@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.web.WebView?>
+
+<AnchorPane prefHeight="812.0" prefWidth="1207.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.EpubEditorMainController">
+   <children>
+      <MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Datei">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#newEpubAction" text="Neu...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#openEpubAction" text="Öffnen…">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <Menu fx:id="addMenu" mnemonicParsing="false" text="Hinzufügen">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Vorhandene Dateien…" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#addEmptyHTMLFileAction" text="Leere XHTML-Datei" />
+                        <MenuItem mnemonicParsing="false" onAction="#addEmptyCSSFileAction" text="Leeren Stylesheet" />
+                        <MenuItem mnemonicParsing="false" onAction="#addEmptySVGFileAction" text="Leere SVG-Datei" />
+                    </items>
+                  </Menu>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#saveEpubAction" text="Speichern">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <MenuItem fx:id="savAsMenuItem" mnemonicParsing="false" onAction="#saveEpubAsAction" text="Speichern als…" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveAsTemplateAction" text="Als Template speichern..." />
+                  <MenuItem fx:id="saveCopyMenuItem" mnemonicParsing="false" onAction="#saveEpubCopyAction" text="Kopie speichern…" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="printPreviewMenuItem" mnemonicParsing="false" onAction="#printPreviewAction" text="Druckvorschau…" />
+                  <MenuItem fx:id="printMenuItem" mnemonicParsing="false" onAction="#printAction" text="Drucken…" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem mnemonicParsing="false" onAction="#exitAction" text="Beenden" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Bearbeiten">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Rückgängig" />
+                  <MenuItem mnemonicParsing="false" text="Wiederherstellen" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Ausschneiden" />
+                  <MenuItem mnemonicParsing="false" text="Kopieren" />
+                  <MenuItem mnemonicParsing="false" text="Einfügen" />
+                  <MenuItem mnemonicParsing="false" text="Einfügen aus Historie..." />
+                  <MenuItem mnemonicParsing="false" text="Zeile löschen..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <Menu mnemonicParsing="false" text="Groß-/Kleinschreibung">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Kleinschreibung" />
+                        <MenuItem mnemonicParsing="false" text="Großschreibung" />
+                        <MenuItem mnemonicParsing="false" text="Wort-Großschreibung" />
+                        <MenuItem mnemonicParsing="false" text="Satz-Großschreibung" />
+                    </items>
+                  </Menu>
+                <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Teilung am Cursor" />
+                  <MenuItem mnemonicParsing="false" text="Teilung an Markierungen" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Einstellungen..." />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Einfügen">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Teilungsmarkierung..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Datei aus dem Buch einfügen..." />
+                  <MenuItem mnemonicParsing="false" text="Datei von Festplatte einfügen..." />
+                  <MenuItem mnemonicParsing="false" onAction="#insertSpecialCharacterAction" text="Sonderzeichen..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="ID..." />
+                  <MenuItem mnemonicParsing="false" text="Link..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Schließendes Tag..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Clip..." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Werkzeuge">
+              <items>
+                <MenuItem fx:id="addCoverMenuItem" mnemonicParsing="false" onAction="#addCoverAction" text="Cover hinzufügen…" />
+                  <MenuItem fx:id="editMetadataMenuItem" mnemonicParsing="false" onAction="#editMetadataAction" text="Metadaten bearbeiten…" />
+                  <Menu mnemonicParsing="false" text="Inhaltsverzeichnis">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Inhaltsverzeichnis erzeugen…" />
+                        <MenuItem mnemonicParsing="false" text="Inhaltsverzeichnis erzeugen…" />
+                        <MenuItem mnemonicParsing="false" text="HTML-Inhaltsverzeichnis erzeugen…" />
+                    </items>
+                  </Menu>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Validiere EPUB..." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Ansicht">
+                <items>
+                    <RadioMenuItem fx:id="showBookBrowserMenuItem" mnemonicParsing="false" selected="true" text="Buchinhalt" />
+                    <RadioMenuItem fx:id="clipsMenuItem" mnemonicParsing="false" selected="true" text="Clips" />
+                    <RadioMenuItem fx:id="showPreviewMenuItem" mnemonicParsing="false" selected="true" text="Vorschau" />
+                    <RadioMenuItem fx:id="showTocMenuItem" mnemonicParsing="false" selected="true" text="Inhaltsverzeichnis" />
+                    <RadioMenuItem fx:id="showValidationResultsMenuItem" mnemonicParsing="false" selected="true" text="Validierungs-Ergebnisse" />
+                </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <SplitPane fx:id="mainDivider" dividerPositions="0.26224066390041495, 0.7892116182572614" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+         <items>
+            <SplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL" SplitPane.resizableWithParent="false">
+              <items>
+                  <TreeView fx:id="epubStructureTreeView" SplitPane.resizableWithParent="false" />
+                  <ListView fx:id="clipListView" />
+              </items>
+            </SplitPane>
+            <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
+               <items>
+                  <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" />
+                  <ListView fx:id="validationResultsListView" />
+               </items>
+            </SplitPane>
+            <SplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL" SplitPane.resizableWithParent="false">
+               <items>
+                  <AnchorPane fx:id="previewAnchorPane" SplitPane.resizableWithParent="false">
+                     <children>
+                        <ToolBar layoutX="14.0" layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn">
+                                <tooltip>
+                                    <Tooltip styleClass="white-tooltip" text="Vergrößern" />
+                                </tooltip>
+                                <graphic>
+                                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="icons/zoom_in.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                              <Button fx:id="zoom100Button" mnemonicParsing="false" onAction="#preview100PercentZoom">
+                                  <tooltip>
+                                      <Tooltip styleClass="white-tooltip" text="100%" />
+                                  </tooltip>
+                                  <graphic>
+                                      <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                              <Image url="icons/view_1_1.png" />
+                                          </image>
+                                      </ImageView>
+                                  </graphic>
+
+                              </Button>
+                              <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut">
+                                  <tooltip>
+                                      <Tooltip styleClass="white-tooltip" text="Verkleinern" />
+                                  </tooltip>
+                                  <graphic>
+                                      <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                              <Image url="icons/zoom_out.png" />
+                                          </image>
+                                      </ImageView>
+                                  </graphic>
+
+                              </Button>
+                          </items>
+                        </ToolBar>
+                        <WebView fx:id="previewWebview" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
+                     </children>
+                  </AnchorPane>
+                  <TreeView fx:id="tocTreeView" />
+               </items>
+            </SplitPane>
+         </items>
+      </SplitPane>
+      <TabPane layoutY="27.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <tabs>
+            <Tab text="Start">
+               <content>
+                  <ToolBar layoutY="27.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <items>
+                        <Button fx:id="newBookButton" mnemonicParsing="false" onAction="#newEpubAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Neues E-Book erstellen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/book2_new.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="openBookButton" mnemonicParsing="false" onAction="#openEpubAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="E-Book öffnen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/book_open.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="addExistingFileButton" mnemonicParsing="false" onAction="#addExistingFilesAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Vorhandene Datei hinzufügen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/document_text_add.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#addEmptyHTMLFileAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Leere Datei einfügen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/document_empty_add.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" prefHeight="30.0" />
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveEpubAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Speichern" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/floppy_disk.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="saveAsButton" mnemonicParsing="false" onAction="#saveEpubAsAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Speichern" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/save_as.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" prefHeight="30.0" />
+                        <Button fx:id="undoButton" mnemonicParsing="false" onAction="#undoButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Rückgängig machen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/undo.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redoButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Wiederherstellen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/redo.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" prefHeight="30.0" />
+                        <Button fx:id="cutButton" mnemonicParsing="false" onAction="#cutButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Ausschneiden" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/cut.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Kopieren" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/copy.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="pasteButton" mnemonicParsing="false" onAction="#pasteButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Einfügen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/clipboard_paste.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Separator orientation="VERTICAL" prefHeight="30.0" />
+                        <Button fx:id="searchReplaceButton" mnemonicParsing="false" onAction="#searchReplaceButtonAction">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Suchen und Ersetzen" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="icons/find_replace.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </items>
+                  </ToolBar>
+               </content>
+            </Tab>
+            <Tab text="Layout">
+               <content>
+                   <ToolBar prefHeight="40.0" prefWidth="200.0">
+                       <items>
+                           <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" text="h1" />
+                           <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" text="h2" />
+                           <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" text="h3" />
+                           <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" text="h4" />
+                           <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction" text="h5" />
+                           <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction" text="h6" />
+                           <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false" onAction="#paragraphButtonAction" text="p" />
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="orderedListButton" mnemonicParsing="false" onAction="#orderedListButtonAction" />
+                           <Button fx:id="unorderedListButton" mnemonicParsing="false" onAction="#unorderedListButtonAction" />
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="increaseIndentButton" mnemonicParsing="false" onAction="#increaseIndentButtonAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Einzug erhöhen" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                      <image>
+                                              <Image url="icons/indent_increase.png" />
+                                      </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+                           <Button fx:id="decreaseIndentButton" mnemonicParsing="false" onAction="#decreaseIndentButtonAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Einzug verringern" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                      <image>
+                                              <Image url="icons/indent_decrease.png" />
+                                      </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction" />
+                           <Button fx:id="kursivButton" mnemonicParsing="false" onAction="#kursivButtonAction" />
+                           <Button fx:id="underlineButton" mnemonicParsing="false" onAction="#underlineButtonAction" />
+                           <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction" />
+                           <Button fx:id="subscriptButton" mnemonicParsing="false" onAction="#subscriptButtonAction" />
+                           <Button fx:id="superscriptButton" mnemonicParsing="false" onAction="#superscriptButtonAction" />
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="alignLeftButton" mnemonicParsing="false" onAction="#alignLeftButtonAction" />
+                           <Button fx:id="centerButton" mnemonicParsing="false" onAction="#centerButtonAction" />
+                           <Button fx:id="rightAlignButton" mnemonicParsing="false" onAction="#rightAlignButtonAction" />
+                           <Button fx:id="justifyButton" mnemonicParsing="false" onAction="#justifyButtonAction" />
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="splitButton" mnemonicParsing="false" onAction="#splitButtonAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Datei am Cursor teilen" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="icons/document_text_split.png" />
+                                       </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+                           <Separator orientation="VERTICAL" prefHeight="30.0" />
+                           <Button fx:id="insertTableButton" mnemonicParsing="false" onAction="#insertTableButtonAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Tabelle einfügen" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="icons/table.png" />
+                                       </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+                           <Button fx:id="insertImageButton" mnemonicParsing="false" onAction="#insertImageButtonAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Bild einfügen" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="icons/painting_landscape.png" />
+                                       </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+                           <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false" onAction="#insertSpecialCharacterAction">
+                               <tooltip>
+                                   <Tooltip styleClass="white-tooltip" text="Sonderzeichen einfügen" />
+                               </tooltip>
+                               <graphic>
+                                   <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="icons/sum.png" />
+                                       </image>
+                                   </ImageView>
+                               </graphic>
+                           </Button>
+
+                       </items>
+                   </ToolBar>
+               </content>
+            </Tab>
+             <Tab text="Inhalt">
+             <content>
+             <ToolBar prefHeight="40.0" prefWidth="200.0">
+             <items>
+                 <Button fx:id="editMetadataButton" mnemonicParsing="false" onAction="#editMetadataAction">
+                     <tooltip>
+                         <Tooltip styleClass="white-tooltip" text="Metadaten bearbeiten" />
+                     </tooltip>
+                     <graphic>
+                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                             <image>
+                                 <Image url="icons/information.png" />
+                             </image>
+                         </ImageView>
+                     </graphic>
+                 </Button>
+                 <Button fx:id="createTocButton" mnemonicParsing="false" onAction="#createTocAction">
+                     <tooltip>
+                         <Tooltip styleClass="white-tooltip" text="Inhaltsverzeichnis erzeugen" />
+                     </tooltip>
+                     <graphic>
+                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                             <image>
+                                 <Image url="icons/index2.png" />
+                             </image>
+                         </ImageView>
+                     </graphic>
+                 </Button>
+             </items>
+             </ToolBar>
+             </content>
+             </Tab>
+
+         </tabs>
+         <padding>
+            <Insets top="-5.0" />
+         </padding>
+      </TabPane>
+      <ToolBar layoutY="848.0" prefHeight="40.0" prefWidth="1207.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <items>
+            <Label fx:id="cursorPosLabel" layoutX="1077.0" layoutY="12.0" text="Label" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="12.0" />
+         </items>
+      </ToolBar>
+   </children>
+</AnchorPane>

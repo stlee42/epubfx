@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="http://localhost:8777/codemirror-4.4/lib/codemirror.css">
+    <script src="http://localhost:8777/codemirror-4.4/lib/codemirror.js"></script>
+    <script src="http://localhost:8777/codemirror-4.4/mode/css/css.js"></script>
+    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closebrackets.js"></script>
+    <style type="text/css">
+        .CodeMirror
+        {
+            border: 1px solid green;
+            height: 100%;
+            font-family: "Source Code Pro", Consolas;
+            font-size: 14px;
+        }
+
+        .CodeMirror-scroll {
+            overflow-y: hidden;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+<form><textarea id="code" name="code">${code}</textarea></form>
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        indentUnit: 4,
+        lineWrapping:true,
+        viewportMargin:Infinity,
+        maxHighlightLength:Infinity,
+        autoCloseBrackets: true,
+        autoCloseTags: true,
+        smartIndent:false,
+        mode: {name: "css", htmlMode: false}
+    });
+</script>
+</body>
+</html>

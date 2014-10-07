@@ -1,0 +1,98 @@
+h1 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+}
+
+h2 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+}
+
+h3 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+}
+
+h4 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+}
+
+h5 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+
+}
+
+h6 {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    adobe-hyphenate: none;
+}
+
+p {
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+    hyphenate-after: 3;
+    hyphenate-before: 3;
+    hyphenate-lines: 2;
+    -webkit-hyphenate-after: 3;
+    -webkit-hyphenate-before: 3;
+    -webkit-hyphenate-lines: 2;
+}
+
+.poem {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    padding-left: 2em;
+}
+
+.poem p {
+    margin-left: 2em;
+    text-indent: -2em;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/*Fussnote*/
+.reference {
+    font-size: 0.6em;
+    vertical-align: text-top;
+}
+
+/*Fussnotentext*/
+.references {
+    font-size: 0.9em;
+}
+
+/*Text im Impressum*/
+
+.impressum-text
+{
+    text-align: justify;
+    font-size:80%;
+}
+
+/* schmales nicht umbrechendes leerzeichen */
+.nnbsp
+{
+    font-size:0.5em;
+}

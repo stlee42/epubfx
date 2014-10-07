@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane gridLinesVisible="false" hgap="0.0" maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="308.0" prefWidth="450.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.AddStylesheetController">
+  <children>
+    <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="37.0" prefWidth="422.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+      <children>
+        <Button id="cancelButton" cancelButton="false" contentDisplay="LEFT" minWidth="90.0" mnemonicParsing="false" onAction="#okAction" text="Ok" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+        <Button id="okButton" minWidth="90.0" mnemonicParsing="false" onAction="#cancelAction" text="Abbrechen" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets left="14.0" />
+          </HBox.margin>
+        </Button>
+      </children>
+      <padding>
+        <Insets bottom="14.0" />
+      </padding>
+    </HBox>
+    <TableView id="popupeditTableView" fx:id="tableView" prefHeight="231.0" prefWidth="449.0" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+         <columns>
+            <TableColumn prefWidth="98.0" text="Einbeziehen" />
+            <TableColumn prefWidth="253.0" text="Stylesheet" />
+         </columns></TableView>
+      <VBox alignment="TOP_CENTER" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <Button mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#styleUpAction">
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
+                <tooltip>
+                    <Tooltip styleClass="white-tooltip" text="Den Styleshheet in der Auswertungsreihenfolge nach oben verschieben" />
+                </tooltip>
+                <graphic>
+                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="icons/arrow_up.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#styleDownAction">
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
+                <tooltip>
+                    <Tooltip styleClass="white-tooltip" text="Den Styleshheet in der Auswertungsreihenfolge nach unten verschieben" />
+                </tooltip>
+                <graphic>
+                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="icons/arrow_down.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+         </children>
+      </VBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="23.0" minWidth="-Infinity" percentWidth="174.0" prefWidth="0.0" />
+      <ColumnConstraints hgrow="NEVER" maxWidth="23.0" minWidth="10.0" percentWidth="26.0" prefWidth="100.0" />
+  </columnConstraints>
+  <padding>
+    <Insets left="14.0" right="14.0" top="14.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" valignment="CENTER" vgrow="NEVER" />
+    <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" valignment="CENTER" vgrow="NEVER" />
+  </rowConstraints>
+</GridPane>

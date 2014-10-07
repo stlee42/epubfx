@@ -1,0 +1,5 @@
+.white-tooltip {
+    -fx-background-color:white;
+    -fx-color-label-visible: true;
+    -fx-text-fill:black;
+}

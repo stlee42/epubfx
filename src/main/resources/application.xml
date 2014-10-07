@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <open-with>
+        <xhtml>
+            <application display-name="Notepad">C:\windows\system32\notepad.exe</application>
+            <application display-name="IntelliJ">C:\Program Files (x86)\JetBrains\IntelliJ IDEA 138.1283.4\bin\idea64.exe</application>
+        </xhtml>
+        <image>
+            <application display-name="GIMP">C:\Program Files\GIMP 2\bin\gimp-2.8.exe</application>
+        </image>
+        <css />
+        <font />
+    </open-with>
+    <layout>
+        <main-window x="312.0" height="918.0" is-fullscreen="false" width="1300.0" y="0.0" />
+        <visibility book-browser="true" toc="true" validation-results="true" clips-list="true" preview="true" />
+        <dividers>
+            <main-divider divider-1="0.24648985959438377" divider-2="0.8018720748829953" />
+            <left-divider divider-1="0.5053475935828877" />
+            <center-divider divider-1="0.7887700534759359" />
+            <right-divider divider-1="0.5053475935828877" />
+        </dividers>
+    </layout>
+</configuration>

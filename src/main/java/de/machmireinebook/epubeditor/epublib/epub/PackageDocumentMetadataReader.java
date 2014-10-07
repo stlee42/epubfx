@@ -1,0 +1,204 @@
+package de.machmireinebook.epubeditor.epublib.epub;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import de.machmireinebook.commons.jdom2.JDOM2Utils;
+import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.Metadata;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jdom2.Element;
+
+/**
+ * Reads the package document metadata.
+ * <p>
+ * In its own separate class because the PackageDocumentReader became a bit large and unwieldy.
+ *
+ * @author paul
+ */
+// package
+class PackageDocumentMetadataReader extends PackageDocumentBase
+{
+
+    private static final Logger log = Logger.getLogger(PackageDocumentMetadataReader.class);
+
+    public static Metadata readMetadata(Element root)
+    {
+        Metadata result = new Metadata();
+        Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
+        if (metadataElement == null)
+        {
+            log.error("Package does not contain element " + OPFTags.metadata);
+            return result;
+        }
+
+        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
+        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.publisher));
+        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.description));
+        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.rights));
+        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.type));
+        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.subject));
+        result.setIdentifiers(readIdentifiers(metadataElement));
+        result.setAuthors(readCreators(metadataElement));
+        result.setContributors(readContributors(metadataElement));
+        result.setDates(readDates(metadataElement));
+        result.setOtherProperties(readOtherProperties(metadataElement));
+        result.setMetaAttributes(readMetaProperties(metadataElement));
+        result.setLanguage(metadataElement.getChildText(DCTags.language, NAMESPACE_DUBLIN_CORE));
+
+        return result;
+    }
+
+    /**
+     * consumes meta tags that have a property attribute as defined in the standard. For example:
+     * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
+     *
+     * @param metadataElement
+     * @return
+     */
+    private static Map<QName, String> readOtherProperties(Element metadataElement)
+    {
+        Map<QName, String> result = new HashMap<>();
+
+        List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
+        for (Element metaTag : metaTags)
+        {
+            String name = metaTag.getAttributeValue(OPFAttributes.property);
+            String value = metaTag.getText();
+            if (StringUtils.isNotEmpty(name))
+            {
+                result.put(new QName(name), value);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * consumes meta tags that have a property attribute as defined in the standard. For example:
+     * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
+     *
+     * @param metadataElement
+     * @return
+     */
+    private static Map<String, String> readMetaProperties(Element metadataElement)
+    {
+        Map<String, String> result = new HashMap<>();
+
+        List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
+        for (Element metaTag : metaTags)
+        {
+            String name = metaTag.getAttributeValue(OPFAttributes.name);
+            String value = metaTag.getAttributeValue(OPFAttributes.content);
+            result.put(name, value);
+        }
+
+        return result;
+    }
+
+    private static String getBookIdId(Element root)
+    {
+        String result = root.getAttributeValue(OPFAttributes.uniqueIdentifier);
+        return result;
+    }
+
+    private static List<Author> readCreators(Element metadataElement)
+    {
+        return readAuthors(DCTags.creator, metadataElement);
+    }
+
+    private static List<Author> readContributors(Element metadataElement)
+    {
+        return readAuthors(DCTags.contributor, metadataElement);
+    }
+
+    private static List<Author> readAuthors(String authorTag, Element metadataElement)
+    {
+        List<Element> elements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
+        List<Author> result = new ArrayList<Author>(elements.size());
+        for (Element authorElement : elements)
+        {
+            Author author = createAuthor(authorElement);
+            if (author != null)
+            {
+                result.add(author);
+            }
+        }
+        return result;
+
+    }
+
+    private static List<MetadataDate> readDates(Element metadataElement)
+    {
+        List<Element> elements = metadataElement.getChildren(DCTags.date, NAMESPACE_DUBLIN_CORE);
+        List<MetadataDate> result = new ArrayList<>(elements.size());
+        for (Element dateElement : elements)
+        {
+            MetadataDate date;
+            try
+            {
+                date = new MetadataDate(dateElement.getText(), dateElement.getAttributeValue(OPFAttributes.event, NAMESPACE_OPF));
+                result.add(date);
+            }
+            catch (IllegalArgumentException e)
+            {
+                log.error(e.getMessage());
+            }
+        }
+        return result;
+
+    }
+
+    private static Author createAuthor(Element authorElement)
+    {
+        String authorString = authorElement.getText();
+        if (StringUtils.isBlank(authorString))
+        {
+            return null;
+        }
+        Author result;
+        result = new Author(authorString);
+        result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
+        return result;
+    }
+
+
+    private static List<Identifier> readIdentifiers(Element metadataElement)
+    {
+        List<Element> identifierElements = metadataElement.getChildren(DCTags.identifier, NAMESPACE_DUBLIN_CORE);
+        if (identifierElements.isEmpty())
+        {
+            log.error("Package does not contain element " + DCTags.identifier);
+            return new ArrayList<Identifier>();
+        }
+        String bookIdId = getBookIdId(metadataElement.getParentElement());
+        List<Identifier> result = new ArrayList<>(identifierElements.size());
+        if (StringUtils.isNotEmpty(bookIdId))
+        {
+            for (Element identifierElement : identifierElements)
+            {
+                String schemeName = identifierElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+                String identifierValue = identifierElement.getText();
+                if (StringUtils.isBlank(identifierValue))
+                {
+                    continue;
+                }
+                Identifier identifier = new Identifier(schemeName, identifierValue);
+                if (bookIdId.equals(identifierElement.getAttributeValue("id")))
+                {
+                    identifier.setBookId(true);
+                }
+                result.add(identifier);
+            }
+        }
+        return result;
+    }
+}
