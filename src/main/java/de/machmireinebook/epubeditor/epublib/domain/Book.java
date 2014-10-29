@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 
+import de.machmireinebook.commons.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -29,8 +30,6 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
 
 
@@ -340,43 +339,6 @@ public class Book implements Serializable
 
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
     private Path physicalFileName;
-
-    public class AtrributeElementFilter extends ElementFilter
-    {
-        private String attributeName;
-        private Namespace attributeNamespace = Namespace.NO_NAMESPACE;
-        private String attributeValue;
-
-        public AtrributeElementFilter(String attributeName, String attributeValue)
-        {
-            super();
-            this.attributeName = attributeName;
-            this.attributeValue = attributeValue;
-        }
-
-        public AtrributeElementFilter(String attributeName, Namespace attributeNamespace, String attributeValue)
-        {
-            super();
-            this.attributeName = attributeName;
-            this.attributeNamespace = attributeNamespace;
-            this.attributeValue = attributeValue;
-        }
-
-        @Override
-        public Element filter(Object content)
-        {
-            Element element = super.filter(content);
-            if (element != null)
-            {
-                if (attributeValue.equals(element.getAttributeValue(attributeName, attributeNamespace)))
-                {
-                    return element;
-                }
-            }
-            return null;
-        }
-    }
-
 
     public static Book createMinimalBook()
     {
