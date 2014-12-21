@@ -76,7 +76,7 @@ public class NCXDocument
 
     }
 
-    public static Resource read(Book book, EpubReader epubReader)
+    public static Resource read(Book book)
     {
         Resource ncxResource = null;
         if (book.getSpine().getTocResource() == null)
@@ -87,10 +87,6 @@ public class NCXDocument
         try
         {
             ncxResource = book.getSpine().getTocResource();
-            if (ncxResource == null)
-            {
-                return ncxResource;
-            }
             Document ncxDocument = ResourceUtil.getAsDocument(ncxResource);
             Element navMapElement = ncxDocument.getRootElement().getChild(NCXTags.navMap, NAMESPACE_NCX);
             TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildren("navPoint", NAMESPACE_NCX), book));
@@ -207,7 +203,7 @@ public class NCXDocument
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(ncxDocument);
 
-        Resource resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF);
+        Resource resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);
         return resource;
     }
 

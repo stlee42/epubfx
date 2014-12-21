@@ -335,7 +335,7 @@ public class PackageDocumentReader extends PackageDocumentBase
     private static Spine generateSpineFromResources(Resources resources)
     {
         Spine result = new Spine();
-        List<String> resourceHrefs = new ArrayList<String>();
+        List<String> resourceHrefs = new ArrayList<>();
         resourceHrefs.addAll(resources.getAllHrefs());
         Collections.sort(resourceHrefs, String.CASE_INSENSITIVE_ORDER);
         for (String resourceHref : resourceHrefs)

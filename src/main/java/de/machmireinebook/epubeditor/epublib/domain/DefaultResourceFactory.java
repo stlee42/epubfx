@@ -44,6 +44,13 @@ public class DefaultResourceFactory  implements ResourceFactory
     }
 
     @Override
+    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    {
+        Resource res = new Resource(id, data, href, mediaType);
+        return res;
+    }
+
+    @Override
     public Resource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new Resource(data, href, mediaType);

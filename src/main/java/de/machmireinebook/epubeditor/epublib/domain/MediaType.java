@@ -30,6 +30,8 @@ public class MediaType implements Serializable
     public static final MediaType JAVASCRIPT = new MediaType("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance());
     public static final MediaType CSS = new MediaType("text/css", ".css", "style", CSSResourceFactory.getInstance());
 
+    public static final MediaType MIMETYPE = new MediaType("text/plain", "mimetype", "", DefaultResourceFactory.getInstance());
+
     // images
     public static final MediaType JPG = new MediaType("image/jpeg", ".jpg", new String[]{".jpg", ".jpeg"}, "image", ImageResourceFactory.getInstance());
     public static final MediaType PNG = new MediaType("image/png", ".png", ImageResourceFactory.getInstance());

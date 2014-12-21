@@ -44,6 +44,14 @@ public class CSSResourceFactory implements ResourceFactory
     }
 
     @Override
+    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    {
+        Resource res = new CSSResource(id, data, href);
+        res.setMediaType(mediaType);
+        return res;
+    }
+
+    @Override
     public Resource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new CSSResource(data, href, mediaType);

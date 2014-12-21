@@ -106,7 +106,7 @@ public class EpubEditorApplication extends Application
                 server.createContext("/", epubHttpHandler);
 
                 ResourceHttpHandler resourceHttpHandler = new ResourceHttpHandler();
-                server.createContext("/codemirror-4.4", resourceHttpHandler);
+                server.createContext("/codemirror", resourceHttpHandler);
                 server.createContext("/dtd", resourceHttpHandler);
 
                 server.start();

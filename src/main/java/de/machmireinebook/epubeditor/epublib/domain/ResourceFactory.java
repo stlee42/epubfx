@@ -11,5 +11,6 @@ public interface ResourceFactory
     Resource createResource(String href);
     Resource createResource(byte[] data, String href);
     Resource createResource(String id, byte[] data, String href);
+    Resource createResource(String id, byte[] data, String href, MediaType mediaType);
     Resource createResource(byte[] data, String href, MediaType mediaType);
 }

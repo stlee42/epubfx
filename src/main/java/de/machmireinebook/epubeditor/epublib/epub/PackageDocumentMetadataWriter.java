@@ -8,8 +8,8 @@ import javax.xml.namespace.QName;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Element;
@@ -140,7 +140,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
      *
      * @param identifiers
      * @param serializer
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
      * @
@@ -155,7 +154,10 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
 
         Element identifierElement = new Element(DCTags.identifier, NAMESPACE_DUBLIN_CORE);
         identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);
-        identifierElement.setAttribute(OPFAttributes.scheme, bookIdIdentifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
+        if (bookIdIdentifier.getScheme() != null)
+        {
+            identifierElement.setAttribute(OPFAttributes.scheme, bookIdIdentifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
+        }
         identifierElement.setText(bookIdIdentifier.getValue());
         metadataElement.addContent(identifierElement);
 

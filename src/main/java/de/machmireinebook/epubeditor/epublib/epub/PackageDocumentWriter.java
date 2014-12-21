@@ -101,10 +101,8 @@ public class PackageDocumentWriter extends PackageDocumentBase
      *
      * @param book
      * @param root
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
-     * @throws javax.xml.stream.XMLStreamException
      */
     private static void writeSpine(Book book, Element root)
     {
@@ -161,10 +159,8 @@ public class PackageDocumentWriter extends PackageDocumentBase
      *
      * @param resource
      * @param serializer
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
-     * @throws javax.xml.stream.XMLStreamException
      */
     private static void writeItem(Book book, Resource resource, Element manifestElement)
     {
@@ -200,7 +196,6 @@ public class PackageDocumentWriter extends PackageDocumentBase
     /**
      * List all spine references
      *
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
      */
