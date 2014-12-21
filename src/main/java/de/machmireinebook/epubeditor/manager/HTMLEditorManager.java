@@ -126,53 +126,48 @@ public class HTMLEditorManager
                 protected Boolean call()
                 {
                     logger.info("scheduled refresh task, one second after last key up");
-                    Platform.runLater(new Runnable()
-                    {
-                        @Override
-                        public void run()
+                    Platform.runLater(() -> {
+                        String code = currentEditor.getValue().getCode();
+                        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
                         {
-                            String code = currentEditor.getValue().getCode();
-                            if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+                            try
                             {
-                                try
-                                {
-                                    currentXHTMLResource.get().setData(code.getBytes("UTF-8"));
-                                }
-                                catch (UnsupportedEncodingException e)
-                                {
-                                    //never happens
-                                }
+                                currentXHTMLResource.get().setData(code.getBytes("UTF-8"));
                             }
-                            else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
+                            catch (UnsupportedEncodingException e)
                             {
-                                try
-                                {
-                                    currentCssResource.get().setData(code.getBytes("UTF-8"));
-                                }
-                                catch (UnsupportedEncodingException e)
-                                {
-                                    //never happens
-                                }
+                                //never happens
                             }
-                            else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
-                            {
-                                try
-                                {
-                                    Resource resource = currentXMLResource.get();
-                                    resource.setData(code.getBytes("UTF-8"));
-                                    if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
-                                    {
-                                        PackageDocumentReader.read(resource, book);
-                                    }
-                                }
-                                catch (JDOMException | IOException e)
-                                {
-                                    logger.error("", e);
-                                }
-                            }
-                            needsRefresh.setValue(true);
-                            needsRefresh.setValue(false);
                         }
+                        else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
+                        {
+                            try
+                            {
+                                currentCssResource.get().setData(code.getBytes("UTF-8"));
+                            }
+                            catch (UnsupportedEncodingException e)
+                            {
+                                //never happens
+                            }
+                        }
+                        else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
+                        {
+                            try
+                            {
+                                Resource resource = currentXMLResource.get();
+                                resource.setData(code.getBytes("UTF-8"));
+                                if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
+                                {
+                                    PackageDocumentReader.read(resource, book);
+                                }
+                            }
+                            catch (JDOMException | IOException e)
+                            {
+                                logger.error("", e);
+                            }
+                        }
+                        needsRefresh.setValue(true);
+                        needsRefresh.setValue(false);
                     });
                     cancel();
                     return true;
@@ -515,7 +510,7 @@ public class HTMLEditorManager
     public void setTabPane(TabPane tabPane)
     {
         this.tabPane = tabPane;
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
         {
             @Override
@@ -693,7 +688,6 @@ public class HTMLEditorManager
 
     public void reset()
     {
-        tabPane.getTabs().clear();
     }
 
     public ObservableBooleanValue currentEditorIsXHTMLProperty()
@@ -765,14 +759,17 @@ public class HTMLEditorManager
         for (Tab tab : tabs)
         {
             Resource resource = (Resource) tab.getUserData();
-            CodeEditor editor = (CodeEditor)tab.getContent();
-            try
+            if (tab.getContent() instanceof  CodeEditor)
             {
-                editor.setCode(new String(resource.getData(), "UTF-8"));
-            }
-            catch (IOException e)
-            {
-                logger.error("", e);
+                CodeEditor editor = (CodeEditor) tab.getContent();
+                try
+                {
+                    editor.setCode(new String(resource.getData(), "UTF-8"));
+                }
+                catch (IOException e)
+                {
+                    logger.error("", e);
+                }
             }
         }
     }

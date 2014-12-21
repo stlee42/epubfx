@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import de.machmireinebook.commons.images.ImageInfo;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
@@ -22,6 +24,7 @@ public class ImageResource extends Resource<Image>
     private double height;
 
     private Image image;
+    private ImageInfo imageInfo;
     private ObjectProperty<Image> coverProperty;
 
     public ImageResource()
@@ -37,7 +40,7 @@ public class ImageResource extends Resource<Image>
     public ImageResource(byte[] data, MediaType mediaType)
     {
         super(data, mediaType);
-        calculateWidthAndHeight();
+        calculateImageInfo();
     }
 
     public ImageResource(byte[] data, String href)
@@ -74,16 +77,23 @@ public class ImageResource extends Resource<Image>
     public void setData(byte[] data)
     {
         super.setData(data);
-        calculateWidthAndHeight();
+        calculateImageInfo();
     }
 
-    private void calculateWidthAndHeight()
+    private void calculateImageInfo()
     {
         try
         {
             image = new Image(getInputStream());
             width = image.getWidth();
             height = image.getHeight();
+
+            imageInfo = new ImageInfo();
+            imageInfo.setInput(getInputStream()); // in can be InputStream or RandomAccessFile
+            if (!imageInfo.check())
+            {
+                logger.error("Not a supported image file format.");
+            }
         }
         catch (IOException e)
         {
@@ -126,6 +136,11 @@ public class ImageResource extends Resource<Image>
     public void setHeight(double height)
     {
         this.height = height;
+    }
+
+    public ImageInfo getImageInfo()
+    {
+        return imageInfo;
     }
 
     public ObjectProperty<Image> coverProperty()

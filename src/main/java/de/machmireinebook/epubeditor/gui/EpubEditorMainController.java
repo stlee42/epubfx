@@ -27,6 +27,7 @@ import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.HTMLEditorManager;
+import de.machmireinebook.epubeditor.manager.ImageViewerManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
@@ -223,6 +224,8 @@ public class EpubEditorMainController implements Initializable
     @Inject
     private HTMLEditorManager editorManager;
     @Inject
+    private ImageViewerManager imageViewerManager;
+    @Inject
     private PreviewManager previewManager;
     @Inject
     private TOCViewManager tocViewManager;
@@ -236,10 +239,13 @@ public class EpubEditorMainController implements Initializable
 
         bookBrowserManager.setTreeView(epubStructureTreeView);
         bookBrowserManager.setEditorManager(editorManager);
+        bookBrowserManager.setImageViewerManager(imageViewerManager);
 
         epubFilesTabPane.getTabs().clear();
+        epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         editorManager.setTabPane(epubFilesTabPane);
         editorManager.setBookBrowserManager(bookBrowserManager);
+        imageViewerManager.setTabPane(epubFilesTabPane);
 
         previewManager.setWebview(previewWebview);
         previewManager.setEditorManager(editorManager);
@@ -252,10 +258,14 @@ public class EpubEditorMainController implements Initializable
             @Override
             public void changed(ObservableValue<? extends Book> observable, Book oldValue, Book newValue)
             {
+                epubFilesTabPane.getTabs().clear();
+
                 bookBrowserManager.setBook(newValue);
                 tocViewManager.setBook(newValue);
                 editorManager.reset();
                 editorManager.setBook(newValue);
+                imageViewerManager.reset();
+                imageViewerManager.setBook(newValue);
                 previewManager.reset();
             }
         });

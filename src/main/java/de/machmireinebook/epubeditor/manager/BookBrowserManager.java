@@ -85,6 +85,7 @@ public class BookBrowserManager
     private Book book;
     private TreeView<Resource> treeView;
     private HTMLEditorManager editorManager;
+    private ImageViewerManager imageViewerManager;
     private TreeItem<Resource> ncxItem;
     private TreeItem<Resource> opfItem;
 
@@ -273,9 +274,13 @@ public class BookBrowserManager
                         {
                             editorManager.openCssFileInEditor(item.getValue());
                         }
-                        if (isXmlItem(item))
+                        else if (isXmlItem(item))
                         {
                             editorManager.openXMLFileInEditor(item.getValue());
+                        }
+                        else if (isImageItem(item))
+                        {
+                            imageViewerManager.openImageFile(item.getValue());
                         }
                         event.consume();
                     }
@@ -677,6 +682,11 @@ public class BookBrowserManager
     public void setEditorManager(HTMLEditorManager editorManager)
     {
         this.editorManager = editorManager;
+    }
+
+    public void setImageViewerManager(ImageViewerManager imageViewerManager)
+    {
+        this.imageViewerManager = imageViewerManager;
     }
 
     public void setBook(Book book)
