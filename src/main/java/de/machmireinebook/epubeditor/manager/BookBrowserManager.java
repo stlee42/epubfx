@@ -11,6 +11,8 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Named;
@@ -19,21 +21,25 @@ import de.machmireinebook.commons.javafx.FXUtils;
 import de.machmireinebook.commons.javafx.cells.EditingTreeCell;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 
 import com.google.common.io.Files;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.control.CheckMenuItem;
@@ -61,9 +67,6 @@ import javafx.util.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 /**
  * User: mjungierek
@@ -84,8 +87,7 @@ public class BookBrowserManager
 
     private Book book;
     private TreeView<Resource> treeView;
-    private HTMLEditorManager editorManager;
-    private ImageViewerManager imageViewerManager;
+    private EditorTabManager editorManager;
     private TreeItem<Resource> ncxItem;
     private TreeItem<Resource> opfItem;
 
@@ -183,6 +185,7 @@ public class BookBrowserManager
                         treeView.getSelectionModel().clearSelection();
                         treeView.getSelectionModel().select(draggedCell.getTreeItem());
                         refreshOpf();
+                        book.setBookIsChanged(true);
                     }
                     // remove all dnd effects
                     treeCell.setEffect(null);
@@ -229,18 +232,23 @@ public class BookBrowserManager
                 }
             });
 
-            treeCell.setOnDragExited(new EventHandler<DragEvent>()
-            {
-                @Override
-                public void handle(DragEvent event)
-                {
-                    // remove all dnd effects
-                    treeCell.setEffect(null);
-                    treeCell.getStyleClass().remove("dnd-below");
-                }
+            treeCell.setOnDragExited(event -> {
+                // remove all dnd effects
+                treeCell.setEffect(null);
+                treeCell.getStyleClass().remove("dnd-below");
             });
 
             return treeCell;
+        }
+    }
+
+    public class FileNameComparator implements Comparator<Resource>
+    {
+
+        @Override
+        public int compare(Resource res1, Resource res2)
+        {
+            return res1.getFileName().compareTo(res2.getFileName());
         }
     }
 
@@ -280,7 +288,7 @@ public class BookBrowserManager
                         }
                         else if (isImageItem(item))
                         {
-                            imageViewerManager.openImageFile(item.getValue());
+                            editorManager.openImageFile(item.getValue());
                         }
                         event.consume();
                     }
@@ -303,15 +311,10 @@ public class BookBrowserManager
                 }
             }
         });
-        treeView.setOnEditCommit(new EventHandler<TreeView.EditEvent<Resource>>()
-        {
-            @Override
-            public void handle(TreeView.EditEvent<Resource> event)
-            {
-                logger.info("editing end for new value " + event.getNewValue());
-                editorManager.refreshAll();
-                book.setBookIsChanged(true);
-            }
+        treeView.setOnEditCommit(event -> {
+            logger.info("editing end for new value " + event.getNewValue());
+            editorManager.refreshAll();
+            book.setBookIsChanged(true);
         });
 
         Resource textResource = new Resource("Text");
@@ -353,7 +356,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Umbenennen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> renameXHTMLItem(treeItem));
+        item.setOnAction(event -> renameItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
         menu.getItems().add(item);
 
@@ -437,19 +440,16 @@ public class BookBrowserManager
                 }
             }
             item.setUserData(treeItem);
-            item.setOnAction(new EventHandler<ActionEvent>()
-            {
-                @Override
-                public void handle(ActionEvent event)
+            item.setOnAction(event -> {
+                if (item.isSelected())
                 {
-                    if (item.isSelected())
-                    {
-                        addSemanticsToXHTMLFile(treeItem, semantic);
-                    }
-                    else
-                    {
-                        removeSemanticsFromXHTMLFile(treeItem, semantic);
-                    }
+                    addSemanticsToXHTMLFile(treeItem, semantic);
+                    book.setBookIsChanged(true);
+                }
+                else
+                {
+                    removeSemanticsFromXHTMLFile(treeItem, semantic);
+                    book.setBookIsChanged(true);
                 }
             });
             menu.getItems().add(item);
@@ -488,7 +488,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Umbenennen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> renameCssItem(treeItem));
+        item.setOnAction(event -> renameItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
         menu.getItems().add(item);
 
@@ -563,11 +563,86 @@ public class BookBrowserManager
 
         MenuItem item = new MenuItem("Löschen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> deleteXHTMLItem(treeItem));
+        item.setOnAction(event -> deleteImageItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
+        item = new MenuItem("Umbenennen...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> renameItem(treeItem));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
+        menu.getItems().add(item);
+
+        Menu semantikItem = new Menu("Semantik hinzufügen...");
+        menu.getItems().add(semantikItem);
+        addImageSemantikMenuItems(semantikItem, treeItem);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        Menu openWithItem = new Menu("Öffnen mit");
+        menu.getItems().add(openWithItem);
+        addImageOpenWithApplicationItems(openWithItem, treeItem);
+
+        item = new MenuItem("Speichern unter...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> saveAs(treeItem));
+        menu.getItems().add(item);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> EpubEditorMainController.getInstance().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
         return menu;
+    }
+
+    private void addImageSemantikMenuItems(Menu menu, TreeItem<Resource> treeItem)
+    {
+        ImageResource resource = (ImageResource)treeItem.getValue();
+        CheckMenuItem item = new CheckMenuItem("Deckblatt-Bild");
+        if (resource.coverProperty().getValue())
+        {
+            item.setSelected(true);
+        }
+        else
+        {
+            item.setSelected(false);
+        }
+        item.setUserData(treeItem);
+        item.setOnAction(event -> {
+            if (item.isSelected())
+            {
+                resource.coverProperty().setValue(true);
+                book.setBookIsChanged(true);
+            }
+            else
+            {
+                resource.coverProperty().setValue(false);
+                book.setBookIsChanged(true);
+            }
+        });
+        menu.getItems().add(item);
+    }
+
+    private void addImageOpenWithApplicationItems(Menu menu, TreeItem<Resource> treeItem)
+    {
+        EpubEditorConfiguration conf = EpubEditorConfiguration.getInstance();
+        List<EpubEditorConfiguration.OpenWithApplication> applications = conf.getImageOpenWithApplications();
+        for (EpubEditorConfiguration.OpenWithApplication application : applications)
+        {
+            MenuItem item = new MenuItem(application.getDisplayName());
+            item.setUserData(treeItem);
+            item.setOnAction(event -> openWithApplication(treeItem, application.getFileName()));
+            menu.getItems().add(item);
+        }
+        MenuItem item = new MenuItem("Weitere Anwendung konfigurieren...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> confígureApplicationForOpenImage(treeItem));
+        menu.getItems().add(item);
     }
 
     public void refreshBookBrowser()
@@ -588,6 +663,7 @@ public class BookBrowserManager
         }
 
         List<Resource> cssResources = book.getResources().getResourcesByMediaType(MediaType.CSS);
+        Collections.sort(cssResources, new FileNameComparator());
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
@@ -597,6 +673,7 @@ public class BookBrowserManager
 
         List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE,
                 MediaType.TTF, MediaType.WOFF});
+        Collections.sort(fontResources, new FileNameComparator());
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
@@ -609,6 +686,7 @@ public class BookBrowserManager
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
+        Collections.sort(imageResources, new FileNameComparator());
         for (Resource imageResource : imageResources)
         {
             TreeItem<Resource> item = new TreeItem<>(imageResource);
@@ -679,14 +757,9 @@ public class BookBrowserManager
         }
     }
 
-    public void setEditorManager(HTMLEditorManager editorManager)
+    public void setEditorManager(EditorTabManager editorManager)
     {
         this.editorManager = editorManager;
-    }
-
-    public void setImageViewerManager(ImageViewerManager imageViewerManager)
-    {
-        this.imageViewerManager = imageViewerManager;
     }
 
     public void setBook(Book book)
@@ -711,8 +784,6 @@ public class BookBrowserManager
         return item.getParent().equals(imagesItem);
     }
 
-
-
     public boolean isXmlItem(TreeItem<Resource> item)
     {
         return item.getParent().equals(rootItem) &&
@@ -721,16 +792,26 @@ public class BookBrowserManager
 
     private void deleteXHTMLItem(TreeItem<Resource> treeItem)
     {
-        try
-        {
-            book.removeSpineResource(treeItem.getValue());
-            refreshOpf();
-            textItem.getChildren().remove(treeItem);
-        }
-        catch (IOException e)
-        {
-            logger.error("", e);
-        }
+        book.removeSpineResource(treeItem.getValue());
+        editorManager.refreshEditorCode(book.getOpfResource());
+        textItem.getChildren().remove(treeItem);
+        book.setBookIsChanged(true);
+    }
+
+    private void deleteCssItem(TreeItem<Resource> treeItem)
+    {
+        book.removeResource(treeItem.getValue());
+        editorManager.refreshEditorCode(book.getOpfResource());
+        cssItem.getChildren().remove(treeItem);
+        book.setBookIsChanged(true);
+    }
+
+    private void deleteImageItem(TreeItem<Resource> treeItem)
+    {
+        book.removeResource(treeItem.getValue());
+        editorManager.refreshEditorCode(book.getOpfResource());
+        imagesItem.getChildren().remove(treeItem);
+        book.setBookIsChanged(true);
     }
 
     private void refreshOpf()
@@ -761,41 +842,29 @@ public class BookBrowserManager
 
     public void addEmptyXHTMLFile(TreeItem<Resource> treeItem)
     {
-        try
+        String fileName = book.getNextStandardFileName(MediaType.XHTML);
+        Resource res;
+        if (book.isEpub3() && book.isFixedLayout())
         {
-            String fileName = book.getNextStandardFileName(MediaType.XHTML);
-            Resource res;
-            if (book.isEpub3() && book.isFixedLayout())
-            {
-                res = book.addResourceFromTemplate("/epub/template_fixed_layout.xhtml", "Text/" + fileName);
-            }
-            else
-            {
-                res = book.addResourceFromTemplate("/epub/template.xhtml", "Text/" + fileName);
-            }
-
-            int index = 0;
-            if (treeItem != null)
-            {
-                index = textItem.getChildren().indexOf(treeItem);
-            }
-            TreeItem<Resource> xhtmlItem = new TreeItem<>(res);
-            xhtmlItem.setGraphic(FXUtils.getIcon("/icons/document_text.png", 24));
-            textItem.getChildren().add(index + 1, xhtmlItem);
-
-            book.addSpineResource(res, index + 1);
-            book.setBookIsChanged(true);
-            refreshOpf();
+            res = book.addResourceFromTemplate("/epub/template_fixed_layout.xhtml", "Text/" + fileName);
         }
-        catch (IOException e)
+        else
         {
-            logger.error("", e);
-            Dialogs.create()
-                    .owner(treeView)
-                    .title("Datei kann nicht hinzugefügt werden")
-                    .message("Kann keine leere Datei hinzufügen.")
-                    .showException(e);
+            res = book.addResourceFromTemplate("/epub/template.xhtml", "Text/" + fileName);
         }
+
+        int index = 0;
+        if (treeItem != null)
+        {
+            index = textItem.getChildren().indexOf(treeItem);
+        }
+        TreeItem<Resource> xhtmlItem = new TreeItem<>(res);
+        xhtmlItem.setGraphic(FXUtils.getIcon("/icons/document_text.png", 24));
+        textItem.getChildren().add(index + 1, xhtmlItem);
+
+        book.addSpineResource(res, index + 1);
+        book.setBookIsChanged(true);
+        editorManager.refreshEditorCode(book.getOpfResource());
     }
 
     private void addCopy(TreeItem<Resource> treeItem)
@@ -819,6 +888,7 @@ public class BookBrowserManager
             if (((XHTMLResource)selectedItem.getValue()).isValidXML())
             {
                 resources.add(selectedItem.getValue());
+                book.setBookIsChanged(true);
             }
             else
             {
@@ -892,15 +962,32 @@ public class BookBrowserManager
                                 WatchEvent<Path> ev = (WatchEvent<Path>)event;
                                 Path filename = ev.context();
                                 logger.info("getting modify event for file " + filename);
-                                try
-                                {
-                                    resource.setData(IOUtils.toByteArray(new FileInputStream(tmp)));
-                                    editorManager.refreshEditorCode(resource);
-                                }
-                                catch (IOException e)
-                                {
-                                    logger.error("error while reading content written by external program", e);
-                                }
+                                Platform.runLater(() -> {
+                                    try
+                                    {
+                                        byte[] data = IOUtils.toByteArray(new FileInputStream(tmp));
+                                        if (data.length == 0)
+                                        {
+                                            logger.info("file " + filename + " looks like its writing from external application, ignore this event");
+                                            return;
+                                        }
+                                        resource.setData(data);
+                                        if (resource instanceof XHTMLResource || resource instanceof CSSResource || resource instanceof JavascriptResource
+                                                ||  resource instanceof XMLResource)
+                                        {
+                                            editorManager.refreshEditorCode(resource);
+                                        }
+                                        else
+                                        {
+                                            editorManager.refreshImageViewer(resource);
+                                        }
+                                        book.setBookIsChanged(true);
+                                    }
+                                    catch (IOException e)
+                                    {
+                                        logger.error("error while reading content written by external program", e);
+                                    }                                    });
+
                             }
                         }
 
@@ -937,7 +1024,7 @@ public class BookBrowserManager
     {
     }
 
-    private void renameXHTMLItem(TreeItem<Resource> treeItem)
+    private void renameItem(TreeItem<Resource> treeItem)
     {
         ((EditingTreeCell)treeItem.getGraphic().getParent()).startEdit();
     }
@@ -964,7 +1051,7 @@ public class BookBrowserManager
 
         //jetzt die neue Semantik ergänzen
         GuideReference reference = new GuideReference(resource, semantic, semantic.getName());
-        book.getGuide().addReference(reference);
+        guide.addReference(reference);
         refreshOpf();
         book.setBookIsChanged(true);
     }
@@ -1025,76 +1112,13 @@ public class BookBrowserManager
 
         book.addResource(res);
         book.setBookIsChanged(true);
-        refreshOpf();
+        editorManager.refreshEditorCode(book.getOpfResource());
     }
 
     private void validateCss(TreeItem<Resource> treeItem)
     {
 
 
-    }
-
-    private void renameCssItem(TreeItem<Resource> treeItem)
-    {
-        ((EditingTreeCell)treeItem.getGraphic().getParent()).startEdit();
-    }
-
-    private void deleteCssItem(TreeItem<Resource> treeItem)
-    {
-        Resource cssResource = treeItem.getValue();
-        String cssFileName = cssResource.getFileName();
-        book.getResources().remove(cssResource);
-        //aus alle XHTML-Dateien entfernen
-        List<Resource> xhtmlResources = book.getResources().getResourcesByMediaType(MediaType.XHTML);
-        boolean someErrors = false;
-        for (Resource xhtmlResource : xhtmlResources)
-        {
-            try
-            {
-                Document document = ((XHTMLResource)xhtmlResource).getAsNativeFormat();
-                if (document != null)
-                {
-                    Element root = document.getRootElement();
-                    if (root != null)
-                    {
-                        Element headElement = root.getChild("head");
-                        if (headElement != null)
-                        {
-                            List<Element> linkElements = headElement.getChildren("link");
-                            Element toRemove = null;
-                            for (Element linkElement : linkElements)
-                            {
-                                if ("stylesheet".equals(linkElement.getAttributeValue("rel"))
-                                        && linkElement.getAttributeValue("href").contains(cssFileName))
-                                {
-                                    toRemove = linkElement;
-                                    break;
-                                }
-                            }
-                            if (toRemove != null)
-                            {
-                                headElement.removeContent(toRemove);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (IOException | JDOMException e)
-            {
-                logger.error("", e);
-                someErrors = true;
-            }
-        }
-        refreshOpf();
-        cssItem.getChildren().remove(treeItem);
-        if (someErrors)
-        {
-            Dialogs.create()
-                    .owner(treeView)
-                    .title("Stylesheet löschen")
-                    .message("Der zu löschende Stylesheet konnte wegen Fehlern nicht aus allen Dateien entfernt werden. Dies muss manuell nachgeholt werden.")
-                    .showError();
-        }
     }
 
     private void confígureApplicationForOpenXHTML(TreeItem<Resource> treeItem)
@@ -1109,5 +1133,10 @@ public class BookBrowserManager
 
     }
 
+    private void confígureApplicationForOpenImage(TreeItem<Resource> treeItem)
+    {
+
+
+    }
 
 }

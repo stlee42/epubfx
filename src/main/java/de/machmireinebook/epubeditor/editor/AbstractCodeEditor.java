@@ -46,6 +46,40 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         {
             return cursorPosition;
         }
+
+        /**
+         * Interessant ist für undo/redo nur der code die cursorposition ist nur für die userexperience,
+         * eine reine cursoränderung soll nicht versioniert werden
+         * @param o
+         * @return
+         */
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o)
+            {
+                return true;
+            }
+            if (!(o instanceof CodeVersion))
+            {
+                return false;
+            }
+
+            CodeVersion that = (CodeVersion) o;
+
+            if (code != null ? !code.equals(that.code) : that.code != null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return code != null ? code.hashCode() : 0;
+        }
     }
 
     public WebView getWebview()
@@ -82,6 +116,34 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         return code;
     }
 
+    public void undo()
+    {
+        CodeVersion codeVersion = undoRedoManager.undo();
+        String undoCode = codeVersion.getCode();
+        webview.getEngine().executeScript("editor.setValue('" + StringEscapeUtils.escapeJavaScript(undoCode) + "');");
+        EditorPosition cursorPos = codeVersion.getCursorPosition();
+        setEditorCursorPosition(cursorPos);
+    }
+
+    public void redo()
+    {
+        CodeVersion codeVersion = undoRedoManager.redo();
+        String undoCode = codeVersion.getCode();
+        webview.getEngine().executeScript("editor.setValue('" + StringEscapeUtils.escapeJavaScript(undoCode) + "');");
+        EditorPosition cursorPos = codeVersion.getCursorPosition();
+        setEditorCursorPosition(cursorPos);
+    }
+
+    public boolean canUndo()
+    {
+        return undoRedoManager.hasUndoVersion();
+    }
+
+    public boolean canRedo()
+    {
+        return undoRedoManager.hasRedoVersion();
+    }
+
     public EditorToken getTokenAt(EditorPosition pos)
     {
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getTokenAt({line:" + pos.getLine() + ",ch:" + pos.getColumn() +"});");
@@ -101,6 +163,11 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getCursor();");
         return new EditorPosition((int)jdoc.getMember("line"),
                 (int)jdoc.getMember("ch"));
+    }
+
+    public void setEditorCursorPosition(EditorPosition position)
+    {
+        webview.getEngine().executeScript("editor.setCursor(" + position.toJson() + ");");
     }
 
     public EditorRange getSelection()

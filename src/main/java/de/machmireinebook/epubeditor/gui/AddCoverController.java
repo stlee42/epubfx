@@ -112,7 +112,7 @@ public class AddCoverController implements Initializable
 
     private void refreshImageView(ImageResource resource)
     {
-        Image image = resource.getAsNativeFormat();
+        Image image = resource.asNativeFormat();
         imageView.setImage(image);
         imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
     }

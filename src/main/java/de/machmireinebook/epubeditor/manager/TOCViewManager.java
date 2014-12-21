@@ -29,7 +29,7 @@ public class TOCViewManager
 
     private TreeView<TOCReference> treeView;
     private Book book;
-    private HTMLEditorManager editorManager;
+    private EditorTabManager editorManager;
     private TreeItem<TOCReference> rootItem;
 
     public void setTreeView(TreeView<TOCReference> treeView)
@@ -104,7 +104,7 @@ public class TOCViewManager
         }
     }
 
-    public void setEditorManager(HTMLEditorManager editorManager)
+    public void setEditorManager(EditorTabManager editorManager)
     {
         this.editorManager = editorManager;
     }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
+<fx:root type="javafx.scene.control.ScrollPane" xmlns:fx="http://javafx.com/fxml">
 
-<ScrollPane prefHeight="193.0" prefWidth="251.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
          <children>
@@ -19,6 +19,9 @@
                <padding>
                   <Insets bottom="10.0" />
                </padding>
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
             </Label>
             <Line endX="100.0" startX="-100.0" />
             <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
@@ -29,4 +32,4 @@
          </children>
       </VBox>
    </content>
-</ScrollPane>
+</fx:root>

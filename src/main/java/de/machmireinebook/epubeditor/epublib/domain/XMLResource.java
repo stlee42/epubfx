@@ -39,9 +39,17 @@ public class XMLResource extends Resource<Document>
     }
 
     @Override
-    public Document getAsNativeFormat() throws IOException, JDOMException
+    public Document asNativeFormat()
     {
-        return XHTMLUtils.parseXHTMLDocument(getData(), getInputEncoding());
+        try
+        {
+            return XHTMLUtils.parseXHTMLDocument(getData(), getInputEncoding());
+        }
+        catch (IOException | JDOMException e)
+        {
+            logger.error("", e);
+            throw new ResourceDataException(e);
+        }
     }
 
     public boolean isValidXML()
@@ -49,13 +57,13 @@ public class XMLResource extends Resource<Document>
         boolean result = false;
         try
         {
-            Document doc = getAsNativeFormat();
+            Document doc = asNativeFormat();
             if (doc != null)
             {
                 result = true;
             }
         }
-        catch (IOException | JDOMException e)
+        catch (ResourceDataException e)
         {
             //ignoring, somethin is wrong with the xml
         }

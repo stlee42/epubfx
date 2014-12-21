@@ -12,12 +12,13 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jdom2.JDOMException;
 
 /**
  * Represents a resource that is part of the epub.
@@ -41,6 +42,7 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	private MediaType mediaType;
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
+	protected ObjectProperty<T> nativeFormatProperty = new SimpleObjectProperty<>();
 
     public Resource()
     {
@@ -166,7 +168,8 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * 
 	 * @throws java.io.IOException
 	 */
-	public InputStream getInputStream() throws IOException {
+	public InputStream getInputStream()
+	{
 		return new ByteArrayInputStream(getData());
 	}
 	
@@ -175,15 +178,20 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * 
 	 * @return The contents of the resource
 	 */
-	public byte[] getData()  throws IOException
+	public byte[] getData()
     {
 		return data;
 	}
 
-    public T getAsNativeFormat()  throws IOException, JDOMException
+    public T asNativeFormat()
     {
         return null;
     }
+
+	public ObjectProperty<T> nativeFormatProperty()
+	{
+		return nativeFormatProperty;
+	}
 
 	/**
 	 * Tells this resource to release its cached data.
@@ -199,8 +207,10 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * 
 	 * @param data
 	 */
-	public void setData(byte[] data) {
+	public void setData(byte[] data)
+	{
 		this.data = data;
+		nativeFormatProperty.setValue(asNativeFormat());
 	}
 	
 	/**
@@ -258,8 +268,6 @@ public class Resource<T> implements Serializable, ToStringConvertible
     {
         return hrefProperty;
     }
-
-
 
     public Path getHrefPath()
     {

@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 
 import javax.inject.Named;
 
+import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssCodeEditor;
@@ -22,12 +23,14 @@ import de.machmireinebook.epubeditor.editor.XMLTagPair;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
+import com.sun.webkit.dom.KeyboardEventImpl;
 import com.sun.webkit.dom.MouseEventImpl;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -44,14 +47,19 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
@@ -63,7 +71,6 @@ import org.controlsfx.dialog.Dialogs;
 import org.jdom2.Content;
 import org.jdom2.DocType;
 import org.jdom2.JDOMException;
-import org.jdom2.JDOMFactory;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filter;
 import org.jdom2.filter.Filters;
@@ -74,8 +81,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 
 /**
@@ -84,9 +89,10 @@ import org.w3c.dom.events.EventTarget;
  * Time: 20:29
  */
 @Named
-public class HTMLEditorManager
+public class EditorTabManager
 {
-    public static final Logger logger = Logger.getLogger(HTMLEditorManager.class);
+    public static final Logger logger = Logger.getLogger(EditorTabManager.class);
+
 
     private TabPane tabPane;
     private ObjectProperty<CodeEditor> currentEditor = new SimpleObjectProperty<>();
@@ -104,10 +110,66 @@ public class HTMLEditorManager
     private ContextMenu contextMenuXHTML;
     private ContextMenu contextMenuCSS;
 
-
-    public ObservableValue<? extends String> cursorPosLabelProperty()
+    public class ImageViewerPane extends ScrollPane
     {
-        return cursorPosLabelProperty;
+        @FXML
+        private ImageView imageView;
+        @FXML
+        private Label imagePropertiesLabel;
+        private ImageResource imageResource;
+
+        public ImageViewerPane()
+        {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/image_view.fxml"), null, new JavaFXBuilderFactory(),
+                    type -> BeanFactory.getInstance().getBean(type));
+            loader.setRoot(this);
+            loader.setController(this);
+
+            try
+            {
+                loader.load();
+            }
+            catch (IOException e)
+            {
+                Dialogs.create()
+                        .owner(tabPane)
+                        .title("Bild anzeigen")
+                        .masthead(null)
+                        .message("Fehler beim Öffnen eines Bildes.")
+                        .showException(e);
+                logger.error("", e);
+            }
+        }
+
+        public Label getImagePropertiesLabel()
+        {
+            return imagePropertiesLabel;
+        }
+
+        public void setImagePropertiesLabel(Label imagePropertiesLabel)
+        {
+            this.imagePropertiesLabel = imagePropertiesLabel;
+        }
+
+        public ImageView getImageView()
+        {
+            return imageView;
+        }
+
+        public void setImageView(ImageView imageView)
+        {
+            this.imageView = imageView;
+        }
+
+        public ImageResource getImageResource()
+        {
+            return imageResource;
+        }
+
+        public void setImageResource(ImageResource imageResource)
+        {
+            this.imageResource = imageResource;
+        }
     }
 
     protected class RefreshPreviewScheduledService extends ScheduledService<Boolean>
@@ -176,7 +238,7 @@ public class HTMLEditorManager
         }
     }
 
-    public HTMLEditorManager()
+    public EditorTabManager()
     {
         currentEditor.addListener(new ChangeListener<CodeEditor>()
         {
@@ -192,22 +254,14 @@ public class HTMLEditorManager
         contextMenuXHTML.setAutoFix(true);
         contextMenuXHTML.setAutoHide(true);
         MenuItem itemRepairHTML = new MenuItem("HTML reparieren");
-        itemRepairHTML.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e)
-            {
-                beautifyOrRepairHTML("repair");
-            }
+        itemRepairHTML.setOnAction(e -> {
+            beautifyOrRepairHTML("repair");
         });
         contextMenuXHTML.getItems().add(itemRepairHTML);
 
         MenuItem itemBeautifyHTML = new MenuItem("HTML neuformatieren");
-        itemBeautifyHTML.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e)
-            {
-                beautifyOrRepairHTML("format");
-            }
+        itemBeautifyHTML.setOnAction(e -> {
+            beautifyOrRepairHTML("format");
         });
         contextMenuXHTML.getItems().add(itemBeautifyHTML);
 
@@ -215,12 +269,8 @@ public class HTMLEditorManager
         contextMenuXHTML.getItems().add(separatorItem);
 
         MenuItem openInExternalBrowserItem = new MenuItem("In externem Browser öffnen");
-        openInExternalBrowserItem.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e)
-            {
-                openInExternalBrowser(currentEditor);
-            }
+        openInExternalBrowserItem.setOnAction(e -> {
+            openInExternalBrowser(currentEditor);
         });
         contextMenuXHTML.getItems().add(openInExternalBrowserItem);
 
@@ -229,22 +279,14 @@ public class HTMLEditorManager
         contextMenuCSS.setAutoFix(true);
         contextMenuCSS.setAutoHide(true);
         MenuItem formatCSSOneLineItem = new MenuItem("Stylse jeweils in einer Zeile formatieren");
-        formatCSSOneLineItem.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e)
-            {
-                beautifyCSS("one_line");
-            }
+        formatCSSOneLineItem.setOnAction(e -> {
+            beautifyCSS("one_line");
         });
         contextMenuCSS.getItems().add(formatCSSOneLineItem);
 
         MenuItem formatCSSMultipleLinesItem = new MenuItem("Styles jeweils in mehrerer Zeilen formatieren ");
-        formatCSSMultipleLinesItem.setOnAction(new EventHandler<ActionEvent>()
-        {
-            public void handle(ActionEvent e)
-            {
-                beautifyCSS("multiple_lines");
-            }
+        formatCSSMultipleLinesItem.setOnAction(e -> {
+            beautifyCSS("multiple_lines");
         });
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
@@ -346,13 +388,47 @@ public class HTMLEditorManager
         }
     }
 
-    private boolean isTabAlreadyOpen(Resource cssResource)
+    public void openImageFile(Resource resource)
+    {
+        Tab tab = new Tab();
+        tab.setClosable(true);
+        if (resource == null)
+        {
+            Dialogs.create()
+                    .owner(tabPane)
+                    .title("Datei nicht vorhanden")
+                    .message("Die angeforderte Datei ist nicht vorhanden und kann deshalb nicht geöffnet werden.")
+                    .showError();
+            return;
+        }
+        tab.setText(resource.getFileName());
+
+        ImageResource imageResource = (ImageResource) resource;
+        ImageViewerPane pane = new ImageViewerPane();
+        pane.setImageResource(imageResource);
+
+        ImageView imageView = pane.getImageView();
+        imageView.setImage(imageResource.asNativeFormat());
+        imageView.setFitHeight(-1);
+        imageView.setFitWidth(-1);
+
+        Label imagePropertiesLabel = pane.getImagePropertiesLabel();
+        imagePropertiesLabel.setText(imageResource.getImageDescription());
+
+        tab.setContent(pane);
+        tab.setUserData(resource);
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+    }
+
+
+    private boolean isTabAlreadyOpen(Resource resource)
     {
         boolean found = false;
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs)
         {
-            if (tab.getUserData().equals(cssResource))
+            if (tab.getUserData().equals(resource))
             {
                 tabPane.getSelectionModel().select(tab);
                 found = true;
@@ -422,40 +498,46 @@ public class HTMLEditorManager
                     editor.setCode(code);
                     Document document = engine.getDocument();
                     Element documentElement = document.getDocumentElement();
-                    ((EventTarget) documentElement).addEventListener("keyup", new EventListener()
+                    ((EventTarget) documentElement).addEventListener("keyup", evt ->
                     {
-                        @Override
-                        public void handleEvent(Event evt)
+                        logger.info("key up in content editor: " + evt.getTarget());
+                        EditorPosition cursorPos = currentEditor.get().getEditorCursorPosition();
+                        cursorPosLabelProperty.set(cursorPos.getLine() + ":" + cursorPos.getColumn());
+                        if (scheduledService.getState().equals(Worker.State.READY))
                         {
-                            logger.info("key up in content editor: " + evt.getTarget());
-                            EditorPosition cursorPos = currentEditor.get().getEditorCursorPosition();
-                            cursorPosLabelProperty.set(cursorPos.getLine() + ":" + cursorPos.getColumn());
-                            if (scheduledService.getState().equals(Worker.State.READY))
-                            {
-                                scheduledService.start();
-                            }
-                            else
-                            {
-                                scheduledService.restart();
-                            }
+                            scheduledService.start();
+                        }
+                        else
+                        {
+                            scheduledService.restart();
                         }
                     }, false);
 
-                    ((EventTarget) documentElement).addEventListener("contextmenu", new EventListener()
+                    ((EventTarget) documentElement).addEventListener("keydown", evt ->
                     {
-                        @Override
-                        public void handleEvent(Event evt)
+                        boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
+                        int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
+                        logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
+                        //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
+                        if (isCtrlPressed)
                         {
-                            logger.info("contextmenu event aufgefangen " + evt);
+                            logger.info("Ctrl-Z gedrückt");
                             evt.preventDefault();
-                            if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-                            {
-                                contextMenuXHTML.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
-                            }
-                            else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
-                            {
-                                contextMenuCSS.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
-                            }
+                            currentEditor.getValue().undo();
+                        }
+                    }, false);
+
+                    ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
+                    {
+                        logger.info("contextmenu event aufgefangen " + evt);
+                        evt.preventDefault();
+                        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+                        {
+                            contextMenuXHTML.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
+                        }
+                        else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
+                        {
+                            contextMenuCSS.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
                         }
                     }, false);
 
@@ -516,23 +598,24 @@ public class HTMLEditorManager
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue)
             {
-                if (newValue != null && newValue.getContent() instanceof XHTMLCodeEditor)
+                Resource resource;
+                if (newValue != null && newValue.getContent() instanceof CodeEditor)
                 {
-                    Resource resource = (Resource) newValue.getUserData();
+                    resource = (Resource) newValue.getUserData();
                     currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
-                    currentXHTMLResource.set(resource);
-                }
-                else if (newValue != null && newValue.getContent() instanceof CssCodeEditor)
-                {
-                    Resource resource = (Resource) newValue.getUserData();
-                    currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
-                    currentCssResource.set(resource);
-                }
-                else if (newValue != null && newValue.getContent() instanceof XMLCodeEditor)
-                {
-                    Resource resource = (Resource) newValue.getUserData();
-                    currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
-                    currentXMLResource.set(resource);
+
+                    if (newValue.getContent() instanceof XHTMLCodeEditor)
+                    {
+                        currentXHTMLResource.set(resource);
+                    }
+                    else if (newValue.getContent() instanceof CssCodeEditor)
+                    {
+                        currentCssResource.set(resource);
+                    }
+                    else if (newValue.getContent() instanceof XMLCodeEditor)
+                    {
+                        currentXMLResource.set(resource);
+                    }
                 }
             }
         });
@@ -717,11 +800,6 @@ public class HTMLEditorManager
 
     public String formatAsXHTML(String xhtml) throws IOException, JDOMException
     {
-        return formatAsXHTML(xhtml, null);
-    }
-
-    public String formatAsXHTML(String xhtml, JDOMFactory factory) throws IOException, JDOMException
-    {
         DocType doctype = new DocType("html", "-//W3C//DTD XHTML 1.1//EN", "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
         Namespace namespace = Namespace.getNamespace("http://www.w3.org/1999/xhtml");
 
@@ -791,6 +869,28 @@ public class HTMLEditorManager
                 {
                     logger.error("", e);
                 }
+            }
+        }
+    }
+
+    public void refreshImageViewer(Resource resourceToUpdate)
+    {
+        List<Tab> tabs = tabPane.getTabs();
+        for (Tab tab : tabs)
+        {
+            Resource resource = (Resource) tab.getUserData();
+            if (resourceToUpdate.equals(resource))
+            {
+                ImageResource imageResource = (ImageResource) resourceToUpdate;
+                logger.info("refreshing image resource");
+                ImageViewerPane imageViewerPane = (ImageViewerPane) tab.getContent();
+                ImageView imageView = imageViewerPane.getImageView();
+                imageView.setImage(imageResource.asNativeFormat());
+                imageView.setFitHeight(-1);
+                imageView.setFitWidth(-1);
+
+                Label imagePropertiesLabel = imageViewerPane.getImagePropertiesLabel();
+                imagePropertiesLabel.setText(imageResource.getImageDescription());
             }
         }
     }
@@ -894,5 +994,10 @@ public class HTMLEditorManager
                 logger.error("", e);
             }
         }
+    }
+
+    public ObservableValue<? extends String> cursorPosLabelProperty()
+    {
+        return cursorPosLabelProperty;
     }
 }

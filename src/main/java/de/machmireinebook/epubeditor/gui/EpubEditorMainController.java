@@ -26,8 +26,7 @@ import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.HTMLEditorManager;
-import de.machmireinebook.epubeditor.manager.ImageViewerManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
@@ -222,9 +221,7 @@ public class EpubEditorMainController implements Initializable
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
-    private HTMLEditorManager editorManager;
-    @Inject
-    private ImageViewerManager imageViewerManager;
+    private EditorTabManager editorManager;
     @Inject
     private PreviewManager previewManager;
     @Inject
@@ -239,13 +236,11 @@ public class EpubEditorMainController implements Initializable
 
         bookBrowserManager.setTreeView(epubStructureTreeView);
         bookBrowserManager.setEditorManager(editorManager);
-        bookBrowserManager.setImageViewerManager(imageViewerManager);
 
         epubFilesTabPane.getTabs().clear();
         epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         editorManager.setTabPane(epubFilesTabPane);
         editorManager.setBookBrowserManager(bookBrowserManager);
-        imageViewerManager.setTabPane(epubFilesTabPane);
 
         previewManager.setWebview(previewWebview);
         previewManager.setEditorManager(editorManager);
@@ -264,8 +259,6 @@ public class EpubEditorMainController implements Initializable
                 tocViewManager.setBook(newValue);
                 editorManager.reset();
                 editorManager.setBook(newValue);
-                imageViewerManager.reset();
-                imageViewerManager.setBook(newValue);
                 previewManager.reset();
             }
         });
@@ -1021,7 +1014,7 @@ public class EpubEditorMainController implements Initializable
         return bookBrowserManager;
     }
 
-    public HTMLEditorManager getEditorManager()
+    public EditorTabManager getEditorManager()
     {
         return editorManager;
     }

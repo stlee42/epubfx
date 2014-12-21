@@ -112,7 +112,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
 
         if (book.getCoverPage() != null // there is a cover page
                 && book.getSpine().findFirstResourceById(book.getCoverPage().getId()) < 0)
-        { // cover page is not already in the spine
+        {   // cover page is not already in the spine
             // write the cover html file
             Element itemRefElement = new Element(OPFTags.itemref, NAMESPACE_OPF);
             itemRefElement.setAttribute(OPFAttributes.idref, book.getCoverPage().getId());

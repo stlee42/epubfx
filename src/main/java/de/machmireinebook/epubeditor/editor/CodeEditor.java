@@ -22,6 +22,12 @@ public interface CodeEditor
     String getEditingTemplate();
     MediaType getMediaType();
 
+    //methods of the java part of editor
+    void undo();
+    void redo();
+    boolean canUndo();
+    boolean canRedo();
+
     //methods of the underlying editor component e.g. codemirror
     void setCode(String newCode);
     String getCode();
@@ -30,4 +36,6 @@ public interface CodeEditor
     void replaceSelection(String replacement);
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
+
+
 }

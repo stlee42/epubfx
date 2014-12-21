@@ -15,7 +15,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.manager.HTMLEditorManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -199,7 +199,7 @@ public class InsertMediaController implements Initializable, StandardController
             }
             snippet = StringUtils.replace(snippet, "${style}", style);
 
-            HTMLEditorManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
+            EditorTabManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
             CodeEditor editor = editorManager.getCurrentEditor();
             EditorPosition cursorPosition = editor.getEditorCursorPosition();
             logger.info("current position" + cursorPosition.toJson());
@@ -248,7 +248,7 @@ public class InsertMediaController implements Initializable, StandardController
     {
         if (resource != null)
         {
-            Image image = resource.getAsNativeFormat();
+            Image image = resource.asNativeFormat();
             imageView.setImage(image);
             imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
         }
@@ -273,7 +273,7 @@ public class InsertMediaController implements Initializable, StandardController
             public void handle(WindowEvent event)
             {
                 refresh();
-                HTMLEditorManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
+                EditorTabManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
                 CodeEditor editor = editorManager.getCurrentEditor();
             }
         });

@@ -38,7 +38,7 @@ public class CSSResource extends Resource<CascadingStyleSheet>
     }
 
     @Override
-    public CascadingStyleSheet getAsNativeFormat()
+    public CascadingStyleSheet asNativeFormat()
     {
         CascadingStyleSheet css = null;
         try
