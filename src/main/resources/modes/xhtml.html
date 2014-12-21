@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="http://localhost:8777/codemirror-4.4/lib/codemirror.css">
-    <script src="http://localhost:8777/codemirror-4.4/lib/codemirror.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/mode/xml/xml.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closebrackets.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closetag.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/fold/xml-fold.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/matchbrackets.js"></script>
+    <link rel="stylesheet" href="http://localhost:8777/codemirror/lib/codemirror.css">
+    <script src="http://localhost:8777/codemirror/lib/codemirror.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/xml/xml.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closetag.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="https://raw.githubusercontent.com/cfinke/Typo.js/master/typo/typo.js"></script>
 
     <style type="text/css">
@@ -31,36 +31,6 @@
 <body>
 <form><textarea id="code" name="code"></textarea></form>
 <script>
-    var typo = new Typo ("de_DE", null, null, {
-        platform: 'any'
-    });
-    var affData = typo._readFile("http://localhost:8777/codemirror-4.4/dict/de_DE.aff", "ISO-8859-1");
-    var wordData = typo._readFile("http://localhost:8777/codemirror-4.4/dict/de_DE.dic", "ISO-8859-1");
-
-    CodeMirror.defineMode("spell-check", function(config, parserConfig) {
-        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ ]");
-        var spellOverlay = {
-            token: function (stream, state) {
-                var ch;
-                if (stream.match(rx_word)) {
-                    while ((ch = stream.peek()) != null) {
-                        if (!ch.match(rx_word)) {
-                            break;
-                        }
-                        stream.next();
-                    }
-                    if (!typo.check(stream.current()))
-                        return "spell-error";
-                    return null;
-                }
-                while (stream.next() != null && !stream.match(rx_word, false)) {}
-                return null;
-            }
-        };
-
-        return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), spellOverlay);
-    });
-
     var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         matchBrackets: true,
