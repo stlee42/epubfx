@@ -24,10 +24,29 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
      */
     private final WebView webview = new WebView();
 
-    /**
-     * a snapshot of the code to be edited kept for easy initilization and reversion of editable code.
-     */
-    private String editingCode;
+    private UndoRedoManager<CodeVersion> undoRedoManager = new UndoRedoManager<>();
+
+    public class CodeVersion
+    {
+        private String code;
+        private EditorPosition cursorPosition;
+
+        public CodeVersion(String code, EditorPosition cursorPosition)
+        {
+            this.code = code;
+            this.cursorPosition = cursorPosition;
+        }
+
+        public String getCode()
+        {
+            return code;
+        }
+
+        public EditorPosition getCursorPosition()
+        {
+            return cursorPosition;
+        }
+    }
 
     public WebView getWebview()
     {
@@ -47,6 +66,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
      */
     public void setCode(String newCode)
     {
+        CodeVersion version = new CodeVersion(newCode, getEditorCursorPosition());
+        undoRedoManager.saveVersion(version);
         webview.getEngine().executeScript("editor.setValue('" + StringEscapeUtils.escapeJavaScript(newCode) + "');");
     }
 
@@ -55,8 +76,10 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
      */
     public String getCode()
     {
-        this.editingCode = (String) webview.getEngine().executeScript("editor.getValue();");
-        return editingCode;
+        String code = (String) webview.getEngine().executeScript("editor.getValue();");
+        CodeVersion version = new CodeVersion(code, getEditorCursorPosition());
+        undoRedoManager.saveVersion(version);
+        return code;
     }
 
     public EditorToken getTokenAt(EditorPosition pos)
@@ -171,5 +194,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         this.getChildren().add(webview);
     }
 
-
+    public UndoRedoManager<CodeVersion> getUndoRedoManager()
+    {
+        return undoRedoManager;
+    }
 }
