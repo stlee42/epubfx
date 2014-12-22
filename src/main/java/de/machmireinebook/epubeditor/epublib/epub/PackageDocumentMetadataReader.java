@@ -40,19 +40,20 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             return result;
         }
 
-        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.title));
-        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.publisher));
-        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.description));
-        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.rights));
-        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.type));
-        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTags.subject));
+        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.title.getName()));
+        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.publisher.getName()));
+        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.description.getName()));
+        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.rights.getName()));
+        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.type.getName()));
+        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.subject.getName()));
+        result.setCoverages(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.coverage.getName()));
         result.setIdentifiers(readIdentifiers(metadataElement));
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
         result.setDates(readDates(metadataElement));
         result.setOtherProperties(readOtherProperties(metadataElement));
         result.setMetaAttributes(readMetaProperties(metadataElement));
-        result.setLanguage(metadataElement.getChildText(DCTags.language, NAMESPACE_DUBLIN_CORE));
+        result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
 
         return result;
     }
@@ -112,18 +113,18 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<Author> readCreators(Element metadataElement)
     {
-        return readAuthors(DCTags.creator, metadataElement);
+        return readAuthors(DCTag.creator.getName(), metadataElement);
     }
 
     private static List<Author> readContributors(Element metadataElement)
     {
-        return readAuthors(DCTags.contributor, metadataElement);
+        return readAuthors(DCTag.contributor.getName(), metadataElement);
     }
 
     private static List<Author> readAuthors(String authorTag, Element metadataElement)
     {
         List<Element> elements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
-        List<Author> result = new ArrayList<Author>(elements.size());
+        List<Author> result = new ArrayList<>(elements.size());
         for (Element authorElement : elements)
         {
             Author author = createAuthor(authorElement);
@@ -138,7 +139,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<MetadataDate> readDates(Element metadataElement)
     {
-        List<Element> elements = metadataElement.getChildren(DCTags.date, NAMESPACE_DUBLIN_CORE);
+        List<Element> elements = metadataElement.getChildren(DCTag.date.getName(), NAMESPACE_DUBLIN_CORE);
         List<MetadataDate> result = new ArrayList<>(elements.size());
         for (Element dateElement : elements)
         {
@@ -173,11 +174,11 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<Identifier> readIdentifiers(Element metadataElement)
     {
-        List<Element> identifierElements = metadataElement.getChildren(DCTags.identifier, NAMESPACE_DUBLIN_CORE);
+        List<Element> identifierElements = metadataElement.getChildren(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         if (identifierElements.isEmpty())
         {
-            log.error("Package does not contain element " + DCTags.identifier);
-            return new ArrayList<Identifier>();
+            log.error("Package does not contain element " + DCTag.identifier.getName());
+            return new ArrayList<>();
         }
         String bookIdId = getBookIdId(metadataElement.getParentElement());
         List<Identifier> result = new ArrayList<>(identifierElements.size());

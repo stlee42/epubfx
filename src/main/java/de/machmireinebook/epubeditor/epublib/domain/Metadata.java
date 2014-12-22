@@ -40,6 +40,7 @@ public class Metadata implements Serializable
     private List<String> types = new ArrayList<>();
     private List<String> descriptions = new ArrayList<>();
     private List<String> publishers = new ArrayList<>();
+    private List<String> coverages = new ArrayList<>();
     private Map<String, String> metaAttributes = new HashMap<>();
 
     public Metadata()
@@ -305,6 +306,22 @@ public class Metadata implements Serializable
     public void setTypes(List<String> types)
     {
         this.types = types;
+    }
+
+    public String addCoverage(String coverage)
+    {
+        this.coverages.add(coverage);
+        return coverage;
+    }
+
+    public List<String> getCoverages()
+    {
+        return coverages;
+    }
+
+    public void setCoverages(List<String> coverages)
+    {
+        this.coverages = coverages;
     }
 
     public String getMetaAttribute(String name)

@@ -26,19 +26,19 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
     public static Metadata readMetadata(Element root)
     {
         Metadata result = new Metadata();
-        Element metadataElement = root.getChild(PackageDocumentBase.OPFTags.metadata, NAMESPACE_OPF);
+        Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
-            logger.error("Package does not contain element " + PackageDocumentBase.OPFTags.metadata);
+            logger.error("Package does not contain element " + OPFTags.metadata);
             return result;
         }
 
-        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.title));
-        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.publisher));
-        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.description));
-        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.rights));
-        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.type));
-        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, PackageDocumentBase.DCTags.subject));
+        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.title.getName()));
+        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.publisher.getName()));
+        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.description.getName()));
+        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.rights.getName()));
+        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.type.getName()));
+        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.subject.getName()));
 /*        result.setIdentifiers(readIdentifiers(metadataElement));
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));

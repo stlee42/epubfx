@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane fx:id="chooserWindowGridPane" gridLinesVisible="false" hgap="14.0" prefWidth="449.0" maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.machmireinebook.vertrieb.gui.ChooserWindowController">
+  <children>
+    <VBox maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" prefHeight="260.0" prefWidth="400.0" spacing="7.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+      <children>
+        <Label id="popupTopLabel" fx:id="chooserWindowLabel" text="Label" />
+        <TableView id="popupChooserTableView" fx:id="chosserWindowTableView" prefHeight="231.0" prefWidth="449.0" />
+      </children>
+    </VBox>
+    <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <children>
+        <Button id="cancelButton" fx:id="chooserWindowOkButton" cancelButton="false" minWidth="90.0" mnemonicParsing="false" text="Übernehmen" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets left="110.0" />
+          </HBox.margin>
+        </Button>
+        <Button id="okButton" fx:id="chooserWindowCancelButton" minWidth="90.0" mnemonicParsing="false" text="Abbrechen" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets left="14.0" right="110.0" />
+          </HBox.margin>
+        </Button>
+      </children>
+      <padding>
+        <Insets bottom="14.0" />
+      </padding>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" maxWidth="23.0" minWidth="-Infinity" percentWidth="100.0" prefWidth="0.0" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+  </rowConstraints>
+</GridPane>

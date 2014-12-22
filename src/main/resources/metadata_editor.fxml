@@ -29,7 +29,7 @@
                <columns>
                   <TableColumn prefWidth="75.0" text="Typ" />
                   <TableColumn prefWidth="325.0" text="Wert" />
-                  <TableColumn prefWidth="144.0" text="Subtyp" />
+                  <TableColumn prefWidth="144.0" text="Schema" />
                </columns>
             </TableView>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="8">

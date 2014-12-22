@@ -20,23 +20,35 @@ public class PackageDocumentBase
 
     public static final String EPUB3_NAV_DOCUMENT_TAG_VALUE = "nav";
 
-    protected interface DCTags
+    public enum DCTag
     {
-        String title = "title";
-        String creator = "creator";
-        String subject = "subject";
-        String description = "description";
-        String publisher = "publisher";
-        String contributor = "contributor";
-        String date = "date";
-        String type = "type";
-        String format = "format";
-        String identifier = "identifier";
-        String source = "source";
-        String language = "language";
-        String relation = "relation";
-        String coverage = "coverage";
-        String rights = "rights";
+        title("title"),
+        creator("creator"),
+        subject("subject"),
+        description("description"),
+        publisher("publisher"),
+        contributor("contributor"),
+        date("date"),
+        type("type"),
+        format("format"),
+        identifier("identifier"),
+        source("source"),
+        language("language"),
+        relation("relation"),
+        coverage("coverage"),
+        rights("rights");
+        
+        private String name;
+
+        DCTag(java.lang.String name)
+        {
+            this.name = name;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
     }
 
     protected interface DCAttributes

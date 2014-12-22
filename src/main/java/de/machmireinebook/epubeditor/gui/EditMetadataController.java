@@ -4,7 +4,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+
+import javax.xml.namespace.QName;
 
 import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
@@ -12,10 +15,12 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Relator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -24,8 +29,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
 
 /**
  * User: mjungierek
@@ -34,7 +43,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class EditMetadataController implements Initializable
 {
-    public TextField saveAsAuthorTextField;
+    public static final Logger logger = Logger.getLogger(EditMetadataController.class);
+
+    @FXML
+    private TextField saveAsAuthorTextField;
     @FXML
     private TableView<Author> otherContributorsTableView;
     @FXML
@@ -94,6 +106,55 @@ public class EditMetadataController implements Initializable
         }
     }
 
+    public enum MetadataTemplate
+    {
+        COVERAGE(DCTag.coverage, "coverage", null),
+        CUSTOM_DATE(DCTag.date, "Date (custom)", "customidentifier"),
+        CREATION_DATE(DCTag.date, "Date: Creation", "creation"),
+        MODIFICATION_DATE(DCTag.date, "Date: Modification", "modificatin"),
+        PUBLICATION_DATE(DCTag.date, "Date: Publication", "publication"),
+        DESCRIPTION(DCTag.description, "Description", null),
+        CUSTOM_IDENTIFIER(DCTag.description, "Identifier (custom)", "customidentifier"),
+        DOI_IDENTIFIER(DCTag.description, "Identifier: DOI", "DOI"),
+        ISBN_IDENTIFIER(DCTag.description, "Identifier: ISBN", "ISBN"),
+        ISSN_IDENTIFIER(DCTag.description, "Identifier: ISSN", "ISSN"),
+        LANGUAGE(DCTag.language, "Language", null),
+        PUBLISHER(DCTag.publisher, "Publisher", null),
+        RELATION(DCTag.relation, "Relation", null),
+        RIGHTS(DCTag.rights, "Rights", null),
+        SOURCE(DCTag.source, "Source", null),
+        SUBJECT(DCTag.subject, "Subject", null),
+        TITLE(DCTag.title, "Title", null),
+        TYPE(DCTag.type, "Type", null),
+        ;
+
+        private String description;
+        private DCTag dcTag;
+        private String scheme;
+
+        MetadataTemplate(DCTag dcTag, String description, String scheme)
+        {
+            this.dcTag = dcTag;
+            this.description = description;
+            this.scheme = scheme;
+        }
+
+        public DCTag getDcTag()
+        {
+            return dcTag;
+        }
+
+        public String getDescription()
+        {
+            return description;
+        }
+
+        public String getScheme()
+        {
+            return scheme;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -143,18 +204,113 @@ public class EditMetadataController implements Initializable
         return instance;
     }
 
+    @SuppressWarnings("unchecked")
     public void addOtherContributorAction(ActionEvent actionEvent)
     {
+        Stage chooserWindow = UIHelper.createChooserWindow();
+
+        ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
+        TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
+        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                Relator relator = tableView.getSelectionModel().getSelectedItem();
+                Author contributor = new Author("");
+                contributor.setRelator(relator);
+                otherContributorsTableView.getItems().add(contributor);
+                chooserWindowController.getChooserWindow().close();
+            }
+        });
+        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent event)
+            {
+                MouseButton mb = event.getButton();
+                int clicks = event.getClickCount();
+                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
+                {
+                    Relator relator = tableView.getSelectionModel().getSelectedItem();
+                    Author contributor = new Author("");
+                    contributor.setRelator(relator);
+                    otherContributorsTableView.getItems().add(contributor);
+                    chooserWindowController.getChooserWindow().close();
+                }
+            }
+        });
 
 
+        tableView.getColumns().clear();
+        TableColumn tc = new TableColumn();
+        tc.setPrefWidth(150);
+        tableView.getColumns().add(tc);
+        tc.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        tc = new TableColumn();
+        tc.setPrefWidth(300);
+        tableView.getColumns().add(tc);
+        tc.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        chooserWindowController.getChooserWindowLabel().setText("Typ des Beteiligten auswählen");
+
+        tableView.setItems(FXCollections.observableArrayList(Relator.values()));
+
+        chooserWindow.show();
     }
 
     public void deleteOtherContributorAction(ActionEvent actionEvent)
     {
     }
 
+    @SuppressWarnings("unchecked")
     public void addMetadateAction(ActionEvent actionEvent)
     {
+        Stage chooserWindow = UIHelper.createChooserWindow();
+
+        ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
+        TableView<MetadataTemplate> tableView = chooserWindowController.getChosserWindowTableView();
+        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
+                MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+                metadateTableView.getItems().add(metadataElement);
+                chooserWindowController.getChooserWindow().close();
+            }
+        });
+        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent event)
+            {
+                MouseButton mb = event.getButton();
+                int clicks = event.getClickCount();
+                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
+                {
+                    MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
+                    MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+                    metadateTableView.getItems().add(metadataElement);
+                    chooserWindowController.getChooserWindow().close();
+                }
+            }
+        });
+
+
+        tableView.getColumns().clear();
+        TableColumn tc = new TableColumn();
+        tc.setPrefWidth(350);
+        tableView.getColumns().add(tc);
+        tc.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        chooserWindowController.getChooserWindowLabel().setText("Metadateneigenschaft auswählen");
+
+        tableView.setItems(FXCollections.observableArrayList(MetadataTemplate.values()));
+
+        chooserWindow.show();
     }
 
     public void deleteMetadataAction(ActionEvent actionEvent)
@@ -164,18 +320,44 @@ public class EditMetadataController implements Initializable
     public void okButtonAction(ActionEvent actionEvent)
     {
         Metadata metadata = book.getMetadata();
-        Author firstAuthor = metadata.getFirstAuthor();
-        if (firstAuthor != null)
+        //auhtor
+        Author firstAuthor = new Author(authorTextField.getText());
+        firstAuthor.setFileAs(saveAsAuthorTextField.getText());
+        metadata.getAuthors().clear();
+        metadata.getContributors().clear();
+        metadata.getAuthors().add(firstAuthor);
+        List<Author> otherContributors = otherContributorsTableView.getItems();
+        for (Author otherContributor : otherContributors)
         {
-            firstAuthor.setName(authorTextField.getText());
-            firstAuthor.setFileAs(saveAsAuthorTextField.getText());
+            logger.info("other contributor " + otherContributor);
+            if (otherContributor.getRelator().equals(Relator.AUTHOR))
+            {
+                metadata.getAuthors().add(otherContributor);
+            }
+            else
+            {
+                metadata.getContributors().add(otherContributor);
+            }
         }
-        else if (StringUtils.isNotEmpty(authorTextField.getText()))
+        //title
+        metadata.getTitles().clear();
+        metadata.addTitle(titleTextField.getText());
+
+        //metadata
+        metadata.getDates().clear();
+        metadata.getRights().clear();
+        metadata.getTitles().clear();
+        metadata.getIdentifiers().clear();
+        metadata.getSubjects().clear();
+        metadata.getTypes().clear();
+        metadata.getDescriptions().clear();
+        metadata.getPublishers().clear();
+        List<MetadataElement> metadataElements = metadateTableView.getItems();
+        for (MetadataElement metadataElement : metadataElements)
         {
-            firstAuthor = new Author(authorTextField.getText());
-            firstAuthor.setFileAs(saveAsAuthorTextField.getText());
-            metadata.getAuthors().add(firstAuthor);
+
         }
+
         stage.close();
     }
 
@@ -259,6 +441,13 @@ public class EditMetadataController implements Initializable
         for (String publisher : publishers)
         {
             MetadataElement element = new MetadataElement("publisher", publisher, "");
+            elements.add(element);
+        }
+
+        Map<QName, String> others = metadata.getOtherProperties();
+        for (QName qName : others.keySet())
+        {
+            MetadataElement element = new MetadataElement(qName.getLocalPart(), others.get(qName), "");
             elements.add(element);
         }
 
