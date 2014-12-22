@@ -74,4 +74,16 @@ public class XMLTagPair
     {
         this.tagName = tagName;
     }
+
+    @Override
+    public String toString()
+    {
+        return "XMLTagPair{" +
+                "closeTagBegin=" + closeTagBegin +
+                ", openTagBegin=" + openTagBegin +
+                ", openTagEnd=" + openTagEnd +
+                ", closeTagEnd=" + closeTagEnd +
+                ", tagName='" + tagName + '\'' +
+                '}';
+    }
 }

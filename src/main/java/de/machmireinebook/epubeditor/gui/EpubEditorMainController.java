@@ -18,6 +18,7 @@ import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.commons.javafx.FXUtils;
 import de.machmireinebook.commons.javafx.control.searchable.TreeViewSearchable;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
@@ -341,7 +342,9 @@ public class EpubEditorMainController implements Initializable
         saveButton.disableProperty().bind(bookIsChangedBinding);
 
         undoButton.setGraphic(FXUtils.getIcon("/icons/undo.png", 18));
+        undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canUndoProperty())));
         redoButton.setGraphic(FXUtils.getIcon("/icons/redo.png", 18));
+        redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canRedoProperty())));
 
         searchReplaceButton.disableProperty().bind(Bindings.isNull(currentBookProperty).or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
 
@@ -879,12 +882,20 @@ public class EpubEditorMainController implements Initializable
 
     public void undoButtonAction(ActionEvent actionEvent)
     {
-        
-
+        CodeEditor currentEditor = editorManager.currentEditorProperty().get();
+        if (currentEditor != null)
+        {
+            currentEditor.undo();
+        }
     }
 
     public void redoButtonAction(ActionEvent actionEvent)
     {
+        CodeEditor currentEditor = editorManager.currentEditorProperty().get();
+        if (currentEditor != null)
+        {
+            currentEditor.redo();
+        }
     }
 
     public void cutButtonAction(ActionEvent actionEvent)

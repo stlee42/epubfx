@@ -2,11 +2,12 @@ package de.machmireinebook.epubeditor.manager;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
 
 import javax.inject.Named;
 
@@ -26,6 +27,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -50,6 +52,7 @@ import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -62,6 +65,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
@@ -104,18 +108,22 @@ public class EditorTabManager
     private RefreshPreviewScheduledService scheduledService = new RefreshPreviewScheduledService();
     private BooleanProperty needsRefresh = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty currentEditorIsXHTML = new SimpleBooleanProperty();
+    private SimpleBooleanProperty canUndo = new SimpleBooleanProperty();
+    private SimpleBooleanProperty canRedo = new SimpleBooleanProperty();
     private StringProperty cursorPosLabelProperty = new SimpleStringProperty();
     private BookBrowserManager bookBrowserManager;
     private Book book;
     private ContextMenu contextMenuXHTML;
     private ContextMenu contextMenuCSS;
 
-    public class ImageViewerPane extends ScrollPane
+    public class ImageViewerPane extends ScrollPane implements Initializable
     {
         @FXML
         private ImageView imageView;
         @FXML
         private Label imagePropertiesLabel;
+        @FXML
+        private VBox vBox;
         private ImageResource imageResource;
 
         public ImageViewerPane()
@@ -139,6 +147,13 @@ public class EditorTabManager
                         .showException(e);
                 logger.error("", e);
             }
+        }
+
+        @Override
+        public void initialize(URL location, ResourceBundle resources)
+        {
+            vBox.minWidthProperty().bind(this.widthProperty());
+            vBox.minHeightProperty().bind(this.heightProperty());
         }
 
         public Label getImagePropertiesLabel()
@@ -240,12 +255,20 @@ public class EditorTabManager
 
     public EditorTabManager()
     {
-        currentEditor.addListener(new ChangeListener<CodeEditor>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends CodeEditor> observable, CodeEditor oldValue, CodeEditor newValue)
+        currentEditor.addListener((observable, oldValue, newValue) -> {
+            canUndo.unbind();
+            canRedo.unbind();
+            if (newValue != null)
             {
                 currentEditorIsXHTML.setValue(currentEditor.getValue().getMediaType().equals(MediaType.XHTML));
+                canUndo.bind(currentEditor.getValue().canUndoProperty());
+                canRedo.bind(currentEditor.getValue().canRedoProperty());
+            }
+            else
+            {
+                currentEditorIsXHTML.setValue(false);
+                canUndo.setValue(false);
+                canRedo.setValue(false);
             }
         });
 
@@ -519,7 +542,7 @@ public class EditorTabManager
                         int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
                         logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
                         //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
-                        if (isCtrlPressed)
+                        if (isCtrlPressed && keyCode == 90)
                         {
                             logger.info("Ctrl-Z gedrückt");
                             evt.preventDefault();
@@ -683,36 +706,37 @@ public class EditorTabManager
                         .showWarning();
                 return false;
             }
+            logger.debug("umgebendes pair " + pair);
             //wir sind innerhalb des Body
             int index = xhtmlCodeEditor.getIndexFromPosition(pos);
             try
             {
                 String originalCode = xhtmlCodeEditor.getCode();
-                byte[] codeBytes = originalCode.getBytes("UTF-8");
                 org.jdom2.Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
                 List<Content> originalHeadContent = getOriginalHeadContent(originalDocument);
 
-                byte[] frontPart = Arrays.copyOfRange(codeBytes, 0, index);
+                byte[] frontPart = originalCode.substring(0, index).getBytes("UTF-8");
                 Resource oldResource = currentXHTMLResource.getValue();
-                oldResource.setData(frontPart);
+                oldResource.setNoValidData(frontPart);
                 HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                 processor.processResource(oldResource);
                 xhtmlCodeEditor.setCode(new String(oldResource.getData(), "UTF-8"));
 
-                byte[] backPart = Arrays.copyOfRange(codeBytes, index, codeBytes.length - 1);
+                byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes("UTF-8");
                 String fileName = book.getNextStandardFileName(MediaType.XHTML);
                 Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
                 byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent);
                 resource.setData(backPartXHTML);
 
-                book.addSpineResource(resource);
+                int spineIndex = book.getSpine().getResourceIndex(oldResource);
+                book.addSpineResource(resource, spineIndex);
                 openXHTMLFileInEditor(resource);
 
                 bookBrowserManager.refreshBookBrowser();
                 needsRefresh.setValue(true);
                 needsRefresh.setValue(false);
             }
-            catch (IOException | JDOMException e)
+            catch (IOException | JDOMException | ResourceDataException e )
             {
                 logger.error("", e);
                 Dialogs.create()
@@ -776,6 +800,26 @@ public class EditorTabManager
     public ObservableBooleanValue currentEditorIsXHTMLProperty()
     {
         return currentEditorIsXHTML;
+    }
+
+    public boolean getCanRedo()
+    {
+        return canRedo.get();
+    }
+
+    public SimpleBooleanProperty canRedoProperty()
+    {
+        return canRedo;
+    }
+
+    public boolean getCanUndo()
+    {
+        return canUndo.get();
+    }
+
+    public SimpleBooleanProperty canUndoProperty()
+    {
+        return canUndo;
     }
 
     public void setBook(Book book)

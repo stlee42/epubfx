@@ -237,7 +237,7 @@ public class XHTMLUtils
             }
             jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
 
-            Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
+            Element headElement = root.getChild("head");
             for (Content content : originalHeadContent)
             {
                 headElement.addContent(content);

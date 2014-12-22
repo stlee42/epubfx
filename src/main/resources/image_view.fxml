@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
@@ -7,10 +8,9 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root type="javafx.scene.control.ScrollPane" xmlns:fx="http://javafx.com/fxml">
-
+<fx:root fx:id="scrollPane" type="javafx.scene.control.ScrollPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
    <content>
-      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+      <VBox fx:id="vBox" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: white;">
          <children>
             <Label fx:id="imagePropertiesLabel" alignment="TOP_LEFT" text="Label">
                <VBox.margin>

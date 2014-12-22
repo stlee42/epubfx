@@ -212,7 +212,18 @@ public class Resource<T> implements Serializable, ToStringConvertible
 		this.data = data;
 		nativeFormatProperty.setValue(asNativeFormat());
 	}
-	
+
+	/**
+	 * Sets the data of the Resource. Die Daten können nicht valide sein und werden deshalb nicht ins native Format umgewandelt.
+	 * If the data is a of a different type then the original data then make sure to change the MediaType.
+	 *
+	 * @param data
+	 */
+	public void setNoValidData(byte[] data)
+	{
+		this.data = data;
+	}
+
 	/**
 	 * Returns the size of this resource in bytes.
 	 * 

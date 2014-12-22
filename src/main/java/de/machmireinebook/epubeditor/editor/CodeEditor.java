@@ -8,6 +8,7 @@ package de.machmireinebook.epubeditor.editor;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.web.WebView;
 
 /**
@@ -25,8 +26,8 @@ public interface CodeEditor
     //methods of the java part of editor
     void undo();
     void redo();
-    boolean canUndo();
-    boolean canRedo();
+    BooleanProperty canUndoProperty();
+    BooleanProperty canRedoProperty();
 
     //methods of the underlying editor component e.g. codemirror
     void setCode(String newCode);

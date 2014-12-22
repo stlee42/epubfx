@@ -3,6 +3,8 @@ package de.machmireinebook.epubeditor.editor;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import org.apache.log4j.Logger;
+
 /**
  * User: mjungierek
  * Date: 20.12.2014
@@ -10,6 +12,7 @@ import java.util.Deque;
  */
 public class UndoRedoManager<T> extends ArrayDeque<T>
 {
+    public static final Logger logger = Logger.getLogger(UndoRedoManager.class);
     private Deque<T> redoList = new ArrayDeque<>();
 
     public T undo()
@@ -45,6 +48,7 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
         boolean add = false;
         if (isEmpty())
         {
+            logger.info("no undo version, save new version");
             add = true;
         }
         else
@@ -53,6 +57,7 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
             //Version nur hinzufügen wenn sich diese unterscheiden
             if (!version.equals(lastVersion))
             {
+                logger.info("has undo versions and version is different then before, save new version");
                 add = true;
             }
         }

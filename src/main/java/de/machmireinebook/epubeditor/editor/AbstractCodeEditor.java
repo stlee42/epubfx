@@ -6,6 +6,8 @@ package de.machmireinebook.epubeditor.editor;
  * Time: 21:12
  */
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -25,6 +27,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     private final WebView webview = new WebView();
 
     private UndoRedoManager<CodeVersion> undoRedoManager = new UndoRedoManager<>();
+    private BooleanProperty canUndo = new SimpleBooleanProperty(undoRedoManager.hasUndoVersion());
+    private BooleanProperty canRedo = new SimpleBooleanProperty(undoRedoManager.hasRedoVersion());
 
     public class CodeVersion
     {
@@ -134,14 +138,14 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         setEditorCursorPosition(cursorPos);
     }
 
-    public boolean canUndo()
+    public BooleanProperty canUndoProperty()
     {
-        return undoRedoManager.hasUndoVersion();
+        return canUndo;
     }
 
-    public boolean canRedo()
+    public BooleanProperty canRedoProperty()
     {
-        return undoRedoManager.hasRedoVersion();
+        return canRedo;
     }
 
     public EditorToken getTokenAt(EditorPosition pos)

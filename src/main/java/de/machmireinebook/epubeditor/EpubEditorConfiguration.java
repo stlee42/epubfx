@@ -218,6 +218,8 @@ public class EpubEditorConfiguration
         catch (JDOMException | IOException e)
         {
             logger.error("", e);
+            //im fehlerfall leeres Document erzeugen
+            configurationDocument = new Document(new Element("configuration"));
         }
     }
 
