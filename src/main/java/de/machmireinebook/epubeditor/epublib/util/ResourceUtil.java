@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.Comparator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -150,4 +151,5 @@ public class ResourceUtil
 		Document result = documentBuilder.build(inputSource);
 		return result;
 	}
+
 }

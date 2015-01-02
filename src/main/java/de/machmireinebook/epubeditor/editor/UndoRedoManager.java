@@ -3,6 +3,8 @@ package de.machmireinebook.epubeditor.editor;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.apache.log4j.Logger;
 
 /**
@@ -15,43 +17,90 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
     public static final Logger logger = Logger.getLogger(UndoRedoManager.class);
     private Deque<T> redoList = new ArrayDeque<>();
 
+    private BooleanProperty canUndo = new SimpleBooleanProperty(false);
+    private BooleanProperty canRedo = new SimpleBooleanProperty(false);
+
+    private T firstVersion;
+
     public T undo()
     {
-        if (isEmpty())
+        if (firstVersion == null && isEmpty())
         {
+            canUndo.setValue(false);
             return  null;
         }
-        //wenn letzte Version erreicht ist, dann geben wir immer diese zurück
-        else if (size() > 1)
+        else if (firstVersion != null && isEmpty())
         {
-            redoList.addFirst(removeFirst());
+            canUndo.setValue(false);
+            return firstVersion;
         }
-        return getFirst();
+        else if (size() == 1)
+        {
+            canUndo.setValue(false);
+            T lastVersion = removeFirst();
+            redoList.addFirst(lastVersion);
+            canRedo.setValue(true);
+            return firstVersion;
+        }
+        else
+        {
+            canUndo.setValue(true);
+            T lastVersion = removeFirst();
+            redoList.addFirst(lastVersion);
+            canRedo.setValue(true);
+            return getFirst();
+        }
     }
 
     public T redo()
     {
-        if (isEmpty())
+        if (firstVersion == null && redoList.isEmpty() )
         {
-            return  null;
+            canRedo.setValue(false);
+            return null;
         }
-        //wenn nichts mehr im Redo dann geben wir einfach die aktuelle Version zurück
-        else if (!redoList.isEmpty())
+        if (firstVersion != null && redoList.isEmpty() )
         {
-            addFirst(redoList.removeFirst());
+            canRedo.setValue(false);
+            return firstVersion;
         }
-        return getFirst();
+        else if (redoList.size() == 1)
+        {
+            T lastRedoVersion = redoList.removeFirst();
+            canRedo.setValue(false);
+            addFirst(lastRedoVersion);
+            canUndo.setValue(true);
+            return lastRedoVersion;
+        }
+        else
+        {
+            T lastRedoVersion = redoList.removeFirst();
+            canRedo.setValue(true);
+            addFirst(lastRedoVersion);
+            canUndo.setValue(true);
+            return lastRedoVersion;
+        }
     }
 
     public void saveVersion(T version)
     {
         boolean add = false;
-        if (isEmpty())
+        if (firstVersion == null && isEmpty())   //init mit erster version
         {
-            logger.info("no undo version, save new version");
-            add = true;
+            firstVersion = version;
+            logger.debug("no undo version, save first version");
         }
-        else
+        else if (firstVersion != null && isEmpty())   //erste undo version
+        {
+            //Version nur hinzufügen wenn sich diese von der first unterscheidet
+            if (!version.equals(firstVersion))
+            {
+                logger.debug("has no undo versions and version is different then first version, save new version");
+                add = true;
+                canUndo.setValue(true);
+            }
+        }
+        else //weitere versionen einfach in liste eintragen, wenn unterschied
         {
             T lastVersion = getFirst();
             //Version nur hinzufügen wenn sich diese unterscheiden
@@ -66,18 +115,29 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
             if (!redoList.isEmpty()) //offenbar wird an einer undo version weitergearbeitet, dann alles was im redo noch ist verwerfen
             {
                 redoList.clear();
+                canRedo.setValue(false);
             }
             addFirst(version);
         }
     }
 
-    public boolean hasRedoVersion()
+    public boolean getCanRedo()
     {
-        return !redoList.isEmpty();
+        return canRedo.get();
     }
 
-    public boolean hasUndoVersion()
+    public BooleanProperty canRedoProperty()
     {
-        return !isEmpty();
+        return canRedo;
+    }
+
+    public boolean getCanUndo()
+    {
+        return canUndo.get();
+    }
+
+    public BooleanProperty canUndoProperty()
+    {
+        return canUndo;
     }
 }

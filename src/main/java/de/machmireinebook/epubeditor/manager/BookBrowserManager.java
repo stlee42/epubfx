@@ -12,7 +12,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Named;
@@ -31,6 +30,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 
@@ -239,16 +239,6 @@ public class BookBrowserManager
             });
 
             return treeCell;
-        }
-    }
-
-    public class FileNameComparator implements Comparator<Resource>
-    {
-
-        @Override
-        public int compare(Resource res1, Resource res2)
-        {
-            return res1.getFileName().compareTo(res2.getFileName());
         }
     }
 
@@ -663,7 +653,7 @@ public class BookBrowserManager
         }
 
         List<Resource> cssResources = book.getResources().getResourcesByMediaType(MediaType.CSS);
-        Collections.sort(cssResources, new FileNameComparator());
+        Collections.sort(cssResources, new ResourceFilenameComparator());
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
@@ -673,7 +663,7 @@ public class BookBrowserManager
 
         List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE,
                 MediaType.TTF, MediaType.WOFF});
-        Collections.sort(fontResources, new FileNameComparator());
+        Collections.sort(fontResources, new ResourceFilenameComparator());
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
@@ -686,7 +676,7 @@ public class BookBrowserManager
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        Collections.sort(imageResources, new FileNameComparator());
+        Collections.sort(imageResources, new ResourceFilenameComparator());
         for (Resource imageResource : imageResources)
         {
             TreeItem<Resource> item = new TreeItem<>(imageResource);

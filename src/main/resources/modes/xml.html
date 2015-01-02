@@ -37,7 +37,18 @@
         autoCloseBrackets: true,
         autoCloseTags: true,
         smartIndent:false,
+        extraKeys: {
+            "Ctrl-Z": function (instance) {
+                return false;
+            },
+            "Ctrl-Y": function (instance) {
+                return false;
+            }
+        },
         mode: {name: "xml", htmlMode: false}
+    });
+    editor.on('change', function(instance, changeObj){
+        onChangeListener.changed(instance, changeObj);
     });
 </script>
 </body>

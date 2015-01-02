@@ -32,8 +32,6 @@ import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import com.sun.webkit.dom.KeyboardEventImpl;
-import com.sun.webkit.dom.MouseEventImpl;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -49,7 +47,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -63,11 +60,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.util.Duration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -83,9 +77,6 @@ import org.jdom2.located.LocatedJDOMFactory;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.events.EventTarget;
 
 /**
  * User: mjungierek
@@ -202,7 +193,7 @@ public class EditorTabManager
             {
                 protected Boolean call()
                 {
-                    logger.info("scheduled refresh task, one second after last key up");
+                    logger.info("scheduled refresh task, one second after last change");
                     Platform.runLater(() -> {
                         String code = currentEditor.getValue().getCode();
                         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
@@ -352,8 +343,6 @@ public class EditorTabManager
                 }
             }
             currentEditor.getValue().setCode(code);
-            needsRefresh.setValue(true);
-            needsRefresh.setValue(false);
         }
         catch (IOException | JDOMException e)
         {
@@ -507,11 +496,9 @@ public class EditorTabManager
         tab.setUserData(resource);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-        WebView webView = editor.getWebview();
-        WebEngine engine = editor.getWebview().getEngine();
 
         final String code = content;
-        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>()
+        editor.stateProperty().addListener(new ChangeListener<Worker.State>()
         {
             @Override
             public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue)
@@ -519,50 +506,6 @@ public class EditorTabManager
                 if (newValue.equals(Worker.State.SUCCEEDED))
                 {
                     editor.setCode(code);
-                    Document document = engine.getDocument();
-                    Element documentElement = document.getDocumentElement();
-                    ((EventTarget) documentElement).addEventListener("keyup", evt ->
-                    {
-                        logger.info("key up in content editor: " + evt.getTarget());
-                        EditorPosition cursorPos = currentEditor.get().getEditorCursorPosition();
-                        cursorPosLabelProperty.set(cursorPos.getLine() + ":" + cursorPos.getColumn());
-                        if (scheduledService.getState().equals(Worker.State.READY))
-                        {
-                            scheduledService.start();
-                        }
-                        else
-                        {
-                            scheduledService.restart();
-                        }
-                    }, false);
-
-                    ((EventTarget) documentElement).addEventListener("keydown", evt ->
-                    {
-                        boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
-                        int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
-                        logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
-                        //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
-                        if (isCtrlPressed && keyCode == 90)
-                        {
-                            logger.info("Ctrl-Z gedrückt");
-                            evt.preventDefault();
-                            currentEditor.getValue().undo();
-                        }
-                    }, false);
-
-                    ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
-                    {
-                        logger.info("contextmenu event aufgefangen " + evt);
-                        evt.preventDefault();
-                        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-                        {
-                            contextMenuXHTML.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
-                        }
-                        else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
-                        {
-                            contextMenuCSS.show(tabPane, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
-                        }
-                    }, false);
 
                     editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
                     ((AnchorPane) editor).widthProperty().addListener(new ChangeListener<Number>()
@@ -581,18 +524,38 @@ public class EditorTabManager
                             editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue.doubleValue() - 20);
                         }
                     });
-
-                    webView.setOnScroll(new EventHandler<ScrollEvent>()
+                    editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
+                    ((AnchorPane) editor).widthProperty().addListener(new ChangeListener<Number>()
                     {
                         @Override
-                        public void handle(ScrollEvent event)
+                        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
                         {
-                            Double delta = event.getDeltaY() * -1;
-                            editor.scroll(delta.intValue());
+                            editor.setCodeEditorSize(newValue.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20);
                         }
                     });
-
+                    ((AnchorPane) editor).heightProperty().addListener(new ChangeListener<Number>()
+                    {
+                        @Override
+                        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+                        {
+                            editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue.doubleValue() - 20);
+                        }
+                    });
                 }
+            }
+        });
+
+        editor.cursorPositionProperty().addListener((observable, oldValue, newValue) -> {
+            cursorPosLabelProperty.set(newValue.getLine() + ":" + newValue.getColumn());
+        });
+        editor.codeProperty().addListener((observable1, oldValue1, newValue1) -> {
+            if (scheduledService.getState().equals(Worker.State.READY))
+            {
+                scheduledService.start();
+            }
+            else
+            {
+                scheduledService.restart();
             }
         });
     }
@@ -717,7 +680,7 @@ public class EditorTabManager
 
                 byte[] frontPart = originalCode.substring(0, index).getBytes("UTF-8");
                 Resource oldResource = currentXHTMLResource.getValue();
-                oldResource.setNoValidData(frontPart);
+                oldResource.setData(frontPart);
                 HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                 processor.processResource(oldResource);
                 xhtmlCodeEditor.setCode(new String(oldResource.getData(), "UTF-8"));
@@ -729,7 +692,7 @@ public class EditorTabManager
                 resource.setData(backPartXHTML);
 
                 int spineIndex = book.getSpine().getResourceIndex(oldResource);
-                book.addSpineResource(resource, spineIndex);
+                book.addSpineResource(resource, spineIndex +1);
                 openXHTMLFileInEditor(resource);
 
                 bookBrowserManager.refreshBookBrowser();

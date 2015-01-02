@@ -87,7 +87,7 @@ public class EpubEditorApplication extends Application
             protected Boolean call() throws Exception
             {
                 updateProgress(0, 3);
-                updateMessage("Verbinde mit Datenbank");
+                updateMessage("Initialisierung");
                 EpubEditorConfiguration.getInstance().init();
 
                 updateProgress(1, 3);

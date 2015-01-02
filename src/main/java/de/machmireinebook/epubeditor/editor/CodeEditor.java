@@ -9,7 +9,9 @@ package de.machmireinebook.epubeditor.editor;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.scene.web.WebView;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Worker;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -19,11 +21,12 @@ import javafx.scene.web.WebView;
  */
 public interface CodeEditor
 {
-    WebView getWebview();
-    String getEditingTemplate();
     MediaType getMediaType();
 
     //methods of the java part of editor
+    ObjectProperty<Worker.State> stateProperty();
+    ObjectProperty<EditorPosition> cursorPositionProperty();
+    ReadOnlyObjectProperty<String> codeProperty();
     void undo();
     void redo();
     BooleanProperty canUndoProperty();

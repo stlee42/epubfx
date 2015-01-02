@@ -69,8 +69,18 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Bearbeiten">
             <items>
-              <MenuItem mnemonicParsing="false" text="Rückgängig" />
-                  <MenuItem mnemonicParsing="false" text="Wiederherstellen" />
+              <MenuItem mnemonicParsing="false" text="Rückgängig">
+                  <accelerator>
+                      <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                  </accelerator>
+              </MenuItem>
+
+                  <MenuItem mnemonicParsing="false" text="Wiederherstellen">
+                      <accelerator>
+                          <KeyCodeCombination alt="UP" code="Y" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                      </accelerator>
+                  </MenuItem>
+
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="Ausschneiden" />
                   <MenuItem mnemonicParsing="false" text="Kopieren" />
@@ -97,8 +107,8 @@
               <items>
                 <MenuItem mnemonicParsing="false" text="Teilungsmarkierung..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Datei aus dem Buch einfügen..." />
-                  <MenuItem mnemonicParsing="false" text="Datei von Festplatte einfügen..." />
+                  <MenuItem fx:id="insertImageMenuItem" mnemonicParsing="false" onAction="#insertImageButtonAction" text="Bild oder andere Mediendatei einfügen..." />
+                  <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Vorhandene Datei zum Buch hinzufügen..." />
                   <MenuItem mnemonicParsing="false" onAction="#insertSpecialCharacterAction" text="Sonderzeichen..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="ID..." />
@@ -116,7 +126,7 @@
                   <Menu mnemonicParsing="false" text="Inhaltsverzeichnis">
                     <items>
                         <MenuItem mnemonicParsing="false" text="Inhaltsverzeichnis erzeugen…" />
-                        <MenuItem mnemonicParsing="false" text="Inhaltsverzeichnis erzeugen…" />
+                        <MenuItem mnemonicParsing="false" text="Inhaltsverzeichnis bearbeiten…" />
                         <MenuItem mnemonicParsing="false" text="HTML-Inhaltsverzeichnis erzeugen…" />
                     </items>
                   </Menu>
@@ -150,7 +160,11 @@
             </SplitPane>
             <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
                <items>
-                  <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" />
+                  <Pane>
+                     <children>
+                        <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" />
+                     </children>
+                  </Pane>
                   <ListView fx:id="validationResultsListView" />
                </items>
             </SplitPane>
@@ -208,7 +222,7 @@
             </SplitPane>
          </items>
       </SplitPane>
-      <TabPane layoutY="27.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TabPane layoutY="27.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <tabs>
             <Tab text="Start">
                <content>
@@ -240,7 +254,7 @@
                         </Button>
                         <Button fx:id="addExistingFileButton" mnemonicParsing="false" onAction="#addExistingFilesAction">
                             <tooltip>
-                                <Tooltip styleClass="white-tooltip" text="Vorhandene Datei hinzufügen" />
+                                <Tooltip styleClass="white-tooltip" text="Vorhandene Datei zum Buch hinzufügen" />
                             </tooltip>
                             <graphic>
                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -445,7 +459,7 @@
                            </Button>
                            <Button fx:id="insertImageButton" mnemonicParsing="false" onAction="#insertImageButtonAction">
                                <tooltip>
-                                   <Tooltip styleClass="white-tooltip" text="Bild einfügen" />
+                                   <Tooltip styleClass="white-tooltip" text="Bild oder andere Mediendatei einfügen" />
                                </tooltip>
                                <graphic>
                                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">

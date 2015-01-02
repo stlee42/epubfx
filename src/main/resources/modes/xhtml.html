@@ -44,9 +44,16 @@
         extraKeys: {
             "Ctrl-Z": function (instance) {
                 return false;
+            },
+            "Ctrl-Y": function (instance) {
+                return false;
             }
         },
         mode: {name: "xml", htmlMode: false}
+    });
+    editor.on('changes', function(instance, changes){
+        if (onChangeListener != null)
+        onChangeListener.changed(instance, changes);
     });
 </script>
 </body>

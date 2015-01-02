@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -15,6 +16,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 import javafx.beans.binding.Bindings;
@@ -107,8 +109,8 @@ public class InsertMediaController implements Initializable, StandardController
         tc.setSortable(true);
 
         TableColumn<ImageResource, Image> tc2 = (TableColumn<ImageResource, Image>) tableView.getColumns().get(1);
-        tc2.setCellValueFactory(new PropertyValueFactory<>("cover"));
-        tc2.setCellFactory(new ImageCellFactory<>(null, 100d));
+        tc2.setCellValueFactory(new PropertyValueFactory<>("image"));
+        tc2.setCellFactory(new ImageCellFactory<>(160d, null));
         tc2.setSortable(false);
 
         tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ImageResource>()
@@ -117,8 +119,11 @@ public class InsertMediaController implements Initializable, StandardController
             public void changed(ObservableValue<? extends ImageResource> observable, ImageResource oldValue, ImageResource newValue)
             {
                 refreshImageView(newValue);
-                widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
-                heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
+                if (newValue != null)
+                {
+                    widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
+                    heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
+                }
             }
         });
         tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -240,6 +245,7 @@ public class InsertMediaController implements Initializable, StandardController
         {
             imageResources.add((ImageResource)resource);
         }
+        Collections.sort(imageResources, new ResourceFilenameComparator());
         tableView.setItems(FXCollections.observableList(imageResources));
         tableView.getSelectionModel().select(0);
     }
@@ -250,7 +256,7 @@ public class InsertMediaController implements Initializable, StandardController
         {
             Image image = resource.asNativeFormat();
             imageView.setImage(image);
-            imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
+            imageValuesLabel.setText(resource.getImageDescription());
         }
         else
         {

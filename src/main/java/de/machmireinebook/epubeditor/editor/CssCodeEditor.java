@@ -60,6 +60,12 @@ public class CssCodeEditor extends AbstractCodeEditor
     }
 
     @Override
+    protected void showContextMenu()
+    {
+
+    }
+
+    @Override
     public String getEditingTemplate()
     {
         return editingTemplate;

@@ -8,7 +8,9 @@ import de.machmireinebook.commons.images.ImageInfo;
 import de.machmireinebook.commons.lang.NumberUtils;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import org.apache.log4j.Logger;
 
@@ -25,6 +27,7 @@ public class ImageResource extends Resource<Image>
     private double height;
 
     private Image image;
+    private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
     private ImageInfo imageInfo;
     private BooleanProperty coverProperty;
 
@@ -85,6 +88,7 @@ public class ImageResource extends Resource<Image>
     private void calculateImageInfo()
     {
         image = new Image(getInputStream());
+        imageProperty.setValue(image);
         width = image.getWidth();
         height = image.getHeight();
 
@@ -102,6 +106,7 @@ public class ImageResource extends Resource<Image>
         if (image == null)
         {
             image = new Image(getInputStream());
+            imageProperty.setValue(image);
         }
         return image;
     }
@@ -136,6 +141,11 @@ public class ImageResource extends Resource<Image>
         String sizeInKB = NumberUtils.formatDouble(Math.round(getSize() / 1024.0 * 100) / 100.0);
         return ((Double) image.getWidth()).intValue() + "×" + ((Double) image.getHeight()).intValue() + " px | "
                 + sizeInKB + " KB | " + imageInfo.getBitsPerPixel() + " bpp";
+    }
+
+    public ObjectProperty<Image> imageProperty()
+    {
+        return imageProperty;
     }
 
     public BooleanProperty coverProperty()
