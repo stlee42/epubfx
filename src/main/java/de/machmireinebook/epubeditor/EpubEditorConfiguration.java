@@ -8,11 +8,20 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
+import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
+import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.manager.ClipManager;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.apache.commons.lang.BooleanUtils;
@@ -23,6 +32,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
+import org.jdom2.CDATA;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -39,7 +49,7 @@ public class EpubEditorConfiguration
 {
     public static final Logger logger = Logger.getLogger(EpubEditorConfiguration.class);
 
-    private static EpubEditorConfiguration instance = new EpubEditorConfiguration();
+    private static EpubEditorConfiguration instance;
 
     //color
     String color = "#0093FF";
@@ -50,6 +60,9 @@ public class EpubEditorConfiguration
     private List<OpenWithApplication> imageOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> cssOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> fontOpenWithApplications = new ArrayList<>();
+
+    @Inject @ClipManagerProducer
+    private ClipManager clipManager;
 
     public static class OpenWithApplication
     {
@@ -73,9 +86,13 @@ public class EpubEditorConfiguration
         }
     }
 
-
+    @Produces @EpubEditorConfigurationProducer
     public static EpubEditorConfiguration getInstance()
     {
+        if (instance == null)
+        {
+            instance = BeanFactory.getInstance().getBean(EpubEditorConfiguration.class);
+        }
         return instance;
     }
 
@@ -212,6 +229,11 @@ public class EpubEditorConfiguration
                             mainController.getShowPreviewMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview")));
                         }
                     }
+
+                    Element clipsElement = root.getChild("clips");
+                    List<Element> children = clipsElement.getChildren();
+                    TreeItem<Clip> clipsRoot =  clipManager.getClipsRoot();
+                    readChildren(children, clipsRoot);
                 }
             }
         }
@@ -220,6 +242,30 @@ public class EpubEditorConfiguration
             logger.error("", e);
             //im fehlerfall leeres Document erzeugen
             configurationDocument = new Document(new Element("configuration"));
+        }
+    }
+
+    private void readChildren(List<Element> children, TreeItem<Clip> parentTreeItem)
+    {
+        for (Element child : children)
+        {
+            if (child.getName().equals("clip"))
+            {
+                String name = child.getChildText("name");
+                String content = child.getChildText("content");
+                Clip clip = new Clip(name, content);
+                TreeItem<Clip> treeItem = new TreeItem<>(clip);
+                parentTreeItem.getChildren().add(treeItem);
+            }
+            else if (child.getName().equals("group"))
+            {
+                String name = child.getAttributeValue("name");
+                Clip clip = new Clip(name, true);
+                TreeItem<Clip> treeItem = new TreeItem<>(clip);
+                parentTreeItem.getChildren().add(treeItem);
+                List<Element> subChildren = child.getChildren();
+                readChildren(subChildren, treeItem);
+            }
         }
     }
 
@@ -430,6 +476,17 @@ public class EpubEditorConfiguration
                 {
                     centerDividerElement.setAttribute("divider-1", "none");
                 }
+
+                Element clipsElement = root.getChild("clips");
+                if (clipsElement == null)
+                {
+                    clipsElement = new Element("clips");
+                    root.addContent(clipsElement);
+                }
+                //neu aus ClipManager aufbauen
+                clipsElement.removeContent();
+                TreeItem<Clip> clipRootItem = clipManager.getClipsRoot();
+                writeChildren(clipRootItem, clipsElement);
             }
         }
         try
@@ -446,6 +503,34 @@ public class EpubEditorConfiguration
             logger.error(e);
         }
 
+    }
+
+    private void writeChildren(TreeItem<Clip> parentTreeItem, Element parentElement)
+    {
+        List<TreeItem<Clip>> treeItems = parentTreeItem.getChildren();
+        for (TreeItem<Clip> treeItem : treeItems)
+        {
+            if (treeItem.getValue().isGroup())
+            {
+                Element groupElement = new Element("group");
+                groupElement.setAttribute("name", treeItem.getValue().getName());
+                writeChildren(treeItem, groupElement);
+                parentElement.addContent(groupElement);
+            }
+            else
+            {
+                Element clipElement = new Element("clip");
+                parentElement.addContent(clipElement);
+
+                Element nameElement =  new Element("name");
+                clipElement.addContent(nameElement);
+                nameElement.setText(treeItem.getValue().getName());
+
+                Element contentElement =  new Element("content");
+                clipElement.addContent(contentElement);
+                contentElement.setContent(new CDATA(treeItem.getValue().getContent()));
+            }
+        }
     }
 
     private void saveApplications(Element element, List<OpenWithApplication> applications)

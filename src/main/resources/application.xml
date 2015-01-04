@@ -21,4 +21,28 @@
             <right-divider divider-1="0.5053475935828877" />
         </dividers>
     </layout>
+    <clips>
+        <clip>
+            <name>div</name>
+            <content><![CDATA[<div>\1</div>]]></content>
+        </clip>
+        <clip>
+            <name>p</name>
+            <content><![CDATA[<p>\1</p>]]></content>
+        </clip>
+        <clip>
+            <name>break</name>
+            <content><![CDATA[</p><p>]]></content>
+        </clip>
+        <group name="misc">
+            <clip>
+                <name>br</name>
+                <content><![CDATA[<br/>]]></content>
+            </clip>
+            <clip>
+                <name>hr</name>
+                <content><![CDATA[<hr/>>]]></content>
+            </clip>
+        </group>
+    </clips>
 </configuration>

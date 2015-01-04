@@ -3,3 +3,8 @@
     -fx-color-label-visible: true;
     -fx-text-fill:black;
 }
+
+.group-cell .text
+{
+    -fx-font-weight: bold;
+}

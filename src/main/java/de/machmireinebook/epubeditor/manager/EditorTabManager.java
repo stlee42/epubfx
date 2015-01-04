@@ -9,10 +9,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
+import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
@@ -54,11 +59,13 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -88,6 +95,7 @@ public class EditorTabManager
 {
     public static final Logger logger = Logger.getLogger(EditorTabManager.class);
 
+    private static EditorTabManager instance;
 
     private TabPane tabPane;
     private ObjectProperty<CodeEditor> currentEditor = new SimpleObjectProperty<>();
@@ -105,7 +113,12 @@ public class EditorTabManager
     private BookBrowserManager bookBrowserManager;
     private Book book;
     private ContextMenu contextMenuXHTML;
+    private ContextMenu contextMenuXML;
     private ContextMenu contextMenuCSS;
+
+    @Inject
+    @ClipManagerProducer
+    private ClipManager clipManager;
 
     public class ImageViewerPane extends ScrollPane implements Initializable
     {
@@ -244,7 +257,19 @@ public class EditorTabManager
         }
     }
 
-    public EditorTabManager()
+    @Produces
+    @EditorTabManagerProducer
+    public static EditorTabManager getInstance()
+    {
+        if (instance == null)
+        {
+            instance = BeanFactory.getInstance().getBean(EditorTabManager.class);
+            instance.init();
+        }
+        return instance;
+    }
+
+    public void init()
     {
         currentEditor.addListener((observable, oldValue, newValue) -> {
             canUndo.unbind();
@@ -263,10 +288,20 @@ public class EditorTabManager
             }
         });
 
+        MenuItem separatorItem = new SeparatorMenuItem();
         //Html menu
         contextMenuXHTML = new ContextMenu();
         contextMenuXHTML.setAutoFix(true);
         contextMenuXHTML.setAutoHide(true);
+
+        Menu clipsItem = new Menu("Clips");
+        clipManager.getClipsRoot().addEventHandler(TreeItem.<Clip>childrenModificationEvent(), event -> {
+            clipsItem.getItems().clear();
+            writeClipMenuItemChildren(clipManager.getClipsRoot(), clipsItem);
+        });
+        contextMenuXHTML.getItems().add(clipsItem);
+        contextMenuXHTML.getItems().add(separatorItem);
+
         MenuItem itemRepairHTML = new MenuItem("HTML reparieren");
         itemRepairHTML.setOnAction(e -> {
             beautifyOrRepairHTML("repair");
@@ -279,7 +314,6 @@ public class EditorTabManager
         });
         contextMenuXHTML.getItems().add(itemBeautifyHTML);
 
-        MenuItem separatorItem = new SeparatorMenuItem();
         contextMenuXHTML.getItems().add(separatorItem);
 
         MenuItem openInExternalBrowserItem = new MenuItem("In externem Browser öffnen");
@@ -288,21 +322,64 @@ public class EditorTabManager
         });
         contextMenuXHTML.getItems().add(openInExternalBrowserItem);
 
+        //XML menu
+        contextMenuXML = new ContextMenu();
+        contextMenuXML.setAutoFix(true);
+        contextMenuXML.setAutoHide(true);
+        MenuItem itemRepairXML = new MenuItem("XML reparieren");
+        itemRepairXML.setOnAction(e -> {
+            beautifyOrRepairXML("repair");
+        });
+        contextMenuXML.getItems().add(itemRepairXML);
+
+        MenuItem itemBeautifyXML = new MenuItem("HTML neuformatieren");
+        itemBeautifyXML.setOnAction(e -> {
+            beautifyOrRepairXML("format");
+        });
+        contextMenuXML.getItems().add(itemBeautifyXML);
+
         //css menu
         contextMenuCSS = new ContextMenu();
         contextMenuCSS.setAutoFix(true);
         contextMenuCSS.setAutoHide(true);
-        MenuItem formatCSSOneLineItem = new MenuItem("Stylse jeweils in einer Zeile formatieren");
-        formatCSSOneLineItem.setOnAction(e -> {
-            beautifyCSS("one_line");
-        });
+        MenuItem formatCSSOneLineItem = new MenuItem("Styles in je einer Zeile formatieren");
+        formatCSSOneLineItem.setOnAction(e -> beautifyCSS("one_line"));
         contextMenuCSS.getItems().add(formatCSSOneLineItem);
 
-        MenuItem formatCSSMultipleLinesItem = new MenuItem("Styles jeweils in mehrerer Zeilen formatieren ");
-        formatCSSMultipleLinesItem.setOnAction(e -> {
-            beautifyCSS("multiple_lines");
-        });
+        MenuItem formatCSSMultipleLinesItem = new MenuItem("Styles in mehrerer Zeilen formatieren");
+        formatCSSMultipleLinesItem.setOnAction(e -> beautifyCSS("multiple_lines"));
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
+    }
+
+    private void writeClipMenuItemChildren(TreeItem<Clip> parentTreeItem, Menu parentMenu)
+    {
+        List<TreeItem<Clip>> children = parentTreeItem.getChildren();
+        for (TreeItem<Clip> child : children)
+        {
+            if (child.getValue().isGroup())
+            {
+                Menu menu = new Menu(child.getValue().getName());
+                parentMenu.getItems().add(menu);
+                writeClipMenuItemChildren(child, menu);
+            }
+            else
+            {
+                MenuItem menuItem = new MenuItem(child.getValue().getName());
+                parentMenu.getItems().add(menuItem);
+                menuItem.setOnAction(event -> {
+                    insertClip(child.getValue());
+                });
+            }
+        }
+    }
+
+    private void insertClip(Clip clip)
+    {
+        CodeEditor editor = currentEditor.getValue();
+        EditorRange selectedRange = editor.getSelection();
+        String insertedClip = selectedRange.getSelection().replaceAll("^(.*)$", clip.getContent());
+        editor.replaceSelection(insertedClip);
+        book.setBookIsChanged(true);
     }
 
     private void beautifyCSS(String type)
@@ -322,12 +399,14 @@ public class EditorTabManager
         logger.info("beautifying html");
         try
         {
-            String code = currentEditor.getValue().getCode();
+            CodeEditor editor = currentEditor.getValue();
+            String code = editor.getCode();
             if (currentEditorIsXHTML.get())
             {
                 try
                 {
-                    currentXHTMLResource.get().setData(code.getBytes("UTF-8"));
+                    Resource resource = currentXHTMLResource.get();
+                    resource.setData(code.getBytes("UTF-8"));
                     switch (mode)
                     {
                         case "format": code = formatAsXHTML(code);
@@ -335,14 +414,15 @@ public class EditorTabManager
                         case "repair": code = repairXHTML(code);
                             break;
                     }
-                    currentXHTMLResource.get().setData(code.getBytes("UTF-8"));
+                    resource.setData(code.getBytes("UTF-8"));
                 }
                 catch (UnsupportedEncodingException e)
                 {
                     //never happens
                 }
             }
-            currentEditor.getValue().setCode(code);
+            editor.setCode(code);
+            book.setBookIsChanged(true);
         }
         catch (IOException | JDOMException e)
         {
@@ -353,6 +433,10 @@ public class EditorTabManager
                     .message("Kann Datei nicht formatieren. Bitte die Fehlermeldung an den Hersteller weitergeben.")
                     .showException(e);
         }
+    }
+
+    private void beautifyOrRepairXML(String mode)
+    {
     }
 
     public void openXHTMLFileInEditor(Resource xhtmlResource)
@@ -478,14 +562,17 @@ public class EditorTabManager
         if (mediaType.equals(MediaType.CSS))
         {
             editor = new CssCodeEditor();
+            editor.setContextMenu(contextMenuCSS);
         }
         else if (mediaType.equals(MediaType.XHTML))
         {
             editor = new XHTMLCodeEditor();
+            editor.setContextMenu(contextMenuXHTML);
         }
         else if (mediaType.equals(MediaType.XML))
         {
             editor = new XMLCodeEditor();
+            editor.setContextMenu(contextMenuXML);
         }
         else
         {

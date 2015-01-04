@@ -20,8 +20,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Pos;
@@ -88,16 +86,16 @@ public class EpubEditorApplication extends Application
             {
                 updateProgress(0, 3);
                 updateMessage("Initialisierung");
-                EpubEditorConfiguration.getInstance().init();
-
-                updateProgress(1, 3);
-                updateMessage("Starte Basiskomponenten");
                 lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
                 lifecycle.startApplication(this);
 
                 BeanManager beanManager = lifecycle.getBeanManager();
                 /*BeanFactory beanFactory = */
                 BeanFactory.initialize(beanManager);
+
+                updateProgress(1, 3);
+                updateMessage("Starte Basiskomponenten");
+                EpubEditorConfiguration.getInstance().init();
 
                 updateProgress(2, 3);
                 updateMessage("Interner Server wird gestarte");
@@ -199,13 +197,10 @@ public class EpubEditorApplication extends Application
                     FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
                     fadeSplash.setFromValue(1.0);
                     fadeSplash.setToValue(0.0);
-                    fadeSplash.setOnFinished(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent actionEvent) {
-                            initStage.hide();
-                            createMainStage();
-                            mainStage.show();
-                        }
+                    fadeSplash.setOnFinished(actionEvent -> {
+                        initStage.hide();
+                        createMainStage();
+                        mainStage.show();
                     });
                     fadeSplash.play();
                 }

@@ -12,6 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.concurrent.Worker;
+import javafx.scene.control.ContextMenu;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -24,6 +25,7 @@ public interface CodeEditor
     MediaType getMediaType();
 
     //methods of the java part of editor
+    void setContextMenu(ContextMenu contextMenu);
     ObjectProperty<Worker.State> stateProperty();
     ObjectProperty<EditorPosition> cursorPositionProperty();
     ReadOnlyObjectProperty<String> codeProperty();
@@ -37,9 +39,10 @@ public interface CodeEditor
     String getCode();
     EditorPosition getEditorCursorPosition();
     void insertAt(String replacement, EditorPosition pos);
+    EditorRange getSelection();
     void replaceSelection(String replacement);
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
-
+    void scrollTo(EditorPosition pos);
 
 }

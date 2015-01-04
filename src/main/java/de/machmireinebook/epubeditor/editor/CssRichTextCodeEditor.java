@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
+import javafx.scene.control.ContextMenu;
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
@@ -133,6 +134,12 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     public MediaType getMediaType()
     {
         return MediaType.CSS;
+    }
+
+    @Override
+    public void setContextMenu(ContextMenu contextMenu)
+    {
+
     }
 
     protected StyleSpans<Collection<String>> computeHighlighting(String text) {

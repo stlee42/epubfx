@@ -157,16 +157,12 @@ public class AddStylesheetController implements StandardController
         tableView.setEditable(true);
         TableColumn<StylesheetResource, ObservableValue<Boolean>> tc = (TableColumn<StylesheetResource, ObservableValue<Boolean>>) tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("included"));
-        Callback<Integer, ObservableValue<Boolean>> propertyCallback = new Callback<Integer, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(Integer param)
+        Callback<Integer, ObservableValue<Boolean>> propertyCallback = param -> {
+            if (param != null)
             {
-                if (param != null)
-                {
-                    return stylesheetResources.get(param).includedProperty();
-                }
-                return null;
+                return stylesheetResources.get(param).includedProperty();
             }
+            return null;
         };
         tc.setEditable(true);
         tc.setCellFactory(CheckBoxTableCell.forTableColumn(propertyCallback, false));

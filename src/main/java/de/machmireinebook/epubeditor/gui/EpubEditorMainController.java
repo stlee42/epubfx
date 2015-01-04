@@ -19,6 +19,8 @@ import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.commons.javafx.FXUtils;
 import de.machmireinebook.commons.javafx.control.searchable.TreeViewSearchable;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -83,6 +85,7 @@ import org.controlsfx.dialog.Dialogs;
 public class EpubEditorMainController implements Initializable
 {
     public static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
+
     @FXML
     private MenuItem insertImageMenuItem;
     @FXML
@@ -229,11 +232,14 @@ public class EpubEditorMainController implements Initializable
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
+    @EditorTabManagerProducer
     private EditorTabManager editorManager;
     @Inject
     private PreviewManager previewManager;
     @Inject
     private TOCViewManager tocViewManager;
+    @Inject @EpubEditorConfigurationProducer
+    private  EpubEditorConfiguration configuration;
 
 
     @Override
@@ -456,7 +462,7 @@ public class EpubEditorMainController implements Initializable
 
         instance = this;
         //erst jetzt configuration lesen, da alles gesetzt ist
-        EpubEditorConfiguration.getInstance().readConfiguration();
+        configuration.readConfiguration();
     }
 
     public static EpubEditorMainController getInstance()
@@ -988,6 +994,12 @@ public class EpubEditorMainController implements Initializable
         }
     }
 
+    public void clipEditorAction(ActionEvent actionEvent)
+    {
+        createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
+    }
+
+
     public void insertSpecialCharacterAction(ActionEvent actionEvent)
     {
     }
@@ -1093,7 +1105,7 @@ public class EpubEditorMainController implements Initializable
     {
         Book minimalBook = Book.createMinimalBook();
         currentBookProperty.set(minimalBook);
-        currentBookProperty.get().setBookIsChanged(true);
+        currentBookProperty.get().setBookIsChanged(false);
     }
 
     public void previewZoomIn(ActionEvent actionEvent)

@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
 import javafx.scene.Node;
+import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import org.fxmisc.richtext.CodeArea;
@@ -140,6 +141,20 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
     @Override
     public void scroll(int delta)
+    {
+
+    }
+
+    @Override
+    public EditorRange getSelection()
+    {
+        IndexRange range = codeArea.getSelection();
+        String selectedText = codeArea.getSelectedText();
+        return null;
+    }
+
+    @Override
+    public void scrollTo(EditorPosition pos)
     {
 
     }

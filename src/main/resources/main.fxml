@@ -131,6 +131,8 @@
                     </items>
                   </Menu>
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#clipEditorAction" text="Clipeditor..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="Validiere EPUB..." />
               </items>
             </Menu>
@@ -160,11 +162,11 @@
             </SplitPane>
             <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
                <items>
-                  <Pane>
+                  <AnchorPane>
                      <children>
-                        <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" />
+                        <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
-                  </Pane>
+                  </AnchorPane>
                   <ListView fx:id="validationResultsListView" />
                </items>
             </SplitPane>
@@ -222,9 +224,9 @@
             </SplitPane>
          </items>
       </SplitPane>
-      <TabPane layoutY="27.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TabPane layoutY="27.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <tabs>
-            <Tab text="Start">
+            <Tab text="   Start   ">
                <content>
                   <ToolBar layoutY="27.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                     <items>
@@ -380,7 +382,7 @@
                   </ToolBar>
                </content>
             </Tab>
-            <Tab text="Layout">
+            <Tab text=" Layout ">
                <content>
                    <ToolBar prefHeight="40.0" prefWidth="200.0">
                        <items>
@@ -486,7 +488,7 @@
                    </ToolBar>
                </content>
             </Tab>
-             <Tab text="Inhalt">
+             <Tab text="  Inhalt  ">
              <content>
              <ToolBar prefHeight="40.0" prefWidth="200.0">
              <items>

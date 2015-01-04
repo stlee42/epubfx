@@ -7,6 +7,7 @@ package de.machmireinebook.epubeditor.editor;
  */
 
 import com.sun.webkit.dom.KeyboardEventImpl;
+import com.sun.webkit.dom.MouseEventImpl;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -17,6 +18,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
@@ -49,6 +51,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
     private ObjectProperty<EditorPosition> cursorPosition = new SimpleObjectProperty<>(new EditorPosition(0,0));
     private ReadOnlyObjectWrapper<String> code = new ReadOnlyObjectWrapper<>();
+
+    private ContextMenu contextMenu;
 
     public class CodeVersion
     {
@@ -160,7 +164,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
 
                         if (isCtrlPressed && (keyCode == 90 || keyCode == 89) || keyCodeIsModifierKey(keyCode))
                         {
-                            logger.debug("Ctrl-Z, ctrl-y key up wird ignoriert");
+                            logger.debug("Ctrl-Z, Ctrl-Y key up wird in keyup ignoriert. da bereits verarbeitet");
+                            return;
                         }
                         cursorPosition.set(getEditorCursorPosition());
                     }, false);
@@ -189,7 +194,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                     {
                         logger.debug("contextmenu event aufgefangen " + evt);
                         evt.preventDefault();
-                        showContextMenu();
+                        contextMenu.setImpl_showRelativeToWindow(true);
+                        contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
                     }, false);
 
 
@@ -202,13 +208,12 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                             scroll(delta.intValue());
                         }
                     });
+                    state.setValue(Worker.State.SUCCEEDED);
                 }
             }
         });
-        state.bind(engine.getLoadWorker().stateProperty());
     }
 
-    protected abstract void showContextMenu();
     protected abstract String getEditingTemplate();
 
     /**
@@ -242,6 +247,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         return code.getReadOnlyProperty();
     }
 
+    @Override
     public void undo()
     {
         CodeVersion codeVersion = undoRedoManager.undo();
@@ -251,6 +257,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         setEditorCursorPosition(cursorPos);
     }
 
+    @Override
     public void redo()
     {
         CodeVersion codeVersion = undoRedoManager.redo();
@@ -284,6 +291,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                 (int)jdoc.getMember("end"), (String)jdoc.getMember("string"), (String)jdoc.getMember("type"));
     }
 
+    @Override
     public EditorPosition getEditorCursorPosition()
     {
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getCursor();");
@@ -296,6 +304,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         webview.getEngine().executeScript("editor.setCursor(" + position.toJson() + ");");
     }
 
+    @Override
     public EditorRange getSelection()
     {
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getCursor('from');");
@@ -328,6 +337,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                 to.toJson() + ");");
     }
 
+    @Override
     public void insertAt(String replacement, EditorPosition pos)
     {
         //doc.replaceRange(replacement: string, from: {line, ch}, to: {line, ch}, ?origin: string)
@@ -335,10 +345,14 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                 pos.toJson() + ");");
     }
 
+    @Override
     public void replaceSelection(String replacement)
     {
+        EditorRange range = getSelection();
         //doc.replaceRange(replacement: string, from: {line, ch}, to: {line, ch}, ?origin: string)
-        webview.getEngine().executeScript("editor.replaceRange('" + StringEscapeUtils.escapeJavaScript(replacement) + "');");
+        webview.getEngine().executeScript("editor.replaceRange('" + StringEscapeUtils.escapeJavaScript(replacement) + "'," +
+                range.getFrom().toJson() + "," +
+                range.getTo().toJson() + ");");
     }
 
     public int getIndexFromPosition(EditorPosition pos)
@@ -351,6 +365,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         return (int)webview.getEngine().executeScript("editor.getLine(" + lineNumber + ").length;");
     }
 
+    @Override
     public void scroll(int delta)
     {
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getScrollInfo();");
@@ -359,6 +374,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         webview.getEngine().executeScript("editor.scrollTo(null, " + newTop + ");");
     }
 
+    @Override
     public void scrollTo(EditorPosition pos)
     {
         double halfHeight = getHeight() / 2;
@@ -391,5 +407,11 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     {
         return keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 157 || keyCode == 524 || keyCode == 65406 ||
                 keyCode == 768;
+    }
+
+    @Override
+    public void setContextMenu(ContextMenu contextMenu)
+    {
+        this.contextMenu = contextMenu;
     }
 }

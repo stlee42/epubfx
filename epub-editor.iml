@@ -31,6 +31,7 @@
           <root url="jar://$USER_HOME$/.ideaLibSources/jimfs-1.0-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/ph-css-3.8.0-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/openjfx-dialogs-1.0.2-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/geronimo-jcdi_1.0_spec-1.0-sources.jar!/" />
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" type="SOURCES" />
