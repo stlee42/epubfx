@@ -9,6 +9,7 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +36,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
         root.addContent(metadataElement);
 
-        writeIdentifiers(book.getMetadata().getIdentifiers(), metadataElement);
+        writeIdentifiers(book.getMetadata(), metadataElement);
         writeSimpleMetdataElements(DCTag.title.getName(), book.getMetadata().getTitles(), metadataElement);
         writeSimpleMetdataElements(DCTag.subject.getName(), book.getMetadata().getSubjects(), metadataElement);
         writeSimpleMetdataElements(DCTag.description.getName(), book.getMetadata().getDescriptions(), metadataElement);
@@ -145,13 +146,15 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
      * @throws IllegalArgumentException
      * @
      */
-    private static void writeIdentifiers(List<Identifier> identifiers, Element metadataElement)
+    private static void writeIdentifiers(Metadata metadata, Element metadataElement)
     {
-        Identifier bookIdIdentifier = Identifier.getBookIdIdentifier(identifiers);
+        Identifier bookIdIdentifier = metadata.getBookIdIdentifier();
         if (bookIdIdentifier == null)
         {
             return;
         }
+
+        List<Identifier> identifiers = metadata.getIdentifiers();
 
         Element identifierElement = new Element(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);

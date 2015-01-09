@@ -86,16 +86,16 @@ public class EpubEditorApplication extends Application
             {
                 updateProgress(0, 3);
                 updateMessage("Initialisierung");
+                EpubEditorConfiguration.initLogger();
+
+                updateProgress(1, 3);
+                updateMessage("Starte Basiskomponenten");
                 lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
                 lifecycle.startApplication(this);
 
                 BeanManager beanManager = lifecycle.getBeanManager();
                 /*BeanFactory beanFactory = */
                 BeanFactory.initialize(beanManager);
-
-                updateProgress(1, 3);
-                updateMessage("Starte Basiskomponenten");
-                EpubEditorConfiguration.getInstance().init();
 
                 updateProgress(2, 3);
                 updateMessage("Interner Server wird gestarte");

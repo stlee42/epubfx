@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.IOException;
 
+import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import org.jdom2.Document;
@@ -37,6 +38,11 @@ public class XMLResource extends Resource<Document>
     {
         super(data, href, mediaType);
     }
+
+    public XMLResource(String id, byte[] data, String href, MediaType mediaType) {
+        super(id, data, href, mediaType, Constants.CHARACTER_ENCODING);
+    }
+
 
     @Override
     public Document asNativeFormat()

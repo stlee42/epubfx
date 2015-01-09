@@ -1,0 +1,187 @@
+package de.machmireinebook.epubeditor.manager;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+import java.util.Optional;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
+import de.machmireinebook.commons.cdi.BeanFactory;
+import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
+import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+
+import com.eaio.stringsearch.BoyerMooreHorspool;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+/**
+ * User: mjungierek
+ * Date: 06.01.2015
+ * Time: 01:53
+ */
+public class SearchManager
+{
+    public static final Logger logger = Logger.getLogger(SearchManager.class);
+    private static SearchManager instance;
+
+    private BoyerMooreHorspool stringSearch;
+
+    @Inject
+    @EpubEditorMainControllerProducer
+    EpubEditorMainController mainController;
+
+    private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>();
+
+    public static class SearchResult
+    {
+        private int begin;
+        private int end;
+        private Resource resource;
+
+        public SearchResult(int begin, int end, Resource resource)
+        {
+            this.begin = begin;
+            this.end = end;
+            this.resource = resource;
+        }
+
+        public int getBegin()
+        {
+            return begin;
+        }
+
+        public int getEnd()
+        {
+            return end;
+        }
+
+        public Resource getResource()
+        {
+            return resource;
+        }
+    }
+
+    public enum SearchMode
+    {
+        NORMAL,
+        CASE_SENSITIVE,
+        REGEX;
+    }
+
+    public enum SearchRegion
+    {
+        CURRENT_RESOURCE,
+        ALL_RESOURCES,
+        ALL_XHTML_REOURCES;
+    }
+
+    public static class SearchParams
+    {
+        private boolean dotAll;
+        private boolean minimalMatch;
+        private SearchMode mode;
+        private SearchRegion region;
+
+        public SearchParams(boolean dotAll, boolean minimalMatch, SearchMode mode, SearchRegion region)
+        {
+            this.dotAll = dotAll;
+            this.minimalMatch = minimalMatch;
+            this.mode = mode;
+            this.region = region;
+        }
+
+        public boolean isDotAll()
+        {
+            return dotAll;
+        }
+
+        public boolean isMinimalMatch()
+        {
+            return minimalMatch;
+        }
+
+        public SearchMode getMode()
+        {
+            return mode;
+        }
+
+        public SearchRegion getRegion()
+        {
+            return region;
+        }
+    }
+
+    @Produces
+    @SearchManagerProducer
+    public static SearchManager getInstance()
+    {
+        if (instance == null)
+        {
+            instance = BeanFactory.getInstance().getBean(SearchManager.class);
+            instance.init();
+        }
+        return instance;
+    }
+
+    private void init()
+    {
+        stringSearch = new BoyerMooreHorspool();
+    }
+
+    public ObjectProperty<Book> currentBookProperty()
+    {
+        return currentBook;
+    }
+
+    public Optional<SearchResult> findNext(String queryString, Resource currentResource, int fromIndex, SearchParams params)
+    {
+        Optional<SearchResult> result;
+        int position = -1;
+        if (StringUtils.isEmpty(queryString))
+        {
+            return Optional.empty();
+        }
+        if (params.getMode().equals(SearchMode.CASE_SENSITIVE))
+        {
+            try
+            {
+                position = stringSearch.searchBytes(currentResource.getData(), fromIndex, queryString.getBytes(currentResource.getInputEncoding()));
+                logger.info("position " + position);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                logger.error("", e);
+            }
+        }
+        else if (params.getMode().equals(SearchMode.NORMAL))
+        {
+            try
+            {
+                String text = new String(currentResource.getData(), currentResource.getInputEncoding());
+                text = text.toLowerCase(Locale.GERMANY);
+                position = stringSearch.searchString(text, fromIndex, queryString.toLowerCase(Locale.GERMANY));
+                logger.info("position " + position);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                logger.error("", e);
+            }
+        }
+        if (position > -1)
+        {
+            int length = queryString.length();
+            result = Optional.of(new SearchResult(position, position + length, currentResource));
+        }
+        else
+        {
+            result = Optional.empty();
+        }
+        return result;
+    }
+}

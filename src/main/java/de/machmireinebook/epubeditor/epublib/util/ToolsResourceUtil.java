@@ -56,7 +56,7 @@ public class ToolsResourceUtil {
 		Pattern h_tag = Pattern.compile("^h\\d\\s*", Pattern.CASE_INSENSITIVE);
 		String title = null;
 		try {
-			Reader content = resource.getReader();
+			Reader content = resource.asReader();
 			Scanner scanner = new Scanner(content);
 			scanner.useDelimiter("<");
 			while(scanner.hasNext()) {

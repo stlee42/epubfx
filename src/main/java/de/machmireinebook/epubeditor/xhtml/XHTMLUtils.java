@@ -202,6 +202,7 @@ public class XHTMLUtils
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
 
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();

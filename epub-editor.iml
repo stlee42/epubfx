@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="IvyIDEA" name="IvyIDEA">
+      <configuration ivyFile="C:\Projects\epub-editor\ivy.xml" useProjectSettings="true" useCustomIvySettings="true" ivySettingsFile="" onlyResolveSelectedConfigs="false">
+        <propertiesSettings>
+          <propertiesFiles includeProjectLevelPropertiesFiles="true" />
+        </propertiesSettings>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/out/production/epub-editor" />
     <output-test url="file://$MODULE_DIR$/out/test/epub-editor" />
@@ -32,6 +41,10 @@
           <root url="jar://$USER_HOME$/.ideaLibSources/ph-css-3.8.0-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/openjfx-dialogs-1.0.2-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ideaLibSources/geronimo-jcdi_1.0_spec-1.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../commons-collections4-4.0-bin/commons-collections4-4.0/commons-collections4-4.0-sources.jar!/" />
+          <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/core/src/java" />
+          <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/analysis/common/src/java" />
+          <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/queryparser/src/java" />
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" type="SOURCES" />

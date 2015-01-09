@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.input.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="400.0" prefWidth="707.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.ClipEditorController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="700.0" prefHeight="550.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.ClipEditorController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="Filter" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
       <TextField fx:id="filterTextField" layoutX="51.0" layoutY="10.0" prefHeight="25.0" prefWidth="380.0" AnchorPane.leftAnchor="49.0" AnchorPane.rightAnchor="278.0" AnchorPane.topAnchor="10.0" />
       <Button layoutX="333.0" layoutY="10.0" mnemonicParsing="false" onAction="#filterAction" text="Anwenden" AnchorPane.rightAnchor="194.0" AnchorPane.topAnchor="10.0" />
       <TreeTableView fx:id="treeTableView" layoutX="14.0" layoutY="45.0" prefHeight="305.0" prefWidth="543.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="45.0">
         <columns>
-          <TreeTableColumn prefWidth="91.0" text="Clipname" />
-          <TreeTableColumn prefWidth="383.0" text="Inhalt" />
+          <TreeTableColumn prefWidth="190.0" text="Clipname" />
+          <TreeTableColumn prefWidth="731.0" text="Inhalt" />
         </columns>
          <contextMenu>
             <ContextMenu>
@@ -29,8 +41,8 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#deleteClip" text="Löschen" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Import..." onAction="#importClips"/>
-                  <MenuItem mnemonicParsing="false" text="Export..." onAction="#exportClips"/>
+                  <MenuItem mnemonicParsing="false" onAction="#importClips" text="Import..." />
+                  <MenuItem mnemonicParsing="false" onAction="#exportClips" text="Export..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#collabsAll" text="Alles einklappen" />
                   <MenuItem mnemonicParsing="false" onAction="#expandAll" text="Alles aufklappen" />
@@ -47,5 +59,41 @@
       <Button layoutX="573.0" layoutY="45.0" minWidth="120.0" mnemonicParsing="false" onAction="#insertClipIntoText" text="In Text einfügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="45.0" />
       <Button layoutX="576.0" layoutY="107.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClip" text="Eintrag hinzufügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="107.0" />
       <Button layoutX="576.0" layoutY="139.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClipGroup" text="Gruppe hinzufügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="139.0" />
+      <Button layoutX="1017.0" layoutY="198.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipUpAction" prefWidth="25.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="198.0">
+          <graphic>
+              <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="icons/navigate_up.png" />
+                  </image>
+              </ImageView>
+          </graphic>
+      </Button>
+      <Button layoutX="1042.0" layoutY="222.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipRightAction" prefWidth="25.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="222.0">
+          <graphic>
+              <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="icons/navigate_right.png" />
+                  </image>
+              </ImageView>
+          </graphic>
+      </Button>
+      <Button layoutX="1017.0" layoutY="247.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipDownAction" prefWidth="25.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="247.0">
+          <graphic>
+              <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="icons/navigate_down.png" />
+                  </image>
+              </ImageView>
+          </graphic>
+      </Button>
+      <Button layoutX="992.0" layoutY="222.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipLeftAction" prefWidth="25.0" AnchorPane.rightAnchor="77.0" AnchorPane.topAnchor="222.0">
+          <graphic>
+              <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="icons/navigate_left.png" />
+                  </image>
+              </ImageView>
+          </graphic>
+      </Button>
    </children>
 </AnchorPane>

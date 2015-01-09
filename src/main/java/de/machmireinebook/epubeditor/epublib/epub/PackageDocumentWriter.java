@@ -16,6 +16,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -55,7 +56,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
     }
 
 
-    public static Resource createOPFResource(Book book) throws IllegalArgumentException, IllegalStateException
+    public static XMLResource createOPFResource(Book book) throws IllegalArgumentException, IllegalStateException
     {
         Document opfDocument = write(book);
 
@@ -64,10 +65,10 @@ public class PackageDocumentWriter extends PackageDocumentBase
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(opfDocument);
 
-        Resource resource = null;
+        XMLResource resource = null;
         try
         {
-            resource = new Resource("opf", text.getBytes(Constants.CHARACTER_ENCODING), "OEBPS/content.opf", MediaType.OPF);
+            resource = new XMLResource("opf", text.getBytes(Constants.CHARACTER_ENCODING), "OEBPS/content.opf", MediaType.OPF);
         }
         catch (UnsupportedEncodingException e)
         {

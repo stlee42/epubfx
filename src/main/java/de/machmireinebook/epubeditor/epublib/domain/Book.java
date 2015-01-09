@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Named;
 
@@ -348,6 +349,7 @@ public class Book implements Serializable
             Resource ncxResource = NCXDocument.createNCXResource(book);
             book.setNcxResource(ncxResource);
             book.getSpine().setTocResource(ncxResource);
+            book.addResource(ncxResource, false);
 
             Resource opfResource = PackageDocumentWriter.createOPFResource(book);
             book.setOpfResource(opfResource);
@@ -608,16 +610,32 @@ public class Book implements Serializable
 
     public void setResources(Resources resources)
     {
+        resources.getResourcesMap().values().stream().forEach(new Consumer<Resource>()
+        {
+            @Override
+            public void accept(Resource resource)
+            {
+                resource.hrefProperty().addListener(new ChangeListener<String>()
+                {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+                    {
+                        renameResource(resource, oldValue, newValue);
+                    }
+                });
+            }
+        });
         this.resources = resources;
+
     }
 
 
-    public Resource addResource(Resource resource)
+    public void addResource(Resource resource)
     {
-        return addResource(resource, true);
+        addResource(resource, true);
     }
 
-    public Resource addResource(Resource resource, boolean refreshOpf)
+    public void addResource(Resource resource, boolean refreshOpf)
     {
         resource.hrefProperty().addListener(new ChangeListener<String>()
         {
@@ -645,11 +663,11 @@ public class Book implements Serializable
                 }
             });
         }
+        resources.add(resource);
         if (refreshOpf)
         {
             refreshOpfResource();
         }
-        return resources.add(resource);
     }
 
     /**
@@ -927,11 +945,14 @@ public class Book implements Serializable
 
     public void renameResource(Resource resource, String oldValue, String newValue)
     {
+        resources.remove(oldValue); //unter altem namen löschen
+        resources.add(resource); //unter neuem wieder hinzufügen
+
         if (MediaType.CSS.equals(resource.getMediaType()))
         {
             //css umbenannt, erstmal alle XHTMLs durchsuchen
             List<Resource> xhtmlResources = resources.getResourcesByMediaType(MediaType.XHTML);
-            Path resourcePath = resource.getHrefPath();
+            Path resourcePath = resource.getHrefAsPath();
             int index = StringUtils.lastIndexOf(oldValue, "/");
             String oldFileName = oldValue;
             if (index > -1)
@@ -949,7 +970,7 @@ public class Book implements Serializable
             for (Resource xhtmlResource : xhtmlResources)
             {
                 Document document = ((XHTMLResource)xhtmlResource).asNativeFormat();
-                Path relativePath = xhtmlResource.getHrefPath().relativize(resourcePath);
+                Path relativePath = xhtmlResource.getHrefAsPath().relativize(resourcePath);
                 AtrributeElementFilter hrefFilter = new AtrributeElementFilter("href", relativePath + "/" + oldFileName);
                 IteratorIterable<Element> descendants = document.getDescendants(hrefFilter);
                 for (Element descendant : descendants)

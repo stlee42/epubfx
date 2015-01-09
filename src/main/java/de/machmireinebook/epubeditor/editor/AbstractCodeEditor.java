@@ -164,7 +164,6 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
 
                         if (isCtrlPressed && (keyCode == 90 || keyCode == 89) || keyCodeIsModifierKey(keyCode))
                         {
-                            logger.debug("Ctrl-Z, Ctrl-Y key up wird in keyup ignoriert. da bereits verarbeitet");
                             return;
                         }
                         cursorPosition.set(getEditorCursorPosition());
@@ -188,6 +187,13 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                             evt.preventDefault();
                             redo();
                         }
+                        else if (isCtrlPressed && keyCode == 32)
+                        {
+                            logger.debug("Ctrl-SPACE gedrückt");
+                            evt.preventDefault();
+                            removeTags();
+                        }
+
                     }, false);
 
                     ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
@@ -277,6 +283,14 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         return canRedo;
     }
 
+    private void removeTags()
+    {
+        EditorRange selectedRange = getSelection();
+        String selectedText = selectedRange.getSelection();
+        selectedText = selectedText.replaceAll("<(.*?)>", "");
+        replaceSelection(selectedText);
+    }
+
     public EditorToken getTokenAt(EditorPosition pos)
     {
         JSObject jdoc = (JSObject) webview.getEngine().executeScript("editor.getTokenAt({line:" + pos.getLine() + ",ch:" + pos.getColumn() +"});");
@@ -299,9 +313,26 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                 (int)jdoc.getMember("ch"));
     }
 
+    @Override
+    public int getEditorCursorIndex()
+    {
+        EditorPosition position = getEditorCursorPosition();
+        return getIndexFromPosition(position);
+    }
+
     public void setEditorCursorPosition(EditorPosition position)
     {
         webview.getEngine().executeScript("editor.setCursor(" + position.toJson() + ");");
+    }
+
+    @Override
+    public void select(int fromIndex, int toIndex)
+    {
+        JSObject fromPos = (JSObject) webview.getEngine().executeScript("editor.posFromIndex(" + fromIndex + ");");
+        JSObject toPos = (JSObject) webview.getEngine().executeScript("editor.posFromIndex(" + toIndex + ");");
+        String json = "editor.setSelection({line:" + fromPos.getMember("line") + ", ch:" + fromPos.getMember("ch") + "}, " +
+                "{line:" + toPos.getMember("line") + ", ch:" + toPos.getMember("ch") + "}, {scroll: true, bias: 1})";
+        webview.getEngine().executeScript(json);
     }
 
     @Override

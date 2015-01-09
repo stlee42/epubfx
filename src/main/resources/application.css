@@ -8,3 +8,19 @@
 {
     -fx-font-weight: bold;
 }
+
+.flat {
+    -fx-background-color: transparent, transparent, transparent, transparent;
+}
+
+.flat:hover{
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
+}
+
+.flat:armed {
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
+}
+
+.text-field.error {
+    -fx-effect: dropshadow(three-pass-box, darkred, 7, 0, 0, 0);
+}

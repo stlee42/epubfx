@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +21,14 @@ import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 import de.machmireinebook.epubeditor.manager.ClipManager;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
@@ -60,6 +65,10 @@ public class EpubEditorConfiguration
     private List<OpenWithApplication> imageOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> cssOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> fontOpenWithApplications = new ArrayList<>();
+
+    private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
+
+    public static final int RECENT_FILE_NUMBER = 3;
 
     @Inject @ClipManagerProducer
     private ClipManager clipManager;
@@ -100,7 +109,7 @@ public class EpubEditorConfiguration
     {
     }
 
-    public void init()
+    public static void initLogger()
     {
         //log4j
         Layout layout = new PatternLayout("%d{HH:mm:ss} %-5p %c %x - %m\n");
@@ -133,6 +142,17 @@ public class EpubEditorConfiguration
                         addApplications(cssElement, cssOpenWithApplications);
                         Element fontElement = openWithElement.getChild("font");
                         addApplications(fontElement, fontOpenWithApplications);
+                    }
+
+                    Element recentFilesElement = root.getChild("recent-files");
+                    if (recentFilesElement != null)
+                    {
+                        List<Element> pathElements = recentFilesElement.getChildren("path");
+                        for (Element pathElement : pathElements)
+                        {
+                            Path path = Paths.get(pathElement.getText());
+                            recentFiles.add(path);
+                        }
                     }
 
                     Element layoutElement = root.getChild("layout");
@@ -227,6 +247,7 @@ public class EpubEditorConfiguration
                             mainController.getShowValidationResultsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results")));
                             mainController.getClipsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("clips-list")));
                             mainController.getShowPreviewMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview")));
+                            mainController.getSearchRadioMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("search")));
                         }
                     }
 
@@ -364,6 +385,20 @@ public class EpubEditorConfiguration
                 }
                 saveApplications(fontElement, fontOpenWithApplications);
 
+                //recent files
+                Element recentFilesElement = root.getChild("recent-files");
+                if (recentFilesElement == null)
+                {
+                    recentFilesElement = new Element("recent-files");
+                    root.addContent(recentFilesElement);
+                }
+                for (Path recentFile : recentFiles)
+                {
+                    Element recentFileElement = new Element("path");
+                    recentFileElement.setText(recentFile.toString());
+                    recentFilesElement.addContent(recentFileElement);
+                }
+
                 //layout der oberfläche speichern
                 Element layoutElement = root.getChild("layout");
                 if (layoutElement == null)
@@ -397,6 +432,7 @@ public class EpubEditorConfiguration
                 visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(mainController.getShowValidationResultsMenuItem().isSelected()));
                 visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(mainController.getClipsMenuItem().isSelected()));
                 visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(mainController.getShowPreviewMenuItem().isSelected()));
+                visibilityElement.setAttribute("search", BooleanUtils.toStringTrueFalse(mainController.getSearchRadioMenuItem().isSelected()));
 
                 Element dividersElement = layoutElement.getChild("dividers");
                 if (dividersElement == null)
@@ -548,5 +584,8 @@ public class EpubEditorConfiguration
         }
     }
 
-
+    public ObservableList<Path> getRecentFiles()
+    {
+        return recentFiles;
+    }
 }

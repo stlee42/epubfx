@@ -142,6 +142,18 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     }
 
+    @Override
+    public int getEditorCursorIndex()
+    {
+        return 0;
+    }
+
+    @Override
+    public void select(int fromIndex, int toIndex)
+    {
+
+    }
+
     protected StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;

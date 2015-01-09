@@ -21,7 +21,8 @@ public class ClipManager
     {
     }
 
-    @Produces @ClipManagerProducer
+    @Produces
+    @ClipManagerProducer
     public static ClipManager getInstance()
     {
         return instance;

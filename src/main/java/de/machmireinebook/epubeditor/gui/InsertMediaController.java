@@ -7,9 +7,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+
 import de.machmireinebook.commons.javafx.cells.ImageCellFactory;
 import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.commons.lang.NumberUtils;
+import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -44,7 +48,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -93,6 +96,13 @@ public class InsertMediaController implements Initializable, StandardController
 
     private Stage stage;
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
+
+    @Inject
+    @EditorTabManagerProducer
+    EditorTabManager editorManager;
+    @Inject
+    @EpubEditorMainControllerProducer
+    EpubEditorMainController mainController;
 
     private static InsertMediaController instance;
 
@@ -204,7 +214,6 @@ public class InsertMediaController implements Initializable, StandardController
             }
             snippet = StringUtils.replace(snippet, "${style}", style);
 
-            EditorTabManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
             CodeEditor editor = editorManager.getCurrentEditor();
             EditorPosition cursorPosition = editor.getEditorCursorPosition();
             logger.info("current position" + cursorPosition.toJson());
@@ -229,7 +238,7 @@ public class InsertMediaController implements Initializable, StandardController
 
     public void otherFileButtonAction(ActionEvent actionEvent)
     {
-        EpubEditorMainController.getInstance().addExistingFiles();
+        mainController.addExistingFiles();
         refresh();
     }
 
@@ -273,15 +282,8 @@ public class InsertMediaController implements Initializable, StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(new EventHandler<WindowEvent>()
-        {
-            @Override
-            public void handle(WindowEvent event)
-            {
-                refresh();
-                EditorTabManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
-                CodeEditor editor = editorManager.getCurrentEditor();
-            }
+        stage.setOnShown(event -> {
+            refresh();
         });
     }
 

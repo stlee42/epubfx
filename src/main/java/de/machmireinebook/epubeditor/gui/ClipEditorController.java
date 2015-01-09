@@ -13,6 +13,7 @@ import de.machmireinebook.epubeditor.manager.ClipManager;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
@@ -188,22 +189,37 @@ public class ClipEditorController implements StandardController
 
     public void addClip(ActionEvent actionEvent)
     {
+        addClip(false);
+    }
+
+    public void addClipGroup(ActionEvent actionEvent)
+    {
+        addClip(true);
+    }
+
+    public void addClip(boolean isGroup)
+    {
         int selectedIndex = treeTableView.getSelectionModel().getSelectedIndex();
         TreeItem<Clip> selectedItem = treeTableView.getSelectionModel().getSelectedItem();
-        Clip clip = new Clip("Name", "");
+        Clip clip;
+        if (isGroup)
+        {
+            clip = new Clip("Name", true);
+        }
+        else
+        {
+            clip = new Clip("Name", "");
+        }
         TreeItem<Clip> treeItem = new TreeItem<>(clip);
         selectedItem.getParent().getChildren().add(selectedIndex + 1, treeItem);
         //focus auf neue Zeile setzen
         Platform.runLater(() -> {
             treeTableView.requestFocus();
-            treeTableView.getSelectionModel().select(selectedIndex + 1);
-            treeTableView.getFocusModel().focus(selectedIndex + 1);
-            treeTableView.edit(selectedIndex + 1, treeTableView.getColumns().get(0));
+            treeTableView.getSelectionModel().select(treeItem);
+            int index = treeTableView.getSelectionModel().getSelectedIndex();
+            treeTableView.getFocusModel().focus(index);
+            //treeTableView.edit(index, treeTableView.getColumns().get(0));
         });
-    }
-
-    public void addClipGroup(ActionEvent actionEvent)
-    {
     }
 
     public void cutClip(ActionEvent actionEvent)
@@ -222,6 +238,8 @@ public class ClipEditorController implements StandardController
 
     public void deleteClip(ActionEvent actionEvent)
     {
+        TreeItem<Clip> selectedItem = treeTableView.getSelectionModel().getSelectedItem();
+        selectedItem.getParent().getChildren().remove(selectedItem);
     }
 
     public void collabsAll(ActionEvent actionEvent)
@@ -242,5 +260,51 @@ public class ClipEditorController implements StandardController
 
     public void insertClipIntoText(ActionEvent actionEvent)
     {
+    }
+
+    public void clipUpAction(ActionEvent actionEvent)
+    {
+        TreeItem<Clip> selectedItem = treeTableView.getSelectionModel().getSelectedItem();
+
+        TreeItem<Clip> parent = selectedItem.getParent();
+        ObservableList<TreeItem<Clip>> children = parent.getChildren();
+        int index = children.indexOf(selectedItem);
+        children.remove(selectedItem);
+        int newIndex = index - 1;
+        if (newIndex < 0)
+        {
+            newIndex = 0;
+        }
+        children.add(newIndex, selectedItem);
+
+        treeTableView.getSelectionModel().select(selectedItem);
+    }
+
+    public void clipRightAction(ActionEvent actionEvent)
+    {
+    }
+
+    public void clipDownAction(ActionEvent actionEvent)
+    {
+        TreeItem<Clip> selectedItem = treeTableView.getSelectionModel().getSelectedItem();
+
+        TreeItem<Clip> parent = selectedItem.getParent();
+        ObservableList<TreeItem<Clip>> children = parent.getChildren();
+        int index = children.indexOf(selectedItem);
+        children.remove(selectedItem);
+        int newIndex = index + 1;
+        if (newIndex > children.size())
+        {
+            newIndex = children.size();
+        }
+        children.add(newIndex, selectedItem);
+
+        treeTableView.getSelectionModel().select(selectedItem);
+    }
+
+    public void clipLeftAction(ActionEvent actionEvent)
+    {
+
+
     }
 }

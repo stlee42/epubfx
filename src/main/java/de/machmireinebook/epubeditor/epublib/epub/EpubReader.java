@@ -87,7 +87,7 @@ public class EpubReader
      */
     public Book readEpubLazy(ZipFile zipFile, String encoding) throws IOException
     {
-        Book book = readEpubLazy(zipFile, encoding, Arrays.asList(MediaType.mediatypes));
+        Book book = readEpubLazy(zipFile, encoding, Arrays.asList(MediaType.values()));
         book.setPhysicalFileName(Paths.get(zipFile.getName()));
         return book;
     }

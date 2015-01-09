@@ -14,11 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import de.machmireinebook.commons.javafx.FXUtils;
 import de.machmireinebook.commons.javafx.cells.EditingTreeCell;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
@@ -58,6 +60,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -84,12 +87,15 @@ public class BookBrowserManager
     private TreeItem<Resource> fontsItem;
     private TreeItem<Resource> rootItem;
 
-
     private Book book;
     private TreeView<Resource> treeView;
     private EditorTabManager editorManager;
     private TreeItem<Resource> ncxItem;
     private TreeItem<Resource> opfItem;
+
+    @Inject
+    @EpubEditorMainControllerProducer
+    EpubEditorMainController mainController;
 
     private class FolderSymbolListener implements ChangeListener<Boolean>
     {
@@ -128,8 +134,8 @@ public class BookBrowserManager
                 @Override
                 public void changed(ObservableValue<? extends Resource> observable, Resource oldValue, Resource newValue)
                 {
-                    if (newValue != null && (MediaType.XHTML.equals(newValue.getMediaType()) ||
-                            MediaType.CSS.equals(newValue.getMediaType())))
+                    if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())
+                            && !MediaType.OPF.equals(newValue.getMediaType()) && !MediaType.NCX.equals(newValue.getMediaType()))
                     {
                         treeCell.setEditable(true);
                     }
@@ -238,6 +244,22 @@ public class BookBrowserManager
                 treeCell.getStyleClass().remove("dnd-below");
             });
 
+            treeCell.setOnKeyTyped(new EventHandler<KeyEvent>()
+            {
+                @Override
+                public void handle(KeyEvent event)
+                {
+                    KeyCode keyCode = event.getCode();
+                    logger.info("key typed in tree view editor: " + keyCode);
+                    //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
+                    if (keyCode.equals(KeyCode.DELETE))
+                    {
+                        logger.debug("Delete gedrückt");
+                        deleteSelectedItems();
+                    }
+                }
+            });
+
             return treeCell;
         }
     }
@@ -266,15 +288,15 @@ public class BookBrowserManager
                         TreeItem<Resource> item = treeView.getSelectionModel().getSelectedItem();
                         if (isTextItem(item))
                         {
-                            editorManager.openXHTMLFileInEditor(item.getValue());
+                            editorManager.openFileInEditor(item.getValue(), MediaType.XHTML);
                         }
                         else if (isCssItem(item))
                         {
-                            editorManager.openCssFileInEditor(item.getValue());
+                            editorManager.openFileInEditor(item.getValue(), MediaType.CSS);
                         }
                         else if (isXmlItem(item))
                         {
-                            editorManager.openXMLFileInEditor(item.getValue());
+                            editorManager.openFileInEditor(item.getValue(), MediaType.XML);
                         }
                         else if (isImageItem(item))
                         {
@@ -285,6 +307,7 @@ public class BookBrowserManager
                 }
                 else if (event.getButton().equals(MouseButton.SECONDARY))
                 {
+                    List<TreeItem<Resource>> selectedItems = treeView.getSelectionModel().getSelectedItems();
                     TreeItem<Resource> item = treeView.getSelectionModel().getSelectedItem();
                     if (isTextItem(item))
                     {
@@ -340,7 +363,7 @@ public class BookBrowserManager
 
         MenuItem item = new MenuItem("Löschen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> deleteXHTMLItem(treeItem));
+        item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
@@ -399,7 +422,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Bestehende Dateien hinzufügen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> EpubEditorMainController.getInstance().addExistingFiles(treeItem));
+        item.setOnAction(event -> mainController.addExistingFiles(treeItem));
         menu.getItems().add(item);
 
         item = new SeparatorMenuItem();
@@ -472,7 +495,7 @@ public class BookBrowserManager
 
         MenuItem item = new MenuItem("Löschen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> deleteCssItem(treeItem));
+        item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
@@ -514,7 +537,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Bestehende Dateien hinzufügen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> EpubEditorMainController.getInstance().addExistingFiles(treeItem));
+        item.setOnAction(event -> mainController.addExistingFiles(treeItem));
         menu.getItems().add(item);
 
         item = new SeparatorMenuItem();
@@ -553,7 +576,7 @@ public class BookBrowserManager
 
         MenuItem item = new MenuItem("Löschen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> deleteImageItem(treeItem));
+        item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
@@ -584,7 +607,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Bestehende Dateien hinzufügen...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> EpubEditorMainController.getInstance().addExistingFiles(treeItem));
+        item.setOnAction(event -> mainController.addExistingFiles(treeItem));
         menu.getItems().add(item);
 
         return menu;
@@ -780,6 +803,30 @@ public class BookBrowserManager
                 !item.equals(textItem) && !item.equals(cssItem) && !item.equals(fontsItem) && !item.equals(imagesItem);
     }
 
+    private void deleteSelectedItems()
+    {
+        List<TreeItem<Resource>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+        for (TreeItem<Resource> selectedItem : selectedItems)
+        {
+            if (selectedItem.getValue().getMediaType().equals(MediaType.CSS))
+            {
+                deleteCssItem(selectedItem);
+            }
+            else if (selectedItem.getValue().getMediaType().equals(MediaType.XHTML))
+            {
+                deleteXHTMLItem(selectedItem);
+            }
+            else if (selectedItem.getValue().getMediaType().isBitmapImage())
+            {
+                deleteImageItem(selectedItem);
+            }
+            else if (selectedItem.getValue().getMediaType().isFont())
+            {
+                deleteFontItem(selectedItem);
+            }
+        }
+    }
+
     private void deleteXHTMLItem(TreeItem<Resource> treeItem)
     {
         book.removeSpineResource(treeItem.getValue());
@@ -804,7 +851,15 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void refreshOpf()
+    private void deleteFontItem(TreeItem<Resource> treeItem)
+    {
+        book.removeResource(treeItem.getValue());
+        editorManager.refreshEditorCode(book.getOpfResource());
+        fontsItem.getChildren().remove(treeItem);
+        book.setBookIsChanged(true);
+    }
+
+    public void refreshOpf()
     {
         book.refreshOpfResource();
         editorManager.refreshEditorCode(book.getOpfResource());
@@ -889,7 +944,7 @@ public class BookBrowserManager
 
         if (allAreValid)
         {
-            Stage stylesheetWindow = EpubEditorMainController.getInstance().createStandardController("/add_stylesheet.fxml", AddStylesheetController.class);
+            Stage stylesheetWindow = mainController.createStandardController("/add_stylesheet.fxml", AddStylesheetController.class);
             AddStylesheetController controller = AddStylesheetController.getInstance();
             controller.setEditorManager(editorManager);
             controller.setXHTMLResources(resources);

@@ -8,10 +8,12 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -21,6 +23,9 @@ import de.machmireinebook.commons.javafx.control.searchable.TreeViewSearchable;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
 import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
+import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
+import de.machmireinebook.epubeditor.cdi.SearchPaneProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -32,6 +37,7 @@ import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
+import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
 import javafx.animation.PauseTransition;
@@ -41,8 +47,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -57,6 +64,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
@@ -71,7 +79,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
@@ -85,7 +92,17 @@ import org.controlsfx.dialog.Dialogs;
 public class EpubEditorMainController implements Initializable
 {
     public static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
-
+    @FXML
+    private AnchorPane centerAnchorPane;
+    @FXML
+    private RadioMenuItem searchRadioMenuItem;
+    @Inject
+    @SearchPaneProducer
+    private AnchorPane searchAnchorPane;
+    @FXML
+    private Menu fileMenu;
+    @FXML
+    private SeparatorMenuItem recentFilesSeparatorMenuItem;
     @FXML
     private MenuItem insertImageMenuItem;
     @FXML
@@ -226,6 +243,7 @@ public class EpubEditorMainController implements Initializable
     private TreeView<Resource> epubStructureTreeView;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
+    private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
     private Stage stage;
     private static EpubEditorMainController instance;
 
@@ -238,9 +256,12 @@ public class EpubEditorMainController implements Initializable
     private PreviewManager previewManager;
     @Inject
     private TOCViewManager tocViewManager;
-    @Inject @EpubEditorConfigurationProducer
-    private  EpubEditorConfiguration configuration;
-
+    @Inject
+    @EpubEditorConfigurationProducer
+    private EpubEditorConfiguration configuration;
+    @Inject
+    @SearchManagerProducer
+    private SearchManager searchManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -274,10 +295,21 @@ public class EpubEditorMainController implements Initializable
                 editorManager.reset();
                 editorManager.setBook(newValue);
                 previewManager.reset();
+                saveButton.disableProperty().unbind();
+                if (newValue != null)
+                {
+                    saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
+                }
+
             }
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorManager.currentEditorIsXHTMLProperty())
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
+        BooleanBinding isNoEditorBinding = Bindings.isNull(currentBookProperty)
+                .or(Bindings.isEmpty(epubFilesTabPane.getTabs()))
+                .or(Bindings.isNull(editorManager.currentXHTMLResourceProperty())
+                .and(Bindings.isNull(editorManager.currentCssResourceProperty()))
+                .and(Bindings.isNull(editorManager.currentXMLResourceProperty())));
 
         addCoverMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
         editMetadataMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
@@ -289,16 +321,6 @@ public class EpubEditorMainController implements Initializable
         addMenu.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
         insertImageMenuItem.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        BooleanBinding bookIsChangedBinding;
-        if (currentBookProperty.get() == null)
-        {
-            bookIsChangedBinding = Bindings.isNull(currentBookProperty);
-        }
-        else
-        {
-            bookIsChangedBinding = Bindings.isNull(currentBookProperty).or(currentBookProperty.get().bookIsChangedProperty());
-        }
 
         h1Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h2Button.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -354,7 +376,7 @@ public class EpubEditorMainController implements Initializable
         addExistingFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
         saveButton.setGraphic(FXUtils.getIcon("/icons/floppy_disk.png", 18));
-        saveButton.disableProperty().bind(bookIsChangedBinding);
+        saveButton.setDisable(true);
 
         undoButton.setGraphic(FXUtils.getIcon("/icons/undo.png", 18));
         undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canUndoProperty())));
@@ -463,8 +485,82 @@ public class EpubEditorMainController implements Initializable
         instance = this;
         //erst jetzt configuration lesen, da alles gesetzt ist
         configuration.readConfiguration();
+
+        ObservableList<Path> recentFiles = configuration.getRecentFiles();
+        createRecentFilesMenuItems(recentFiles);
+        recentFiles.addListener((ListChangeListener<Path>) change -> {
+            ObservableList<Path> currentRecentFiles = configuration.getRecentFiles();
+            createRecentFilesMenuItems(currentRecentFiles);
+        });
+
+        centerAnchorPane.getChildren().add(searchAnchorPane);
+        AnchorPane.setTopAnchor(searchAnchorPane, 0.0);
+        AnchorPane.setLeftAnchor(searchAnchorPane, 0.0);
+        AnchorPane.setRightAnchor(searchAnchorPane, 0.0);
+        searchAnchorPane.visibleProperty().bind(isNoEditorBinding.not().and(searchRadioMenuItem.selectedProperty()));
+        searchAnchorPane.visibleProperty().addListener(new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+            {
+                if (newValue)
+                {
+                    AnchorPane.setTopAnchor(epubFilesTabPane, 70.0);
+                }
+                else
+                {
+                    AnchorPane.setTopAnchor(epubFilesTabPane, 0.0);
+                }
+            }
+        });
+        searchManager.currentBookProperty().bind(currentBookProperty);
     }
 
+    private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
+    {
+        recentFilesSeparatorMenuItem.setVisible(recentFiles.size() > 0);
+        for (MenuItem recentFilesMenuItem : recentFilesMenuItems)
+        {
+            fileMenu.getItems().remove(recentFilesMenuItem);
+        }
+        recentFilesMenuItems.clear();
+
+        int index = fileMenu.getItems().indexOf(recentFilesSeparatorMenuItem);
+        int number = 0;
+        for (Path recentFile : recentFiles)
+        {
+            if (number > EpubEditorConfiguration.RECENT_FILE_NUMBER)
+            {
+                break;
+            }
+            MenuItem recentFileMenuItem = new MenuItem(recentFile.toString());
+            recentFileMenuItem.setOnAction(event -> {
+                EpubReader reader = new EpubReader();
+                try
+                {
+                    File file = recentFile.toFile();
+                    Book currentBook = reader.readEpub(file);
+                    currentBookProperty.set(currentBook);
+                }
+                catch (IOException e)
+                {
+                    logger.error("", e);
+                    Dialogs.create()
+                            .owner(stage)
+                            .title("E-Book öffnen")
+                            .message("Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.")
+                            .showException(e);
+                }
+            });
+            fileMenu.getItems().add(index, recentFileMenuItem);
+            recentFilesMenuItems.add(recentFileMenuItem);
+            index++;
+            number++;
+        }
+    }
+
+    @Produces
+    @EpubEditorMainControllerProducer
     public static EpubEditorMainController getInstance()
     {
         return instance;
@@ -474,13 +570,8 @@ public class EpubEditorMainController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
-        {
-            @Override
-            public void handle(WindowEvent event)
-            {
-                checkBeforeExit();
-            }
+        stage.setOnCloseRequest(event -> {
+            checkBeforeExit();
         });
 
         //tastencodes erst jetzt setzen, da scene in init noch nicht vorhanden
@@ -510,6 +601,16 @@ public class EpubEditorMainController implements Initializable
         pt.play();
     }
 
+    public Book getCurrentBook()
+    {
+        return currentBookProperty.get();
+    }
+
+    public ObjectProperty<Book> currentBookProperty()
+    {
+        return currentBookProperty;
+    }
+
     @SuppressWarnings("UnusedParameters")
     public void newEpubAction(ActionEvent actionEvent)
     {
@@ -525,6 +626,7 @@ public class EpubEditorMainController implements Initializable
     @SuppressWarnings("UnusedParameters")
     public void openEpubAction(ActionEvent actionEvent)
     {
+        checkBeforeExit();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("EPUB-Datei öffnen");
         fileChooser.getExtensionFilters().removeAll();
@@ -538,6 +640,7 @@ public class EpubEditorMainController implements Initializable
             {
                 Book currentBook = reader.readEpub(file);
                 currentBookProperty.set(currentBook);
+                configuration.getRecentFiles().add(0, file.toPath());
             }
             catch (IOException e)
             {
@@ -634,6 +737,7 @@ public class EpubEditorMainController implements Initializable
     public void addEmptyHTMLFileAction(ActionEvent actionEvent)
     {
         bookBrowserManager.addEmptyXHTMLFile();
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -775,7 +879,7 @@ public class EpubEditorMainController implements Initializable
     {
         if (epubHttpHandler != null)
         {
-            currentBookProperty.addListener((observable, oldValue, newValue) -> epubHttpHandler.setBook(currentBookProperty.get()));
+            epubHttpHandler.bookProperty().bind(currentBookProperty);
         }
     }
 
@@ -1130,19 +1234,9 @@ public class EpubEditorMainController implements Initializable
         return showBookBrowserMenuItem;
     }
 
-    public void setShowBookBrowserMenuItem(RadioMenuItem showBookBrowserMenuItem)
-    {
-        this.showBookBrowserMenuItem = showBookBrowserMenuItem;
-    }
-
     public RadioMenuItem getShowPreviewMenuItem()
     {
         return showPreviewMenuItem;
-    }
-
-    public void setShowPreviewMenuItem(RadioMenuItem showPreviewMenuItem)
-    {
-        this.showPreviewMenuItem = showPreviewMenuItem;
     }
 
     public RadioMenuItem getShowTocMenuItem()
@@ -1150,19 +1244,9 @@ public class EpubEditorMainController implements Initializable
         return showTocMenuItem;
     }
 
-    public void setShowTocMenuItem(RadioMenuItem showTocMenuItem)
-    {
-        this.showTocMenuItem = showTocMenuItem;
-    }
-
     public RadioMenuItem getShowValidationResultsMenuItem()
     {
         return showValidationResultsMenuItem;
-    }
-
-    public void setShowValidationResultsMenuItem(RadioMenuItem showValidationResultsMenuItem)
-    {
-        this.showValidationResultsMenuItem = showValidationResultsMenuItem;
     }
 
     public RadioMenuItem getClipsMenuItem()
@@ -1170,9 +1254,9 @@ public class EpubEditorMainController implements Initializable
         return clipsMenuItem;
     }
 
-    public void setClipsMenuItem(RadioMenuItem clipsMenuItem)
+    public RadioMenuItem getSearchRadioMenuItem()
     {
-        this.clipsMenuItem = clipsMenuItem;
+        return searchRadioMenuItem;
     }
 
     public SplitPane getMainDivider()
@@ -1214,4 +1298,43 @@ public class EpubEditorMainController implements Initializable
     {
         this.leftDivider = leftDivider;
     }
+
+    public void generateUuidAction(ActionEvent actionEvent)
+    {
+        Book book = currentBookProperty.getValue();
+        book.getMetadata().generateNewUuid();
+        bookBrowserManager.refreshOpf();
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void replaceAction(ActionEvent actionEvent)
+    {
+    }
+
+    public void replaceAllAction(ActionEvent actionEvent)
+    {
+    }
+
+    public void findReplaceAction(ActionEvent actionEvent)
+    {
+
+
+    }
+
+    public void findBeforeAction(ActionEvent actionEvent)
+    {
+    }
+
+    public void findNextAction(ActionEvent actionEvent)
+    {
+
+
+    }
+
+    public void closeSearchPaneAction(ActionEvent actionEvent)
+    {
+        searchRadioMenuItem.setSelected(false);
+    }
+
+
 }

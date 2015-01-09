@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.Comparator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -113,7 +112,7 @@ public class ResourceUtil
 		if (resource == null) {
 			return null;
 		}
-		Reader reader = resource.getReader();
+		Reader reader = resource.asReader();
 		if (reader == null) {
 			return null;
 		}

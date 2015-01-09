@@ -32,7 +32,7 @@
    <children>
       <MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
-          <Menu mnemonicParsing="false" text="Datei">
+          <Menu fx:id="fileMenu" mnemonicParsing="false" text="Datei">
             <items>
                   <MenuItem mnemonicParsing="false" onAction="#newEpubAction" text="Neu...">
                      <accelerator>
@@ -64,6 +64,7 @@
                   <MenuItem fx:id="printPreviewMenuItem" mnemonicParsing="false" onAction="#printPreviewAction" text="Druckvorschau…" />
                   <MenuItem fx:id="printMenuItem" mnemonicParsing="false" onAction="#printAction" text="Drucken…" />
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <SeparatorMenuItem fx:id="recentFilesSeparatorMenuItem" mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#exitAction" text="Beenden" />
             </items>
           </Menu>
@@ -132,6 +133,7 @@
                   </Menu>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#clipEditorAction" text="Clipeditor..." />
+                  <MenuItem mnemonicParsing="false" onAction="#generateUuidAction" text="Neue UUID generieren" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="Validiere EPUB..." />
               </items>
@@ -143,6 +145,8 @@
                     <RadioMenuItem fx:id="showPreviewMenuItem" mnemonicParsing="false" selected="true" text="Vorschau" />
                     <RadioMenuItem fx:id="showTocMenuItem" mnemonicParsing="false" selected="true" text="Inhaltsverzeichnis" />
                     <RadioMenuItem fx:id="showValidationResultsMenuItem" mnemonicParsing="false" selected="true" text="Validierungs-Ergebnisse" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <RadioMenuItem fx:id="searchRadioMenuItem" mnemonicParsing="false" text="Suche" />
                 </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -152,7 +156,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <SplitPane fx:id="mainDivider" dividerPositions="0.26224066390041495, 0.7892116182572614" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+      <SplitPane fx:id="mainDivider" dividerPositions="0.2970954356846473, 0.700414937759336" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
          <items>
             <SplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL" SplitPane.resizableWithParent="false">
               <items>
@@ -162,9 +166,9 @@
             </SplitPane>
             <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
                <items>
-                  <AnchorPane>
+                  <AnchorPane fx:id="centerAnchorPane" prefHeight="817.0" prefWidth="629.0">
                      <children>
-                        <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0" />
                      </children>
                   </AnchorPane>
                   <ListView fx:id="validationResultsListView" />
@@ -176,7 +180,7 @@
                      <children>
                         <ToolBar layoutX="14.0" layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
-                            <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn">
+                            <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn" styleClass="flat">
                                 <tooltip>
                                     <Tooltip styleClass="white-tooltip" text="Vergrößern" />
                                 </tooltip>
@@ -188,7 +192,7 @@
                                     </ImageView>
                                 </graphic>
                             </Button>
-                              <Button fx:id="zoom100Button" mnemonicParsing="false" onAction="#preview100PercentZoom">
+                              <Button fx:id="zoom100Button" mnemonicParsing="false" onAction="#preview100PercentZoom" styleClass="flat">
                                   <tooltip>
                                       <Tooltip styleClass="white-tooltip" text="100%" />
                                   </tooltip>
@@ -201,7 +205,7 @@
                                   </graphic>
 
                               </Button>
-                              <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut">
+                              <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut" styleClass="flat">
                                   <tooltip>
                                       <Tooltip styleClass="white-tooltip" text="Verkleinern" />
                                   </tooltip>
@@ -230,7 +234,7 @@
                <content>
                   <ToolBar layoutY="27.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                     <items>
-                        <Button fx:id="newBookButton" mnemonicParsing="false" onAction="#newEpubAction">
+                        <Button fx:id="newBookButton" mnemonicParsing="false" onAction="#newEpubAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Neues E-Book erstellen" />
                             </tooltip>
@@ -242,7 +246,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="openBookButton" mnemonicParsing="false" onAction="#openEpubAction">
+                        <Button fx:id="openBookButton" mnemonicParsing="false" onAction="#openEpubAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="E-Book öffnen" />
                             </tooltip>
@@ -254,7 +258,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="addExistingFileButton" mnemonicParsing="false" onAction="#addExistingFilesAction">
+                        <Button fx:id="addExistingFileButton" mnemonicParsing="false" onAction="#addExistingFilesAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Vorhandene Datei zum Buch hinzufügen" />
                             </tooltip>
@@ -266,7 +270,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#addEmptyHTMLFileAction">
+                        <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#addEmptyHTMLFileAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Leere Datei einfügen" />
                             </tooltip>
@@ -279,7 +283,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="30.0" />
-                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveEpubAction">
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveEpubAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Speichern" />
                             </tooltip>
@@ -291,9 +295,9 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="saveAsButton" mnemonicParsing="false" onAction="#saveEpubAsAction">
+                        <Button fx:id="saveAsButton" mnemonicParsing="false" onAction="#saveEpubAsAction" styleClass="flat">
                             <tooltip>
-                                <Tooltip styleClass="white-tooltip" text="Speichern" />
+                                <Tooltip styleClass="white-tooltip" text="Speichern als..." />
                             </tooltip>
                             <graphic>
                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -304,7 +308,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="30.0" />
-                        <Button fx:id="undoButton" mnemonicParsing="false" onAction="#undoButtonAction">
+                        <Button fx:id="undoButton" mnemonicParsing="false" onAction="#undoButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Rückgängig machen" />
                             </tooltip>
@@ -316,7 +320,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redoButtonAction">
+                        <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redoButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Wiederherstellen" />
                             </tooltip>
@@ -329,7 +333,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="30.0" />
-                        <Button fx:id="cutButton" mnemonicParsing="false" onAction="#cutButtonAction">
+                        <Button fx:id="cutButton" mnemonicParsing="false" onAction="#cutButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Ausschneiden" />
                             </tooltip>
@@ -341,7 +345,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyButtonAction">
+                        <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Kopieren" />
                             </tooltip>
@@ -353,7 +357,7 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                        <Button fx:id="pasteButton" mnemonicParsing="false" onAction="#pasteButtonAction">
+                        <Button fx:id="pasteButton" mnemonicParsing="false" onAction="#pasteButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Einfügen" />
                             </tooltip>
@@ -366,7 +370,7 @@
                             </graphic>
                         </Button>
                         <Separator orientation="VERTICAL" prefHeight="30.0" />
-                        <Button fx:id="searchReplaceButton" mnemonicParsing="false" onAction="#searchReplaceButtonAction">
+                        <Button fx:id="searchReplaceButton" mnemonicParsing="false" onAction="#searchReplaceButtonAction" styleClass="flat">
                             <tooltip>
                                 <Tooltip styleClass="white-tooltip" text="Suchen und Ersetzen" />
                             </tooltip>
@@ -386,18 +390,18 @@
                <content>
                    <ToolBar prefHeight="40.0" prefWidth="200.0">
                        <items>
-                           <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" text="h1" />
-                           <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" text="h2" />
-                           <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" text="h3" />
-                           <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" text="h4" />
-                           <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction" text="h5" />
-                           <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction" text="h6" />
-                           <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false" onAction="#paragraphButtonAction" text="p" />
+                           <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" styleClass="flat" text="h1" />
+                           <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" styleClass="flat" text="h2" />
+                           <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" styleClass="flat" text="h3" />
+                           <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" styleClass="flat" text="h4" />
+                           <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction" styleClass="flat" text="h5" />
+                           <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction" styleClass="flat" text="h6" />
+                           <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false" onAction="#paragraphButtonAction" styleClass="flat" text="p" />
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="orderedListButton" mnemonicParsing="false" onAction="#orderedListButtonAction" />
-                           <Button fx:id="unorderedListButton" mnemonicParsing="false" onAction="#unorderedListButtonAction" />
+                           <Button fx:id="orderedListButton" mnemonicParsing="false" onAction="#orderedListButtonAction" styleClass="flat" />
+                           <Button fx:id="unorderedListButton" mnemonicParsing="false" onAction="#unorderedListButtonAction" styleClass="flat" />
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="increaseIndentButton" mnemonicParsing="false" onAction="#increaseIndentButtonAction">
+                           <Button fx:id="increaseIndentButton" mnemonicParsing="false" onAction="#increaseIndentButtonAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Einzug erhöhen" />
                                </tooltip>
@@ -409,7 +413,7 @@
                                    </ImageView>
                                </graphic>
                            </Button>
-                           <Button fx:id="decreaseIndentButton" mnemonicParsing="false" onAction="#decreaseIndentButtonAction">
+                           <Button fx:id="decreaseIndentButton" mnemonicParsing="false" onAction="#decreaseIndentButtonAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Einzug verringern" />
                                </tooltip>
@@ -422,19 +426,19 @@
                                </graphic>
                            </Button>
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction" />
-                           <Button fx:id="kursivButton" mnemonicParsing="false" onAction="#kursivButtonAction" />
-                           <Button fx:id="underlineButton" mnemonicParsing="false" onAction="#underlineButtonAction" />
-                           <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction" />
-                           <Button fx:id="subscriptButton" mnemonicParsing="false" onAction="#subscriptButtonAction" />
-                           <Button fx:id="superscriptButton" mnemonicParsing="false" onAction="#superscriptButtonAction" />
+                           <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction" styleClass="flat" />
+                           <Button fx:id="kursivButton" mnemonicParsing="false" onAction="#kursivButtonAction" styleClass="flat" />
+                           <Button fx:id="underlineButton" mnemonicParsing="false" onAction="#underlineButtonAction" styleClass="flat" />
+                           <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction" styleClass="flat" />
+                           <Button fx:id="subscriptButton" mnemonicParsing="false" onAction="#subscriptButtonAction" styleClass="flat" />
+                           <Button fx:id="superscriptButton" mnemonicParsing="false" onAction="#superscriptButtonAction" styleClass="flat" />
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="alignLeftButton" mnemonicParsing="false" onAction="#alignLeftButtonAction" />
-                           <Button fx:id="centerButton" mnemonicParsing="false" onAction="#centerButtonAction" />
-                           <Button fx:id="rightAlignButton" mnemonicParsing="false" onAction="#rightAlignButtonAction" />
-                           <Button fx:id="justifyButton" mnemonicParsing="false" onAction="#justifyButtonAction" />
+                           <Button fx:id="alignLeftButton" mnemonicParsing="false" onAction="#alignLeftButtonAction" styleClass="flat" />
+                           <Button fx:id="centerButton" mnemonicParsing="false" onAction="#centerButtonAction" styleClass="flat" />
+                           <Button fx:id="rightAlignButton" mnemonicParsing="false" onAction="#rightAlignButtonAction" styleClass="flat" />
+                           <Button fx:id="justifyButton" mnemonicParsing="false" onAction="#justifyButtonAction" styleClass="flat" />
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="splitButton" mnemonicParsing="false" onAction="#splitButtonAction">
+                           <Button fx:id="splitButton" mnemonicParsing="false" onAction="#splitButtonAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Datei am Cursor teilen" />
                                </tooltip>
@@ -447,7 +451,7 @@
                                </graphic>
                            </Button>
                            <Separator orientation="VERTICAL" prefHeight="30.0" />
-                           <Button fx:id="insertTableButton" mnemonicParsing="false" onAction="#insertTableButtonAction">
+                           <Button fx:id="insertTableButton" mnemonicParsing="false" onAction="#insertTableButtonAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Tabelle einfügen" />
                                </tooltip>
@@ -459,7 +463,7 @@
                                    </ImageView>
                                </graphic>
                            </Button>
-                           <Button fx:id="insertImageButton" mnemonicParsing="false" onAction="#insertImageButtonAction">
+                           <Button fx:id="insertImageButton" mnemonicParsing="false" onAction="#insertImageButtonAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Bild oder andere Mediendatei einfügen" />
                                </tooltip>
@@ -471,7 +475,7 @@
                                    </ImageView>
                                </graphic>
                            </Button>
-                           <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false" onAction="#insertSpecialCharacterAction">
+                           <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false" onAction="#insertSpecialCharacterAction" styleClass="flat">
                                <tooltip>
                                    <Tooltip styleClass="white-tooltip" text="Sonderzeichen einfügen" />
                                </tooltip>
@@ -492,7 +496,7 @@
              <content>
              <ToolBar prefHeight="40.0" prefWidth="200.0">
              <items>
-                 <Button fx:id="editMetadataButton" mnemonicParsing="false" onAction="#editMetadataAction">
+                 <Button fx:id="editMetadataButton" mnemonicParsing="false" onAction="#editMetadataAction" styleClass="flat">
                      <tooltip>
                          <Tooltip styleClass="white-tooltip" text="Metadaten bearbeiten" />
                      </tooltip>
@@ -504,7 +508,7 @@
                          </ImageView>
                      </graphic>
                  </Button>
-                 <Button fx:id="createTocButton" mnemonicParsing="false" onAction="#createTocAction">
+                 <Button fx:id="createTocButton" mnemonicParsing="false" onAction="#createTocAction" styleClass="flat">
                      <tooltip>
                          <Tooltip styleClass="white-tooltip" text="Inhaltsverzeichnis erzeugen" />
                      </tooltip>

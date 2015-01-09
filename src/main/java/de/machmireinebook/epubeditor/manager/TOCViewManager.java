@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Named;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
@@ -62,7 +63,7 @@ public class TOCViewManager
                                     .showError();
                             return;
                         }
-                        editorManager.openXHTMLFileInEditor(res);
+                        editorManager.openFileInEditor(res, MediaType.XHTML);
                     }
                 }
             }

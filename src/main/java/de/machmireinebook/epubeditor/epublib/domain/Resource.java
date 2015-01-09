@@ -12,6 +12,8 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.apache.commons.io.IOUtils;
@@ -34,10 +36,10 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	private static final long serialVersionUID = 1043946707835004037L;
 	private String id;
 	private String title;
-	private StringProperty hrefProperty = new SimpleStringProperty();
+	private StringProperty href = new SimpleStringProperty();
 	protected String originalHref;
     private String properties;
-	private MediaType mediaType;
+	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
 
@@ -151,9 +153,9 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 */
 	public Resource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding) {
 		this.id = id;
-		this.hrefProperty.set(href);
+		this.href.set(href);
 		this.originalHref = href;
-		this.mediaType = mediaType;
+		this.mediaType.setValue(mediaType);
 		this.inputEncoding = inputEncoding;
 		this.data = data;
 	}
@@ -252,15 +254,15 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 */
     public String getHref()
     {
-        return hrefProperty.get();
+        return href.get();
     }
 
     public StringProperty hrefProperty()
     {
-        return hrefProperty;
+        return href;
     }
 
-    public Path getHrefPath()
+    public Path getHrefAsPath()
     {
         int index = StringUtils.lastIndexOf(getHref(), "/");
         String path = "";
@@ -289,7 +291,7 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 */
     public void setHref(String href)
     {
-        this.hrefProperty.set(href);
+        this.href.set(href);
     }
 
 
@@ -298,11 +300,21 @@ public class Resource<T> implements Serializable, ToStringConvertible
         String result = "";
         if (other != null)
         {
-            Path resultPath = getHrefPath().relativize(other.getHrefPath());
+            Path resultPath = getHrefAsPath().relativize(other.getHrefAsPath());
             result = resultPath.toString() + "/" + other.getFileName();
         }
         return result;
     }
+
+	public String getOriginalHref()
+	{
+		return originalHref;
+	}
+
+	public void setOriginalHref(String originalHref)
+	{
+		this.originalHref = originalHref;
+	}
 
 	/**
 	 * The character encoding of the resource.
@@ -331,7 +343,7 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * @return the contents of the Resource as Reader.
 	 * @throws java.io.IOException
 	 */
-	public Reader getReader() throws IOException {
+	public Reader asReader() throws IOException {
 		return new XmlStreamReader(new ByteArrayInputStream(getData()), getInputEncoding());
 	}
 	
@@ -354,18 +366,25 @@ public class Resource<T> implements Serializable, ToStringConvertible
 		}
 		return getHref().equals(((Resource) resourceObject).getHref());
 	}
-	
+
 	/**
 	 * This resource's mediaType.
-	 * 
+	 *
 	 * @return This resource's mediaType.
 	 */
-	public MediaType getMediaType() {
+	public MediaType getMediaType()
+	{
+		return mediaType.get();
+	}
+
+	public ObjectProperty<MediaType> mediaTypeProperty()
+	{
 		return mediaType;
 	}
-	
-	public void setMediaType(MediaType mediaType) {
-		this.mediaType = mediaType;
+
+	public void setMediaType(MediaType mediaType)
+	{
+		this.mediaType.set(mediaType);
 	}
 
 	public void setTitle(String title) {
@@ -414,4 +433,6 @@ public class Resource<T> implements Serializable, ToStringConvertible
         }
         setHref(getHref().replace(fileName, string));
     }
+
+
 }

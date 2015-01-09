@@ -1,7 +1,6 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,33 +44,6 @@ public class Identifier implements Serializable {
 		this.value = value;
 	}
 
-	/**
-	 * The first identifier for which the bookId is true is made the bookId identifier.
-	 * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-	 * 
-	 * @param identifiers
-	 * @return The first identifier for which the bookId is true is made the bookId identifier.
-	 */
-	public static Identifier getBookIdIdentifier(List<Identifier> identifiers) {
-		if(identifiers == null || identifiers.isEmpty()) {
-			return null;
-		}
-		
-		Identifier result = null;
-		for(Identifier identifier: identifiers) {
-			if(identifier.isBookId()) {
-				result = identifier;
-				break;
-			}
-		}
-		
-		if(result == null) {
-			result = identifiers.get(0);
-		}
-		
-		return result;
-	}
-	
 	public String getScheme() {
 		return scheme;
 	}
