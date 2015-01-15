@@ -63,7 +63,7 @@ public class XHTMLUtils
 
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(new String(originalHtml, "UTF-8"));
-            Document jdomDocument = new JDomSerializer(new CleanerProperties(), true).createJDom(rootNode);
+            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), true).createJDom(rootNode);
 
             // hat die Datei ein anderes Encoding im HTML-Header deklariert?
             Element root = jdomDocument.getRootElement();

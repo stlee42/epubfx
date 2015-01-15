@@ -143,6 +143,12 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
+    public void setEditorCursorPosition(EditorPosition position)
+    {
+
+    }
+
+    @Override
     public int getEditorCursorIndex()
     {
         return 0;

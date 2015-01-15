@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -28,6 +27,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
 
 /**
@@ -37,6 +37,8 @@ import org.controlsfx.dialog.Dialogs;
 */
 public class SearchAnchorPane extends AnchorPane implements Initializable
 {
+    public static final Logger logger = Logger.getLogger(SearchAnchorPane.class);
+
     private static SearchAnchorPane instance;
     @FXML
     private TextField replaceStringTextField;
@@ -115,15 +117,41 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
         Optional<SearchManager.SearchResult> result = searchManager.findNext(searchStringTextField.getText(), editorManager.getCurrentSearchableResource(), cursorIndex, params);
-        result.ifPresent(new Consumer<SearchManager.SearchResult>()
-        {
-            @Override
-            public void accept(SearchManager.SearchResult searchResult)
+        result.ifPresent((searchResult) ->
+                {
+                    int fromIndex = searchResult.getBegin();
+                    int toIndex = searchResult.getEnd();
+                    editor.select(fromIndex, toIndex);
+                }
+        );
+    }
+
+    public void replaceNextAction()
+    {
+        CodeEditor editor = editorManager.getCurrentEditor();
+        int cursorIndex = editor.getEditorCursorIndex();
+        SearchManager.SearchParams params = new SearchManager.SearchParams(dotAllCheckBox.selectedProperty().get(),
+                minimalMatchCheckBox.selectedProperty().get(),
+                SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
+                SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
+        Optional<SearchManager.SearchResult> result = searchManager.findNext(searchStringTextField.getText(), editorManager.getCurrentSearchableResource(), cursorIndex, params);
+        result.ifPresent((searchResult) ->
             {
                 int fromIndex = searchResult.getBegin();
                 int toIndex = searchResult.getEnd();
                 editor.select(fromIndex, toIndex);
+
+                String replaceString = replaceStringTextField.getText();
+                editor.replaceSelection(replaceString);
+                editor.select(fromIndex, fromIndex + replaceString.length());
+                logger.debug("resource after: " + new String(editorManager.getCurrentSearchableResource().getData()));
             }
-        });
+        );
+    }
+
+    public void setSearchString(String searchString)
+    {
+        searchStringTextField.setText(searchString);
+        searchStringTextField.requestFocus();
     }
 }

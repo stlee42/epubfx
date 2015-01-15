@@ -18,7 +18,7 @@
         <main-window x="312.0" height="918.0" is-fullscreen="true" width="1300.0" y="0.0" />
         <visibility book-browser="true" toc="false" validation-results="false" clips-list="false" preview="true" />
         <dividers>
-            <main-divider divider-1="0.24648985959438377" divider-2="0.8018720748829953" />
+            <main-divider divider-1="0.24" divider-2="0.80" />
             <left-divider divider-1="0.5053475935828877" />
             <center-divider divider-1="0.7887700534759359" />
             <right-divider divider-1="0.5053475935828877" />

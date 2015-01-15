@@ -141,6 +141,7 @@ public class SearchManager
 
     public Optional<SearchResult> findNext(String queryString, Resource currentResource, int fromIndex, SearchParams params)
     {
+        logger.info("fromIndex " + fromIndex);
         Optional<SearchResult> result;
         int position = -1;
         if (StringUtils.isEmpty(queryString))
@@ -151,7 +152,8 @@ public class SearchManager
         {
             try
             {
-                position = stringSearch.searchBytes(currentResource.getData(), fromIndex, queryString.getBytes(currentResource.getInputEncoding()));
+                String text = new String(currentResource.getData(), currentResource.getInputEncoding());
+                position = stringSearch.searchString(text, fromIndex, queryString);
                 logger.info("position " + position);
             }
             catch (UnsupportedEncodingException e)
@@ -166,7 +168,7 @@ public class SearchManager
                 String text = new String(currentResource.getData(), currentResource.getInputEncoding());
                 text = text.toLowerCase(Locale.GERMANY);
                 position = stringSearch.searchString(text, fromIndex, queryString.toLowerCase(Locale.GERMANY));
-                logger.info("position " + position);
+//                position = text.indexOf(queryString.toLowerCase(Locale.GERMANY), fromIndex);
             }
             catch (UnsupportedEncodingException e)
             {

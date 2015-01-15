@@ -45,6 +45,7 @@
           <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/core/src/java" />
           <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/analysis/common/src/java" />
           <root url="file://$MODULE_DIR$/../lucene-4.10.3-src/lucene-4.10.3/queryparser/src/java" />
+          <root url="jar://$USER_HOME$/.ideaLibSources/commons-lang-2.4-sources.jar!/" />
         </SOURCES>
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" type="SOURCES" />

@@ -38,6 +38,7 @@ public interface CodeEditor
     void setCode(String newCode);
     String getCode();
     EditorPosition getEditorCursorPosition();
+    void setEditorCursorPosition(EditorPosition position);
     int getEditorCursorIndex();
     void insertAt(String replacement, EditorPosition pos);
     void select(int fromIndex, int toIndex);

@@ -11,6 +11,7 @@ public class XMLTagPair
     private EditorPosition openTagEnd;
     private EditorPosition closeTagBegin;
     private EditorPosition closeTagEnd;
+    private EditorPosition tagAttributesEnd;
     private String tagName;
 
     public XMLTagPair()
@@ -23,6 +24,15 @@ public class XMLTagPair
         this.openTagEnd = openTagEnd;
         this.closeTagBegin = closeTagBegin;
         this.closeTagEnd = closeTagEnd;
+    }
+
+    public XMLTagPair(EditorPosition openTagBegin, EditorPosition openTagEnd, EditorPosition closeTagBegin, EditorPosition closeTagEnd, EditorPosition tagAttributesEnd)
+    {
+        this.openTagBegin = openTagBegin;
+        this.openTagEnd = openTagEnd;
+        this.closeTagBegin = closeTagBegin;
+        this.closeTagEnd = closeTagEnd;
+        this.tagAttributesEnd = tagAttributesEnd;
     }
 
     public EditorPosition getOpenTagBegin()
@@ -73,6 +83,16 @@ public class XMLTagPair
     public void setTagName(String tagName)
     {
         this.tagName = tagName;
+    }
+
+    public EditorPosition getTagAttributesEnd()
+    {
+        return tagAttributesEnd;
+    }
+
+    public void setTagAttributesEnd(EditorPosition tagAttributesEnd)
+    {
+        this.tagAttributesEnd = tagAttributesEnd;
     }
 
     @Override

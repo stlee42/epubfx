@@ -27,6 +27,7 @@ import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
 import de.machmireinebook.epubeditor.cdi.SearchPaneProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorRange;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
@@ -40,7 +41,6 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
-import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -70,8 +70,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
@@ -79,7 +77,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
 
@@ -95,10 +92,7 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private AnchorPane centerAnchorPane;
     @FXML
-    private RadioMenuItem searchRadioMenuItem;
-    @Inject
-    @SearchPaneProducer
-    private AnchorPane searchAnchorPane;
+    private MenuItem searchRadioMenuItem;
     @FXML
     private Menu fileMenu;
     @FXML
@@ -262,6 +256,9 @@ public class EpubEditorMainController implements Initializable
     @Inject
     @SearchManagerProducer
     private SearchManager searchManager;
+    @Inject
+    @SearchPaneProducer
+    private SearchAnchorPane searchAnchorPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -482,10 +479,6 @@ public class EpubEditorMainController implements Initializable
             }
         });
 
-        instance = this;
-        //erst jetzt configuration lesen, da alles gesetzt ist
-        configuration.readConfiguration();
-
         ObservableList<Path> recentFiles = configuration.getRecentFiles();
         createRecentFilesMenuItems(recentFiles);
         recentFiles.addListener((ListChangeListener<Path>) change -> {
@@ -497,7 +490,7 @@ public class EpubEditorMainController implements Initializable
         AnchorPane.setTopAnchor(searchAnchorPane, 0.0);
         AnchorPane.setLeftAnchor(searchAnchorPane, 0.0);
         AnchorPane.setRightAnchor(searchAnchorPane, 0.0);
-        searchAnchorPane.visibleProperty().bind(isNoEditorBinding.not().and(searchRadioMenuItem.selectedProperty()));
+        searchAnchorPane.visibleProperty().bind(isNoEditorBinding.not().and(searchRadioMenuItem.disableProperty()));
         searchAnchorPane.visibleProperty().addListener(new ChangeListener<Boolean>()
         {
             @Override
@@ -514,6 +507,7 @@ public class EpubEditorMainController implements Initializable
             }
         });
         searchManager.currentBookProperty().bind(currentBookProperty);
+        instance = this;
     }
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
@@ -570,35 +564,21 @@ public class EpubEditorMainController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
+
         stage.setOnCloseRequest(event -> {
             checkBeforeExit();
         });
 
-        //tastencodes erst jetzt setzen, da scene in init noch nicht vorhanden
-        setAccelerator(saveButton, KeyCode.S, KeyCombination.SHORTCUT_DOWN);
-    }
-
-    private void setAccelerator(Button button, KeyCode keyCode, KeyCombination.Modifier modifier)
-    {
-        Scene scene = stage.getScene();
-        if (scene == null) {
-            throw new IllegalArgumentException("setAccelerator must be called when a button is attached to a scene");
-        }
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(keyCode, modifier),
-                () -> fireButton(button)
-        );
-    }
-
-    private void fireButton(final Button button) {
-        button.arm();
-        PauseTransition pt = new PauseTransition(Duration.millis(300));
-        pt.setOnFinished(event -> {
-            button.fire();
-            button.disarm();
+        stage.getScene().setOnKeyPressed(event -> {
+            if ((event.isControlDown() || event.isShortcutDown()) && event.getCode().equals(KeyCode.F))
+            {
+                logger.debug("Ctrl-F Pressed");
+                if (searchRadioMenuItem.isDisable())
+                {
+                    searchReplaceButtonAction();
+                }
+            }
         });
-        pt.play();
     }
 
     public Book getCurrentBook()
@@ -969,6 +949,7 @@ public class EpubEditorMainController implements Initializable
     public void h6ButtonAction(ActionEvent actionEvent)
     {
         editorManager.surroundParagraphWithTag("h6");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void paragraphButtonAction(ActionEvent actionEvent)
@@ -1025,18 +1006,26 @@ public class EpubEditorMainController implements Initializable
 
     public void alignLeftButtonAction(ActionEvent actionEvent)
     {
+        editorManager.insertStyle("text-align", "left");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void centerButtonAction(ActionEvent actionEvent)
     {
+        editorManager.insertStyle("text-align", "center");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void rightAlignButtonAction(ActionEvent actionEvent)
     {
+        editorManager.insertStyle("text-align", "right");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void justifyButtonAction(ActionEvent actionEvent)
     {
+        editorManager.insertStyle("text-align", "justify");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void undoButtonAction(ActionEvent actionEvent)
@@ -1069,8 +1058,11 @@ public class EpubEditorMainController implements Initializable
     {
     }
 
-    public void searchReplaceButtonAction(ActionEvent actionEvent)
+    public void searchReplaceButtonAction()
     {
+        searchRadioMenuItem.disableProperty().set(true);
+        EditorRange range = editorManager.getCurrentEditor().getSelection();
+        searchAnchorPane.setSearchString(range.getSelection());
     }
 
     public void splitButtonAction(ActionEvent actionEvent)
@@ -1116,14 +1108,13 @@ public class EpubEditorMainController implements Initializable
 
     public void increaseIndentButtonAction(ActionEvent actionEvent)
     {
-
+        editorManager.increaseIndent();
 
     }
 
     public void decreaseIndentButtonAction(ActionEvent actionEvent)
     {
-
-
+        editorManager.decreaseIndent();
     }
 
     public void insertTableButtonAction(ActionEvent actionEvent)
@@ -1254,7 +1245,7 @@ public class EpubEditorMainController implements Initializable
         return clipsMenuItem;
     }
 
-    public RadioMenuItem getSearchRadioMenuItem()
+    public MenuItem getSearchRadioMenuItem()
     {
         return searchRadioMenuItem;
     }
@@ -1333,8 +1324,6 @@ public class EpubEditorMainController implements Initializable
 
     public void closeSearchPaneAction(ActionEvent actionEvent)
     {
-        searchRadioMenuItem.setSelected(false);
+        searchRadioMenuItem.setDisable(false);
     }
-
-
 }

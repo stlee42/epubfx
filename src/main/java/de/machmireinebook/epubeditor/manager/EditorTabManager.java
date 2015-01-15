@@ -8,6 +8,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -71,6 +73,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
 import org.jdom2.Content;
@@ -116,6 +119,8 @@ public class EditorTabManager
     private ContextMenu contextMenuXHTML;
     private ContextMenu contextMenuXML;
     private ContextMenu contextMenuCSS;
+
+    private static final Pattern indentRegex = Pattern.compile("style\\s*=\\s*\"(.*)text-indent:([-\\.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
 
     @Inject
     @ClipManagerProducer
@@ -209,45 +214,6 @@ public class EditorTabManager
                 {
                     logger.info("scheduled refresh task, one second after last change");
                     Platform.runLater(() -> {
-                        String code = currentEditor.getValue().getCode();
-                        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-                        {
-                            try
-                            {
-                                currentXHTMLResource.get().setData(code.getBytes("UTF-8"));
-                            }
-                            catch (UnsupportedEncodingException e)
-                            {
-                                //never happens
-                            }
-                        }
-                        else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
-                        {
-                            try
-                            {
-                                currentCssResource.get().setData(code.getBytes("UTF-8"));
-                            }
-                            catch (UnsupportedEncodingException e)
-                            {
-                                //never happens
-                            }
-                        }
-                        else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
-                        {
-                            try
-                            {
-                                Resource resource = currentXMLResource.get();
-                                resource.setData(code.getBytes("UTF-8"));
-                                if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
-                                {
-                                    PackageDocumentReader.read(resource, book);
-                                }
-                            }
-                            catch (JDOMException | IOException e)
-                            {
-                                logger.error("", e);
-                            }
-                        }
                         needsRefresh.setValue(true);
                         needsRefresh.setValue(false);
                     });
@@ -428,6 +394,7 @@ public class EditorTabManager
         try
         {
             CodeEditor editor = currentEditor.getValue();
+            EditorPosition currentCursorPosition = editor.getEditorCursorPosition();
             String code = editor.getCode();
             if (currentEditorIsXHTML.get())
             {
@@ -450,6 +417,8 @@ public class EditorTabManager
                 }
             }
             editor.setCode(code);
+            editor.setEditorCursorPosition(currentCursorPosition);
+            editor.scrollTo(currentCursorPosition);
             book.setBookIsChanged(true);
         }
         catch (IOException | JDOMException e)
@@ -623,7 +592,46 @@ public class EditorTabManager
             editor.cursorPositionProperty().addListener((observable, oldValue, newValue) -> {
                 cursorPosLabelProperty.set(newValue.getLine() + ":" + newValue.getColumn());
             });
-            editor.codeProperty().addListener((observable1, oldValue1, newValue1) -> {
+
+            editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
+                if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+                {
+                    try
+                    {
+                        currentXHTMLResource.get().setData(newValue.getBytes("UTF-8"));
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        //never happens
+                    }
+                }
+                else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
+                {
+                    try
+                    {
+                        currentCssResource.get().setData(newValue.getBytes("UTF-8"));
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        //never happens
+                    }
+                }
+                else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
+                {
+                    try
+                    {
+                        currentXMLResource.get().setData(newValue.getBytes("UTF-8"));
+                        if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
+                        {
+                            PackageDocumentReader.read(resource, book);
+                        }
+                    }
+                    catch (JDOMException | IOException e)
+                    {
+                        logger.error("", e);
+                    }
+                }
+
                 if (scheduledService.getState().equals(Worker.State.READY))
                 {
                     scheduledService.start();
@@ -732,6 +740,34 @@ public class EditorTabManager
         }
     }
 
+    public void insertStyle(String styleName, String value)
+    {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+        {
+            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
+            if (pair != null)
+            {
+                logger.info("found xml block tag " + pair.getTagName());
+                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                if (tagAtttributes.contains("style=")) //wenn bereits styles vorhanden, dann diese modifizieren
+                {
+                    tagAtttributes = tagAtttributes.replaceAll("style\\s*=\\s*\"(.*)" + styleName +":([^;]*)(;?)(.*)\\s*\"",
+                            "style=\"$1" + styleName +":" + value +"$3$4\"");
+                    xhtmlCodeEditor.replaceRange(tagAtttributes, pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                }
+                else
+                {
+                    EditorPosition pos = new EditorPosition(pair.getOpenTagBegin().getLine(),
+                            pair.getOpenTagBegin().getColumn() + pair.getTagName().length());
+                    xhtmlCodeEditor.insertAt(" style=\"" + styleName +":" + value + "\"", pos);
+                }
+                refreshPreview();
+                xhtmlCodeEditor.requestFocus();
+            }
+        }
+    }
+
     public void surroundSelectionWithTag(String tagName)
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
@@ -741,6 +777,79 @@ public class EditorTabManager
             xhtmlCodeEditor.replaceRange("<" + tagName + ">" + range.getSelection() + "</" + tagName + ">",
                     range.getFrom(), range.getTo());
             refreshPreview();
+            xhtmlCodeEditor.requestFocus();
+        }
+    }
+
+    public void increaseIndent()
+    {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+        {
+            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
+            if (pair != null)
+            {
+                logger.info("found xml block tag " + pair.getTagName());
+                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+
+                Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
+                if (regexMatcher.find())
+                {
+                    String currentIndentStr = regexMatcher.group(2);
+                    int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
+                    String currentUnit = regexMatcher.group(3);
+                    switch(currentUnit)
+                    {
+                        case "%":
+                        case "rem":
+                        case "em":  currentIndent++;
+                                    break;
+                        case "px":  currentIndent = currentIndent + 10;
+                            break;
+                    }
+                    insertStyle("text-indent", currentIndent + currentUnit);
+                }
+                else
+                {
+                    insertStyle("text-indent", "1em");
+                }
+            }
+        }
+    }
+
+    public void decreaseIndent()
+    {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+        {
+            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
+            if (pair != null)
+            {
+                logger.info("found xml block tag " + pair.getTagName());
+                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+
+                Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
+                if (regexMatcher.find())
+                {
+                    String currentIndentStr = regexMatcher.group(2);
+                    int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
+                    String currentUnit = regexMatcher.group(3);
+                    switch(currentUnit)
+                    {
+                        case "%":
+                        case "rem":
+                        case "em":  currentIndent--;
+                            break;
+                        case "px":  currentIndent = currentIndent - 10;
+                            break;
+                    }
+                    insertStyle("text-indent", currentIndent + currentUnit);
+                }
+                else
+                {
+                    insertStyle("text-indent", "-1em");
+                }
+            }
         }
     }
 

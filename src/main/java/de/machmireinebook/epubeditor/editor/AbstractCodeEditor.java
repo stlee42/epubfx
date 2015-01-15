@@ -320,6 +320,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         return getIndexFromPosition(position);
     }
 
+    @Override
     public void setEditorCursorPosition(EditorPosition position)
     {
         webview.getEngine().executeScript("editor.setCursor(" + position.toJson() + ");");
@@ -444,5 +445,11 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     public void setContextMenu(ContextMenu contextMenu)
     {
         this.contextMenu = contextMenu;
+    }
+
+    @Override
+    public void requestFocus()
+    {
+        webview.requestFocus();
     }
 }

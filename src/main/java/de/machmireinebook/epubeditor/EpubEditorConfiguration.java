@@ -158,6 +158,8 @@ public class EpubEditorConfiguration
                     Element layoutElement = root.getChild("layout");
                     if (layoutElement != null)
                     {
+                        EpubEditorMainController mainController = EpubEditorMainController.getInstance();
+
                         Element mainWindoElement = layoutElement.getChild("main-window");
                         if (mainWindoElement != null)
                         {
@@ -170,7 +172,7 @@ public class EpubEditorConfiguration
                             Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
                             if (isFullscreen)
                             {
-                                mainWindow.setMaximized(true);
+                                mainWindow.setFullScreen(true);
                                 mainWindow.setWidth(primaryScreenBounds.getWidth());
                                 mainWindow.setHeight(primaryScreenBounds.getHeight());
                                 mainWindow.setX(0);
@@ -178,6 +180,7 @@ public class EpubEditorConfiguration
                             }
                             else if (x >= 0.0 && y >= 0.0 && x < primaryScreenBounds.getWidth() - 100 && y < primaryScreenBounds.getHeight() - 100) // verhindern dass Fenster ausserhalb des sichtbaren Bereichs geöffnet wird
                             {
+                                mainWindow.setFullScreen(false);
                                 mainWindow.setWidth(width);
                                 mainWindow.setHeight(height);
                                 mainWindow.setX(x);
@@ -185,26 +188,23 @@ public class EpubEditorConfiguration
                             }
                         }
 
-                        EpubEditorMainController mainController = EpubEditorMainController.getInstance();
-
                         Element dividersElement = layoutElement.getChild("dividers");
                         if (dividersElement != null)
                         {
                             Element mainDividerElement = dividersElement.getChild("main-divider");
                             if (mainDividerElement != null)
                             {
+                                logger.debug("setting main divider");
                                 List<SplitPane.Divider> dividers = mainController.getMainDivider().getDividers();
                                 if (!"none".equals(mainDividerElement.getAttributeValue("divider-1")))
                                 {
-                                    //double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-1"));
-                                    //da es nicht richtig funktioniert erstmal hart codieren
-                                    dividers.get(0).setPosition(0.3);
+                                    double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-1"));
+                                    dividers.get(0).setPosition(value);
                                 }
                                 if (!"none".equals(mainDividerElement.getAttributeValue("divider-2")))
                                 {
-                                    //double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-2"));
-                                    //da es nicht richtig funktioniert erstmal hart codieren
-                                    dividers.get(1).setPosition(0.6);
+                                    double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-2"));
+                                    dividers.get(1).setPosition(value);
                                 }
                             }
 
@@ -247,9 +247,9 @@ public class EpubEditorConfiguration
                             mainController.getShowValidationResultsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results")));
                             mainController.getClipsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("clips-list")));
                             mainController.getShowPreviewMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview")));
-                            mainController.getSearchRadioMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("search")));
                         }
                     }
+
 
                     Element clipsElement = root.getChild("clips");
                     List<Element> children = clipsElement.getChildren();
@@ -432,7 +432,6 @@ public class EpubEditorConfiguration
                 visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(mainController.getShowValidationResultsMenuItem().isSelected()));
                 visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(mainController.getClipsMenuItem().isSelected()));
                 visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(mainController.getShowPreviewMenuItem().isSelected()));
-                visibilityElement.setAttribute("search", BooleanUtils.toStringTrueFalse(mainController.getSearchRadioMenuItem().isSelected()));
 
                 Element dividersElement = layoutElement.getChild("dividers");
                 if (dividersElement == null)
