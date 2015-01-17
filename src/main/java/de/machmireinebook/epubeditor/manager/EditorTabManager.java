@@ -126,6 +126,8 @@ public class EditorTabManager
     @ClipManagerProducer
     private ClipManager clipManager;
 
+    private boolean openingEditorTab = false;
+
     public class ImageViewerPane extends ScrollPane implements Initializable
     {
         @FXML
@@ -549,8 +551,8 @@ public class EditorTabManager
                 {
                     if (newValue.equals(Worker.State.SUCCEEDED))
                     {
+                        openingEditorTab = true;
                         editor.setCode(code);
-
                         editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
                         ((AnchorPane) editor).widthProperty().addListener(new ChangeListener<Number>()
                         {
@@ -585,6 +587,7 @@ public class EditorTabManager
                                 editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue.doubleValue() - 20);
                             }
                         });
+                        openingEditorTab = false;
                     }
                 }
             });
@@ -594,6 +597,10 @@ public class EditorTabManager
             });
 
             editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
+                if (openingEditorTab)
+                {
+                    return;
+                }
                 if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
                 {
                     try

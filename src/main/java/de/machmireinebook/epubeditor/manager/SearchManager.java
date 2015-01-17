@@ -1,6 +1,8 @@
 package de.machmireinebook.epubeditor.manager;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -186,4 +188,38 @@ public class SearchManager
         }
         return result;
     }
+
+    public List<SearchResult> findAll(String queryString, Resource currentResource, SearchParams params)
+    {
+        List<SearchResult> result = new ArrayList<>();
+        int position = 0;
+        int length = queryString.length();
+
+        try
+        {
+            String text = new String(currentResource.getData(), currentResource.getInputEncoding());
+            if (params.getMode().equals(SearchMode.NORMAL))
+            {
+                text = text.toLowerCase(Locale.GERMANY);
+                queryString = queryString.toLowerCase(Locale.GERMANY);
+            }
+            while(true)
+            {
+                position = stringSearch.searchString(text, position, queryString);
+                logger.info("current position " + position);
+                if (position == -1)
+                {
+                    break;
+                }
+                result.add(0, new SearchResult(position, position + length, currentResource));
+                position = position + length;
+            }
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            logger.error("", e);
+        }
+        return result;
+    }
+
 }

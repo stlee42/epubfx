@@ -160,6 +160,18 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     }
 
+    @Override
+    public void scrollTo(int index)
+    {
+
+    }
+
+    @Override
+    public void spellCheck()
+    {
+
+    }
+
     protected StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;

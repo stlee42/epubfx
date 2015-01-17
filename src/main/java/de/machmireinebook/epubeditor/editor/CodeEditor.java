@@ -44,8 +44,12 @@ public interface CodeEditor
     void select(int fromIndex, int toIndex);
     EditorRange getSelection();
     void replaceSelection(String replacement);
+
+    void scrollTo(int index);
+
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
     void scrollTo(EditorPosition pos);
 
+    void spellCheck();
 }

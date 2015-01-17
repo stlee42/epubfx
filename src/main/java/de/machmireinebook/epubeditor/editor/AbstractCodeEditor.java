@@ -6,8 +6,13 @@ package de.machmireinebook.epubeditor.editor;
  * Time: 21:12
  */
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
 import com.sun.webkit.dom.KeyboardEventImpl;
 import com.sun.webkit.dom.MouseEventImpl;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -26,6 +31,9 @@ import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.languagetool.MultiThreadedJLanguageTool;
+import org.languagetool.language.GermanyGerman;
+import org.languagetool.rules.RuleMatch;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.EventTarget;
@@ -53,6 +61,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     private ReadOnlyObjectWrapper<String> code = new ReadOnlyObjectWrapper<>();
 
     private ContextMenu contextMenu;
+    private SpellChecker spellChecker;
 
     public class CodeVersion
     {
@@ -119,6 +128,72 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
             CodeVersion version = new CodeVersion(editorCode, getEditorCursorPosition());
             undoRedoManager.saveVersion(version);
             code.setValue(editorCode);
+            spellCheck();
+        }
+    }
+
+    public class SpellChecker
+    {
+        private MultiThreadedJLanguageTool langTool;
+        public SpellChecker()
+        {
+            langTool = new MultiThreadedJLanguageTool(new GermanyGerman());
+            try
+            {
+                langTool.activateDefaultPatternRules();
+            }
+            catch (IOException e)
+            {
+                logger.error("", e);
+            }
+        }
+
+        public boolean check(String word)
+        {
+            List<RuleMatch> matches = Collections.emptyList();
+            try
+            {
+                matches = langTool.check(word);
+            }
+            catch (IOException e)
+            {
+                logger.error("", e);
+            }
+            return matches.isEmpty();
+        }
+
+        public List<RuleMatch> checkText(String text)
+        {
+            List<RuleMatch> matches = Collections.emptyList();
+            try
+            {
+                matches = langTool.check(text);
+            }
+            catch (IOException e)
+            {
+                logger.error("", e);
+            }
+            return matches;
+        }
+
+        public void onViewPortChanged(Object editor, int from, int to)
+        {
+            logger.debug("viewport changed");
+            Platform.runLater(() -> {
+                int fromIndex = (int) webview.getEngine().executeScript("editor.indexFromPos({line:" + from + ",ch: 0});");
+                int toIndex = (int) webview.getEngine().executeScript("editor.indexFromPos({line:" + (to + 1) +",ch: 0});");
+
+                String text = getCode();
+                text = text.substring(fromIndex, toIndex);
+                List<RuleMatch> results = checkText(text);
+                for (RuleMatch result : results)
+                {
+                    int resultFromIndex = result.getFromPos();
+                    int resultToIndex = result.getToPos();
+                    webview.getEngine().executeScript("editor.markText(editor.posFromIndex(" + (fromIndex + resultFromIndex) + "), editor.posFromIndex(" + (fromIndex + resultToIndex) + ")," +
+                            "{\"className\": \"cm-spell-error\"})");
+                }
+            });
         }
     }
 
@@ -152,6 +227,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
 
                     JSObject window = (JSObject) engine.executeScript("window");
                     window.setMember("onChangeListener", new OnChangeListener());
+                    spellChecker = new SpellChecker();
+                    window.setMember("spellChecker", spellChecker);
 
                     Element documentElement = document.getDocumentElement();
                     ((EventTarget) documentElement).addEventListener("keyup", evt ->
@@ -236,6 +313,15 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     public void setCode(String newCode)
     {
         webview.getEngine().executeScript("editor.setValue('" + StringEscapeUtils.escapeJavaScript(newCode) + "');");
+    }
+
+    @Override
+    public void spellCheck()
+    {
+        JSObject jsObject = (JSObject) webview.getEngine().executeScript("editor.getViewport();");
+        int fromLine = (int) jsObject.getMember("from");
+        int toLine = (int) jsObject.getMember("to");
+        spellChecker.onViewPortChanged(null, fromLine, toLine);
     }
 
     /**
@@ -411,6 +497,14 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     {
         double halfHeight = getHeight() / 2;
         webview.getEngine().executeScript("editor.scrollIntoView(" + pos.toJson() + "," + halfHeight + ");");
+    }
+
+    @Override
+    public void scrollTo(int index)
+    {
+        double halfHeight = getHeight() / 2;
+        JSObject jsObject = (JSObject)webview.getEngine().executeScript("editor.posFromIndex(" + index + ");");
+        webview.getEngine().executeScript("editor.scrollIntoView({line:" + jsObject.getMember("line") + ", ch:" + jsObject.getMember("ch") + "}," + halfHeight + ");");
     }
 
     public void setCodeEditorSize(double width, double height)

@@ -10,7 +10,6 @@
     <script src="http://localhost:8777/codemirror/addon/fold/xml-fold.js"></script>
     <script src="http://localhost:8777/codemirror/addon/edit/matchbrackets.js"></script>
     <script src="http://localhost:8777/codemirror/typo/typo.js" ></script>
-    <script src="http://localhost:8777/codemirror/addon/selection/mark-selection.js" ></script>
 
     <style type="text/css">
         .CodeMirror
@@ -28,31 +27,26 @@
         {
             background: url("http://localhost:8777/images/red-wavy-underline.gif") bottom repeat-x;
         }
-        .CodeMirror-selectedtext, .cm-tag.CodeMirror-selectedtext
-        {
-            color:white;
-        }
     </style>
 </head>
 <body>
 <form><textarea id="code" name="code"></textarea></form>
 <script>
 
-/*    var typo = new Typo ('de_DE', null, null, {
+    var typo = new Typo ('de_DE', null, null, {
         platform: 'any',
         dictionaryPath: "http://localhost:8777/codemirror/dict/"
-    });                   */
+    });
     var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         matchBrackets: true,
         indentUnit: 2,
         lineWrapping:true,
-        viewportMargin:5,
+        viewportMargin:Infinity,
         maxHighlightLength:Infinity,
         autoCloseBrackets: true,
         autoCloseTags: true,
         smartIndent:false,
-        styleSelectedText: true,
         extraKeys: {
             "Ctrl-Z": function (instance) {
                 return false;
@@ -66,8 +60,8 @@
         },
         mode: {name: "xml", htmlMode: false}
     });
- /*   CodeMirror.defineMode("spell-check", function(config, parserConfig) {
-        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ „“]");
+    CodeMirror.defineMode("spell-check", function(config, parserConfig) {
+        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ ]");
         return {
             token: function (stream, state) {
                 var ch;
@@ -78,7 +72,7 @@
                         }
                         stream.next();
                     }
-                    if (!spellChecker.check(stream.current()))
+                    if (!typo.check(stream.current()))
                         return "spell-error";
                     return null;
                 }
@@ -88,14 +82,8 @@
                 return null;
             }
         };
-    }); */
-    editor.on('changes', function(instance, changes){
-        if (onChangeListener != null)
-            onChangeListener.changed(instance, changes);
     });
-    editor.on('viewportChange', function(instance, from,to){
-        spellChecker.onViewPortChanged(instance, from,to);
-    });
+    editor.addOverlay("spell-check");
 </script>
 </body>
 </html>
