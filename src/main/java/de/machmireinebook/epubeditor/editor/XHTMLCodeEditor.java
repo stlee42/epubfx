@@ -17,6 +17,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
 {
     public static final Logger logger = Logger.getLogger(XHTMLCodeEditor.class);
 
+    @FunctionalInterface
     public interface TagInspector
     {
         boolean isTagFound(EditorToken token);
@@ -100,35 +101,46 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
         EditorPosition beginPos = getEditorCursorPosition();
         int lineLength = getLineLength(beginPos.getLine());
         EditorToken startToken;
+
+        EditorPosition openTagBegin = new EditorPosition();
+        EditorPosition openTagEnd = new EditorPosition();
+        EditorPosition closeTagBegin = new EditorPosition();
+        EditorPosition closeTagEnd = new EditorPosition();
+        EditorPosition lastBracketBegin = new EditorPosition();
+        String tagName = "";
+
         if (beginPos.getColumn() > 0 && beginPos.getColumn() < lineLength)
         {
             beginPos.setColumn(beginPos.getColumn());
             startToken = getTokenAt(beginPos);
             logger.info("start token " + startToken.getContent());
+            if (">".equals(startToken.getContent()) && "tag bracket".equals(startToken.getType()))
+            {
+                lastBracketBegin = new EditorPosition(beginPos.getLine(), startToken.getStart());
+            }
         }
         else
         {
             startToken = new EditorToken();
         }
 
-        EditorPosition openTagBegin = new EditorPosition();
-        EditorPosition openTagEnd = new EditorPosition();
-        EditorPosition closeTagBegin = new EditorPosition();
-        EditorPosition closeTagEnd = new EditorPosition();
-        String tagName = "";
 
         if (startToken.getType() == null || (">".equals(startToken.getContent()) && "tag bracket".equals(startToken.getType())))
         {
+            int currentLine = beginPos.getLine();
             logger.info("cursor steht in normalem text token");
             //nach vorne suchen
-            int currentLine = beginPos.getLine();
-            EditorPosition currentPos = new EditorPosition(currentLine, startToken.getStart() - 1);
+            EditorPosition currentPos = new EditorPosition(currentLine, startToken.getStart());
             EditorToken currentToken = getTokenAt(currentPos);
 
             boolean found = false;
             do  //öffnendes Tag suchen
             {
                 logger.debug("suchen öffnendes Tag, currrent token " + currentToken.getContent());
+                if (">".equals(currentToken.getContent()) && "tag bracket".equals(currentToken.getType()))
+                {
+                    lastBracketBegin = new EditorPosition(currentLine, currentToken.getStart());
+                }
                 if (inspector.isTagFound(currentToken))
                 {
                     //öffnendes BlockTag gefunden
@@ -152,7 +164,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
                     }
                     else
                     {
-                        currentPos = new EditorPosition(currentLine, currentToken.getStart() - 1);
+                        currentPos = new EditorPosition(currentLine, currentToken.getStart());
                         currentToken = getTokenAt(currentPos);
                     }
                 }
@@ -206,7 +218,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
             while (!found);
 
         }
-        pair = new XMLTagPair(openTagBegin, openTagEnd, closeTagBegin, closeTagEnd);
+        pair = new XMLTagPair(openTagBegin, openTagEnd, closeTagBegin, closeTagEnd, lastBracketBegin);
         pair.setTagName(tagName);
         return pair;
     }

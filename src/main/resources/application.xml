@@ -11,14 +11,69 @@
         <css />
         <font />
     </open-with>
+    <recent-files>
+        <path>C:\ebooks business\Archäologie\Tu ench amun\tut_3.epub</path>
+    </recent-files>
     <layout>
-        <main-window x="312.0" height="918.0" is-fullscreen="false" width="1300.0" y="0.0" />
-        <visibility book-browser="true" toc="true" validation-results="true" clips-list="true" preview="true" />
+        <main-window x="312.0" height="918.0" is-fullscreen="true" width="1300.0" y="0.0" />
+        <visibility book-browser="true" toc="false" validation-results="false" clips-list="false" preview="true" />
         <dividers>
-            <main-divider divider-1="0.24648985959438377" divider-2="0.8018720748829953" />
+            <main-divider divider-1="0.24" divider-2="0.80" />
             <left-divider divider-1="0.5053475935828877" />
             <center-divider divider-1="0.7887700534759359" />
             <right-divider divider-1="0.5053475935828877" />
         </dividers>
     </layout>
+    <clips>
+        <clip>
+            <name>Überschrift</name>
+            <content><![CDATA[<h3><span class="chapter-name">Abschnitt</span> <span class="chapter-number">I</span> <span class="chapter-subtitle">Text</span></h3>]]></content>
+        </clip>
+        <clip>
+            <name>div</name>
+            <content><![CDATA[<div>$1</div>]]></content>
+        </clip>
+        <clip>
+            <name>p</name>
+            <content><![CDATA[<p>$1</p>]]></content>
+        </clip>
+        <clip>
+            <name>break</name>
+            <content><![CDATA[</p><p>]]></content>
+        </clip>
+        <clip>
+            <name>noindent</name>
+            <content><![CDATA[class="noindent"]]></content>
+        </clip>
+        <clip>
+            <name>image</name>
+            <content><![CDATA[class="image" id="tafel_1"]]></content>
+        </clip>
+        <clip>
+            <name>image-classes</name>
+            <content><![CDATA[style="max-width:100%;width:572px"]]></content>
+        </clip>
+        <clip>
+            <name>sup reference</name>
+            <content><![CDATA[<sup class="reference" id="footnote-ref-"><a href="anmerkungen.xhtml#footnote-text-">$1</a></sup>]]></content>
+        </clip>
+        <clip>
+            <name>footnote-text</name>
+            <content><![CDATA[<a href="#footnote-ref-" id="footnote-text-">$1</a>]]></content>
+        </clip>
+        <clip>
+            <name>dropcap</name>
+            <content><![CDATA[<span class="dropcaps">$1</span>]]></content>
+        </clip>
+        <group name="misc">
+            <clip>
+                <name>br</name>
+                <content><![CDATA[<br/>]]></content>
+            </clip>
+            <clip>
+                <name>hr</name>
+                <content><![CDATA[<hr/>]]></content>
+            </clip>
+        </group>
+    </clips>
 </configuration>

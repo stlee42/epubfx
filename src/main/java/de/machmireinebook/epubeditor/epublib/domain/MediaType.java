@@ -3,8 +3,6 @@ package de.machmireinebook.epubeditor.epublib.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -18,52 +16,40 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  * @see de.machmireinebook.epubeditor.epublib.service.MediatypeService
  */
-public class MediaType implements Serializable
+public enum MediaType implements Serializable
 {
 
-    public static final MediaType XHTML = new MediaType("application/xhtml+xml", ".xhtml", new String[]{".htm", ".html", ".xhtml"}, "text", XHTMLResourceFactory.getInstance());
-    public static final MediaType XML = new MediaType("application/xml", ".xml", XMLResourceFactory.getInstance());
-    public static final MediaType OPF = new MediaType("application/oebps-package+xml", ".opf", XMLResourceFactory.getInstance());
-    public static final MediaType EPUB = new MediaType("application/epub+zip", ".epub", XMLResourceFactory.getInstance());
-    public static final MediaType NCX = new MediaType("application/x-dtbncx+xml", ".ncx", XMLResourceFactory.getInstance());
+    XHTML("application/xhtml+xml", ".xhtml", new String[]{".htm", ".html", ".xhtml"}, "text", XHTMLResourceFactory.getInstance()),
+    XML("application/xml", ".xml", XMLResourceFactory.getInstance()),
+    OPF ("application/oebps-package+xml", ".opf", XMLResourceFactory.getInstance()),
+    EPUB ("application/epub+zip", ".epub", XMLResourceFactory.getInstance()),
+    NCX ("application/x-dtbncx+xml", ".ncx", XMLResourceFactory.getInstance()),
 
-    public static final MediaType JAVASCRIPT = new MediaType("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance());
-    public static final MediaType CSS = new MediaType("text/css", ".css", "style", CSSResourceFactory.getInstance());
+    JAVASCRIPT ("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance()),
+    CSS("text/css", ".css", "style", CSSResourceFactory.getInstance()),
+
+    MIMETYPE ("text/plain", "mimetype", "", DefaultResourceFactory.getInstance()),
 
     // images
-    public static final MediaType JPG = new MediaType("image/jpeg", ".jpg", new String[]{".jpg", ".jpeg"}, "image", ImageResourceFactory.getInstance());
-    public static final MediaType PNG = new MediaType("image/png", ".png", ImageResourceFactory.getInstance());
-    public static final MediaType GIF = new MediaType("image/gif", ".gif", ImageResourceFactory.getInstance());
+    JPG ("image/jpeg", ".jpg", new String[]{".jpg", ".jpeg"}, "image", ImageResourceFactory.getInstance()),
+    PNG ("image/png", ".png", ImageResourceFactory.getInstance()),
+    GIF ("image/gif", ".gif", ImageResourceFactory.getInstance()),
 
-    public static final MediaType SVG = new MediaType("image/svg+xml", ".svg", ImageResourceFactory.getInstance());
+    SVG ("image/svg+xml", ".svg", ImageResourceFactory.getInstance()),
 
     // fonts
-    public static final MediaType TTF = new MediaType("application/x-truetype-font", ".ttf", DefaultResourceFactory.getInstance());
-    public static final MediaType OPENTYPE = new MediaType("application/vnd.ms-opentype", ".otf", DefaultResourceFactory.getInstance());
-    public static final MediaType WOFF = new MediaType("application/font-woff", ".woff", DefaultResourceFactory.getInstance());
+    TTF ("application/x-truetype-font", ".ttf", DefaultResourceFactory.getInstance()),
+    OPENTYPE ("application/vnd.ms-opentype", ".otf", DefaultResourceFactory.getInstance()),
+    WOFF ("application/font-woff", ".woff", DefaultResourceFactory.getInstance()),
 
     // audio
-    public static final MediaType MP3 = new MediaType("audio/mpeg", ".mp3", DefaultResourceFactory.getInstance());
-    public static final MediaType MP4 = new MediaType("audio/mp4", ".mp4", DefaultResourceFactory.getInstance());
-    public static final MediaType OGG = new MediaType("audio/ogg", ".ogg", DefaultResourceFactory.getInstance());
+    MP3 ("audio/mpeg", ".mp3", DefaultResourceFactory.getInstance()),
+    MP4 ("audio/mp4", ".mp4", DefaultResourceFactory.getInstance()),
+    OGG ("audio/ogg", ".ogg", DefaultResourceFactory.getInstance()),
 
-    public static final MediaType SMIL = new MediaType("application/smil+xml", ".smil", DefaultResourceFactory.getInstance());
-    public static final MediaType XPGT = new MediaType("application/adobe-page-template+xml", ".xpgt", DefaultResourceFactory.getInstance());
-    public static final MediaType PLS = new MediaType("application/pls+xml", ".pls", DefaultResourceFactory.getInstance());
-
-    public static MediaType[] mediatypes = new MediaType[]{
-            XHTML, EPUB, JPG, PNG, GIF, CSS, SVG, TTF, NCX, XPGT, OPENTYPE, WOFF, SMIL, PLS, JAVASCRIPT, MP3, MP4, OGG, OPF, XML
-    };
-
-    public static Map<String, MediaType> mediaTypesByName = new HashMap<>();
-
-    static
-    {
-        for (MediaType mediatype : mediatypes)
-        {
-            mediaTypesByName.put(mediatype.getName(), mediatype);
-        }
-    }
+    SMIL ("application/smil+xml", ".smil", DefaultResourceFactory.getInstance()),
+    XPGT ("application/adobe-page-template+xml", ".xpgt", DefaultResourceFactory.getInstance()),
+    PLS ("application/pls+xml", ".pls", DefaultResourceFactory.getInstance());
 
     public boolean isBitmapImage()
     {
@@ -89,7 +75,7 @@ public class MediaType implements Serializable
      */
     public static MediaType getByFileName(String filename)
     {
-        for (MediaType mediatype : mediatypes)
+        for (MediaType mediatype : values())
         {
             for (String extension : mediatype.getExtensions())
             {
@@ -104,7 +90,15 @@ public class MediaType implements Serializable
 
     public static MediaType getByName(String mediaTypeName)
     {
-        return mediaTypesByName.get(mediaTypeName);
+        for (MediaType mediatype : values())
+        {
+            if (mediatype.name.equalsIgnoreCase(mediaTypeName))
+            {
+                return mediatype;
+            }
+        }
+        return null;
+
     }
 
     /**
@@ -117,40 +111,29 @@ public class MediaType implements Serializable
     private String fileNamePrefix;
     private ResourceFactory resourceFactory;
 
-    public MediaType(String name, String defaultExtension, ResourceFactory resourceFactory)
+    private MediaType(String name, String defaultExtension, ResourceFactory resourceFactory)
     {
         this(name, defaultExtension, new String[]{defaultExtension}, resourceFactory);
     }
 
-    public MediaType(String name, String defaultExtension,
+    private MediaType(String name, String defaultExtension,
                      String[] extensions, ResourceFactory resourceFactory)
     {
         this(name, defaultExtension, Arrays.asList(extensions), resourceFactory);
     }
 
-    public int hashCode()
-    {
-        if (name == null)
-        {
-            return 0;
-        }
-        return name.hashCode();
-    }
-
-    public MediaType(String name, String defaultExtension,
+    private MediaType(String name, String defaultExtension,
                      Collection<String> extensions, ResourceFactory resourceFactory)
     {
-        super();
         this.name = name;
         this.defaultExtension = defaultExtension;
         this.extensions = extensions;
         this.resourceFactory = resourceFactory;
     }
 
-    public MediaType(String name, String defaultExtension,
+    private MediaType(String name, String defaultExtension,
                      String[] extensions, String fileNamePrefix, ResourceFactory resourceFactory)
     {
-        super();
         this.name = name;
         this.defaultExtension = defaultExtension;
         this.extensions = Arrays.asList(extensions);
@@ -158,9 +141,8 @@ public class MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    public MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory)
+    private MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory)
     {
-        super();
         this.name = name;
         this.defaultExtension = defaultExtension;
         this.extensions = Arrays.asList(defaultExtension);
@@ -185,15 +167,6 @@ public class MediaType implements Serializable
         return extensions;
     }
 
-    public boolean equals(Object otherMediaType)
-    {
-        if (!(otherMediaType instanceof MediaType))
-        {
-            return false;
-        }
-        return name.equals(((MediaType) otherMediaType).getName());
-    }
-
     public String toString()
     {
         return name;
@@ -208,6 +181,4 @@ public class MediaType implements Serializable
     {
         return resourceFactory;
     }
-
-
 }

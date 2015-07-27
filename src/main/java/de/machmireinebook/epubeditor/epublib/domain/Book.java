@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Named;
 
+import de.machmireinebook.commons.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -28,9 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.ElementFilter;
 import org.jdom2.util.IteratorIterable;
 
 
@@ -341,56 +340,16 @@ public class Book implements Serializable
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
     private Path physicalFileName;
 
-    public class AtrributeElementFilter extends ElementFilter
-    {
-        private String attributeName;
-        private Namespace attributeNamespace = Namespace.NO_NAMESPACE;
-        private String attributeValue;
-
-        public AtrributeElementFilter(String attributeName, String attributeValue)
-        {
-            super();
-            this.attributeName = attributeName;
-            this.attributeValue = attributeValue;
-        }
-
-        public AtrributeElementFilter(String attributeName, Namespace attributeNamespace, String attributeValue)
-        {
-            super();
-            this.attributeName = attributeName;
-            this.attributeNamespace = attributeNamespace;
-            this.attributeValue = attributeValue;
-        }
-
-        @Override
-        public Element filter(Object content)
-        {
-            Element element = super.filter(content);
-            if (element != null)
-            {
-                if (attributeValue.equals(element.getAttributeValue(attributeName, attributeNamespace)))
-                {
-                    return element;
-                }
-            }
-            return null;
-        }
-    }
-
-
     public static Book createMinimalBook()
     {
         Book book = new Book();
-        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
-        book.addSection("Start", textRes);
-
-        book.addResourceFromTemplate("/epub/standard.css", "Styles/standard.css");
 
         try
         {
             Resource ncxResource = NCXDocument.createNCXResource(book);
             book.setNcxResource(ncxResource);
             book.getSpine().setTocResource(ncxResource);
+            book.addResource(ncxResource, false);
 
             Resource opfResource = PackageDocumentWriter.createOPFResource(book);
             book.setOpfResource(opfResource);
@@ -399,6 +358,12 @@ public class Book implements Serializable
         {
             logger.error("", e);
         }
+
+        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
+        book.addSection("Start", textRes);
+
+        book.addResourceFromTemplate("/epub/standard.css", "Styles/standard.css");
+
         return book;
     }
 
@@ -524,12 +489,12 @@ public class Book implements Serializable
         return tocReference;
     }
 
-    public SpineReference addSpineResource(Resource resource) throws IOException
+    public SpineReference addSpineResource(Resource resource)
     {
         return addSpineResource(resource, null);
     }
 
-    public SpineReference addSpineResource(Resource resource, Integer index) throws IOException
+    public SpineReference addSpineResource(Resource resource, Integer index)
     {
         getResources().add(resource);
         SpineReference ref = null;
@@ -541,8 +506,50 @@ public class Book implements Serializable
         return ref;
     }
 
+    public void removeResource(Resource resource)
+    {
+        getResources().remove(resource);
+        if (resource.getMediaType().equals(MediaType.CSS))
+        {
+            String cssFileName = resource.getFileName();
+            //aus allen XHTML-Dateien entfernen
+            List<Resource> xhtmlResources = getResources().getResourcesByMediaType(MediaType.XHTML);
+            for (Resource xhtmlResource : xhtmlResources)
+            {
+                Document document = ((XHTMLResource) xhtmlResource).asNativeFormat();
+                if (document != null)
+                {
+                    Element root = document.getRootElement();
+                    if (root != null)
+                    {
+                        Element headElement = root.getChild("head");
+                        if (headElement != null)
+                        {
+                            List<Element> linkElements = headElement.getChildren("link");
+                            Element toRemove = null;
+                            for (Element linkElement : linkElements)
+                            {
+                                if ("stylesheet".equals(linkElement.getAttributeValue("rel"))
+                                        && linkElement.getAttributeValue("href").contains(cssFileName))
+                                {
+                                    toRemove = linkElement;
+                                    break;
+                                }
+                            }
+                            if (toRemove != null)
+                            {
+                                headElement.removeContent(toRemove);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        refreshOpfResource();
+    }
 
-    public SpineReference removeSpineResource(Resource resource) throws IOException
+
+    public SpineReference removeSpineResource(Resource resource)
     {
         getResources().remove(resource);
         int index = spine.findFirstResourceById(resource.getId());
@@ -603,11 +610,32 @@ public class Book implements Serializable
 
     public void setResources(Resources resources)
     {
+        resources.getResourcesMap().values().stream().forEach(new Consumer<Resource>()
+        {
+            @Override
+            public void accept(Resource resource)
+            {
+                resource.hrefProperty().addListener(new ChangeListener<String>()
+                {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+                    {
+                        renameResource(resource, oldValue, newValue);
+                    }
+                });
+            }
+        });
         this.resources = resources;
+
     }
 
 
-    public Resource addResource(Resource resource)
+    public void addResource(Resource resource)
+    {
+        addResource(resource, true);
+    }
+
+    public void addResource(Resource resource, boolean refreshOpf)
     {
         resource.hrefProperty().addListener(new ChangeListener<String>()
         {
@@ -617,7 +645,29 @@ public class Book implements Serializable
                 renameResource(resource, oldValue, newValue);
             }
         });
-        return resources.add(resource);
+
+        if (resource instanceof ImageResource)
+        {
+            ImageResource imageResource = (ImageResource) resource;
+            imageResource.coverProperty().addListener((observable, oldValue, newValue) ->
+            {
+                if (newValue)
+                {
+                    this.coverImage = imageResource;
+                    refreshOpfResource();
+                }
+                if (oldValue && coverImage == imageResource)  //wenn das alte nur ausgeschaltet wird, aber vorher kein neues gesetzt wurde
+                {
+                    this.coverImage = null;
+                    refreshOpfResource();
+                }
+            });
+        }
+        resources.add(resource);
+        if (refreshOpf)
+        {
+            refreshOpfResource();
+        }
     }
 
     /**
@@ -749,7 +799,7 @@ public class Book implements Serializable
      */
     public List<Resource> getContents()
     {
-        Map<String, Resource> result = new LinkedHashMap<String, Resource>();
+        Map<String, Resource> result = new LinkedHashMap<>();
         addToContentsResult(getCoverPage(), result);
 
         for (SpineReference spineReference : getSpine().getSpineReferences())
@@ -895,59 +945,55 @@ public class Book implements Serializable
 
     public void renameResource(Resource resource, String oldValue, String newValue)
     {
-        try
+        resources.remove(oldValue); //unter altem namen löschen
+        resources.add(resource); //unter neuem wieder hinzufügen
+
+        if (MediaType.CSS.equals(resource.getMediaType()))
         {
-            if (MediaType.CSS.equals(resource.getMediaType()))
+            //css umbenannt, erstmal alle XHTMLs durchsuchen
+            List<Resource> xhtmlResources = resources.getResourcesByMediaType(MediaType.XHTML);
+            Path resourcePath = resource.getHrefAsPath();
+            int index = StringUtils.lastIndexOf(oldValue, "/");
+            String oldFileName = oldValue;
+            if (index > -1)
             {
-                //css umbenannt, erstmal alle XHTMLs durchsuchen
-                List<Resource> xhtmlResources = resources.getResourcesByMediaType(MediaType.XHTML);
-                Path resourcePath = resource.getHrefPath();
-                int index = StringUtils.lastIndexOf(oldValue, "/");
-                String oldFileName = oldValue;
-                if (index > -1)
-                {
-                    oldFileName = oldValue.substring(index + 1);
-                }
-
-                index = StringUtils.lastIndexOf(newValue, "/");
-                String newFileName = newValue;
-                if (index > -1)
-                {
-                    newFileName = newValue.substring(index + 1);
-                }
-
-                for (Resource xhtmlResource : xhtmlResources)
-                {
-                    Document document = ((XHTMLResource)xhtmlResource).getAsNativeFormat();
-                    Path relativePath = xhtmlResource.getHrefPath().relativize(resourcePath);
-                    AtrributeElementFilter hrefFilter = new AtrributeElementFilter("href", relativePath + "/" + oldFileName);
-                    IteratorIterable<Element> descendants = document.getDescendants(hrefFilter);
-                    for (Element descendant : descendants)
-                    {
-                        logger.info("found element with attribut href in resource " + xhtmlResource);
-                        descendant.setAttribute("href", relativePath + "/" + newFileName);
-                    }
-                    //nach noch mehr Elementen suchen
-                    //zB src-Attribut
-                    xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document));
-                }
-
-                //weiter nach import etc. in anderen css dateien suchen
+                oldFileName = oldValue.substring(index + 1);
             }
-            else if(MediaType.XHTML.equals(resource.getMediaType()))
+
+            index = StringUtils.lastIndexOf(newValue, "/");
+            String newFileName = newValue;
+            if (index > -1)
             {
-                //nach href
+                newFileName = newValue.substring(index + 1);
             }
-            else if(resource.getMediaType().isBitmapImage())
+
+            for (Resource xhtmlResource : xhtmlResources)
             {
-                //nach href und src
+                Document document = ((XHTMLResource)xhtmlResource).asNativeFormat();
+                Path relativePath = xhtmlResource.getHrefAsPath().relativize(resourcePath);
+                AtrributeElementFilter hrefFilter = new AtrributeElementFilter("href", relativePath + "/" + oldFileName);
+                IteratorIterable<Element> descendants = document.getDescendants(hrefFilter);
+                for (Element descendant : descendants)
+                {
+                    logger.info("found element with attribut href in resource " + xhtmlResource);
+                    descendant.setAttribute("href", relativePath + "/" + newFileName);
+                }
+                //nach noch mehr Elementen suchen
+                //zB src-Attribut
+                xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document));
             }
-            refreshOpfResource();
+
+            //weiter nach import etc. in anderen css dateien suchen
         }
-        catch (IOException | JDOMException e)
+        else if(MediaType.XHTML.equals(resource.getMediaType()))
         {
-            logger.error("", e);
+            //nach href
         }
+        else if(resource.getMediaType().isBitmapImage())
+        {
+            //nach href und src
+        }
+        refreshOpfResource();
     }
 }
 

@@ -87,7 +87,7 @@ public class EpubReader
      */
     public Book readEpubLazy(ZipFile zipFile, String encoding) throws IOException
     {
-        Book book = readEpubLazy(zipFile, encoding, Arrays.asList(MediaType.mediatypes));
+        Book book = readEpubLazy(zipFile, encoding, Arrays.asList(MediaType.values()));
         book.setPhysicalFileName(Paths.get(zipFile.getName()));
         return book;
     }
@@ -134,7 +134,7 @@ public class EpubReader
         String packageResourceHref = getPackageResourceHref(resources);
         Resource packageResource = processPackageResource(packageResourceHref, book, resources);
         book.setOpfResource(packageResource);
-        Resource ncxResource = processNcxResource(packageResource, book);
+        Resource ncxResource = processNcxResource(book);
         book.setNcxResource(ncxResource);
         book = postProcessBook(book);
         return book;
@@ -150,9 +150,9 @@ public class EpubReader
         return book;
     }
 
-    private Resource processNcxResource(Resource packageResource, Book book)
+    private Resource processNcxResource(Book book)
     {
-        return NCXDocument.read(book, this);
+        return NCXDocument.read(book);
     }
 
     private Resource processPackageResource(String packageResourceHref, Book book, Resources resources)

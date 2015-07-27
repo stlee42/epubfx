@@ -1,14 +1,16 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="http://localhost:8777/codemirror-4.4/lib/codemirror.css">
-    <script src="http://localhost:8777/codemirror-4.4/lib/codemirror.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/mode/xml/xml.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closebrackets.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closetag.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/fold/xml-fold.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/matchbrackets.js"></script>
-    <script src="https://raw.githubusercontent.com/cfinke/Typo.js/master/typo/typo.js"></script>
+    <link rel="stylesheet" href="http://localhost:8777/codemirror/lib/codemirror.css">
+    <script src="http://localhost:8777/codemirror/lib/codemirror.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/xml/xml.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/css/css.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closetag.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/typo/typo.js" ></script>
+    <script src="http://localhost:8777/codemirror/addon/selection/mark-selection.js" ></script>
 
     <style type="text/css">
         .CodeMirror
@@ -24,22 +26,49 @@
         }
         .CodeMirror .cm-spell-error
         {
-            background: url("https://raw.githubusercontent.com/jwulf/typojs-project/master/public/images/red-wavy-underline.gif") bottom repeat-x;
+            background: url("http://localhost:8777/images/red-wavy-underline.gif") bottom repeat-x;
+        }
+        .CodeMirror-selectedtext, .cm-tag.CodeMirror-selectedtext
+        {
+            color:white;
         }
     </style>
 </head>
 <body>
 <form><textarea id="code" name="code"></textarea></form>
 <script>
-    var typo = new Typo ("de_DE", null, null, {
-        platform: 'any'
-    });
-    var affData = typo._readFile("http://localhost:8777/codemirror-4.4/dict/de_DE.aff", "ISO-8859-1");
-    var wordData = typo._readFile("http://localhost:8777/codemirror-4.4/dict/de_DE.dic", "ISO-8859-1");
 
-    CodeMirror.defineMode("spell-check", function(config, parserConfig) {
-        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ ]");
-        var spellOverlay = {
+/*    var typo = new Typo ('de_DE', null, null, {
+        platform: 'any',
+        dictionaryPath: "http://localhost:8777/codemirror/dict/"
+    });                   */
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        indentUnit: 2,
+        lineWrapping:true,
+        viewportMargin:5,
+        maxHighlightLength:Infinity,
+        autoCloseBrackets: true,
+        autoCloseTags: true,
+        smartIndent:false,
+        styleSelectedText: true,
+        extraKeys: {
+            "Ctrl-Z": function (instance) {
+                return false;
+            },
+            "Ctrl-Y": function (instance) {
+                return false;
+            },
+            "Ctrl-Space": function (instance) {
+                return false;
+            }
+        },
+        mode: {name: "xml", htmlMode: false}
+    });
+ /*   CodeMirror.defineMode("spell-check", function(config, parserConfig) {
+        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ „“]");
+        return {
             token: function (stream, state) {
                 var ch;
                 if (stream.match(rx_word)) {
@@ -49,29 +78,23 @@
                         }
                         stream.next();
                     }
-                    if (!typo.check(stream.current()))
+                    if (!spellChecker.check(stream.current()))
                         return "spell-error";
                     return null;
                 }
-                while (stream.next() != null && !stream.match(rx_word, false)) {}
+                while (stream.next() != null && !stream.match(rx_word, false)) {
+
+                }
                 return null;
             }
         };
-
-        return CodeMirror.overlayMode(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), spellOverlay);
+    }); */
+    editor.on('changes', function(instance, changes){
+        if (onChangeListener != null)
+            onChangeListener.changed(instance, changes);
     });
-
-    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        lineNumbers: true,
-        matchBrackets: true,
-        indentUnit: 2,
-        lineWrapping:true,
-        viewportMargin:Infinity,
-        maxHighlightLength:Infinity,
-        autoCloseBrackets: true,
-        autoCloseTags: true,
-        smartIndent:false,
-        mode: {name: "xml", htmlMode: false}
+    editor.on('viewportChange', function(instance, from,to){
+        spellChecker.onViewPortChanged(instance, from,to);
     });
 </script>
 </body>

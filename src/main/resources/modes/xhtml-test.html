@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="http://localhost:8777/codemirror/lib/codemirror.css">
+    <script src="http://localhost:8777/codemirror/lib/codemirror.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/xml/xml.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/css/css.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closetag.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/typo/typo.js" ></script>
+
+    <style type="text/css">
+        .CodeMirror
+        {
+            border: 1px solid green;
+            font-family: "Source Code Pro", Consolas;
+            font-size: 14px;
+            height:auto;
+        }
+        .CodeMirror-scroll {
+            overflow-y: hidden;
+            overflow-x: auto;
+        }
+        .CodeMirror .cm-spell-error
+        {
+            background: url("http://localhost:8777/images/red-wavy-underline.gif") bottom repeat-x;
+        }
+    </style>
+</head>
+<body>
+<form><textarea id="code" name="code"></textarea></form>
+<script>
+
+    var typo = new Typo ('de_DE', null, null, {
+        platform: 'any',
+        dictionaryPath: "http://localhost:8777/codemirror/dict/"
+    });
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        indentUnit: 2,
+        lineWrapping:true,
+        viewportMargin:Infinity,
+        maxHighlightLength:Infinity,
+        autoCloseBrackets: true,
+        autoCloseTags: true,
+        smartIndent:false,
+        extraKeys: {
+            "Ctrl-Z": function (instance) {
+                return false;
+            },
+            "Ctrl-Y": function (instance) {
+                return false;
+            },
+            "Ctrl-Space": function (instance) {
+                return false;
+            }
+        },
+        mode: {name: "xml", htmlMode: false}
+    });
+    CodeMirror.defineMode("spell-check", function(config, parserConfig) {
+        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ ]");
+        return {
+            token: function (stream, state) {
+                var ch;
+                if (stream.match(rx_word)) {
+                    while ((ch = stream.peek()) != null) {
+                        if (!ch.match(rx_word)) {
+                            break;
+                        }
+                        stream.next();
+                    }
+                    if (!typo.check(stream.current()))
+                        return "spell-error";
+                    return null;
+                }
+                while (stream.next() != null && !stream.match(rx_word, false)) {
+
+                }
+                return null;
+            }
+        };
+    });
+    editor.addOverlay("spell-check");
+</script>
+</body>
+</html>

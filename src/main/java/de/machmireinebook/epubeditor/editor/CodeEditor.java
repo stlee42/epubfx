@@ -8,7 +8,11 @@ package de.machmireinebook.epubeditor.editor;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
-import javafx.scene.web.WebView;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Worker;
+import javafx.scene.control.ContextMenu;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -18,16 +22,34 @@ import javafx.scene.web.WebView;
  */
 public interface CodeEditor
 {
-    WebView getWebview();
-    String getEditingTemplate();
     MediaType getMediaType();
+
+    //methods of the java part of editor
+    void setContextMenu(ContextMenu contextMenu);
+    ObjectProperty<Worker.State> stateProperty();
+    ObjectProperty<EditorPosition> cursorPositionProperty();
+    ReadOnlyObjectProperty<String> codeProperty();
+    void undo();
+    void redo();
+    BooleanProperty canUndoProperty();
+    BooleanProperty canRedoProperty();
 
     //methods of the underlying editor component e.g. codemirror
     void setCode(String newCode);
     String getCode();
     EditorPosition getEditorCursorPosition();
+    void setEditorCursorPosition(EditorPosition position);
+    int getEditorCursorIndex();
     void insertAt(String replacement, EditorPosition pos);
+    void select(int fromIndex, int toIndex);
+    EditorRange getSelection();
     void replaceSelection(String replacement);
+
+    void scrollTo(int index);
+
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
+    void scrollTo(EditorPosition pos);
+
+    void spellCheck();
 }

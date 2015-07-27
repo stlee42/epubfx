@@ -10,11 +10,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.DefaultResourceFactory;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -26,8 +28,10 @@ import org.xml.sax.InputSource;
  * @author paul
  *
  */
-public class ResourceUtil {
-	
+public class ResourceUtil
+{
+	public static final Logger logger = Logger.getLogger(ResourceUtil.class);
+
 	public static Resource createResource(File file) throws IOException {
 		if (file == null) {
 			return null;
@@ -69,7 +73,16 @@ public class ResourceUtil {
 	 */
 	public static Resource createResource(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
         MediaType mediaType = MediaType.getByFileName(zipEntry.getName());
-        return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName());
+		if (mediaType != null)
+		{
+			return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName());
+		}
+		else
+		{
+			logger.info("reading resource " + zipEntry.getName() + " with unknown mediatype, using default resource factory");
+			return DefaultResourceFactory.getInstance().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName());
+		}
+
 	}
 
     public static Resource createResource(ZipEntry zipEntry, InputStream zipInputStream) throws IOException
@@ -99,7 +112,7 @@ public class ResourceUtil {
 		if (resource == null) {
 			return null;
 		}
-		Reader reader = resource.getReader();
+		Reader reader = resource.asReader();
 		if (reader == null) {
 			return null;
 		}
@@ -137,4 +150,5 @@ public class ResourceUtil {
 		Document result = documentBuilder.build(inputSource);
 		return result;
 	}
+
 }

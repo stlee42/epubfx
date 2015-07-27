@@ -144,7 +144,7 @@ public class NewEBookController implements StandardController
                     Image cover = null;
                     if (book.getCoverImage() != null)
                     {
-                        cover = book.getCoverImage().getAsNativeFormat();
+                        cover = book.getCoverImage().asNativeFormat();
                     }
                     List<String> descriptions = book.getMetadata().getDescriptions();
                     String description = "";
@@ -159,7 +159,7 @@ public class NewEBookController implements StandardController
                     Image cover = null;
                     if (book.getCoverImage() != null)
                     {
-                        cover = book.getCoverImage().getAsNativeFormat();
+                        cover = book.getCoverImage().asNativeFormat();
                     }
                     List<String> descriptions = book.getMetadata().getDescriptions();
                     String description = "";

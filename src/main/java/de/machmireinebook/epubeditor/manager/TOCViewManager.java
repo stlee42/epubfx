@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Named;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
@@ -29,7 +30,7 @@ public class TOCViewManager
 
     private TreeView<TOCReference> treeView;
     private Book book;
-    private HTMLEditorManager editorManager;
+    private EditorTabManager editorManager;
     private TreeItem<TOCReference> rootItem;
 
     public void setTreeView(TreeView<TOCReference> treeView)
@@ -62,7 +63,7 @@ public class TOCViewManager
                                     .showError();
                             return;
                         }
-                        editorManager.openXHTMLFileInEditor(res);
+                        editorManager.openFileInEditor(res, MediaType.XHTML);
                     }
                 }
             }
@@ -104,7 +105,7 @@ public class TOCViewManager
         }
     }
 
-    public void setEditorManager(HTMLEditorManager editorManager)
+    public void setEditorManager(EditorTabManager editorManager)
     {
         this.editorManager = editorManager;
     }

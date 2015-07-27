@@ -21,6 +21,7 @@ import org.jdom2.Element;
 import org.jdom2.IllegalAddException;
 import org.jdom2.JDOMException;
 import org.jdom2.JDOMFactory;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
@@ -62,7 +63,7 @@ public class XHTMLUtils
 
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(new String(originalHtml, "UTF-8"));
-            Document jdomDocument = new JDomSerializer(new CleanerProperties(), true).createJDom(rootNode);
+            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), true).createJDom(rootNode);
 
             // hat die Datei ein anderes Encoding im HTML-Header deklariert?
             Element root = jdomDocument.getRootElement();
@@ -201,6 +202,7 @@ public class XHTMLUtils
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
 
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();
@@ -225,23 +227,24 @@ public class XHTMLUtils
 
             Document jdomDocument = new JDomSerializer(htmlCleaner.getProperties(), false).createJDom(rootNode);
             Element root = jdomDocument.getRootElement();
+
+            Element headElement = root.getChild("head");
+            for (Content content : originalHeadContent)
+            {
+                headElement.addContent(content);
+            }
+
             root.setNamespace(Constants.NAMESPACE_XHTML);
             root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
             IteratorIterable<Element> elements = root.getDescendants(Filters.element());
             for (Element element : elements)
             {
-                if (element.getNamespace() == null)
+                if (element.getNamespace() == null || element.getNamespace() == Namespace.NO_NAMESPACE) //kein oder der leere NS zum XHTML namespace machen
                 {
                     element.setNamespace(Constants.NAMESPACE_XHTML);
                 }
             }
             jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-
-            Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
-            for (Content content : originalHeadContent)
-            {
-                headElement.addContent(content);
-            }
 
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();

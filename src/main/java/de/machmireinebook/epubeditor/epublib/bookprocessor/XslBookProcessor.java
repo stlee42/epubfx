@@ -61,7 +61,7 @@ public class XslBookProcessor extends HtmlBookProcessor implements BookProcessor
 	    DocumentBuilder db = dbFactory.newDocumentBuilder();
 	    db.setEntityResolver(EpubProcessorSupport.getEntityResolver());
 
-	    Document doc = db.parse(new InputSource(resource.getReader()));
+	    Document doc = db.parse(new InputSource(resource.asReader()));
 	    
 	    Source htmlSource = new DOMSource(doc.getDocumentElement());
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();

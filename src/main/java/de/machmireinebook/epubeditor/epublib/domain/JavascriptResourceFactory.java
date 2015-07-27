@@ -43,6 +43,14 @@ public class JavascriptResourceFactory implements ResourceFactory
         return res;
     }
 
+    @Override
+    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    {
+        Resource res = new JavascriptResource(id, data, href);
+        res.setMediaType(mediaType);
+        return res;
+    }
+
 
     @Override
     public Resource createResource(byte[] data, String href, MediaType mediaType)

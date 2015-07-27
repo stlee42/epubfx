@@ -5,16 +5,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
+import de.machmireinebook.commons.cdi.BeanFactory;
+import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.manager.ClipManager;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
@@ -23,6 +37,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
+import org.jdom2.CDATA;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -39,7 +54,7 @@ public class EpubEditorConfiguration
 {
     public static final Logger logger = Logger.getLogger(EpubEditorConfiguration.class);
 
-    private static EpubEditorConfiguration instance = new EpubEditorConfiguration();
+    private static EpubEditorConfiguration instance;
 
     //color
     String color = "#0093FF";
@@ -50,6 +65,13 @@ public class EpubEditorConfiguration
     private List<OpenWithApplication> imageOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> cssOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> fontOpenWithApplications = new ArrayList<>();
+
+    private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
+
+    public static final int RECENT_FILE_NUMBER = 3;
+
+    @Inject @ClipManagerProducer
+    private ClipManager clipManager;
 
     public static class OpenWithApplication
     {
@@ -73,9 +95,13 @@ public class EpubEditorConfiguration
         }
     }
 
-
+    @Produces @EpubEditorConfigurationProducer
     public static EpubEditorConfiguration getInstance()
     {
+        if (instance == null)
+        {
+            instance = BeanFactory.getInstance().getBean(EpubEditorConfiguration.class);
+        }
         return instance;
     }
 
@@ -83,7 +109,7 @@ public class EpubEditorConfiguration
     {
     }
 
-    public void init()
+    public static void initLogger()
     {
         //log4j
         Layout layout = new PatternLayout("%d{HH:mm:ss} %-5p %c %x - %m\n");
@@ -118,9 +144,22 @@ public class EpubEditorConfiguration
                         addApplications(fontElement, fontOpenWithApplications);
                     }
 
+                    Element recentFilesElement = root.getChild("recent-files");
+                    if (recentFilesElement != null)
+                    {
+                        List<Element> pathElements = recentFilesElement.getChildren("path");
+                        for (Element pathElement : pathElements)
+                        {
+                            Path path = Paths.get(pathElement.getText());
+                            recentFiles.add(path);
+                        }
+                    }
+
                     Element layoutElement = root.getChild("layout");
                     if (layoutElement != null)
                     {
+                        EpubEditorMainController mainController = EpubEditorMainController.getInstance();
+
                         Element mainWindoElement = layoutElement.getChild("main-window");
                         if (mainWindoElement != null)
                         {
@@ -133,7 +172,7 @@ public class EpubEditorConfiguration
                             Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
                             if (isFullscreen)
                             {
-                                mainWindow.setMaximized(true);
+                                mainWindow.setFullScreen(true);
                                 mainWindow.setWidth(primaryScreenBounds.getWidth());
                                 mainWindow.setHeight(primaryScreenBounds.getHeight());
                                 mainWindow.setX(0);
@@ -141,6 +180,7 @@ public class EpubEditorConfiguration
                             }
                             else if (x >= 0.0 && y >= 0.0 && x < primaryScreenBounds.getWidth() - 100 && y < primaryScreenBounds.getHeight() - 100) // verhindern dass Fenster ausserhalb des sichtbaren Bereichs geöffnet wird
                             {
+                                mainWindow.setFullScreen(false);
                                 mainWindow.setWidth(width);
                                 mainWindow.setHeight(height);
                                 mainWindow.setX(x);
@@ -148,26 +188,23 @@ public class EpubEditorConfiguration
                             }
                         }
 
-                        EpubEditorMainController mainController = EpubEditorMainController.getInstance();
-
                         Element dividersElement = layoutElement.getChild("dividers");
                         if (dividersElement != null)
                         {
                             Element mainDividerElement = dividersElement.getChild("main-divider");
                             if (mainDividerElement != null)
                             {
+                                logger.debug("setting main divider");
                                 List<SplitPane.Divider> dividers = mainController.getMainDivider().getDividers();
                                 if (!"none".equals(mainDividerElement.getAttributeValue("divider-1")))
                                 {
-                                    //double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-1"));
-                                    //da es nicht richtig funktioniert erstmal hart codieren
-                                    dividers.get(0).setPosition(0.3);
+                                    double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-1"));
+                                    dividers.get(0).setPosition(value);
                                 }
                                 if (!"none".equals(mainDividerElement.getAttributeValue("divider-2")))
                                 {
-                                    //double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-2"));
-                                    //da es nicht richtig funktioniert erstmal hart codieren
-                                    dividers.get(1).setPosition(0.6);
+                                    double value = Double.parseDouble(mainDividerElement.getAttributeValue("divider-2"));
+                                    dividers.get(1).setPosition(value);
                                 }
                             }
 
@@ -212,12 +249,44 @@ public class EpubEditorConfiguration
                             mainController.getShowPreviewMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview")));
                         }
                     }
+
+
+                    Element clipsElement = root.getChild("clips");
+                    List<Element> children = clipsElement.getChildren();
+                    TreeItem<Clip> clipsRoot =  clipManager.getClipsRoot();
+                    readChildren(children, clipsRoot);
                 }
             }
         }
         catch (JDOMException | IOException e)
         {
             logger.error("", e);
+            //im fehlerfall leeres Document erzeugen
+            configurationDocument = new Document(new Element("configuration"));
+        }
+    }
+
+    private void readChildren(List<Element> children, TreeItem<Clip> parentTreeItem)
+    {
+        for (Element child : children)
+        {
+            if (child.getName().equals("clip"))
+            {
+                String name = child.getChildText("name");
+                String content = child.getChildText("content");
+                Clip clip = new Clip(name, content);
+                TreeItem<Clip> treeItem = new TreeItem<>(clip);
+                parentTreeItem.getChildren().add(treeItem);
+            }
+            else if (child.getName().equals("group"))
+            {
+                String name = child.getAttributeValue("name");
+                Clip clip = new Clip(name, true);
+                TreeItem<Clip> treeItem = new TreeItem<>(clip);
+                parentTreeItem.getChildren().add(treeItem);
+                List<Element> subChildren = child.getChildren();
+                readChildren(subChildren, treeItem);
+            }
         }
     }
 
@@ -315,6 +384,20 @@ public class EpubEditorConfiguration
                     openWithElement.addContent(fontElement);
                 }
                 saveApplications(fontElement, fontOpenWithApplications);
+
+                //recent files
+                Element recentFilesElement = root.getChild("recent-files");
+                if (recentFilesElement == null)
+                {
+                    recentFilesElement = new Element("recent-files");
+                    root.addContent(recentFilesElement);
+                }
+                for (Path recentFile : recentFiles)
+                {
+                    Element recentFileElement = new Element("path");
+                    recentFileElement.setText(recentFile.toString());
+                    recentFilesElement.addContent(recentFileElement);
+                }
 
                 //layout der oberfläche speichern
                 Element layoutElement = root.getChild("layout");
@@ -428,6 +511,17 @@ public class EpubEditorConfiguration
                 {
                     centerDividerElement.setAttribute("divider-1", "none");
                 }
+
+                Element clipsElement = root.getChild("clips");
+                if (clipsElement == null)
+                {
+                    clipsElement = new Element("clips");
+                    root.addContent(clipsElement);
+                }
+                //neu aus ClipManager aufbauen
+                clipsElement.removeContent();
+                TreeItem<Clip> clipRootItem = clipManager.getClipsRoot();
+                writeChildren(clipRootItem, clipsElement);
             }
         }
         try
@@ -446,6 +540,34 @@ public class EpubEditorConfiguration
 
     }
 
+    private void writeChildren(TreeItem<Clip> parentTreeItem, Element parentElement)
+    {
+        List<TreeItem<Clip>> treeItems = parentTreeItem.getChildren();
+        for (TreeItem<Clip> treeItem : treeItems)
+        {
+            if (treeItem.getValue().isGroup())
+            {
+                Element groupElement = new Element("group");
+                groupElement.setAttribute("name", treeItem.getValue().getName());
+                writeChildren(treeItem, groupElement);
+                parentElement.addContent(groupElement);
+            }
+            else
+            {
+                Element clipElement = new Element("clip");
+                parentElement.addContent(clipElement);
+
+                Element nameElement =  new Element("name");
+                clipElement.addContent(nameElement);
+                nameElement.setText(treeItem.getValue().getName());
+
+                Element contentElement =  new Element("content");
+                clipElement.addContent(contentElement);
+                contentElement.setContent(new CDATA(treeItem.getValue().getContent()));
+            }
+        }
+    }
+
     private void saveApplications(Element element, List<OpenWithApplication> applications)
     {
         if (element != null)
@@ -461,5 +583,8 @@ public class EpubEditorConfiguration
         }
     }
 
-
+    public ObservableList<Path> getRecentFiles()
+    {
+        return recentFiles;
+    }
 }

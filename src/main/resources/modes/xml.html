@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="http://localhost:8777/codemirror-4.4/lib/codemirror.css">
-    <script src="http://localhost:8777/codemirror-4.4/lib/codemirror.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/mode/xml/xml.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closebrackets.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/closetag.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/fold/xml-fold.js"></script>
-    <script src="http://localhost:8777/codemirror-4.4/addon/edit/matchbrackets.js"></script>
+    <link rel="stylesheet" href="http://localhost:8777/codemirror/lib/codemirror.css">
+    <script src="http://localhost:8777/codemirror/lib/codemirror.js"></script>
+    <script src="http://localhost:8777/codemirror/mode/xml/xml.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/closetag.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="http://localhost:8777/codemirror/addon/edit/matchbrackets.js"></script>
 
     <style type="text/css">
         .CodeMirror
@@ -37,7 +37,18 @@
         autoCloseBrackets: true,
         autoCloseTags: true,
         smartIndent:false,
+        extraKeys: {
+            "Ctrl-Z": function (instance) {
+                return false;
+            },
+            "Ctrl-Y": function (instance) {
+                return false;
+            }
+        },
         mode: {name: "xml", htmlMode: false}
+    });
+    editor.on('change', function(instance, changeObj){
+        onChangeListener.changed(instance, changeObj);
     });
 </script>
 </body>

@@ -15,8 +15,8 @@
                <children>
                   <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TableColumn prefWidth="308.0" text="Name" />
-                      <TableColumn prefWidth="160.0" text="Vorschau" />
+                      <TableColumn prefWidth="270.0" text="Name" />
+                      <TableColumn prefWidth="185.0" text="Vorschau" />
                     </columns>
                   </TableView>
                </children>
@@ -69,7 +69,7 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <RadioButton fx:id="flexibleWidthRadioButton" layoutX="26.0" layoutY="254.0" mnemonicParsing="false" text="Flexible Breite" toggleGroup="$widthHeightGroup" />
+            <RadioButton fx:id="flexibleWidthRadioButton" layoutX="26.0" layoutY="254.0" mnemonicParsing="false" selected="true" text="Flexible Breite" toggleGroup="$widthHeightGroup" />
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <TextField fx:id="percentWidthTextField" prefHeight="25.0" prefWidth="45.0" text="100" />
@@ -79,7 +79,7 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <CheckBox fx:id="maxPhysicalWidthCheckBox" mnemonicParsing="false" text="max. bis phys. Breite">
+            <CheckBox fx:id="maxPhysicalWidthCheckBox" mnemonicParsing="false" selected="true" text="max. bis phys. Breite">
                <VBox.margin>
                   <Insets left="10.0" />
                </VBox.margin>

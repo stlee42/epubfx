@@ -13,6 +13,8 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,7 +25,7 @@ import org.apache.log4j.Logger;
 public class EpubHttpHandler implements HttpHandler
 {
     public static final Logger logger = Logger.getLogger(EpubHttpHandler.class);
-    private Book book;
+    private ObjectProperty<Book> book = new SimpleObjectProperty<>();
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException
@@ -36,12 +38,12 @@ public class EpubHttpHandler implements HttpHandler
         InputStream body = httpExchange.getRequestBody();
         body.close();
         Headers headers = httpExchange.getResponseHeaders();
-        if ("GET".equals(command) && book != null)
+        if ("GET".equals(command) && book.get() != null)
         {
             String uri = requestURI.toString();
             uri = URLDecoder.decode(uri, "UTF-8");
             uri = uri.replaceFirst("/", "");
-            Resource resource = book.getResources().getByHref(uri);
+            Resource resource = book.get().getResources().getByHref(uri);
             if (resource != null)
             {
                 MediaType mediaType = resource.getMediaType();
@@ -65,12 +67,7 @@ public class EpubHttpHandler implements HttpHandler
         }
     }
 
-    public void setBook(Book book)
-    {
-        this.book = book;
-    }
-
-    public Book getBook()
+    public ObjectProperty<Book> bookProperty()
     {
         return book;
     }

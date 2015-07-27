@@ -16,6 +16,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -55,7 +56,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
     }
 
 
-    public static Resource createOPFResource(Book book) throws IllegalArgumentException, IllegalStateException
+    public static XMLResource createOPFResource(Book book) throws IllegalArgumentException, IllegalStateException
     {
         Document opfDocument = write(book);
 
@@ -64,10 +65,10 @@ public class PackageDocumentWriter extends PackageDocumentBase
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(opfDocument);
 
-        Resource resource = null;
+        XMLResource resource = null;
         try
         {
-            resource = new Resource("opf", text.getBytes(Constants.CHARACTER_ENCODING), "OEBPS/content.opf", MediaType.OPF);
+            resource = new XMLResource("opf", text.getBytes(Constants.CHARACTER_ENCODING), "OEBPS/content.opf", MediaType.OPF);
         }
         catch (UnsupportedEncodingException e)
         {
@@ -101,10 +102,8 @@ public class PackageDocumentWriter extends PackageDocumentBase
      *
      * @param book
      * @param root
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
-     * @throws javax.xml.stream.XMLStreamException
      */
     private static void writeSpine(Book book, Element root)
     {
@@ -114,7 +113,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
 
         if (book.getCoverPage() != null // there is a cover page
                 && book.getSpine().findFirstResourceById(book.getCoverPage().getId()) < 0)
-        { // cover page is not already in the spine
+        {   // cover page is not already in the spine
             // write the cover html file
             Element itemRefElement = new Element(OPFTags.itemref, NAMESPACE_OPF);
             itemRefElement.setAttribute(OPFAttributes.idref, book.getCoverPage().getId());
@@ -161,10 +160,8 @@ public class PackageDocumentWriter extends PackageDocumentBase
      *
      * @param resource
      * @param serializer
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
-     * @throws javax.xml.stream.XMLStreamException
      */
     private static void writeItem(Book book, Resource resource, Element manifestElement)
     {
@@ -200,7 +197,6 @@ public class PackageDocumentWriter extends PackageDocumentBase
     /**
      * List all spine references
      *
-     * @throws java.io.IOException
      * @throws IllegalStateException
      * @throws IllegalArgumentException
      */

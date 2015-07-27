@@ -99,6 +99,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
             outputter.setFormat(xmlFormat);
             outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
             String content = outputter.outputString(jdomDocument);
+            logger.debug("new content " + content);
             resource.setData(content.getBytes("UTF-8"));
             resource.setInputEncoding("UTF-8");
         }

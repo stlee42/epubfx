@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import de.machmireinebook.commons.images.ImageInfo;
+import de.machmireinebook.commons.lang.NumberUtils;
+
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import org.apache.log4j.Logger;
@@ -22,7 +27,9 @@ public class ImageResource extends Resource<Image>
     private double height;
 
     private Image image;
-    private ObjectProperty<Image> coverProperty;
+    private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
+    private ImageInfo imageInfo;
+    private BooleanProperty coverProperty;
 
     public ImageResource()
     {
@@ -37,12 +44,13 @@ public class ImageResource extends Resource<Image>
     public ImageResource(byte[] data, MediaType mediaType)
     {
         super(data, mediaType);
-        calculateWidthAndHeight();
+        calculateImageInfo();
     }
 
     public ImageResource(byte[] data, String href)
     {
         super(data, href);
+        calculateImageInfo();
     }
 
     public ImageResource(Reader in, String href) throws IOException
@@ -74,36 +82,31 @@ public class ImageResource extends Resource<Image>
     public void setData(byte[] data)
     {
         super.setData(data);
-        calculateWidthAndHeight();
+        calculateImageInfo();
     }
 
-    private void calculateWidthAndHeight()
+    private void calculateImageInfo()
     {
-        try
+        image = new Image(getInputStream());
+        imageProperty.setValue(image);
+        width = image.getWidth();
+        height = image.getHeight();
+
+        imageInfo = new ImageInfo();
+        imageInfo.setInput(getInputStream()); // in can be InputStream or RandomAccessFile
+        if (!imageInfo.check())
         {
-            image = new Image(getInputStream());
-            width = image.getWidth();
-            height = image.getHeight();
-        }
-        catch (IOException e)
-        {
-            logger.error("", e);
+            logger.error("Not a supported image file format.");
         }
     }
 
     @Override
-    public Image getAsNativeFormat()
+    public Image asNativeFormat()
     {
         if (image == null)
         {
-            try
-            {
-                image = new Image(getInputStream());
-            }
-            catch (IOException e)
-            {
-                logger.error("", e);
-            }
+            image = new Image(getInputStream());
+            imageProperty.setValue(image);
         }
         return image;
     }
@@ -128,11 +131,28 @@ public class ImageResource extends Resource<Image>
         this.height = height;
     }
 
-    public ObjectProperty<Image> coverProperty()
+    public ImageInfo getImageInfo()
+    {
+        return imageInfo;
+    }
+
+    public String getImageDescription()
+    {
+        String sizeInKB = NumberUtils.formatDouble(Math.round(getSize() / 1024.0 * 100) / 100.0);
+        return ((Double) image.getWidth()).intValue() + "×" + ((Double) image.getHeight()).intValue() + " px | "
+                + sizeInKB + " KB | " + imageInfo.getBitsPerPixel() + " bpp";
+    }
+
+    public ObjectProperty<Image> imageProperty()
+    {
+        return imageProperty;
+    }
+
+    public BooleanProperty coverProperty()
     {
         if (coverProperty == null)
         {
-            coverProperty = new SimpleObjectProperty<>(image);
+            coverProperty = new SimpleBooleanProperty();
         }
         return coverProperty;
     }

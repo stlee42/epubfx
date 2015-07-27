@@ -16,7 +16,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.manager.HTMLEditorManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -34,10 +34,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
@@ -58,9 +56,9 @@ public class AddStylesheetController implements StandardController
     private ObservableList<StylesheetResource> stylesheetResources = FXCollections.observableArrayList();
 
     private static AddStylesheetController instance;
-    private HTMLEditorManager editorManager;
+    private EditorTabManager editorManager;
 
-    public void setEditorManager(HTMLEditorManager editorManager)
+    public void setEditorManager(EditorTabManager editorManager)
     {
         this.editorManager = editorManager;
     }
@@ -159,16 +157,12 @@ public class AddStylesheetController implements StandardController
         tableView.setEditable(true);
         TableColumn<StylesheetResource, ObservableValue<Boolean>> tc = (TableColumn<StylesheetResource, ObservableValue<Boolean>>) tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("included"));
-        Callback<Integer, ObservableValue<Boolean>> propertyCallback = new Callback<Integer, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(Integer param)
+        Callback<Integer, ObservableValue<Boolean>> propertyCallback = param -> {
+            if (param != null)
             {
-                if (param != null)
-                {
-                    return stylesheetResources.get(param).includedProperty();
-                }
-                return null;
+                return stylesheetResources.get(param).includedProperty();
             }
+            return null;
         };
         tc.setEditable(true);
         tc.setCellFactory(CheckBoxTableCell.forTableColumn(propertyCallback, false));
@@ -249,63 +243,51 @@ public class AddStylesheetController implements StandardController
             stylesheetResource.setTotalCount(resources.size());
             stylesheetResource.resetCount();
         }
-        try
+        for (Resource resource : resources)
         {
-            for (Resource resource : resources)
+            Document document = ((XHTMLResource)resource).asNativeFormat();
+            Element root = document.getRootElement();
+            if (root != null)
             {
-                Document document = ((XHTMLResource)resource).getAsNativeFormat();
-                Element root = document.getRootElement();
-                if (root != null)
+                Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
+                headElements.put(headElement, resource);
+                List<Element> toRemove = new ArrayList<>();
+                if (headElement != null)
                 {
-                    Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
-                    headElements.put(headElement, resource);
-                    List<Element> toRemove = new ArrayList<>();
-                    if (headElement != null)
+                    List<Element> styleElements = headElement.getChildren("link", Constants.NAMESPACE_XHTML);
+                    for (Element styleElement : styleElements)
                     {
-                        List<Element> styleElements = headElement.getChildren("link", Constants.NAMESPACE_XHTML);
-                        for (Element styleElement : styleElements)
+                        if ("stylesheet".equals(styleElement.getAttributeValue("rel")))
                         {
-                            if ("stylesheet".equals(styleElement.getAttributeValue("rel")))
+                            toRemove.add(styleElement);
+                            String href = styleElement.getAttributeValue("href");
+                            Resource cssResource = currentBookProperty.get().getResources().getByResolvedHref(resource, href);
+                            if (cssResource != null)
                             {
-                                toRemove.add(styleElement);
-                                String href = styleElement.getAttributeValue("href");
-                                Resource cssResource = currentBookProperty.get().getResources().getByResolvedHref(resource, href);
-                                if (cssResource != null)
+                                for (StylesheetResource stylesheetResource : stylesheetResources)
                                 {
-                                    for (StylesheetResource stylesheetResource : stylesheetResources)
+                                    if (stylesheetResource.getStylesheet().equals(cssResource))
                                     {
-                                        if (stylesheetResource.getStylesheet().equals(cssResource))
-                                        {
-                                            stylesheetResource.increase();
-                                        }
+                                        stylesheetResource.increase();
                                     }
                                 }
-                                else
-                                {
-                                    logger.warn("css resource with href " + href + " not found");
-                                }
+                            }
+                            else
+                            {
+                                logger.warn("css resource with href " + href + " not found");
                             }
                         }
-                        for (Element element : toRemove) //style elemente erstmal weg, bei ok fügen wir die wieder in der richtigen Reihenfolge ein
-                        {
-                            headElement.removeContent(element);
-                        }
+                    }
+                    for (Element element : toRemove) //style elemente erstmal weg, bei ok fügen wir die wieder in der richtigen Reihenfolge ein
+                    {
+                        headElement.removeContent(element);
                     }
                 }
             }
-            for (StylesheetResource stylesheetResource : stylesheetResources)
-            {
-                stylesheetResource.initIncluded();
-            }
         }
-        catch (IOException | JDOMException e)
+        for (StylesheetResource stylesheetResource : stylesheetResources)
         {
-            logger.error("", e);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Stylesheet hinzufügen")
-                    .message("Fehler beim Stylesheet hinzufügen.")
-                    .showException(e);
+            stylesheetResource.initIncluded();
         }
     }
 

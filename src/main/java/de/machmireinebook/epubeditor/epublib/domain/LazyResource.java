@@ -24,7 +24,7 @@ public class LazyResource extends Resource {
 	private String filename;
 	private long cachedSize;
 	
-	private static final Logger LOG = Logger.getLogger(LazyResource.class);
+	private static final Logger logger = Logger.getLogger(LazyResource.class);
 	
 	/**
 	 * Creates a Lazy resource, by not actually loading the data for this entry.
@@ -69,13 +69,22 @@ public class LazyResource extends Resource {
 	 * 
 	 * @throws java.io.IOException
 	 */
-	public InputStream getInputStream() throws IOException {
-		if (isInitialized()) {
-			return new ByteArrayInputStream(getData());
-		} else {
-			return getResourceStream();
+	public InputStream getInputStream()
+	{
+		try
+		{
+			if (isInitialized()) {
+					return new ByteArrayInputStream(getData());
+			} else {
+				return getResourceStream();
+			}
 		}
-	}
+		catch (IOException e)
+		{
+			logger.error("", e);
+			throw new ResourceDataException(e);
+		}
+}
 	
 	/**
 	 * Initializes the resource by loading its data into memory.
@@ -95,24 +104,32 @@ public class LazyResource extends Resource {
 	 * 
 	 * @return The contents of the resource
 	 */
-	public byte[] getData() throws IOException
+	public byte[] getData()
     {
 		
-		if ( data == null ) {
+		if ( data == null )
+		{
 			
-			LOG.debug("Initializing lazy resource " + filename + "#" + this.getHref() );
-			
-			InputStream in = getResourceStream();
-			byte[] readData = IOUtils.toByteArray(in, (int) this.cachedSize);
-			if ( readData == null ) {
-			    throw new IOException("Could not load the contents of entry " + this.getHref() + " from epub file " + filename);
-			} else {
-			    this.data = readData;
-			}
-			
-			in.close();
-		}
+			logger.debug("Initializing lazy resource " + filename + "#" + this.getHref());
 
+			InputStream in;
+			try
+			{
+				in = getResourceStream();
+				byte[] readData = IOUtils.toByteArray(in, (int) this.cachedSize);
+				if (readData == null ) {
+					throw new ResourceDataException("Could not load the contents of entry " + this.getHref() + " from epub file " + filename);
+				} else {
+					this.data = readData;
+				}
+				in.close();
+			}
+			catch (IOException e)
+			{
+				logger.error("", e);
+				throw new ResourceDataException(e);
+			}
+		}
 		return data;
 	}
 

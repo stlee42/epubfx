@@ -3,19 +3,25 @@ package de.machmireinebook.epubeditor.gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.inject.Inject;
 
 import de.machmireinebook.commons.javafx.cells.ImageCellFactory;
 import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.commons.lang.NumberUtils;
+import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
+import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.manager.HTMLEditorManager;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -42,7 +48,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -92,6 +97,13 @@ public class InsertMediaController implements Initializable, StandardController
     private Stage stage;
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
 
+    @Inject
+    @EditorTabManagerProducer
+    EditorTabManager editorManager;
+    @Inject
+    @EpubEditorMainControllerProducer
+    EpubEditorMainController mainController;
+
     private static InsertMediaController instance;
 
     @SuppressWarnings("unchecked")
@@ -107,8 +119,8 @@ public class InsertMediaController implements Initializable, StandardController
         tc.setSortable(true);
 
         TableColumn<ImageResource, Image> tc2 = (TableColumn<ImageResource, Image>) tableView.getColumns().get(1);
-        tc2.setCellValueFactory(new PropertyValueFactory<>("cover"));
-        tc2.setCellFactory(new ImageCellFactory<>(null, 100d));
+        tc2.setCellValueFactory(new PropertyValueFactory<>("image"));
+        tc2.setCellFactory(new ImageCellFactory<>(160d, null));
         tc2.setSortable(false);
 
         tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ImageResource>()
@@ -117,8 +129,11 @@ public class InsertMediaController implements Initializable, StandardController
             public void changed(ObservableValue<? extends ImageResource> observable, ImageResource oldValue, ImageResource newValue)
             {
                 refreshImageView(newValue);
-                widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
-                heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
+                if (newValue != null)
+                {
+                    widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
+                    heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
+                }
             }
         });
         tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -199,7 +214,6 @@ public class InsertMediaController implements Initializable, StandardController
             }
             snippet = StringUtils.replace(snippet, "${style}", style);
 
-            HTMLEditorManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
             CodeEditor editor = editorManager.getCurrentEditor();
             EditorPosition cursorPosition = editor.getEditorCursorPosition();
             logger.info("current position" + cursorPosition.toJson());
@@ -224,7 +238,7 @@ public class InsertMediaController implements Initializable, StandardController
 
     public void otherFileButtonAction(ActionEvent actionEvent)
     {
-        EpubEditorMainController.getInstance().addExistingFiles();
+        mainController.addExistingFiles();
         refresh();
     }
 
@@ -240,6 +254,7 @@ public class InsertMediaController implements Initializable, StandardController
         {
             imageResources.add((ImageResource)resource);
         }
+        Collections.sort(imageResources, new ResourceFilenameComparator());
         tableView.setItems(FXCollections.observableList(imageResources));
         tableView.getSelectionModel().select(0);
     }
@@ -248,9 +263,9 @@ public class InsertMediaController implements Initializable, StandardController
     {
         if (resource != null)
         {
-            Image image = resource.getAsNativeFormat();
+            Image image = resource.asNativeFormat();
             imageView.setImage(image);
-            imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
+            imageValuesLabel.setText(resource.getImageDescription());
         }
         else
         {
@@ -267,15 +282,8 @@ public class InsertMediaController implements Initializable, StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(new EventHandler<WindowEvent>()
-        {
-            @Override
-            public void handle(WindowEvent event)
-            {
-                refresh();
-                HTMLEditorManager editorManager = EpubEditorMainController.getInstance().getEditorManager();
-                CodeEditor editor = editorManager.getCurrentEditor();
-            }
+        stage.setOnShown(event -> {
+            refresh();
         });
     }
 

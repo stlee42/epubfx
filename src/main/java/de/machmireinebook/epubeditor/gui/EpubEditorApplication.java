@@ -20,8 +20,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Pos;
@@ -87,8 +85,8 @@ public class EpubEditorApplication extends Application
             protected Boolean call() throws Exception
             {
                 updateProgress(0, 3);
-                updateMessage("Verbinde mit Datenbank");
-                EpubEditorConfiguration.getInstance().init();
+                updateMessage("Initialisierung");
+                EpubEditorConfiguration.initLogger();
 
                 updateProgress(1, 3);
                 updateMessage("Starte Basiskomponenten");
@@ -106,8 +104,10 @@ public class EpubEditorApplication extends Application
                 server.createContext("/", epubHttpHandler);
 
                 ResourceHttpHandler resourceHttpHandler = new ResourceHttpHandler();
-                server.createContext("/codemirror-4.4", resourceHttpHandler);
+                server.createContext("/codemirror", resourceHttpHandler);
                 server.createContext("/dtd", resourceHttpHandler);
+                server.createContext("/modes", resourceHttpHandler);
+                server.createContext("/images", resourceHttpHandler);
 
                 server.start();
 
@@ -132,65 +132,73 @@ public class EpubEditorApplication extends Application
 
     private void createMainStage()
     {
-            mainStage = new Stage(StageStyle.DECORATED);
-            EpubEditorConfiguration.getInstance().setMainWindow(mainStage);
+        mainStage = new Stage(StageStyle.DECORATED);
+        EpubEditorConfiguration configuration = EpubEditorConfiguration.getInstance();
+        configuration.setMainWindow(mainStage);
 
-            Method staticMethod;
-            final EpubEditorMainController controller;
-            Class<EpubEditorMainController> controllerClass = EpubEditorMainController.class;
-            try
+        Method staticMethod;
+        final EpubEditorMainController controller;
+        Class<EpubEditorMainController> controllerClass = EpubEditorMainController.class;
+        try
+        {
+            staticMethod = EpubEditorMainController.class.getMethod("getInstance");
+        }
+        catch (NoSuchMethodException e)
+        {
+            logger.error("", e);
+            Dialogs.create().showException(e);
+            return;
+        }
+
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"), null, new JavaFXBuilderFactory(),
+                    type -> BeanFactory.getInstance().getBean(type));
+            Pane root = loader.load();
+            Scene scene = new Scene(root);
+            if (getClass().getResource("/application.css") != null)
             {
-                staticMethod = EpubEditorMainController.class.getMethod("getInstance");
-            }
-            catch (NoSuchMethodException e)
-            {
-                logger.error("", e);
-                Dialogs.create().showException(e);
-                return;
+                scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
             }
 
-            try
+            setUserAgentStylesheet(STYLESHEET_MODENA);
+            mainStage.setScene(scene);
+            //set icon of the application
+            mainStage.getIcons().add(applicationIcon);
+            mainStage.setTitle("epub4mmee");
+        }
+        catch (IOException e)
+        {
+            logger.error("", e);
+            Dialogs.create().showException(e);
+        }
+        try
+        {
+            controller = (EpubEditorMainController) staticMethod.invoke(controllerClass);
+            controller.setStage(mainStage);
+            controller.setEpubHttpHandler(epubHttpHandler);
+            mainStage.setOnShown(event ->
             {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"), null, new JavaFXBuilderFactory(),
-                        type -> BeanFactory.getInstance().getBean(type));
-                Pane root = loader.load();
-                Scene scene = new Scene(root);
-                if (getClass().getResource("/application.css") != null)
-                {
-                    scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
-                }
-
-                setUserAgentStylesheet(STYLESHEET_MODENA);
-                mainStage.setScene(scene);
-                //set icon of the application
-                mainStage.getIcons().add(applicationIcon);
-                mainStage.setTitle("epub4mmee");
-            }
-            catch (IOException e)
-            {
-                logger.error("", e);
-                Dialogs.create().showException(e);
-            }
-            try
-            {
-                controller = (EpubEditorMainController) staticMethod.invoke(controllerClass);
-                controller.setStage(mainStage);
-                controller.setEpubHttpHandler(epubHttpHandler);
-                mainStage.setOnShown(event -> controller.newMinimalEpubAction());
-            }
-            catch (IllegalAccessException | InvocationTargetException e)
-            {
-                logger.error("", e);
-                Dialogs.create().showException(e);
-            }
+                configuration.readConfiguration();
+                controller.newMinimalEpubAction();
+            });
+        }
+        catch (IllegalAccessException | InvocationTargetException e)
+        {
+            logger.error("", e);
+            Dialogs.create().showException(e);
+        }
     }
 
-    private void showSplash(final Stage initStage, final Task<Boolean> task) {
+    private void showSplash(final Stage initStage, final Task<Boolean> task)
+    {
         progressText.textProperty().bind(task.messageProperty());
         loadProgress.progressProperty().bind(task.progressProperty());
-        task.stateProperty().addListener(new ChangeListener<Worker.State>() {
+        task.stateProperty().addListener(new ChangeListener<Worker.State>()
+        {
             @Override
-            public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
+            public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState)
+            {
                 if (newState == Worker.State.SUCCEEDED)
                 {
                     loadProgress.progressProperty().unbind();
@@ -199,13 +207,10 @@ public class EpubEditorApplication extends Application
                     FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
                     fadeSplash.setFromValue(1.0);
                     fadeSplash.setToValue(0.0);
-                    fadeSplash.setOnFinished(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent actionEvent) {
-                            initStage.hide();
-                            createMainStage();
-                            mainStage.show();
-                        }
+                    fadeSplash.setOnFinished(actionEvent -> {
+                        initStage.hide();
+                        createMainStage();
+                        mainStage.show();
                     });
                     fadeSplash.play();
                 }
