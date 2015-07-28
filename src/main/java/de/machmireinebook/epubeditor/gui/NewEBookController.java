@@ -14,13 +14,12 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.commons.javafx.cells.ImageCellFactory;
-import de.machmireinebook.commons.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
 import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,6 +36,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
 
 /**

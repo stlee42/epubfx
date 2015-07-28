@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.commons.javafx.cells.ImageCellFactory;
-import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 
 import javafx.beans.value.ChangeListener;
@@ -32,6 +31,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import jidefx.scene.control.searchable.TableViewSearchable;
 
 /**
  * User: mjungierek

@@ -1,7 +1,7 @@
 <ivy-module version="2.0">
     <info organisation="de.machmireinebook" module="epub-editor"/>
     <dependencies>
-        <dependency org="com.eaio.stringsearch" name="stringsearch" rev="2"/>
         <dependency org="org.languagetool" name="language-de" rev="2.8"/>
+        <dependency org="com.jidesoft" name="jidefx-common" rev="0.9.1"/>
     </dependencies>
 </ivy-module>

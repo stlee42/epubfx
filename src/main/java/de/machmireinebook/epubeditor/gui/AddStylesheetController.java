@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.commons.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 import javafx.beans.property.ObjectProperty;

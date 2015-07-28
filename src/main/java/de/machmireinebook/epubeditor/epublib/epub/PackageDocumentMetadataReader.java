@@ -7,11 +7,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.commons.jdom2.JDOM2Utils;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

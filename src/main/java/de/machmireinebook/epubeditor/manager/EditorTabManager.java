@@ -15,8 +15,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
 import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
 import de.machmireinebook.epubeditor.domain.Clip;
@@ -37,6 +36,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import javafx.application.Platform;

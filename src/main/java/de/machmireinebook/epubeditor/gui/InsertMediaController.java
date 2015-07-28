@@ -9,9 +9,6 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.commons.javafx.cells.ImageCellFactory;
-import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
-import de.machmireinebook.commons.lang.NumberUtils;
 import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
 import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -21,7 +18,9 @@ import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.util.NumberUtils;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -48,6 +47,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

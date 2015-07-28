@@ -17,10 +17,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
-import de.machmireinebook.commons.javafx.FXUtils;
-import de.machmireinebook.commons.javafx.control.searchable.TreeViewSearchable;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
 import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
 import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
@@ -35,6 +33,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
@@ -77,6 +76,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import jidefx.scene.control.searchable.TreeViewSearchable;
 import org.apache.log4j.Logger;
 import org.controlsfx.dialog.Dialogs;
 

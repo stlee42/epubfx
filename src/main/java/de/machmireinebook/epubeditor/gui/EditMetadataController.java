@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
@@ -32,6 +31,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
 
 import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;

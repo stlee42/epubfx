@@ -7,8 +7,8 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.nio.file.Path;
 
-import de.machmireinebook.commons.lang.ToStringConvertible;
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 

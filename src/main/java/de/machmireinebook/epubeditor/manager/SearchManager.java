@@ -9,7 +9,7 @@ import java.util.Optional;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
 import de.machmireinebook.epubeditor.epublib.domain.Book;

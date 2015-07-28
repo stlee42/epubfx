@@ -20,7 +20,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="commons" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -50,8 +49,6 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="codemirror" level="application" />
-    <orderEntry type="library" name="xml" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -77,6 +74,7 @@
           <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.lucene/lucene-core/jars/lucene-core-4.10.1.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.languagetool/hunspell-native-libs/jars/hunspell-native-libs-2.8.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/de.abelssoft/jwordsplitter/jars/jwordsplitter-3.4.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/com.jidesoft/jidefx-common/jars/jidefx-common-0.9.1.jar!/" />
         </CLASSES>
         <JAVADOC>
           <root url="jar://$USER_HOME$/.ivy2/cache/org.languagetool/language-de/javadocs/language-de-2.8-javadoc.jar!/" />
@@ -91,6 +89,7 @@
           <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.tika/tika-core/javadocs/tika-core-1.5-javadoc.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.lucene/lucene-core/javadocs/lucene-core-4.10.1-javadoc.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/de.abelssoft/jwordsplitter/javadocs/jwordsplitter-3.4-javadoc.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/com.jidesoft/jidefx-common/javadocs/jidefx-common-0.9.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
           <root url="jar://$USER_HOME$/.ivy2/cache/org.languagetool/language-de/sources/language-de-2.8-sources.jar!/" />
@@ -106,6 +105,7 @@
           <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.lucene/lucene-core/sources/lucene-core-4.10.1-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.languagetool/hunspell-native-libs/sources/hunspell-native-libs-2.8-sources.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/de.abelssoft/jwordsplitter/sources/jwordsplitter-3.4-sources.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/com.jidesoft/jidefx-common/sources/jidefx-common-0.9.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

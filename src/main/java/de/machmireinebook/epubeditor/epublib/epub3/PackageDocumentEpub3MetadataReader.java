@@ -6,9 +6,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.commons.jdom2.JDOM2Utils;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

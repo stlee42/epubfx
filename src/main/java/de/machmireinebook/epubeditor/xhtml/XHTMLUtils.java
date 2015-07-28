@@ -5,14 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import de.machmireinebook.commons.htmlcleaner.CleanerProperties;
-import de.machmireinebook.commons.htmlcleaner.HtmlCleaner;
-import de.machmireinebook.commons.htmlcleaner.JDomSerializer;
-import de.machmireinebook.commons.htmlcleaner.TagNode;
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
+import de.machmireinebook.epubeditor.htmlcleaner.CleanerProperties;
+import de.machmireinebook.epubeditor.htmlcleaner.HtmlCleaner;
+import de.machmireinebook.epubeditor.htmlcleaner.JDomSerializer;
+import de.machmireinebook.epubeditor.htmlcleaner.TagNode;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 
 import org.apache.log4j.Logger;
 import org.jdom2.Content;

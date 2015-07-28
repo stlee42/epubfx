@@ -8,8 +8,8 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 

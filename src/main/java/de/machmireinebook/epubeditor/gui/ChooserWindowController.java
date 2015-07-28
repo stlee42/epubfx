@@ -3,8 +3,6 @@ package de.machmireinebook.epubeditor.gui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.commons.javafx.control.searchable.TableViewSearchable;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
 
 /**

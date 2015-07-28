@@ -2,8 +2,8 @@ package de.machmireinebook.epubeditor.gui;
 
 import java.io.IOException;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;

@@ -13,12 +13,12 @@ import java.util.List;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import de.machmireinebook.commons.cdi.BeanFactory;
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
 import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
 import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.ClipManager;
 
 import javafx.collections.FXCollections;

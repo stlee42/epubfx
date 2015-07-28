@@ -14,9 +14,9 @@ import java.util.function.Consumer;
 
 import javax.inject.Named;
 
-import de.machmireinebook.commons.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import javafx.beans.property.BooleanProperty;

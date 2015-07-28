@@ -3,14 +3,14 @@ package de.machmireinebook.epubeditor.epublib.bookprocessor;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import de.machmireinebook.commons.htmlcleaner.HtmlCleaner;
-import de.machmireinebook.commons.htmlcleaner.JDomSerializer;
-import de.machmireinebook.commons.htmlcleaner.TagNode;
-import de.machmireinebook.commons.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.htmlcleaner.HtmlCleaner;
+import de.machmireinebook.epubeditor.htmlcleaner.JDomSerializer;
+import de.machmireinebook.epubeditor.htmlcleaner.TagNode;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import org.apache.log4j.Logger;

@@ -2,7 +2,7 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.nio.file.Path;
 
-import de.machmireinebook.commons.javafx.FXUtils;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
 
 import javafx.scene.image.Image;
 

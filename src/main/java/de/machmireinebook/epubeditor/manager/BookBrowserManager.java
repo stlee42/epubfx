@@ -17,8 +17,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.machmireinebook.commons.javafx.FXUtils;
-import de.machmireinebook.commons.javafx.cells.EditingTreeCell;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -35,6 +33,8 @@ import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
+import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 
 import com.google.common.io.Files;
 import javafx.application.Platform;

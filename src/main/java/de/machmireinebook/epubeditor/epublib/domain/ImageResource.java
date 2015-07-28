@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import de.machmireinebook.commons.images.ImageInfo;
-import de.machmireinebook.commons.lang.NumberUtils;
+import de.machmireinebook.epubeditor.util.ImageInfo;
+import de.machmireinebook.epubeditor.util.NumberUtils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
