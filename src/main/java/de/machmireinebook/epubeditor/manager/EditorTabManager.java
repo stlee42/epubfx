@@ -23,7 +23,6 @@ import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.editor.EditorRange;
-import de.machmireinebook.epubeditor.editor.EditorToken;
 import de.machmireinebook.epubeditor.editor.XHTMLCodeEditor;
 import de.machmireinebook.epubeditor.editor.XMLCodeEditor;
 import de.machmireinebook.epubeditor.editor.XMLTagPair;
@@ -38,7 +37,6 @@ import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -48,7 +46,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.ScheduledService;
@@ -59,6 +56,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -75,7 +73,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 import org.jdom2.Content;
 import org.jdom2.DocType;
 import org.jdom2.JDOMException;
@@ -103,7 +101,7 @@ public class EditorTabManager
     private TabPane tabPane;
     private ObjectProperty<CodeEditor> currentEditor = new SimpleObjectProperty<>();
     //getrennte Verwaltung der current resource für html und css, da der Previewer auf der html property lauscht und
-    // wenn ein css bearbeitet wird, das letzte html-doument weiterhin im previewer angezeigt werden soll
+    // wenn ein css bearbeitet wird, das letzte html-dokument weiterhin im previewer angezeigt werden soll
     private ReadOnlyObjectWrapper<Resource> currentSearchableResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentCssResource = new ReadOnlyObjectWrapper<>();
@@ -151,12 +149,11 @@ public class EditorTabManager
             }
             catch (IOException e)
             {
-                Dialogs.create()
-                        .owner(tabPane)
-                        .title("Bild anzeigen")
-                        .masthead(null)
-                        .message("Fehler beim Öffnen eines Bildes.")
-                        .showException(e);
+                ExceptionDialog dialog = new ExceptionDialog(e);
+                dialog.setTitle("Show image");
+                dialog.setContentText("Could not open image file, look for details at exception trace");
+                dialog.showAndWait();
+
                 logger.error("", e);
             }
         }
@@ -271,13 +268,13 @@ public class EditorTabManager
         contextMenuXHTML.getItems().add(clipsItem);
         contextMenuXHTML.getItems().add(separatorItem);
 
-        MenuItem itemRepairHTML = new MenuItem("HTML reparieren");
+        MenuItem itemRepairHTML = new MenuItem("Repair HTML");
         itemRepairHTML.setOnAction(e -> {
             beautifyOrRepairHTML("repair");
         });
         contextMenuXHTML.getItems().add(itemRepairHTML);
 
-        MenuItem itemBeautifyHTML = new MenuItem("HTML formatieren");
+        MenuItem itemBeautifyHTML = new MenuItem("Format HTML");
         itemBeautifyHTML.setOnAction(e -> {
             beautifyOrRepairHTML("format");
         });
@@ -285,7 +282,7 @@ public class EditorTabManager
 
         contextMenuXHTML.getItems().add(separatorItem);
 
-        MenuItem openInExternalBrowserItem = new MenuItem("In externem Browser öffnen");
+        MenuItem openInExternalBrowserItem = new MenuItem("Open external Browser");
         openInExternalBrowserItem.setOnAction(e -> {
             openInExternalBrowser(currentEditor);
         });
@@ -296,25 +293,21 @@ public class EditorTabManager
         contextMenuXML.setAutoFix(true);
         contextMenuXML.setAutoHide(true);
 
-        MenuItem generateUuidMenuItem = new MenuItem("Neue UUID generieren");
+        MenuItem generateUuidMenuItem = new MenuItem("Generate new UUID");
         generateUuidMenuItem.setOnAction(e -> {
             book.getMetadata().generateNewUuid();
             bookBrowserManager.refreshOpf();
         });
         contextMenuXML.getItems().add(generateUuidMenuItem);
-        currentXMLResource.addListener(new ChangeListener<Resource>()
+        currentXMLResource.addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Resource> observable, Resource oldValue, Resource newValue)
+            if (newValue != null && currentXMLResource.get().mediaTypeProperty().getValue().equals(MediaType.OPF))
             {
-                if (newValue != null && currentXMLResource.get().mediaTypeProperty().getValue().equals(MediaType.OPF))
-                {
-                    generateUuidMenuItem.visibleProperty().setValue(true);
-                }
-                else
-                {
-                    generateUuidMenuItem.visibleProperty().setValue(false);
-                }
+                generateUuidMenuItem.visibleProperty().setValue(true);
+            }
+            else
+            {
+                generateUuidMenuItem.visibleProperty().setValue(false);
             }
         });
 
@@ -322,13 +315,13 @@ public class EditorTabManager
         contextMenuXML.getItems().add(separatorItem2);
         separatorItem2.visibleProperty().bind(generateUuidMenuItem.visibleProperty());
 
-        MenuItem itemRepairXML = new MenuItem("XML reparieren");
+        MenuItem itemRepairXML = new MenuItem("Repair XML");
         itemRepairXML.setOnAction(e -> {
             beautifyOrRepairXML("repair");
         });
         contextMenuXML.getItems().add(itemRepairXML);
 
-        MenuItem itemBeautifyXML = new MenuItem("XML formatieren");
+        MenuItem itemBeautifyXML = new MenuItem("Format XML");
         itemBeautifyXML.setOnAction(e -> {
             beautifyOrRepairXML("format");
         });
@@ -338,11 +331,11 @@ public class EditorTabManager
         contextMenuCSS = new ContextMenu();
         contextMenuCSS.setAutoFix(true);
         contextMenuCSS.setAutoHide(true);
-        MenuItem formatCSSOneLineItem = new MenuItem("Styles in je einer Zeile formatieren");
+        MenuItem formatCSSOneLineItem = new MenuItem("Format styles in line");
         formatCSSOneLineItem.setOnAction(e -> beautifyCSS("one_line"));
         contextMenuCSS.getItems().add(formatCSSOneLineItem);
 
-        MenuItem formatCSSMultipleLinesItem = new MenuItem("Styles in mehreren Zeilen formatieren");
+        MenuItem formatCSSMultipleLinesItem = new MenuItem("Format styles in multiple lines");
         formatCSSMultipleLinesItem.setOnAction(e -> beautifyCSS("multiple_lines"));
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
@@ -426,11 +419,11 @@ public class EditorTabManager
         catch (IOException | JDOMException e)
         {
             logger.error("", e);
-            Dialogs.create()
-                    .owner(tabPane)
-                    .title("Formatierung nicht möglich")
-                    .message("Kann Datei nicht formatieren. Bitte die Fehlermeldung an den Hersteller weitergeben.")
-                    .showException(e);
+
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.setTitle("Formating not possible");
+            dialog.setContentText("Could not format file, look for details at exception trace");
+            dialog.showAndWait();
         }
     }
 
@@ -444,11 +437,11 @@ public class EditorTabManager
         tab.setClosable(true);
         if (resource == null)
         {
-            Dialogs.create()
-                    .owner(tabPane)
-                    .title("Datei nicht vorhanden")
-                    .message("Die angeforderte Datei ist nicht vorhanden und kann deshalb nicht geöffnet werden.")
-                    .showError();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("File not found");
+            alert.setContentText("Could not open image, because file not found");
+            alert.showAndWait();
+
             return;
         }
         tab.setText(resource.getFileName());
@@ -495,11 +488,11 @@ public class EditorTabManager
             tab.setClosable(true);
             if (resource == null)
             {
-                Dialogs.create()
-                        .owner(tabPane)
-                        .title("Datei nicht vorhanden")
-                        .message("Die angeforderte Datei ist nicht vorhanden und kann deshalb nicht geöffnet werden.")
-                        .showError();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("File not found");
+                alert.setContentText("Could not add stylesheet, because file not found");
+                alert.showAndWait();
+
                 return;
             }
             tab.setText(resource.getFileName());
@@ -544,51 +537,19 @@ public class EditorTabManager
             tabPane.getSelectionModel().select(tab);
 
             final String code = content;
-            editor.stateProperty().addListener(new ChangeListener<Worker.State>()
+            editor.stateProperty().addListener((observable, oldValue, newValue) ->
             {
-                @Override
-                public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue)
+                if (newValue.equals(Worker.State.SUCCEEDED))
                 {
-                    if (newValue.equals(Worker.State.SUCCEEDED))
-                    {
-                        openingEditorTab = true;
-                        editor.setCode(code);
-                        editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
-                        ((AnchorPane) editor).widthProperty().addListener(new ChangeListener<Number>()
-                        {
-                            @Override
-                            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-                            {
-                                editor.setCodeEditorSize(newValue.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20);
-                            }
-                        });
-                        ((AnchorPane) editor).heightProperty().addListener(new ChangeListener<Number>()
-                        {
-                            @Override
-                            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-                            {
-                                editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue.doubleValue() - 20);
-                            }
-                        });
-                        editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
-                        ((AnchorPane) editor).widthProperty().addListener(new ChangeListener<Number>()
-                        {
-                            @Override
-                            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-                            {
-                                editor.setCodeEditorSize(newValue.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20);
-                            }
-                        });
-                        ((AnchorPane) editor).heightProperty().addListener(new ChangeListener<Number>()
-                        {
-                            @Override
-                            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-                            {
-                                editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue.doubleValue() - 20);
-                            }
-                        });
-                        openingEditorTab = false;
-                    }
+                    openingEditorTab = true;
+                    editor.setCode(code);
+                    editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
+                    ((AnchorPane) editor).widthProperty().addListener((observable12, oldValue1, newValue1) -> editor.setCodeEditorSize(newValue1.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20));
+                    ((AnchorPane) editor).heightProperty().addListener((observable13, oldValue12, newValue12) -> editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue12.doubleValue() - 20));
+                    editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
+                    ((AnchorPane) editor).widthProperty().addListener((observable14, oldValue13, newValue13) -> editor.setCodeEditorSize(newValue13.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20));
+                    ((AnchorPane) editor).heightProperty().addListener((observable15, oldValue14, newValue14) -> editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue14.doubleValue() - 20));
+                    openingEditorTab = false;
                 }
             });
 
@@ -701,30 +662,26 @@ public class EditorTabManager
     {
         this.tabPane = tabPane;
 
-        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>()
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue)
+            Resource resource;
+            if (newValue != null && newValue.getContent() instanceof CodeEditor)
             {
-                Resource resource;
-                if (newValue != null && newValue.getContent() instanceof CodeEditor)
-                {
-                    resource = (Resource) newValue.getUserData();
-                    currentSearchableResource.set(resource);
-                    currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
+                resource = (Resource) newValue.getUserData();
+                currentSearchableResource.set(resource);
+                currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
 
-                    if (newValue.getContent() instanceof XHTMLCodeEditor)
-                    {
-                        currentXHTMLResource.set(resource);
-                    }
-                    else if (newValue.getContent() instanceof CssCodeEditor)
-                    {
-                        currentCssResource.set(resource);
-                    }
-                    else if (newValue.getContent() instanceof XMLCodeEditor)
-                    {
-                        currentXMLResource.set(resource);
-                    }
+                if (newValue.getContent() instanceof XHTMLCodeEditor)
+                {
+                    currentXHTMLResource.set(resource);
+                }
+                else if (newValue.getContent() instanceof CssCodeEditor)
+                {
+                    currentCssResource.set(resource);
+                }
+                else if (newValue.getContent() instanceof XMLCodeEditor)
+                {
+                    currentXMLResource.set(resource);
                 }
             }
         });
@@ -739,7 +696,7 @@ public class EditorTabManager
             if (pair != null)
             {
                 logger.info("found xml block tag " + pair.getTagName());
-                //erst das schließende Tag ersetzen, da sich sonst die Koordinaten verschieben können
+                //Replace first the closing tag, otherwise the coordinates can change
                 xhtmlCodeEditor.replaceRange(tagName, pair.getCloseTagBegin(), pair.getCloseTagEnd());
                 xhtmlCodeEditor.replaceRange(tagName, pair.getOpenTagBegin(), pair.getOpenTagEnd());
                 refreshPreview();
@@ -757,7 +714,7 @@ public class EditorTabManager
             {
                 logger.info("found xml block tag " + pair.getTagName());
                 String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
-                if (tagAtttributes.contains("style=")) //wenn bereits styles vorhanden, dann diese modifizieren
+                if (tagAtttributes.contains("style=")) //If already styles exists, then modify them
                 {
                     tagAtttributes = tagAtttributes.replaceAll("style\\s*=\\s*\"(.*)" + styleName +":([^;]*)(;?)(.*)\\s*\"",
                             "style=\"$1" + styleName +":" + value +"$3$4\"");
@@ -881,15 +838,15 @@ public class EditorTabManager
             });
             if (pair == null || "head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()))
             {
-                Dialogs.create()
-                        .owner(tabPane)
-                        .title("Teilung nicht möglich")
-                        .message("Kann Datei nicht an dieser Position teilen. Eine Teilung ist nur innerhalb des XHTML-Bodys möglich.")
-                        .showWarning();
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Split not possible");
+                alert.setContentText("Can not split file at this location, split is only possible within the XHTML body");
+                alert.showAndWait();
+
                 return false;
             }
             logger.debug("umgebendes pair " + pair);
-            //wir sind innerhalb des Body
+            //outside of body
             int index = xhtmlCodeEditor.getIndexFromPosition(pos);
             try
             {
@@ -921,11 +878,10 @@ public class EditorTabManager
             catch (IOException | JDOMException | ResourceDataException e )
             {
                 logger.error("", e);
-                Dialogs.create()
-                        .owner(tabPane)
-                        .title("Teilung nicht möglich")
-                        .message("Kann Datei nicht teilen. Bitte Fehlermeldung an den Hersteller übermitteln.")
-                        .showException(e);
+                ExceptionDialog dialog = new ExceptionDialog(e);
+                dialog.setTitle("Split not possible");
+                dialog.setContentText("Could not split file, look for details at exception trace");
+                dialog.showAndWait();
             }
 
             result = true;
@@ -943,10 +899,7 @@ public class EditorTabManager
             if (headElement != null)
             {
                 List<Content> contents = headElement.getContent();
-                for (Content content : contents)
-                {
-                    contentList.add(content);
-                }
+                contentList.addAll(contents);
             }
         }
         //erst ausserhalb der Schleife detachen
@@ -1127,22 +1080,18 @@ public class EditorTabManager
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
             XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.TagInspector()
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token ->
             {
-                @Override
-                public boolean isTagFound(EditorToken token)
+                String type = token.getType();
+                if ("tag".equals(type))
                 {
-                    String type = token.getType();
-                    if ("tag".equals(type))
+                    String content = token.getContent();
+                    if ("head".equals(content) || "body".equals(content) || "html".equals(content))
                     {
-                        String content = token.getContent();
-                        if ("head".equals(content) || "body".equals(content) || "html".equals(content))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    return false;
                 }
+                return false;
             });
             result = !(pair == null || "head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()));
         }

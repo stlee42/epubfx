@@ -39,7 +39,6 @@ import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -78,7 +77,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 
 /**
  * User: mjungierek
@@ -280,25 +279,21 @@ public class EpubEditorMainController implements Initializable
         tocViewManager.setTreeView(tocTreeView);
         tocViewManager.setEditorManager(editorManager);
 
-        currentBookProperty.addListener(new ChangeListener<Book>()
+        currentBookProperty.addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Book> observable, Book oldValue, Book newValue)
+            epubFilesTabPane.getTabs().clear();
+
+            bookBrowserManager.setBook(newValue);
+            tocViewManager.setBook(newValue);
+            editorManager.reset();
+            editorManager.setBook(newValue);
+            previewManager.reset();
+            saveButton.disableProperty().unbind();
+            if (newValue != null)
             {
-                epubFilesTabPane.getTabs().clear();
-
-                bookBrowserManager.setBook(newValue);
-                tocViewManager.setBook(newValue);
-                editorManager.reset();
-                editorManager.setBook(newValue);
-                previewManager.reset();
-                saveButton.disableProperty().unbind();
-                if (newValue != null)
-                {
-                    saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
-                }
-
+                saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
             }
+
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorManager.currentEditorIsXHTMLProperty())
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
@@ -539,11 +534,10 @@ public class EpubEditorMainController implements Initializable
                 catch (IOException e)
                 {
                     logger.error("", e);
-                    Dialogs.create()
-                            .owner(stage)
-                            .title("E-Book öffnen")
-                            .message("Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.")
-                            .showException(e);
+                    ExceptionDialog dialog = new ExceptionDialog(e);
+                    dialog.setTitle("E-Book öffnen");
+                    dialog.setContentText("Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.");
+                    dialog.showAndWait();
                 }
             });
             fileMenu.getItems().add(index, recentFileMenuItem);
@@ -625,11 +619,10 @@ public class EpubEditorMainController implements Initializable
             catch (IOException e)
             {
                 logger.error("", e);
-                Dialogs.create()
-                        .owner(stage)
-                        .title("E-Book öffnen")
-                        .message("Kann E-Book-Datei " + file.getName()  + " nicht öffnen.")
-                        .showException(e);
+                ExceptionDialog dialog = new ExceptionDialog(e);
+                dialog.setTitle("E-Book öffnen");
+                dialog.setContentText("Kann E-Book-Datei " + file.getName()  + " nicht öffnen.");
+                dialog.showAndWait();
             }
             finally
             {
@@ -696,11 +689,10 @@ public class EpubEditorMainController implements Initializable
                     catch (IOException e)
                     {
                         logger.error("", e);
-                        Dialogs.create()
-                                .owner(stage)
-                                .title("Datei hinzugefügen")
-                                .message("Kann Datei " + file.getName()  + "  nicht hinzufügen.")
-                                .showException(e);
+                        ExceptionDialog dialog = new ExceptionDialog(e);
+                        dialog.setTitle("Datei hinzugefügen");
+                        dialog.setContentText("Kann Datei " + file.getName()  + "  nicht hinzufügen.");
+                        dialog.showAndWait();
                     }
                 }
                 else
@@ -1082,11 +1074,10 @@ public class EpubEditorMainController implements Initializable
         }
         else
         {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Einfügen nicht möglich")
-                    .message("Kann Bild bzw. Mediendatei nicht an dieser Position einfügen. Dies ist nur innerhalb des XHTML-Bodys möglich.")
-                    .showWarning();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Einfügen nicht möglich");
+            alert.setContentText("Kann Bild bzw. Mediendatei nicht an dieser Position einfügen. Dies ist nur innerhalb des XHTML-Bodys möglich.");
+            alert.showAndWait();
         }
     }
 

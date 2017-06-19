@@ -67,7 +67,7 @@
         mode: {name: "xml", htmlMode: false}
     });
  /*   CodeMirror.defineMode("spell-check", function(config, parserConfig) {
-        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ „“]");
+        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ ï¿½ï¿½]");
         return {
             token: function (stream, state) {
                 var ch;
@@ -94,7 +94,7 @@
             onChangeListener.changed(instance, changes);
     });
     editor.on('viewportChange', function(instance, from,to){
-        spellChecker.onViewPortChanged(instance, from,to);
+//        spellChecker.onViewPortChanged(instance, from,to);
     });
 </script>
 </body>

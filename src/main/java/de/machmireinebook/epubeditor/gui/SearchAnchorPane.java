@@ -18,7 +18,6 @@ import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 
 /**
 * User: mjungierek
@@ -80,12 +79,11 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
         }
         catch (IOException e)
         {
-            Dialogs.create()
-                    .title("Suchmaske")
-                    .masthead(null)
-                    .message("Fehler beim Öffnen der Suchmaske")
-                    .showException(e);
-            SearchManager.logger.error("", e);
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.setTitle("Suchmaske");
+            dialog.setContentText("Fehler beim Öffnen der Suchmaske");
+            dialog.showAndWait();
+            logger.error("", e);
         }
     }
 

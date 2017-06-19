@@ -8,16 +8,13 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.inject.spi.BeanManager;
 
+import com.sun.net.httpserver.HttpServer;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.cdi.BeanFactory;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
-
-import com.sun.net.httpserver.HttpServer;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
@@ -39,7 +36,7 @@ import javafx.util.Duration;
 import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
-import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 
 
 public class EpubEditorApplication extends Application
@@ -146,7 +143,8 @@ public class EpubEditorApplication extends Application
         catch (NoSuchMethodException e)
         {
             logger.error("", e);
-            Dialogs.create().showException(e);
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.showAndWait();
             return;
         }
 
@@ -170,7 +168,8 @@ public class EpubEditorApplication extends Application
         catch (IOException e)
         {
             logger.error("", e);
-            Dialogs.create().showException(e);
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.showAndWait();
         }
         try
         {
@@ -186,7 +185,8 @@ public class EpubEditorApplication extends Application
         catch (IllegalAccessException | InvocationTargetException e)
         {
             logger.error("", e);
-            Dialogs.create().showException(e);
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.showAndWait();
         }
     }
 
@@ -194,36 +194,32 @@ public class EpubEditorApplication extends Application
     {
         progressText.textProperty().bind(task.messageProperty());
         loadProgress.progressProperty().bind(task.progressProperty());
-        task.stateProperty().addListener(new ChangeListener<Worker.State>()
+        task.stateProperty().addListener((observableValue, oldState, newState) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState)
+            if (newState == Worker.State.SUCCEEDED)
             {
-                if (newState == Worker.State.SUCCEEDED)
-                {
-                    loadProgress.progressProperty().unbind();
-                    loadProgress.setProgress(1);
-                    initStage.toFront();
-                    FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
-                    fadeSplash.setFromValue(1.0);
-                    fadeSplash.setToValue(0.0);
-                    fadeSplash.setOnFinished(actionEvent -> {
-                        initStage.hide();
-                        createMainStage();
-                        mainStage.show();
-                    });
-                    fadeSplash.play();
-                }
-                else if (newState == Worker.State.FAILED)
-                {
+                loadProgress.progressProperty().unbind();
+                loadProgress.setProgress(1);
+                initStage.toFront();
+                FadeTransition fadeSplash = new FadeTransition(Duration.seconds(1.2), splashLayout);
+                fadeSplash.setFromValue(1.0);
+                fadeSplash.setToValue(0.0);
+                fadeSplash.setOnFinished(actionEvent -> {
                     initStage.hide();
-                    Throwable t = task.getException();
-                    Dialogs.create()
-                            .owner(mainStage)
-                            .title("Kann Applikation nicht laden")
-                            .message("Kann Applikation nicht laden, bitte Fehlermeldung weitergeben")
-                            .showException(t);
-                }
+                    createMainStage();
+                    mainStage.show();
+                });
+                fadeSplash.play();
+            }
+            else if (newState == Worker.State.FAILED)
+            {
+                initStage.hide();
+                Throwable t = task.getException();
+                ExceptionDialog dialog = new ExceptionDialog(t);
+                dialog.setTitle("Kann Applikation nicht laden");
+                dialog.setContentText("Kann Applikation nicht laden, bitte Fehlermeldung weitergeben");
+                dialog.showAndWait();
+
             }
         });
 

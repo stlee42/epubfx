@@ -9,14 +9,13 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
-
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  * User: mjungierek
@@ -56,11 +55,11 @@ public class TOCViewManager
                         Resource res = tocRef.getResource();
                         if (res == null)
                         {
-                            Dialogs.create()
-                                    .owner(treeView)
-                                    .title("Datei nicht vorhanden")
-                                    .message("Die zum Inhaltsverzeichniseintrag gehörige Datei " + tocRef.getNcxReference()  + " ist nicht vorhanden und kann deshalb nicht geöffnet werden.")
-                                    .showError();
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("File not found");
+                            alert.setContentText("Could not open table of contents, because file not found");
+                            alert.showAndWait();
+
                             return;
                         }
                         editorManager.openFileInEditor(res, MediaType.XHTML);

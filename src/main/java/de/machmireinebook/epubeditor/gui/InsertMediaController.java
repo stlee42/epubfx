@@ -21,7 +21,6 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.util.NumberUtils;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -51,7 +50,7 @@ import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
+import org.controlsfx.dialog.ExceptionDialog;
 
 /**
  * User: mjungierek
@@ -223,11 +222,10 @@ public class InsertMediaController implements Initializable, StandardController
         catch (IOException e)
         {
             logger.error("", e);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Einfügen nicht möglich")
-                    .message("Wegen eines Fehler kann das Bild bzw. die Mediendatei nicht einfügen.")
-                    .showException(e);
+            ExceptionDialog dialog = new ExceptionDialog(e);
+            dialog.setTitle("Einfügen nicht möglich");
+            dialog.setContentText("Wegen eines Fehler kann das Bild bzw. die Mediendatei nicht einfügen.");
+            dialog.showAndWait();
         }
     }
 

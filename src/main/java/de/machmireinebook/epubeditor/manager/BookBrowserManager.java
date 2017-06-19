@@ -11,12 +11,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.common.io.Files;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -35,8 +35,6 @@ import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
-
-import com.google.common.io.Files;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -44,6 +42,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -56,11 +55,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -69,7 +66,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  * User: mjungierek
@@ -129,112 +125,94 @@ public class BookBrowserManager
         {
             EditingTreeCell<Resource> treeCell = new EditingTreeCell<>();
 
-            treeCell.itemProperty().addListener(new ChangeListener<Resource>()
+            treeCell.itemProperty().addListener((observable, oldValue, newValue) ->
             {
-                @Override
-                public void changed(ObservableValue<? extends Resource> observable, Resource oldValue, Resource newValue)
+                if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())
+                        && !MediaType.OPF.equals(newValue.getMediaType()) && !MediaType.NCX.equals(newValue.getMediaType()))
                 {
-                    if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())
-                            && !MediaType.OPF.equals(newValue.getMediaType()) && !MediaType.NCX.equals(newValue.getMediaType()))
+                    treeCell.setEditable(true);
+                }
+                else
+                {
+                    treeCell.setEditable(false);
+                }
+            });
+
+            treeCell.setOnDragDetected(mouseEvent ->
+            {
+                TreeCell<Resource> cell = (TreeCell<Resource>) mouseEvent.getSource();
+                logger.info("dnd detected on item " + cell);
+                Resource res = cell.getItem();
+                if (MediaType.XHTML.equals(res.getMediaType()))
+                {
+                    Dragboard dragBoard = cell.startDragAndDrop(TransferMode.MOVE);
+                    ClipboardContent content = new ClipboardContent();
+                    content.put(OBJECT_DATA_FORMAT, res);
+                    dragBoard.setContent(content);
+                    mouseEvent.consume();
+                }
+            });
+
+            treeCell.setOnDragDropped(dragEvent ->
+            {
+                logger.info("dnd dropped of item " + dragEvent.getSource());
+                Object o = dragEvent.getDragboard().getContent(OBJECT_DATA_FORMAT);
+                if (o != null)
+                {
+                    TreeCell<Resource> draggedCell = (TreeCell<Resource>) dragEvent.getGestureSource();
+                    logger.info("dragged cell is " + draggedCell.getItem());
+                    logger.info("cell dropped on is " + treeCell.getItem());
+
+                    TreeItem<Resource> draggedItem = draggedCell.getTreeItem();
+                    textItem.getChildren().remove(draggedItem);
+                    int index = textItem.getChildren().indexOf(treeCell.getTreeItem());
+                    textItem.getChildren().add(index, draggedItem);
+                    treeView.getSelectionModel().select(draggedItem);
+                    //noch im spine moven
+                    book.getSpine().moveSpineReference(draggedItem.getValue(), treeCell.getItem());
+
+                    treeView.getSelectionModel().clearSelection();
+                    treeView.getSelectionModel().select(draggedCell.getTreeItem());
+                    refreshOpf();
+                    book.setBookIsChanged(true);
+                }
+                // remove all dnd effects
+                treeCell.setEffect(null);
+                treeCell.getStyleClass().remove("dnd-below");
+
+                dragEvent.consume();
+            });
+
+            treeCell.setOnDragOver(event ->
+            {
+                Resource res = treeCell.getItem();
+                if (MediaType.XHTML.equals(res.getMediaType()))
+                {
+                    Point2D sceneCoordinates = treeCell.localToScene(0d, 0d);
+
+                    double height = treeCell.getHeight();
+
+                    // get the y coordinate within the control
+                    double y = event.getSceneY() - (sceneCoordinates.getY());
+
+
+                    // set the dnd effect for the required action
+                    if (y > (height * .75d))
                     {
-                        treeCell.setEditable(true);
+                        treeCell.getStyleClass().add("dnd-below");
+                        treeCell.setEffect(null);
                     }
                     else
                     {
-                        treeCell.setEditable(false);
+                        treeCell.getStyleClass().remove("dnd-below");
+
+                        InnerShadow shadow = new InnerShadow();
+                        shadow.setOffsetX(1.0);
+                        shadow.setColor(Color.web("#666666"));
+                        shadow.setOffsetY(1.0);
+                        treeCell.setEffect(shadow);
                     }
-                }
-            });
-
-            treeCell.setOnDragDetected(new EventHandler<MouseEvent>()
-            {
-                @SuppressWarnings("unchecked")
-                @Override
-                public void handle(MouseEvent mouseEvent)
-                {
-                    TreeCell<Resource> cell = (TreeCell<Resource>) mouseEvent.getSource();
-                    logger.info("dnd detected on item " + cell);
-                    Resource res = cell.getItem();
-                    if (MediaType.XHTML.equals(res.getMediaType()))
-                    {
-                        Dragboard dragBoard = cell.startDragAndDrop(TransferMode.MOVE);
-                        ClipboardContent content = new ClipboardContent();
-                        content.put(OBJECT_DATA_FORMAT, res);
-                        dragBoard.setContent(content);
-                        mouseEvent.consume();
-                    }
-                }
-            });
-
-            treeCell.setOnDragDropped(new EventHandler<DragEvent>()
-            {
-                @SuppressWarnings("unchecked")
-                @Override
-                public void handle(DragEvent dragEvent)
-                {
-                    logger.info("dnd dropped of item " + dragEvent.getSource());
-                    Object o = dragEvent.getDragboard().getContent(OBJECT_DATA_FORMAT);
-                    if (o != null)
-                    {
-                        TreeCell<Resource> draggedCell = (TreeCell<Resource>) dragEvent.getGestureSource();
-                        logger.info("dragged cell is " + draggedCell.getItem());
-                        logger.info("cell dropped on is " + treeCell.getItem());
-
-                        TreeItem<Resource> draggedItem = draggedCell.getTreeItem();
-                        textItem.getChildren().remove(draggedItem);
-                        int index = textItem.getChildren().indexOf(treeCell.getTreeItem());
-                        textItem.getChildren().add(index, draggedItem);
-                        treeView.getSelectionModel().select(draggedItem);
-                        //noch im spine moven
-                        book.getSpine().moveSpineReference(draggedItem.getValue(), treeCell.getItem());
-
-                        treeView.getSelectionModel().clearSelection();
-                        treeView.getSelectionModel().select(draggedCell.getTreeItem());
-                        refreshOpf();
-                        book.setBookIsChanged(true);
-                    }
-                    // remove all dnd effects
-                    treeCell.setEffect(null);
-                    treeCell.getStyleClass().remove("dnd-below");
-
-                    dragEvent.consume();
-                }
-            });
-
-            treeCell.setOnDragOver(new EventHandler<DragEvent>()
-            {
-                @Override
-                public void handle(DragEvent event)
-                {
-                    Resource res = treeCell.getItem();
-                    if (MediaType.XHTML.equals(res.getMediaType()))
-                    {
-                        Point2D sceneCoordinates = treeCell.localToScene(0d, 0d);
-
-                        double height = treeCell.getHeight();
-
-                        // get the y coordinate within the control
-                        double y = event.getSceneY() - (sceneCoordinates.getY());
-
-
-                        // set the dnd effect for the required action
-                        if (y > (height * .75d))
-                        {
-                            treeCell.getStyleClass().add("dnd-below");
-                            treeCell.setEffect(null);
-                        }
-                        else
-                        {
-                            treeCell.getStyleClass().remove("dnd-below");
-
-                            InnerShadow shadow = new InnerShadow();
-                            shadow.setOffsetX(1.0);
-                            shadow.setColor(Color.web("#666666"));
-                            shadow.setOffsetY(1.0);
-                            treeCell.setEffect(shadow);
-                        }
-                        event.acceptTransferModes(TransferMode.MOVE);
-                    }
+                    event.acceptTransferModes(TransferMode.MOVE);
                 }
             });
 
@@ -244,19 +222,15 @@ public class BookBrowserManager
                 treeCell.getStyleClass().remove("dnd-below");
             });
 
-            treeCell.setOnKeyTyped(new EventHandler<KeyEvent>()
+            treeCell.setOnKeyTyped(event ->
             {
-                @Override
-                public void handle(KeyEvent event)
+                KeyCode keyCode = event.getCode();
+                logger.info("key typed in tree view editor: " + keyCode);
+                //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
+                if (keyCode.equals(KeyCode.DELETE))
                 {
-                    KeyCode keyCode = event.getCode();
-                    logger.info("key typed in tree view editor: " + keyCode);
-                    //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
-                    if (keyCode.equals(KeyCode.DELETE))
-                    {
-                        logger.debug("Delete gedrückt");
-                        deleteSelectedItems();
-                    }
+                    logger.debug("Delete gedrückt");
+                    deleteSelectedItems();
                 }
             });
 
@@ -483,7 +457,7 @@ public class BookBrowserManager
         }
         MenuItem item = new MenuItem("Anwendung konfigurieren...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> confígureApplicationForOpenXHTML(treeItem));
+        item.setOnAction(event -> configureApplicationForOpenXHTML(treeItem));
         menu.getItems().add(item);
     }
 
@@ -564,7 +538,7 @@ public class BookBrowserManager
         }
         MenuItem item = new MenuItem("Weitere Anwendung konfigurieren...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> confígureApplicationForOpenCSS(treeItem));
+        item.setOnAction(event -> configureApplicationForOpenCSS(treeItem));
         menu.getItems().add(item);
     }
 
@@ -654,7 +628,7 @@ public class BookBrowserManager
         }
         MenuItem item = new MenuItem("Weitere Anwendung konfigurieren...");
         item.setUserData(treeItem);
-        item.setOnAction(event -> confígureApplicationForOpenImage(treeItem));
+        item.setOnAction(event -> configureApplicationForOpenImage(treeItem));
         menu.getItems().add(item);
     }
 
@@ -676,7 +650,7 @@ public class BookBrowserManager
         }
 
         List<Resource> cssResources = book.getResources().getResourcesByMediaType(MediaType.CSS);
-        Collections.sort(cssResources, new ResourceFilenameComparator());
+        cssResources.sort(new ResourceFilenameComparator());
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
@@ -686,7 +660,7 @@ public class BookBrowserManager
 
         List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE,
                 MediaType.TTF, MediaType.WOFF});
-        Collections.sort(fontResources, new ResourceFilenameComparator());
+        fontResources.sort(new ResourceFilenameComparator());
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
@@ -699,7 +673,7 @@ public class BookBrowserManager
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        Collections.sort(imageResources, new ResourceFilenameComparator());
+        imageResources.sort(new ResourceFilenameComparator());
         for (Resource imageResource : imageResources)
         {
             TreeItem<Resource> item = new TreeItem<>(imageResource);
@@ -952,11 +926,10 @@ public class BookBrowserManager
         }
         else
         {
-            Dialogs.create()
-                    .owner(treeView)
-                    .title("Stylesheet hinzufügen")
-                    .message("Kann Stylesheet nicht hinzufügen, da Datei kein gültiges XHTML ist.")
-                    .showError();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Stylesheet hinzufügen");
+            alert.setContentText("Kann Stylesheet nicht hinzufügen, da Datei kein gültiges XHTML ist.");
+            alert.showAndWait();
         }
     }
 
@@ -1166,19 +1139,19 @@ public class BookBrowserManager
 
     }
 
-    private void confígureApplicationForOpenXHTML(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenXHTML(TreeItem<Resource> treeItem)
     {
 
 
     }
 
-    private void confígureApplicationForOpenCSS(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenCSS(TreeItem<Resource> treeItem)
     {
 
 
     }
 
-    private void confígureApplicationForOpenImage(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenImage(TreeItem<Resource> treeItem)
     {
 
 
