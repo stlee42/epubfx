@@ -15,11 +15,9 @@ import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -29,7 +27,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
@@ -211,33 +208,25 @@ public class EditMetadataController implements Initializable
 
         ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
-        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
+        chooserWindowController.getChooserWindowOkButton().setOnAction(event ->
         {
-            @Override
-            public void handle(ActionEvent event)
+            Relator relator = tableView.getSelectionModel().getSelectedItem();
+            Author contributor = new Author("");
+            contributor.setRelator(relator);
+            otherContributorsTableView.getItems().add(contributor);
+            chooserWindowController.getChooserWindow().close();
+        });
+        tableView.setOnMouseClicked(event ->
+        {
+            MouseButton mb = event.getButton();
+            int clicks = event.getClickCount();
+            if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
                 Author contributor = new Author("");
                 contributor.setRelator(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
-            }
-        });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseButton mb = event.getButton();
-                int clicks = event.getClickCount();
-                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
-                {
-                    Relator relator = tableView.getSelectionModel().getSelectedItem();
-                    Author contributor = new Author("");
-                    contributor.setRelator(relator);
-                    otherContributorsTableView.getItems().add(contributor);
-                    chooserWindowController.getChooserWindow().close();
-                }
             }
         });
 
@@ -271,31 +260,23 @@ public class EditMetadataController implements Initializable
 
         ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
         TableView<MetadataTemplate> tableView = chooserWindowController.getChosserWindowTableView();
-        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
+        chooserWindowController.getChooserWindowOkButton().setOnAction(event ->
         {
-            @Override
-            public void handle(ActionEvent event)
+            MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
+            MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+            metadateTableView.getItems().add(metadataElement);
+            chooserWindowController.getChooserWindow().close();
+        });
+        tableView.setOnMouseClicked(event ->
+        {
+            MouseButton mb = event.getButton();
+            int clicks = event.getClickCount();
+            if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
                 MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
                 metadateTableView.getItems().add(metadataElement);
                 chooserWindowController.getChooserWindow().close();
-            }
-        });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseButton mb = event.getButton();
-                int clicks = event.getClickCount();
-                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
-                {
-                    MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
-                    MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
-                    metadateTableView.getItems().add(metadataElement);
-                    chooserWindowController.getChooserWindow().close();
-                }
             }
         });
 

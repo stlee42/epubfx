@@ -535,7 +535,7 @@ public class EpubEditorConfiguration
         }
         catch (IOException e)
         {
-            logger.error(e);
+            logger.error("", e);
         }
 
     }

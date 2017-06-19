@@ -40,24 +40,24 @@
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Normal" />
-                    <String fx:value="Groß-/Kleinschreibung beachten" />
-                    <String fx:value="Regex" />
+                    <String fx:value="Case sensitive" />
+                    <String fx:value="Regexp" />
                 </FXCollections>
             </items>
         </ChoiceBox>
         <ChoiceBox fx:id="searchRegionChoiceBox" layoutX="617.0" layoutY="7.0" prefHeight="25.0" prefWidth="111.0">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Aktuelle Datei" />
-                    <String fx:value="Alle Dateien" />
-                    <String fx:value="Alle HTML-Dateien" />
+                    <String fx:value="Current file" />
+                    <String fx:value="All files" />
+                    <String fx:value="All HTML files" />
                 </FXCollections>
             </items>
         </ChoiceBox>
         <TextField layoutX="8.0" layoutY="39.0" prefHeight="25.0" prefWidth="210.0" fx:id="replaceStringTextField"/>
-        <Label fx:id="searchMatchesLabel" layoutX="735.0" layoutY="11.0" text="0 Treffer" />
-        <Button layoutX="227.0" layoutY="39.0" mnemonicParsing="false" text="Ersetzen" onAction="#replaceNextAction" />
-        <Button layoutX="295.0" layoutY="39.0" mnemonicParsing="false" text="Alles ersetzen"  onAction="#replaceAllAction" />
+        <Label fx:id="searchMatchesLabel" layoutX="735.0" layoutY="11.0" text="0 results" />
+        <Button layoutX="227.0" layoutY="39.0" mnemonicParsing="false" text="Replace" onAction="#replaceNextAction" />
+        <Button layoutX="295.0" layoutY="39.0" mnemonicParsing="false" text="Replace all"  onAction="#replaceAllAction" />
         <Button layoutX="289.0" layoutY="7.0" mnemonicParsing="false" prefWidth="31.0" styleClass="flat">
             <graphic>
                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">

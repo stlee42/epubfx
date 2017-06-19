@@ -20,22 +20,17 @@ import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
 
@@ -72,23 +67,19 @@ public class NewEBookController implements StandardController
     {
         ObservableList<String> epubTypes = FXCollections.observableArrayList("EPUB 2", "EPUB 3 Reflowable Layout", "EPUB3 Fixed Layout");
         typeListView.setItems(epubTypes);
-        typeListView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>()
+        typeListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+            if ((int) newValue == 0)
             {
-                if ((int) newValue == 0)
-                {
-                    tableView.setItems(epub2Books);
-                }
-                else if ((int) newValue == 1)
-                {
-                    tableView.setItems(epub3ReflowableBooks);
-                }
-                else if ((int) newValue == 2)
-                {
-                    tableView.setItems(epub3PrepaginatedBooks);
-                }
+                tableView.setItems(epub2Books);
+            }
+            else if ((int) newValue == 1)
+            {
+                tableView.setItems(epub3ReflowableBooks);
+            }
+            else if ((int) newValue == 2)
+            {
+                tableView.setItems(epub3PrepaginatedBooks);
             }
         });
         typeListView.getSelectionModel().select(0);
@@ -119,14 +110,7 @@ public class NewEBookController implements StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShowing(new EventHandler<WindowEvent>()
-        {
-            @Override
-            public void handle(WindowEvent event)
-            {
-                findTemplates();
-            }
-        });
+        stage.setOnShowing(event -> findTemplates());
     }
 
     private void findTemplates()

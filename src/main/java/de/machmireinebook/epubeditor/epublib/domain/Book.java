@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.inject.Named;
 
@@ -18,13 +17,10 @@ import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -610,21 +606,10 @@ public class Book implements Serializable
 
     public void setResources(Resources resources)
     {
-        resources.getResourcesMap().values().stream().forEach(new Consumer<Resource>()
+        resources.getResourcesMap().values().forEach(resource -> resource.hrefProperty().addListener((observable, oldValue, newValue) ->
         {
-            @Override
-            public void accept(Resource resource)
-            {
-                resource.hrefProperty().addListener(new ChangeListener<String>()
-                {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
-                    {
-                        renameResource(resource, oldValue, newValue);
-                    }
-                });
-            }
-        });
+            renameResource(resource, oldValue, newValue);
+        }));
         this.resources = resources;
 
     }
@@ -637,14 +622,7 @@ public class Book implements Serializable
 
     public void addResource(Resource resource, boolean refreshOpf)
     {
-        resource.hrefProperty().addListener(new ChangeListener<String>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
-            {
-                renameResource(resource, oldValue, newValue);
-            }
-        });
+        resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
 
         if (resource instanceof ImageResource)
         {

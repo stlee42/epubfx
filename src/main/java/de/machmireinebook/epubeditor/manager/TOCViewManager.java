@@ -9,7 +9,6 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -41,29 +40,25 @@ public class TOCViewManager
         treeView.setRoot(rootItem);
         treeView.setShowRoot(false);
 
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
+        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->
         {
-            @Override
-            public void handle(MouseEvent event)
+            if (event.getButton().equals(MouseButton.PRIMARY))
             {
-                if (event.getButton().equals(MouseButton.PRIMARY))
+                if (event.getClickCount() == 2)
                 {
-                    if (event.getClickCount() == 2)
+                    TreeItem<TOCReference> item = treeView.getSelectionModel().getSelectedItem();
+                    TOCReference tocRef = item.getValue();
+                    Resource res = tocRef.getResource();
+                    if (res == null)
                     {
-                        TreeItem<TOCReference> item = treeView.getSelectionModel().getSelectedItem();
-                        TOCReference tocRef = item.getValue();
-                        Resource res = tocRef.getResource();
-                        if (res == null)
-                        {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("File not found");
-                            alert.setContentText("Could not open table of contents, because file not found");
-                            alert.showAndWait();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("File not found");
+                        alert.setContentText("Could not open table of contents, because file not found");
+                        alert.showAndWait();
 
-                            return;
-                        }
-                        editorManager.openFileInEditor(res, MediaType.XHTML);
+                        return;
                     }
+                    editorManager.openFileInEditor(res, MediaType.XHTML);
                 }
             }
         });

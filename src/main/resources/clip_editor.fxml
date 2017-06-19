@@ -21,7 +21,7 @@
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="Filter" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
       <TextField fx:id="filterTextField" layoutX="51.0" layoutY="10.0" prefHeight="25.0" prefWidth="380.0" AnchorPane.leftAnchor="49.0" AnchorPane.rightAnchor="278.0" AnchorPane.topAnchor="10.0" />
-      <Button layoutX="333.0" layoutY="10.0" mnemonicParsing="false" onAction="#filterAction" text="Anwenden" AnchorPane.rightAnchor="194.0" AnchorPane.topAnchor="10.0" />
+      <Button layoutX="333.0" layoutY="10.0" mnemonicParsing="false" onAction="#filterAction" text="Apply" AnchorPane.rightAnchor="194.0" AnchorPane.topAnchor="10.0" />
       <TreeTableView fx:id="treeTableView" layoutX="14.0" layoutY="45.0" prefHeight="305.0" prefWidth="543.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="45.0">
         <columns>
           <TreeTableColumn prefWidth="190.0" text="Clipname" />
@@ -30,35 +30,35 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#editClipAction" text="Ändern" />
+                <MenuItem mnemonicParsing="false" onAction="#editClipAction" text="Edit" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#addClip" text="Eintrag hinzufügen" />
-                  <MenuItem mnemonicParsing="false" onAction="#addClipGroup" text="Gruppe hinzufügen" />
+                  <MenuItem mnemonicParsing="false" onAction="#addClip" text="Add clip" />
+                  <MenuItem mnemonicParsing="false" onAction="#addClipGroup" text="Add group" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#cutClip" text="Ausschneiden" />
-                  <MenuItem mnemonicParsing="false" onAction="#copyClip" text="Kopieren" />
-                  <MenuItem mnemonicParsing="false" onAction="#pasteClip" text="Einfügen" />
+                  <MenuItem mnemonicParsing="false" onAction="#cutClip" text="Cut" />
+                  <MenuItem mnemonicParsing="false" onAction="#copyClip" text="Copy" />
+                  <MenuItem mnemonicParsing="false" onAction="#pasteClip" text="Paste" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#deleteClip" text="Löschen" />
+                  <MenuItem mnemonicParsing="false" onAction="#deleteClip" text="Delete" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#importClips" text="Import..." />
                   <MenuItem mnemonicParsing="false" onAction="#exportClips" text="Export..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#collabsAll" text="Alles einklappen" />
-                  <MenuItem mnemonicParsing="false" onAction="#expandAll" text="Alles aufklappen" />
+                  <MenuItem mnemonicParsing="false" onAction="#collabsAll" text="Fold all" />
+                  <MenuItem mnemonicParsing="false" onAction="#expandAll" text="Unfold all" />
               </items>
             </ContextMenu>
          </contextMenu>
       </TreeTableView>
       <HBox alignment="CENTER" layoutX="250.0" layoutY="361.0" prefHeight="50.0" prefWidth="707.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button layoutX="264.0" layoutY="361.0" minWidth="90.0" mnemonicParsing="false" onAction="#saveClips" text="Übernehmen" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="250.0" />
-            <Button layoutX="384.0" layoutY="361.0" minWidth="90.0" mnemonicParsing="false" onAction="#cancelClips" text="Abbrechen" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="250.0" />
+            <Button layoutX="264.0" layoutY="361.0" minWidth="90.0" mnemonicParsing="false" onAction="#saveClips" text="Apply" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="250.0" />
+            <Button layoutX="384.0" layoutY="361.0" minWidth="90.0" mnemonicParsing="false" onAction="#cancelClips" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="250.0" />
          </children>
       </HBox>
-      <Button layoutX="573.0" layoutY="45.0" minWidth="120.0" mnemonicParsing="false" onAction="#insertClipIntoText" text="In Text einfügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="45.0" />
-      <Button layoutX="576.0" layoutY="107.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClip" text="Eintrag hinzufügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="107.0" />
-      <Button layoutX="576.0" layoutY="139.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClipGroup" text="Gruppe hinzufügen" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="139.0" />
+      <Button layoutX="573.0" layoutY="45.0" minWidth="120.0" mnemonicParsing="false" onAction="#insertClipIntoText" text="Insert into text" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="45.0" />
+      <Button layoutX="576.0" layoutY="107.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClip" text="Add clip" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="107.0" />
+      <Button layoutX="576.0" layoutY="139.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClipGroup" text="Add group" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="139.0" />
       <Button layoutX="1017.0" layoutY="198.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipUpAction" prefWidth="25.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="198.0">
           <graphic>
               <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">

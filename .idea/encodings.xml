@@ -3,11 +3,16 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddCoverController.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddStylesheetController.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/jdom2/XHTMLOutputProcessor.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java" charset="ISO-8859-1" />
+    <file url="PROJECT" charset="ISO-8859-1" />
   </component>
 </project>

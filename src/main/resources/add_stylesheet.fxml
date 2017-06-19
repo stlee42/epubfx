@@ -18,7 +18,7 @@
             <Insets />
           </HBox.margin>
         </Button>
-        <Button id="okButton" minWidth="90.0" mnemonicParsing="false" onAction="#cancelAction" text="Abbrechen" HBox.hgrow="NEVER">
+        <Button id="okButton" minWidth="90.0" mnemonicParsing="false" onAction="#cancelAction" text="Cancel" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets left="14.0" />
           </HBox.margin>

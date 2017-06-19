@@ -487,7 +487,7 @@
                                 </Button>
                                 <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false" onAction="#insertSpecialCharacterAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Sonderzeichen einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Insert special character" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -508,7 +508,7 @@
                             <items>
                                 <Button fx:id="editMetadataButton" mnemonicParsing="false" onAction="#editMetadataAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Metadaten bearbeiten" />
+                                        <Tooltip styleClass="white-tooltip" text="Edit metadata" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -520,7 +520,7 @@
                                 </Button>
                                 <Button fx:id="createTocButton" mnemonicParsing="false" onAction="#createTocAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Inhaltsverzeichnis erzeugen" />
+                                        <Tooltip styleClass="white-tooltip" text="Create table of contents" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
