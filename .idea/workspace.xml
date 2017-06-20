@@ -1,29 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d6961331-f3a7-4db6-90f0-0a2987db56be" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/lib1.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/EpubEditorConfiguration.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/EpubEditorConfiguration.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MediaType.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MediaType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddStylesheetController.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddStylesheetController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/TOCViewManager.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/TOCViewManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/util/ImageInfo.java" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/util/ImageInfo.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/ChooserWindow.fxml" afterPath="$PROJECT_DIR$/src/main/resources/ChooserWindow.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/add_cover.fxml" afterPath="$PROJECT_DIR$/src/main/resources/add_cover.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/add_stylesheet.fxml" afterPath="$PROJECT_DIR$/src/main/resources/add_stylesheet.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/clip_editor.fxml" afterPath="$PROJECT_DIR$/src/main/resources/clip_editor.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/com/sun/javafx/scene/control/skin/resources/dialog_de_DE.properties" afterPath="$PROJECT_DIR$/src/main/resources/com/sun/javafx/scene/control/skin/resources/dialog_de_DE.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/insert_media.fxml" afterPath="$PROJECT_DIR$/src/main/resources/insert_media.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/main.fxml" afterPath="$PROJECT_DIR$/src/main/resources/main.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/metadata_editor.fxml" afterPath="$PROJECT_DIR$/src/main/resources/metadata_editor.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/new_ebook.fxml" afterPath="$PROJECT_DIR$/src/main/resources/new_ebook.fxml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/search_pane.fxml" afterPath="$PROJECT_DIR$/src/main/resources/search_pane.fxml" />
-    </list>
+    <list default="true" id="d6961331-f3a7-4db6-90f0-0a2987db56be" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -102,8 +80,8 @@
       <file leaf-file-name="SearchAnchorPane.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-672">
-              <caret line="40" column="13" lean-forward="false" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+            <state relative-caret-position="-744">
+              <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -1491,12 +1469,12 @@
       <workItem from="1497870147537" duration="1808000" />
       <workItem from="1497872058913" duration="112000" />
       <workItem from="1497872304517" duration="52000" />
-      <workItem from="1497872384732" duration="8335000" />
+      <workItem from="1497872384732" duration="10228000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24793000" />
+    <option name="totallyTimeSpent" value="26686000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1532,7 +1510,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24972972" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3555241" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35154063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -2018,8 +1996,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-672">
-          <caret line="40" column="13" lean-forward="false" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="13" />
+        <state relative-caret-position="-744">
+          <caret line="111" column="0" lean-forward="true" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
           <folding />
         </state>
       </provider>
