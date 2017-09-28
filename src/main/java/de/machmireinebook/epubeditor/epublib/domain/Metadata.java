@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -31,7 +29,7 @@ public class Metadata implements Serializable
     private List<Author> contributors = new ArrayList<>();
     private List<MetadataDate> dates = new ArrayList<>();
     private String language = DEFAULT_LANGUAGE;
-    private Map<QName, String> otherProperties = new HashMap<>();
+    private List<Epub3MetadataProperty> epub3MetaProperties = new ArrayList<>();
     private List<String> rights = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
     private List<Identifier> identifiers = new ArrayList<>();
@@ -41,7 +39,7 @@ public class Metadata implements Serializable
     private List<String> descriptions = new ArrayList<>();
     private List<String> publishers = new ArrayList<>();
     private List<String> coverages = new ArrayList<>();
-    private Map<String, String> metaAttributes = new HashMap<>();
+    private Map<String, String> epub2MetaAttributes = new HashMap<>();
 
     public Metadata()
     {
@@ -59,14 +57,14 @@ public class Metadata implements Serializable
      *
      * @return Metadata properties not hard-coded like the author, title, etc.
      */
-    public Map<QName, String> getOtherProperties()
+    public List<Epub3MetadataProperty> getEpub3MetaProperties()
     {
-        return otherProperties;
+        return epub3MetaProperties;
     }
 
-    public void setOtherProperties(Map<QName, String> otherProperties)
+    public void setEpub3MetaProperties(List<Epub3MetadataProperty> epub3MetaProperties)
     {
-        this.otherProperties = otherProperties;
+        this.epub3MetaProperties = epub3MetaProperties;
     }
 
     public MetadataDate addDate(MetadataDate date)
@@ -364,13 +362,13 @@ public class Metadata implements Serializable
         this.coverages = coverages;
     }
 
-    public String getMetaAttribute(String name)
+    public String getEpub2MetaAttribute(String name)
     {
-        return metaAttributes.get(name);
+        return epub2MetaAttributes.get(name);
     }
 
-    public void setMetaAttributes(Map<String, String> metaAttributes)
+    public void setEpub2MetaAttributes(Map<String, String> metaAttributes)
     {
-        this.metaAttributes = metaAttributes;
+        this.epub2MetaAttributes = metaAttributes;
     }
 }

@@ -7,7 +7,6 @@ package de.machmireinebook.epubeditor.editor;
  */
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;

@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class UndoRedoManager<T> extends ArrayDeque<T>
 {
-    public static final Logger logger = Logger.getLogger(UndoRedoManager.class);
+    private static final Logger logger = Logger.getLogger(UndoRedoManager.class);
     private Deque<T> redoList = new ArrayDeque<>();
 
     private BooleanProperty canUndo = new SimpleBooleanProperty(false);
@@ -92,7 +92,7 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
         }
         else if (firstVersion != null && isEmpty())   //erste undo version
         {
-            //Version nur hinzufügen wenn sich diese von der first unterscheidet
+            //Version nur hinzufÃ¼gen wenn sich diese von der first unterscheidet
             if (!version.equals(firstVersion))
             {
                 logger.debug("has no undo versions and version is different then first version, save new version");
@@ -103,7 +103,7 @@ public class UndoRedoManager<T> extends ArrayDeque<T>
         else //weitere versionen einfach in liste eintragen, wenn unterschied
         {
             T lastVersion = getFirst();
-            //Version nur hinzufügen wenn sich diese unterscheiden
+            //Version nur hinzufÃ¼gen wenn sich diese unterscheiden
             if (!version.equals(lastVersion))
             {
                 logger.info("has undo versions and version is different then before, save new version");

@@ -318,7 +318,7 @@ import org.jdom2.util.IteratorIterable;
 @Named
 public class Book implements Serializable
 {
-    public static final Logger logger = Logger.getLogger(Book.class);
+    private static final Logger logger = Logger.getLogger(Book.class);
     private static final long serialVersionUID = 2068355170895770100L;
 
     private Resources resources = new Resources();
@@ -945,8 +945,8 @@ public class Book implements Serializable
 
     public void renameResource(Resource resource, String oldValue, String newValue)
     {
-        resources.remove(oldValue); //unter altem namen löschen
-        resources.add(resource); //unter neuem wieder hinzufügen
+        resources.remove(oldValue); //unter altem namen lÃ¶schen
+        resources.add(resource); //unter neuem wieder hinzufÃ¼gen
 
         if (MediaType.CSS.equals(resource.getMediaType()))
         {

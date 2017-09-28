@@ -46,7 +46,7 @@ import org.jdom2.output.XMLOutputter;
  */
 public class AddStylesheetController implements StandardController
 {
-    public static final Logger logger = Logger.getLogger(AddStylesheetController.class);
+    private static final Logger logger = Logger.getLogger(AddStylesheetController.class);
     public TableView<StylesheetResource> tableView;
 
     private Stage stage;
@@ -278,7 +278,7 @@ public class AddStylesheetController implements StandardController
                             }
                         }
                     }
-                    for (Element element : toRemove) //style elemente erstmal weg, bei ok fügen wir die wieder in der richtigen Reihenfolge ein
+                    for (Element element : toRemove) //style elemente erstmal weg, bei ok fÃ¼gen wir die wieder in der richtigen Reihenfolge ein
                     {
                         headElement.removeContent(element);
                     }

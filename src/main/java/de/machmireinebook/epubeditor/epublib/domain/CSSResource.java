@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.helger.css.ECSSVersion;
 import com.helger.css.decl.CascadingStyleSheet;
 import com.helger.css.reader.CSSReader;
+import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek
@@ -13,6 +14,8 @@ import com.helger.css.reader.CSSReader;
  */
 public class CSSResource extends Resource<CascadingStyleSheet>
 {
+    private static final Logger logger = Logger.getLogger(CSSResource.class);
+    
     public CSSResource()
     {
     }

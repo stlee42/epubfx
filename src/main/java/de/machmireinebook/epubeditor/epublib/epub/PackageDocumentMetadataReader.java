@@ -11,8 +11,8 @@ import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Element;
@@ -51,8 +51,8 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
         result.setDates(readDates(metadataElement));
-        result.setOtherProperties(readOtherProperties(metadataElement));
-        result.setMetaAttributes(readMetaProperties(metadataElement));
+        result.setEpub3MetaProperties(readOtherProperties(metadataElement));
+        result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
         result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
 
         return result;
@@ -65,18 +65,26 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
      * @param metadataElement
      * @return
      */
-    private static Map<QName, String> readOtherProperties(Element metadataElement)
+    private static List<Epub3MetadataProperty> readOtherProperties(Element metadataElement)
     {
-        Map<QName, String> result = new HashMap<>();
+        List<Epub3MetadataProperty> result = new ArrayList<>();
 
         List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
+            Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
             String name = metaTag.getAttributeValue(OPFAttributes.property);
-            String value = metaTag.getText();
-            if (StringUtils.isNotEmpty(name))
+            if (StringUtils.isNotEmpty(name)) //epub 3 metadata, read in, but ignore in epub 2 context
             {
-                result.put(new QName(name), value);
+                otherMetadataElement.setQName(new QName(name));
+                String value = metaTag.getText();
+                otherMetadataElement.setValue(value);
+                String refines = metaTag.getAttributeValue(OPFAttributes.refines);
+                otherMetadataElement.setRefines(refines);
+                String scheme = metaTag.getAttributeValue(OPFAttributes.scheme);
+                otherMetadataElement.setScheme(scheme);
+
+                result.add(otherMetadataElement);
             }
         }
 
@@ -90,7 +98,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
      * @param metadataElement
      * @return
      */
-    private static Map<String, String> readMetaProperties(Element metadataElement)
+    private static Map<String, String> readEpub2MetaProperties(Element metadataElement)
     {
         Map<String, String> result = new HashMap<>();
 

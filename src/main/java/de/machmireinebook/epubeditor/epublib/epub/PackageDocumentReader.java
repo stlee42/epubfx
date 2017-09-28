@@ -54,7 +54,7 @@ public class PackageDocumentReader extends PackageDocumentBase
 
         String packageHref = packageResource.getHref();
         resources = fixHrefs(packageHref, resources);
-        if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas ‰hnliches findet sich mit den landmarks im navigation document
+        if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas √§hnliches findet sich mit den landmarks im navigation document
         {
             Resource resource = Epub3NavigatonDocumentReader.read(root, resources);
             book.setEpub3NavResource(resource);
@@ -90,7 +90,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         double version = Double.valueOf(root.getAttributeValue("version"));
         book.setVersion(version);
 
-        if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas ‰hnliches findet sich mit den landmarks im navigation document
+        if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas √§hnliches findet sich mit den landmarks im navigation document
         {
             Resource resource = Epub3NavigatonDocumentReader.read(root, book.getResources());
             book.setEpub3NavResource(resource);
@@ -248,7 +248,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         }
         String packageFolderName = packageHref.substring(0, lastSlashPos);
         //den komplizierten heckmeck machen, da Resources intern eine Map mit href als Key ist,
-        // aber genau der wird ja hier ge‰ndert
+        // aber genau der wird ja hier ge√§ndert
         List<String> oldHrefsToRemove = new ArrayList<>();
         List<Resource> newResources = new ArrayList<>();
         for (Resource resource : resourcesByHref.getAll())

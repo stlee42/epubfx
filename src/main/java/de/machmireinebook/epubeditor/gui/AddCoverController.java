@@ -114,7 +114,7 @@ public class AddCoverController implements Initializable
     {
         Image image = resource.asNativeFormat();
         imageView.setImage(image);
-        imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
+        imageValuesLabel.setText(image.getWidth() + "Ã—" + image.getHeight() + " | " + resource.getSize());
     }
 
 

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class XMLCodeEditor extends AbstractCodeEditor
 {
-    public static final Logger logger = Logger.getLogger(XMLCodeEditor.class);
+    private static final Logger logger = Logger.getLogger(XMLCodeEditor.class);
 
     /**
      * a template for editing code - this can be changed to any template derived from the

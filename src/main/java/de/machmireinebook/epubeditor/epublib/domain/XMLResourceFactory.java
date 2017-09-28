@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  */
 public class XMLResourceFactory implements ResourceFactory
 {
-    public static final Logger logger = Logger.getLogger(XMLResourceFactory.class);
+    private static final Logger logger = Logger.getLogger(XMLResourceFactory.class);
 
     private static final XMLResourceFactory instance = new XMLResourceFactory();
 

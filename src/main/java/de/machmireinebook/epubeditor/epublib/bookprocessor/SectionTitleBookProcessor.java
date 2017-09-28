@@ -18,7 +18,7 @@ import org.xml.sax.InputSource;
 
 public class SectionTitleBookProcessor implements BookProcessor
 {
-    public static final Logger logger = Logger.getLogger(SectionTitleBookProcessor.class);
+    private static final Logger logger = Logger.getLogger(SectionTitleBookProcessor.class);
 	@Override
 	public Book processBook(Book book) {
 		XPath xpath = createXPathExpression();

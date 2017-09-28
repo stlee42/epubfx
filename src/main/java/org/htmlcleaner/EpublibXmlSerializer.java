@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import de.machmireinebook.commons.htmlcleaner.CleanerProperties;
-import de.machmireinebook.commons.htmlcleaner.SimpleXmlSerializer;
-import de.machmireinebook.commons.htmlcleaner.TagNode;
-import de.machmireinebook.commons.htmlcleaner.Utils;
+import de.machmireinebook.epubeditor.htmlcleaner.CleanerProperties;
+import de.machmireinebook.epubeditor.htmlcleaner.SimpleXmlSerializer;
+import de.machmireinebook.epubeditor.htmlcleaner.TagNode;
+import de.machmireinebook.epubeditor.htmlcleaner.Utils;
 
 public class EpublibXmlSerializer extends SimpleXmlSerializer
 {

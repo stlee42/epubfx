@@ -276,7 +276,7 @@ public class ImageInfo
         COLOR_TYPE_TRUECOLOR_RGB("Truecolor"),
         COLOR_TYPE_PALETTED("Palette"),
         COLOR_TYPE_GRAYSCALE("Graustufen"),
-        COLOR_TYPE_BLACK_AND_WHITE("Schwarz/Weiﬂ") ;
+        COLOR_TYPE_BLACK_AND_WHITE("Schwarz/Wei√ü") ;
 
         private String name;
 

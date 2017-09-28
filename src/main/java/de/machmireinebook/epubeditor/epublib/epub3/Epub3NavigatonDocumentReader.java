@@ -20,7 +20,7 @@ import org.jdom2.Element;
  */
 public class Epub3NavigatonDocumentReader extends PackageDocumentBase
 {
-    public static final Logger logger = Logger.getLogger(Epub3NavigatonDocumentReader.class);
+    private static final Logger logger = Logger.getLogger(Epub3NavigatonDocumentReader.class);
 
     public static Resource read(Element packageRootElement, Resources resources)
     {

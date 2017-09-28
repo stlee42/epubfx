@@ -30,7 +30,7 @@ import org.xml.sax.InputSource;
  */
 public class ResourceUtil
 {
-	public static final Logger logger = Logger.getLogger(ResourceUtil.class);
+	private static final Logger logger = Logger.getLogger(ResourceUtil.class);
 
 	public static Resource createResource(File file) throws IOException {
 		if (file == null) {

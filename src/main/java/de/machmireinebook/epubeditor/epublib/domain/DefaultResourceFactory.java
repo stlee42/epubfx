@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  */
 public class DefaultResourceFactory  implements ResourceFactory
 {
-    public static final Logger logger = Logger.getLogger(DefaultResourceFactory.class);
+    private static final Logger logger = Logger.getLogger(DefaultResourceFactory.class);
 
     private static final DefaultResourceFactory instance = new DefaultResourceFactory();
 

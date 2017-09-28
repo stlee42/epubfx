@@ -14,7 +14,7 @@ import org.jdom2.Namespace;
  */
 public class JDOM2Utils
 {
-    public static final Logger logger = Logger.getLogger(JDOM2Utils.class);
+    private static final Logger logger = Logger.getLogger(JDOM2Utils.class);
 
     public static List<String> getChildrenText(Element rootElement, Namespace namespace, String childrenName)
     {

@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class ImageCell<S> extends TableCell<S, Image>
 {
-    public static final Logger logger = Logger.getLogger(ImageCell.class);
+    private static final Logger logger = Logger.getLogger(ImageCell.class);
 
     private Double width;
     private Double height;

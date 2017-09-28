@@ -6,17 +6,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-
-import de.machmireinebook.epubeditor.cdi.BeanFactory;
-import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
-import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import javax.inject.Singleton;
 
 import com.eaio.stringsearch.BoyerMooreHorspool;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang.StringUtils;
@@ -27,16 +21,12 @@ import org.apache.log4j.Logger;
  * Date: 06.01.2015
  * Time: 01:53
  */
+@Singleton
 public class SearchManager
 {
-    public static final Logger logger = Logger.getLogger(SearchManager.class);
-    private static SearchManager instance;
+    private static final Logger logger = Logger.getLogger(SearchManager.class);
 
     private BoyerMooreHorspool stringSearch;
-
-    @Inject
-    @EpubEditorMainControllerProducer
-    EpubEditorMainController mainController;
 
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>();
 
@@ -117,18 +107,6 @@ public class SearchManager
         {
             return region;
         }
-    }
-
-    @Produces
-    @SearchManagerProducer
-    public static SearchManager getInstance()
-    {
-        if (instance == null)
-        {
-            instance = BeanFactory.getInstance().getBean(SearchManager.class);
-            instance.init();
-        }
-        return instance;
     }
 
     private void init()

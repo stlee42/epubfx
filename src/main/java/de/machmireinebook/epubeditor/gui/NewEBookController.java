@@ -8,7 +8,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.zip.ZipInputStream;
 
@@ -16,11 +15,11 @@ import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -46,7 +45,7 @@ import org.apache.log4j.Logger;
  */
 public class NewEBookController implements StandardController
 {
-    public static final Logger logger = Logger.getLogger(NewEBookController.class);
+    private static final Logger logger = Logger.getLogger(NewEBookController.class);
 
     DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>()
     {
@@ -168,19 +167,20 @@ public class NewEBookController implements StandardController
                         description = descriptions.get(0);
                     }
                     BookTemplate template = new BookTemplate(book.getTitle(), cover, description, path, 3.0);
-                    Map<QName, String> otherProperties = book.getMetadata().getOtherProperties();
+                    List<Epub3MetadataProperty> otherProperties = book.getMetadata().getEpub3MetaProperties();
                     boolean found = false;
-                    for (QName qName : otherProperties.keySet())
+                    for (Epub3MetadataProperty otherMetadataProperty : otherProperties)
                     {
+                        QName qName = otherMetadataProperty.getQName();
                         if (RenditionLayout.qName.equals(qName.getPrefix() + ":" + qName.getLocalPart()))
                         {
                             found = true;
-                            if (RenditionLayout.PRE_PAGINATED.getValue().equals(otherProperties.get(qName)))
+                            if (RenditionLayout.PRE_PAGINATED.getValue().equals(otherMetadataProperty.getValue()))
                             {
                                 epub3PrepaginatedBooks.add(template);
                                 break;
                             }
-                            else if (RenditionLayout.REFLOWABLE.getValue().equals(otherProperties.get(qName)))
+                            else if (RenditionLayout.REFLOWABLE.getValue().equals(otherMetadataProperty.getValue()))
                             {
                                 epub3ReflowableBooks.add(template);
                                 break;

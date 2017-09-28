@@ -19,12 +19,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -46,7 +42,7 @@ import org.w3c.dom.events.EventTarget;
  */
 public abstract class AbstractCodeEditor extends AnchorPane implements CodeEditor
 {
-    public static final Logger logger = Logger.getLogger(AbstractCodeEditor.class);
+    private static final Logger logger = Logger.getLogger(AbstractCodeEditor.class);
 
     /**
      * a webview used to encapsulate the CodeMirror JavaScript.
@@ -85,8 +81,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         }
 
         /**
-         * Interessant ist für undo/redo nur der code die cursorposition ist nur für die userexperience,
-         * eine reine cursoränderung soll nicht versioniert werden
+         * Interessant ist fÃ¼r undo/redo nur der code die cursorposition ist nur fÃ¼r die userexperience,
+         * eine reine cursorÃ¤nderung soll nicht versioniert werden
          * @param o
          * @return
          */
@@ -202,7 +198,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
      *
      * @param editingCode the initial code to be edited in the code editor.
      */
-    AbstractCodeEditor()
+    public AbstractCodeEditor()
     {
         AnchorPane.setTopAnchor(webview, 0.0);
         AnchorPane.setLeftAnchor(webview, 0.0);
@@ -216,83 +212,73 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         engine.loadContent(applyEditingTemplate());
         getChildren().add(webview);
 
-        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue)
+        engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals(Worker.State.SUCCEEDED))
             {
-                if (newValue.equals(Worker.State.SUCCEEDED))
+                Document document = engine.getDocument();
+
+                JSObject window = (JSObject) engine.executeScript("window");
+                window.setMember("onChangeListener", new OnChangeListener());
+                spellChecker = new SpellChecker();
+                window.setMember("spellChecker", spellChecker);
+
+                Element documentElement = document.getDocumentElement();
+                ((EventTarget) documentElement).addEventListener("keyup", evt ->
                 {
-                    Document document = engine.getDocument();
+                    boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
+                    int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
+                    String keyIdentifier = ((KeyboardEventImpl) evt).getKeyIdentifier();
 
-                    JSObject window = (JSObject) engine.executeScript("window");
-                    window.setMember("onChangeListener", new OnChangeListener());
-                    spellChecker = new SpellChecker();
-                    window.setMember("spellChecker", spellChecker);
+                    logger.debug("key up in content editor: " + evt.getTarget() + " isCtrl " + isCtrlPressed + ", keyCode " + keyCode + " keyId " + keyIdentifier);
 
-                    Element documentElement = document.getDocumentElement();
-                    ((EventTarget) documentElement).addEventListener("keyup", evt ->
+                    if (isCtrlPressed && (keyCode == 90 || keyCode == 89) || keyCodeIsModifierKey(keyCode))
                     {
-                        boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
-                        int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
-                        String keyIdentifier = ((KeyboardEventImpl) evt).getKeyIdentifier();
+                        return;
+                    }
+                    cursorPosition.set(getEditorCursorPosition());
+                }, false);
 
-                        logger.debug("key up in content editor: " + evt.getTarget() + " isCtrl " + isCtrlPressed + ", keyCode " + keyCode + " keyId " + keyIdentifier);
-
-                        if (isCtrlPressed && (keyCode == 90 || keyCode == 89) || keyCodeIsModifierKey(keyCode))
-                        {
-                            return;
-                        }
-                        cursorPosition.set(getEditorCursorPosition());
-                    }, false);
-
-                    ((EventTarget) documentElement).addEventListener("keydown", evt ->
+                ((EventTarget) documentElement).addEventListener("keydown", evt ->
+                {
+                    boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
+                    int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
+                    logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
+                    //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
+                    if (isCtrlPressed && keyCode == 90)
                     {
-                        boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
-                        int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
-                        logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
-                        //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
-                        if (isCtrlPressed && keyCode == 90)
-                        {
-                            logger.debug("Ctrl-Z gedrückt");
-                            evt.preventDefault();
-                            undo();
-                        }
-                        else if (isCtrlPressed && keyCode == 89)
-                        {
-                            logger.debug("Ctrl-Y gedrückt");
-                            evt.preventDefault();
-                            redo();
-                        }
-                        else if (isCtrlPressed && keyCode == 32)
-                        {
-                            logger.debug("Ctrl-SPACE gedrückt");
-                            evt.preventDefault();
-                            removeTags();
-                        }
-
-                    }, false);
-
-                    ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
-                    {
-                        logger.debug("contextmenu event aufgefangen " + evt);
+                        logger.debug("Ctrl-Z gedrÃ¼ckt");
                         evt.preventDefault();
-                        contextMenu.setImpl_showRelativeToWindow(true);
-                        contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
-                    }, false);
-
-
-                    webview.setOnScroll(new EventHandler<ScrollEvent>()
+                        undo();
+                    }
+                    else if (isCtrlPressed && keyCode == 89)
                     {
-                        @Override
-                        public void handle(ScrollEvent event)
-                        {
-                            Double delta = event.getDeltaY() * -1;
-                            scroll(delta.intValue());
-                        }
-                    });
-                    state.setValue(Worker.State.SUCCEEDED);
-                }
+                        logger.debug("Ctrl-Y gedrÃ¼ckt");
+                        evt.preventDefault();
+                        redo();
+                    }
+                    else if (isCtrlPressed && keyCode == 32)
+                    {
+                        logger.debug("Ctrl-SPACE gedrÃ¼ckt");
+                        evt.preventDefault();
+                        removeTags();
+                    }
+
+                }, false);
+
+                ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
+                {
+                    logger.debug("contextmenu event aufgefangen " + evt);
+                    evt.preventDefault();
+//                    contextMenu.setShowRelativeToWindow(true);
+                    contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
+                }, false);
+
+
+                webview.setOnScroll(event -> {
+                    Double delta = event.getDeltaY() * -1;
+                    scroll(delta.intValue());
+                });
+                state.setValue(Worker.State.SUCCEEDED);
             }
         });
     }
@@ -318,10 +304,10 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
     @Override
     public void spellCheck()
     {
-        JSObject jsObject = (JSObject) webview.getEngine().executeScript("editor.getViewport();");
+/*        JSObject jsObject = (JSObject) webview.getEngine().executeScript("editor.getViewport();");
         int fromLine = (int) jsObject.getMember("from");
         int toLine = (int) jsObject.getMember("to");
-        spellChecker.onViewPortChanged(null, fromLine, toLine);
+        spellChecker.onViewPortChanged(null, fromLine, toLine);    */
     }
 
     /**

@@ -4,18 +4,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
-
-import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +29,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jidefx.scene.control.searchable.TableViewSearchable;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
@@ -43,7 +41,7 @@ import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCT
  */
 public class EditMetadataController implements Initializable
 {
-    public static final Logger logger = Logger.getLogger(EditMetadataController.class);
+    private static final Logger logger = Logger.getLogger(EditMetadataController.class);
 
     @FXML
     private TextField saveAsAuthorTextField;
@@ -67,6 +65,9 @@ public class EditMetadataController implements Initializable
         private String type;
         private String value;
         private String subtype;
+
+        private String refines;
+        private String scheme;
 
         public MetadataElement(String type, String value, String subtype)
         {
@@ -103,6 +104,26 @@ public class EditMetadataController implements Initializable
         public void setSubtype(String subtype)
         {
             this.subtype = subtype;
+        }
+
+        public String getRefines()
+        {
+            return refines;
+        }
+
+        public void setRefines(String refines)
+        {
+            this.refines = refines;
+        }
+
+        public String getScheme()
+        {
+            return scheme;
+        }
+
+        public void setScheme(String scheme)
+        {
+            this.scheme = scheme;
         }
     }
 
@@ -207,37 +228,27 @@ public class EditMetadataController implements Initializable
     @SuppressWarnings("unchecked")
     public void addOtherContributorAction(ActionEvent actionEvent)
     {
-        Stage chooserWindow = UIHelper.createChooserWindow();
+        Stage chooserWindow = new UIHelper().createChooserWindow();
 
         ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
-        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event)
+        chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
+            Relator relator = tableView.getSelectionModel().getSelectedItem();
+            Author contributor = new Author("");
+            contributor.setRelator(relator);
+            otherContributorsTableView.getItems().add(contributor);
+            chooserWindowController.getChooserWindow().close();
+        });
+        tableView.setOnMouseClicked(event -> {
+            MouseButton mb = event.getButton();
+            int clicks = event.getClickCount();
+            if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
                 Author contributor = new Author("");
                 contributor.setRelator(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
-            }
-        });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseButton mb = event.getButton();
-                int clicks = event.getClickCount();
-                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
-                {
-                    Relator relator = tableView.getSelectionModel().getSelectedItem();
-                    Author contributor = new Author("");
-                    contributor.setRelator(relator);
-                    otherContributorsTableView.getItems().add(contributor);
-                    chooserWindowController.getChooserWindow().close();
-                }
             }
         });
 
@@ -253,7 +264,7 @@ public class EditMetadataController implements Initializable
         tableView.getColumns().add(tc);
         tc.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        chooserWindowController.getChooserWindowLabel().setText("Typ des Beteiligten auswählen");
+        chooserWindowController.getChooserWindowLabel().setText("Typ des Beteiligten auswÃ¤hlen");
 
         tableView.setItems(FXCollections.observableArrayList(Relator.values()));
 
@@ -267,7 +278,7 @@ public class EditMetadataController implements Initializable
     @SuppressWarnings("unchecked")
     public void addMetadateAction(ActionEvent actionEvent)
     {
-        Stage chooserWindow = UIHelper.createChooserWindow();
+        Stage chooserWindow = new UIHelper().createChooserWindow();
 
         ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
         TableView<MetadataTemplate> tableView = chooserWindowController.getChosserWindowTableView();
@@ -306,7 +317,7 @@ public class EditMetadataController implements Initializable
         tableView.getColumns().add(tc);
         tc.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        chooserWindowController.getChooserWindowLabel().setText("Metadateneigenschaft auswählen");
+        chooserWindowController.getChooserWindowLabel().setText("Metadateneigenschaft auswï¿½hlen");
 
         tableView.setItems(FXCollections.observableArrayList(MetadataTemplate.values()));
 
@@ -444,10 +455,18 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        Map<QName, String> others = metadata.getOtherProperties();
-        for (QName qName : others.keySet())
+        List<Epub3MetadataProperty> others = metadata.getEpub3MetaProperties();
+        for (Epub3MetadataProperty other : others)
         {
-            MetadataElement element = new MetadataElement(qName.getLocalPart(), others.get(qName), "");
+            MetadataElement element = new MetadataElement(other.getQName().getLocalPart(), other.getValue(), "");
+            if (StringUtils.isNotEmpty(other.getScheme()))
+            {
+                element.setScheme(other.getScheme());
+            }
+            if (StringUtils.isNotEmpty(other.getRefines()))
+            {
+                element.setRefines(other.getRefines());
+            }
             elements.add(element);
         }
 

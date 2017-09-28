@@ -36,7 +36,7 @@ import org.jdom2.util.IteratorIterable;
  */
 public class XHTMLUtils
 {
-    public static final Logger logger = Logger.getLogger(XHTMLUtils.class);
+    private static final Logger logger = Logger.getLogger(XHTMLUtils.class);
 
     public static Resource fromHtml(Resource res)
     {

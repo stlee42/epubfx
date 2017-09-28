@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public class ImageResource extends Resource<Image>
 {
-    public static final Logger logger = Logger.getLogger(ImageResource.class);
+    private static final Logger logger = Logger.getLogger(ImageResource.class);
 
     private double width;
     private double height;
@@ -139,7 +139,7 @@ public class ImageResource extends Resource<Image>
     public String getImageDescription()
     {
         String sizeInKB = NumberUtils.formatDouble(Math.round(getSize() / 1024.0 * 100) / 100.0);
-        return ((Double) image.getWidth()).intValue() + "×" + ((Double) image.getHeight()).intValue() + " px | "
+        return ((Double) image.getWidth()).intValue() + "Ã—" + ((Double) image.getHeight()).intValue() + " px | "
                 + sizeInKB + " KB | " + imageInfo.getBitsPerPixel() + " bpp";
     }
 

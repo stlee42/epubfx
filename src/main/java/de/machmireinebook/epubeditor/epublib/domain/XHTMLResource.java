@@ -3,7 +3,7 @@ package de.machmireinebook.epubeditor.epublib.domain;
 import java.io.IOException;
 
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
+import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -14,6 +14,8 @@ import org.jdom2.JDOMException;
  */
 public class XHTMLResource extends Resource<Document>
 {
+    private static final Logger logger = Logger.getLogger(XHTMLResource.class);
+    
     public XHTMLResource(String href)
     {
         super(href);

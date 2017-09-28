@@ -2,31 +2,29 @@ package de.machmireinebook.epubeditor.manager;
 
 import java.util.List;
 
-import javax.inject.Named;
+import javax.inject.Singleton;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
-
-import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  * User: mjungierek
  * Date: 27.07.2014
  * Time: 12:35
  */
-@Named
+@Singleton
 public class TOCViewManager
 {
-    public static final Logger logger = Logger.getLogger(TOCViewManager.class);
+    private static final Logger logger = Logger.getLogger(TOCViewManager.class);
 
     private TreeView<TOCReference> treeView;
     private Book book;
@@ -42,29 +40,26 @@ public class TOCViewManager
         treeView.setRoot(rootItem);
         treeView.setShowRoot(false);
 
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
+        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY))
             {
-                if (event.getButton().equals(MouseButton.PRIMARY))
+                if (event.getClickCount() == 2)
                 {
-                    if (event.getClickCount() == 2)
+                    TreeItem<TOCReference> item = treeView.getSelectionModel().getSelectedItem();
+                    TOCReference tocRef = item.getValue();
+                    Resource res = tocRef.getResource();
+                    if (res == null)
                     {
-                        TreeItem<TOCReference> item = treeView.getSelectionModel().getSelectedItem();
-                        TOCReference tocRef = item.getValue();
-                        Resource res = tocRef.getResource();
-                        if (res == null)
-                        {
-                            Dialogs.create()
-                                    .owner(treeView)
-                                    .title("Datei nicht vorhanden")
-                                    .message("Die zum Inhaltsverzeichniseintrag gehörige Datei " + tocRef.getNcxReference()  + " ist nicht vorhanden und kann deshalb nicht geöffnet werden.")
-                                    .showError();
-                            return;
-                        }
-                        editorManager.openFileInEditor(res, MediaType.XHTML);
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("File not exists");
+                        alert.getDialogPane().setHeader(null);
+                        alert.getDialogPane().setHeaderText(null);
+                        alert.setContentText("The file attached to toc item " + tocRef.getNcxReference()  + " don't exists and can not be open.");
+                        alert.showAndWait();
+
+                        return;
                     }
+                    editorManager.openFileInEditor(res, MediaType.XHTML);
                 }
             }
         });

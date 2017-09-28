@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class Resource<T> implements Serializable, ToStringConvertible
 {
-    public static final Logger logger = Logger.getLogger(Resource.class);
+    private static final Logger logger = Logger.getLogger(Resource.class);
 	/**
 	 * 
 	 */
@@ -77,8 +77,6 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * 
 	 * Assumes that if the data is of a text type (html/css/etc) then the encoding will be UTF-8
 	 * 
-	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
-	 * 
 	 * @param data The Resource's contents
 	 * @param href The location of the resource within the epub. Example: "chapter1.html".
 	 */
@@ -90,8 +88,6 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * Creates a resource with the data from the given Reader at the specified href.
 	 * The MediaType will be determined based on the href extension.
 	 *
-	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
-	 *  
 	 * @param in The Resource's contents
 	 * @param href The location of the resource within the epub. Example: "cover.jpg".
 	 */
@@ -164,8 +160,6 @@ public class Resource<T> implements Serializable, ToStringConvertible
 	 * Gets the contents of the Resource as an InputStream.
 	 * 
 	 * @return The contents of the Resource.
-	 * 
-	 * @throws java.io.IOException
 	 */
 	public InputStream getInputStream()
 	{
@@ -433,6 +427,4 @@ public class Resource<T> implements Serializable, ToStringConvertible
         }
         setHref(getHref().replace(fileName, string));
     }
-
-
 }

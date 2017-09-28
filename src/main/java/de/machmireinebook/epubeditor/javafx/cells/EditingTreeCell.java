@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
 {
-    public static final Logger logger = Logger.getLogger(EditingTreeCell.class);
+    private static final Logger logger = Logger.getLogger(EditingTreeCell.class);
 
     private TextField textField;
 

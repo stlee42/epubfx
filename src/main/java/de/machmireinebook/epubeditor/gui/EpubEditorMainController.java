@@ -13,17 +13,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.cdi.BeanFactory;
-import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
-import de.machmireinebook.epubeditor.cdi.EpubEditorConfigurationProducer;
-import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
-import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
-import de.machmireinebook.epubeditor.cdi.SearchPaneProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorRange;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -39,13 +33,10 @@ import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -78,17 +69,16 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  * User: mjungierek
  * Date: 07.02.14
  * Time: 19:09
  */
-@Named
+@Singleton
 public class EpubEditorMainController implements Initializable
 {
-    public static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
+    private static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
     @FXML
     private AnchorPane centerAnchorPane;
     @FXML
@@ -239,25 +229,20 @@ public class EpubEditorMainController implements Initializable
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
     private Stage stage;
-    private static EpubEditorMainController instance;
 
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
-    @EditorTabManagerProducer
     private EditorTabManager editorManager;
     @Inject
     private PreviewManager previewManager;
     @Inject
     private TOCViewManager tocViewManager;
     @Inject
-    @EpubEditorConfigurationProducer
     private EpubEditorConfiguration configuration;
     @Inject
-    @SearchManagerProducer
     private SearchManager searchManager;
     @Inject
-    @SearchPaneProducer
     private SearchAnchorPane searchAnchorPane;
 
     @Override
@@ -280,25 +265,20 @@ public class EpubEditorMainController implements Initializable
         tocViewManager.setTreeView(tocTreeView);
         tocViewManager.setEditorManager(editorManager);
 
-        currentBookProperty.addListener(new ChangeListener<Book>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Book> observable, Book oldValue, Book newValue)
+        currentBookProperty.addListener((observable, oldValue, newValue) -> {
+            epubFilesTabPane.getTabs().clear();
+
+            bookBrowserManager.setBook(newValue);
+            tocViewManager.setBook(newValue);
+            editorManager.reset();
+            editorManager.setBook(newValue);
+            previewManager.reset();
+            saveButton.disableProperty().unbind();
+            if (newValue != null)
             {
-                epubFilesTabPane.getTabs().clear();
-
-                bookBrowserManager.setBook(newValue);
-                tocViewManager.setBook(newValue);
-                editorManager.reset();
-                editorManager.setBook(newValue);
-                previewManager.reset();
-                saveButton.disableProperty().unbind();
-                if (newValue != null)
-                {
-                    saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
-                }
-
+                saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
             }
+
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorManager.currentEditorIsXHTMLProperty())
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
@@ -392,90 +372,65 @@ public class EpubEditorMainController implements Initializable
 
         cursorPosLabel.textProperty().bind(editorManager.cursorPosLabelProperty());
 
-        //Teile der Oberfläche an-/abschalten, per Binding an die Menüeinträge
+        //Teile der OberflÃ¤che an-/abschalten, per Binding an die MenÃ¼eintrÃ¤ge
         clipListView.visibleProperty().bindBidirectional(clipsMenuItem.selectedProperty());
-        clipsMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        clipsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue)
             {
-                if (!newValue)
-                {
-                    leftDivider.getItems().remove(clipListView);
-                }
-                else
-                {
-                    leftDivider.getItems().add(clipListView);
-                    leftDivider.setDividerPosition(0, 0.7);
-                }
+                leftDivider.getItems().remove(clipListView);
+            }
+            else
+            {
+                leftDivider.getItems().add(clipListView);
+                leftDivider.setDividerPosition(0, 0.7);
             }
         });
         epubStructureTreeView.visibleProperty().bindBidirectional(showBookBrowserMenuItem.selectedProperty());
-        showBookBrowserMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        showBookBrowserMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
             {
-                if (newValue)
-                {
-                    leftDivider.getItems().add(epubStructureTreeView);
-                    leftDivider.setDividerPosition(0, 0.7);
-                }
-                else
-                {
-                    leftDivider.getItems().remove(epubStructureTreeView);
-                }
+                leftDivider.getItems().add(epubStructureTreeView);
+                leftDivider.setDividerPosition(0, 0.7);
+            }
+            else
+            {
+                leftDivider.getItems().remove(epubStructureTreeView);
             }
         });
         validationResultsListView.visibleProperty().bindBidirectional(showValidationResultsMenuItem.selectedProperty());
-        showValidationResultsMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        showValidationResultsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue)
             {
-                if (!newValue)
-                {
-                    centerDivider.getItems().remove(validationResultsListView);
-                }
-                else
-                {
-                    centerDivider.getItems().add(validationResultsListView);
-                    centerDivider.setDividerPosition(0, 0.8);
-                }
+                centerDivider.getItems().remove(validationResultsListView);
+            }
+            else
+            {
+                centerDivider.getItems().add(validationResultsListView);
+                centerDivider.setDividerPosition(0, 0.8);
             }
         });
         previewAnchorPane.visibleProperty().bindBidirectional(showPreviewMenuItem.selectedProperty());
-        showPreviewMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        showPreviewMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
             {
-                if (newValue)
-                {
-                    rightDivider.getItems().add(previewAnchorPane);
-                    rightDivider.setDividerPosition(0, 0.7);
-                }
-                else
-                {
-                    rightDivider.getItems().remove(previewAnchorPane);
-                }
+                rightDivider.getItems().add(previewAnchorPane);
+                rightDivider.setDividerPosition(0, 0.7);
+            }
+            else
+            {
+                rightDivider.getItems().remove(previewAnchorPane);
             }
         });
         tocTreeView.visibleProperty().bindBidirectional(showTocMenuItem.selectedProperty());
-        showTocMenuItem.selectedProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        showTocMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue)
             {
-                if (!newValue)
-                {
-                    rightDivider.getItems().remove(tocTreeView);
-                }
-                else
-                {
-                    rightDivider.getItems().add(tocTreeView);
-                    rightDivider.setDividerPosition(0, 0.7);
-                }
+                rightDivider.getItems().remove(tocTreeView);
+            }
+            else
+            {
+                rightDivider.getItems().add(tocTreeView);
+                rightDivider.setDividerPosition(0, 0.7);
             }
         });
 
@@ -491,23 +446,21 @@ public class EpubEditorMainController implements Initializable
         AnchorPane.setLeftAnchor(searchAnchorPane, 0.0);
         AnchorPane.setRightAnchor(searchAnchorPane, 0.0);
         searchAnchorPane.visibleProperty().bind(isNoEditorBinding.not().and(searchRadioMenuItem.disableProperty()));
-        searchAnchorPane.visibleProperty().addListener(new ChangeListener<Boolean>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+        searchAnchorPane.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
             {
-                if (newValue)
-                {
-                    AnchorPane.setTopAnchor(epubFilesTabPane, 70.0);
-                }
-                else
-                {
-                    AnchorPane.setTopAnchor(epubFilesTabPane, 0.0);
-                }
+                AnchorPane.setTopAnchor(epubFilesTabPane, 70.0);
+            }
+            else
+            {
+                AnchorPane.setTopAnchor(epubFilesTabPane, 0.0);
             }
         });
+        searchAnchorPane.getCloseButton().setOnAction(event -> {
+            searchRadioMenuItem.setDisable(false);
+        });
+
         searchManager.currentBookProperty().bind(currentBookProperty);
-        instance = this;
     }
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
@@ -539,11 +492,7 @@ public class EpubEditorMainController implements Initializable
                 catch (IOException e)
                 {
                     logger.error("", e);
-                    Dialogs.create()
-                            .owner(stage)
-                            .title("E-Book öffnen")
-                            .message("Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.")
-                            .showException(e);
+                    ExceptionDialog.showAndWait(e, stage, "E-Book Ã¶ffnen", "Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht Ã¶ffnen.");
                 }
             });
             fileMenu.getItems().add(index, recentFileMenuItem);
@@ -553,20 +502,12 @@ public class EpubEditorMainController implements Initializable
         }
     }
 
-    @Produces
-    @EpubEditorMainControllerProducer
-    public static EpubEditorMainController getInstance()
-    {
-        return instance;
-    }
-
-
     public void setStage(Stage stage)
     {
         this.stage = stage;
 
         stage.setOnCloseRequest(event -> {
-            checkBeforeExit();
+            checkBeforeCloseBook();
         });
 
         stage.getScene().setOnKeyPressed(event -> {
@@ -606,9 +547,9 @@ public class EpubEditorMainController implements Initializable
     @SuppressWarnings("UnusedParameters")
     public void openEpubAction(ActionEvent actionEvent)
     {
-        checkBeforeExit();
+        checkBeforeCloseBook();
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("EPUB-Datei öffnen");
+        fileChooser.setTitle("EPUB-Datei Ã¶ffnen");
         fileChooser.getExtensionFilters().removeAll();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("EPUB-Datei", "*.epub"));
         File file = fileChooser.showOpenDialog(stage);
@@ -625,11 +566,7 @@ public class EpubEditorMainController implements Initializable
             catch (IOException e)
             {
                 logger.error("", e);
-                Dialogs.create()
-                        .owner(stage)
-                        .title("E-Book öffnen")
-                        .message("Kann E-Book-Datei " + file.getName()  + " nicht öffnen.")
-                        .showException(e);
+                ExceptionDialog.showAndWait(e, stage, "E-Book Ã¶ffnen", "Kann E-Book-Datei " + file.getName()  + " nicht Ã¶ffnen.");
             }
             finally
             {
@@ -652,7 +589,7 @@ public class EpubEditorMainController implements Initializable
     public void addExistingFiles()
     {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Einzufügende Dateien auswählen");
+        chooser.setTitle("EinzufÃ¼gende Dateien auswÃ¤hlen");
         List<File> files = chooser.showOpenMultipleDialog(stage);
         if (files != null)
         {
@@ -696,11 +633,7 @@ public class EpubEditorMainController implements Initializable
                     catch (IOException e)
                     {
                         logger.error("", e);
-                        Dialogs.create()
-                                .owner(stage)
-                                .title("Datei hinzugefügen")
-                                .message("Kann Datei " + file.getName()  + "  nicht hinzufügen.")
-                                .showException(e);
+                        ExceptionDialog.showAndWait(e, stage, "Datei hinzugefÃ¼gen", "Kann Datei " + file.getName()  + "  nicht hinzufÃ¼gen." );
                     }
                 }
                 else
@@ -826,17 +759,17 @@ public class EpubEditorMainController implements Initializable
         stage.close();
     }
 
-    public void checkBeforeExit()
+    public void checkBeforeCloseBook()
     {
-        if (currentBookProperty.getValue().getBookIsChanged())
+        if (currentBookProperty.getValue() != null && currentBookProperty.getValue().getBookIsChanged())
         {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initOwner(stage);
             alert.setTitle("epub4mmee beenden");
             alert.getDialogPane().setHeader(null);
             alert.getDialogPane().setHeaderText(null);
-            alert.setContentText("Das E-Book wurde geändert. " +
-                    "Sollen die Änderungen gespeichert werden?");
+            alert.setContentText("Das E-Book wurde geÃ¤ndert. " +
+                    "Sollen die Ã„nderungen gespeichert werden?");
             alert.getDialogPane().getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
             Optional<ButtonType> choosedButton = alert.showAndWait();
             if (choosedButton.isPresent() && choosedButton.get().equals(ButtonType.YES))
@@ -853,7 +786,6 @@ public class EpubEditorMainController implements Initializable
             }
         }
     }
-
 
     public void setEpubHttpHandler(EpubHttpHandler epubHttpHandler)
     {
@@ -1082,11 +1014,12 @@ public class EpubEditorMainController implements Initializable
         }
         else
         {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Einfügen nicht möglich")
-                    .message("Kann Bild bzw. Mediendatei nicht an dieser Position einfügen. Dies ist nur innerhalb des XHTML-Bodys möglich.")
-                    .showWarning();
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("EinfÃ¼gen nicht mÃ¶glich");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("Kann Bild bzw. Mediendatei nicht an dieser Position einfÃ¼gen. Dies ist nur innerhalb des XHTML-Bodys mÃ¶glich.");
+            alert.showAndWait();
         }
     }
 
@@ -1174,26 +1107,6 @@ public class EpubEditorMainController implements Initializable
             windowStage = controller.getStage();
         }
         return windowStage;
-    }
-
-    public BookBrowserManager getBookBrowserManager()
-    {
-        return bookBrowserManager;
-    }
-
-    public EditorTabManager getEditorManager()
-    {
-        return editorManager;
-    }
-
-    public PreviewManager getPreviewManager()
-    {
-        return previewManager;
-    }
-
-    public TOCViewManager getTocViewManager()
-    {
-        return tocViewManager;
     }
 
     public void newMinimalEpubAction()
@@ -1320,10 +1233,5 @@ public class EpubEditorMainController implements Initializable
     {
 
 
-    }
-
-    public void closeSearchPaneAction(ActionEvent actionEvent)
-    {
-        searchRadioMenuItem.setDisable(false);
     }
 }

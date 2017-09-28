@@ -2,8 +2,10 @@ package de.machmireinebook.epubeditor.gui;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.cdi.BeanFactory;
+import de.machmireinebook.epubeditor.BeanFactory;
 
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -21,9 +23,12 @@ import org.apache.log4j.Logger;
  */
 public class UIHelper
 {
-    public static final Logger logger = Logger.getLogger(UIHelper.class);
+    private static final Logger logger = Logger.getLogger(UIHelper.class);
 
-    public static Stage createChooserWindow()
+    @Inject
+    private EpubEditorConfiguration configuration;
+
+    public Stage createChooserWindow()
     {
         Stage chooserWindowStage = new Stage(StageStyle.UTILITY);
         try
@@ -33,7 +38,6 @@ public class UIHelper
             Pane root = loader.load();
             Scene scene = new Scene(root);
 
-            EpubEditorConfiguration configuration = EpubEditorConfiguration.getInstance();
             ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
             chooserWindowController.setChooserWindow(chooserWindowStage);
 
@@ -48,4 +52,6 @@ public class UIHelper
         }
         return chooserWindowStage;
     }
+
+
 }

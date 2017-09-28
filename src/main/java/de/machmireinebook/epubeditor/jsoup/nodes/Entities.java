@@ -133,7 +133,7 @@ public class Entities {
     };
 
     static {
-        xhtmlByVal = new HashMap<Character, String>();
+        xhtmlByVal = new HashMap<>();
         base = loadEntities("entities-base.properties");  // most common / default
         baseByVal = toCharacterKey(base);
         full = loadEntities("entities-full.properties"); // extended and overblown.
@@ -147,7 +147,7 @@ public class Entities {
 
     private static Map<String, Character> loadEntities(String filename) {
         Properties properties = new Properties();
-        Map<String, Character> entities = new HashMap<String, Character>();
+        Map<String, Character> entities = new HashMap<>();
         try {
             InputStream in = Entities.class.getResourceAsStream(filename);
             properties.load(in);

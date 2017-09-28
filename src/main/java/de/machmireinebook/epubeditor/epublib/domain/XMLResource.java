@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
+import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -15,6 +15,7 @@ import org.jdom2.JDOMException;
  */
 public class XMLResource extends Resource<Document>
 {
+    private static final Logger logger = Logger.getLogger(XMLResource.class);
     public XMLResource()
     {
     }
@@ -42,8 +43,7 @@ public class XMLResource extends Resource<Document>
     public XMLResource(String id, byte[] data, String href, MediaType mediaType) {
         super(id, data, href, mediaType, Constants.CHARACTER_ENCODING);
     }
-
-
+    
     @Override
     public Document asNativeFormat()
     {

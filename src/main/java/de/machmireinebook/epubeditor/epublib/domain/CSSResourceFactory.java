@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  */
 public class CSSResourceFactory implements ResourceFactory
 {
-    public static final Logger logger = Logger.getLogger(CSSResourceFactory.class);
+    private static final Logger logger = Logger.getLogger(CSSResourceFactory.class);
 
     private static final CSSResourceFactory instance = new CSSResourceFactory();
 

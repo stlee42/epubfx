@@ -7,18 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.cdi.BeanFactory;
-import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
-import de.machmireinebook.epubeditor.cdi.SearchManagerProducer;
-import de.machmireinebook.epubeditor.cdi.SearchPaneProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
-
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,18 +27,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
 * User: mjungierek
 * Date: 06.01.2015
 * Time: 22:08
 */
+@Singleton
 public class SearchAnchorPane extends AnchorPane implements Initializable
 {
-    public static final Logger logger = Logger.getLogger(SearchAnchorPane.class);
+    private static final Logger logger = Logger.getLogger(SearchAnchorPane.class);
 
-    private static SearchAnchorPane instance;
     @FXML
     private TextField replaceStringTextField;
     @FXML
@@ -61,12 +55,9 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     @FXML
     private ChoiceBox searchRegionChoiceBox;
     @Inject
-    @SearchManagerProducer
     private SearchManager searchManager;
     @Inject
-    @EditorTabManagerProducer
     private EditorTabManager editorManager;
-
 
     public SearchAnchorPane()
     {
@@ -80,32 +71,14 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
         }
         catch (IOException e)
         {
-            Dialogs.create()
-                    .title("Suchmaske")
-                    .masthead(null)
-                    .message("Fehler beim Öffnen der Suchmaske")
-                    .showException(e);
-            SearchManager.logger.error("", e);
+            ExceptionDialog.showAndWait(e, null, "Suchmaske", "Fehler beim Ã–ffnen der Suchmaske");
+            logger.error("", e);
         }
-    }
-
-    @Produces
-    @SearchPaneProducer
-    public static SearchAnchorPane getInstance()
-    {
-        if (instance == null)
-        {
-            instance = BeanFactory.getInstance().getBean(SearchAnchorPane.class);
-        }
-        return instance;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        closeButton.setOnAction(event -> {
-            EpubEditorMainController.getInstance().closeSearchPaneAction(event);
-        });
         modusChoiceBox.getSelectionModel().select(0);
         searchRegionChoiceBox.getSelectionModel().select(0);
         dotAllCheckBox.disableProperty().bind(Bindings.equal(2, modusChoiceBox.getSelectionModel().selectedIndexProperty()));
@@ -178,7 +151,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
         }
         catch (UnsupportedEncodingException e)
         {
-            //schould not happens „“
+            //schould not happens Â„Â“
         }
     }
 
@@ -186,5 +159,10 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     {
         searchStringTextField.setText(searchString);
         searchStringTextField.requestFocus();
+    }
+
+    public Button getCloseButton()
+    {
+        return closeButton;
     }
 }

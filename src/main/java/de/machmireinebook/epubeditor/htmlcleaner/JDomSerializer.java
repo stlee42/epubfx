@@ -125,7 +125,7 @@ public class JDomSerializer {
                     if (!attPrefix.startsWith("xml")) {
                         ns = Namespace.getNamespace(attPrefix, nsURI);
                     }
-                    else if(attPrefix.startsWith("xmlns")) //da wird noch ein zus‰tzlicher Namespace deklariert
+                    else if(attPrefix.startsWith("xmlns")) //da wird noch ein zus√§tzlicher Namespace deklariert
                     {
                         element.addNamespaceDeclaration(Namespace.getNamespace(attrName, attrValue));
                         node.addNamespaceDeclaration(attrName, attrValue);

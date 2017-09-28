@@ -18,7 +18,7 @@ import org.w3c.tidy.Tidy;
  */
 public class JTidyBookProcessor extends HtmlBookProcessor
 {
-    public static final Logger logger = Logger.getLogger(JTidyBookProcessor.class);
+    private static final Logger logger = Logger.getLogger(JTidyBookProcessor.class);
     private Tidy tidy;
 
     public JTidyBookProcessor()
@@ -52,7 +52,7 @@ public class JTidyBookProcessor extends HtmlBookProcessor
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         tidy.parse(resource.getInputStream(), bos);
         String doc = bos.toString("UTF-8");
-        //fehlerhaftes xhtml für epub wieder reparieren
+        //fehlerhaftes xhtml fÃ¼r epub wieder reparieren
         doc = StringUtils.replace(doc, "/*<![CDATA[*/", "");
         doc = StringUtils.replace(doc, "/*]]>*/", "");
         doc = StringUtils.replace(doc, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",

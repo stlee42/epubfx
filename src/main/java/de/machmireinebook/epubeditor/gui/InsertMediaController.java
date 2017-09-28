@@ -3,14 +3,11 @@ package de.machmireinebook.epubeditor.gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.epubeditor.cdi.EditorTabManagerProducer;
-import de.machmireinebook.epubeditor.cdi.EpubEditorMainControllerProducer;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -21,15 +18,11 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.util.NumberUtils;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -45,13 +38,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.controlsfx.dialog.Dialogs;
 
 /**
  * User: mjungierek
@@ -60,7 +51,7 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class InsertMediaController implements Initializable, StandardController
 {
-    public static final Logger logger = Logger.getLogger(InsertMediaController.class);
+    private static final Logger logger = Logger.getLogger(InsertMediaController.class);
     @FXML
     private CheckBox addBorderCheckBox;
     @FXML
@@ -98,10 +89,8 @@ public class InsertMediaController implements Initializable, StandardController
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
 
     @Inject
-    @EditorTabManagerProducer
     EditorTabManager editorManager;
     @Inject
-    @EpubEditorMainControllerProducer
     EpubEditorMainController mainController;
 
     private static InsertMediaController instance;
@@ -123,32 +112,22 @@ public class InsertMediaController implements Initializable, StandardController
         tc2.setCellFactory(new ImageCellFactory<>(160d, null));
         tc2.setSortable(false);
 
-        tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ImageResource>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends ImageResource> observable, ImageResource oldValue, ImageResource newValue)
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            refreshImageView(newValue);
+            if (newValue != null)
             {
-                refreshImageView(newValue);
-                if (newValue != null)
-                {
-                    widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
-                    heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
-                }
+                widthPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getWidth()));
+                heightPixelTextField.setText(NumberUtils.formatAsInteger(newValue.getHeight()));
             }
         });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
+        tableView.setOnMouseClicked(event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY))
             {
-                if (event.getButton().equals(MouseButton.PRIMARY))
+                if (event.getClickCount() == 2)
                 {
-                    if (event.getClickCount() == 2)
-                    {
-                        ImageResource resource = tableView.getSelectionModel().getSelectedItem();
-                        insertMediaFile(resource);
-                        stage.close();
-                    }
+                    ImageResource resource = tableView.getSelectionModel().getSelectedItem();
+                    insertMediaFile(resource);
+                    stage.close();
                 }
             }
         });
@@ -182,12 +161,12 @@ public class InsertMediaController implements Initializable, StandardController
             String snippet;
             if (withCaptionCheckBox.isSelected())
             {
-                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"));
+                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), "UTF-8");
                 snippet = StringUtils.replace(snippet, "${caption}", captionTextField.getText());
             }
             else
             {
-                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"));
+                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), "UTF-8");
             }
             snippet = StringUtils.replace(snippet, "${url}", "/" + resource.getHref());
 
@@ -223,11 +202,8 @@ public class InsertMediaController implements Initializable, StandardController
         catch (IOException e)
         {
             logger.error("", e);
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Einfügen nicht möglich")
-                    .message("Wegen eines Fehler kann das Bild bzw. die Mediendatei nicht einfügen.")
-                    .showException(e);
+            ExceptionDialog.showAndWait(e, stage,  "EinfÃ¼gen nicht mÃ¶glich", "Wegen eines Fehler kann das Bild bzw. die Mediendatei nicht einfÃ¼gen.");
+
         }
     }
 
@@ -254,7 +230,7 @@ public class InsertMediaController implements Initializable, StandardController
         {
             imageResources.add((ImageResource)resource);
         }
-        Collections.sort(imageResources, new ResourceFilenameComparator());
+        imageResources.sort(new ResourceFilenameComparator());
         tableView.setItems(FXCollections.observableList(imageResources));
         tableView.getSelectionModel().select(0);
     }

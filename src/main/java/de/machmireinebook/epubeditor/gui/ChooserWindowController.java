@@ -34,7 +34,7 @@ public class ChooserWindowController implements Initializable
     private Button chooserWindowCancelButton;
 
     private Stage chooserWindow;
-    public static final Logger logger = Logger.getLogger(ChooserWindowController.class);
+    private static final Logger logger = Logger.getLogger(ChooserWindowController.class);
 
     private static ChooserWindowController instance;
 

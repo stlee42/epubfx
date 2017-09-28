@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
  @author Jonathan Hedley, jonathan@hedley.net */
 public class Attribute implements Map.Entry<String, String>, Cloneable  {
-    public static final Logger logger = Logger.getLogger(Attribute.class);
+    private static final Logger logger = Logger.getLogger(Attribute.class);
     private String key;
     private String value;
 

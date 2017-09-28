@@ -16,7 +16,7 @@
         .CodeMirror
         {
             border: 1px solid green;
-            font-family: "Source Code Pro", Consolas;
+            font-family: "Source Code Pro", Consolas, sans-serif;
             font-size: 14px;
             height:auto;
         }
@@ -67,7 +67,7 @@
         mode: {name: "xml", htmlMode: false}
     });
  /*   CodeMirror.defineMode("spell-check", function(config, parserConfig) {
-        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ „“]");
+        var rx_word = new RegExp("[^\!\"\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~\ Â„Â“]");
         return {
             token: function (stream, state) {
                 var ch;
@@ -94,7 +94,7 @@
             onChangeListener.changed(instance, changes);
     });
     editor.on('viewportChange', function(instance, from,to){
-        spellChecker.onViewPortChanged(instance, from,to);
+        //spellChecker.onViewPortChanged(instance, from,to);
     });
 </script>
 </body>

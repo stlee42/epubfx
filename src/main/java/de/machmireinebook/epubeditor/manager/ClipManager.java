@@ -1,10 +1,8 @@
 package de.machmireinebook.epubeditor.manager;
 
-import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
 import de.machmireinebook.epubeditor.domain.Clip;
-
 import javafx.scene.control.TreeItem;
 
 /**
@@ -12,20 +10,13 @@ import javafx.scene.control.TreeItem;
  * Date: 03.01.2015
  * Time: 00:24
  */
+@Singleton
 public class ClipManager
 {
     private TreeItem<Clip> clipsRoot = new TreeItem<>();
-    private static final ClipManager instance = new ClipManager();
 
-    private ClipManager()
+    public ClipManager()
     {
-    }
-
-    @Produces
-    @ClipManagerProducer
-    public static ClipManager getInstance()
-    {
-        return instance;
     }
 
     public void setClipsRoot(TreeItem<Clip> clipsRoot)

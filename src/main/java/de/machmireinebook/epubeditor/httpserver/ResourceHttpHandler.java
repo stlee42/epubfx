@@ -8,8 +8,8 @@ import java.net.URI;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.util.IOUtils;
 
 /**
  * User: mjungierek
@@ -18,7 +18,7 @@ import org.apache.poi.util.IOUtils;
  */
 public class ResourceHttpHandler implements HttpHandler
 {
-    public static final Logger logger = Logger.getLogger(ResourceHttpHandler.class);
+    private static final Logger logger = Logger.getLogger(ResourceHttpHandler.class);
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException

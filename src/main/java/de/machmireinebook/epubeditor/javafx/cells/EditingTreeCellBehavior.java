@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
 {
-    public static final Logger logger = Logger.getLogger(EditingTreeCellBehavior.class);
+    private static final Logger logger = Logger.getLogger(EditingTreeCellBehavior.class);
 
     /***************************************************************************
      *                                                                         *

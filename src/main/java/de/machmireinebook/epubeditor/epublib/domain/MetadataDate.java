@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+import org.jetbrains.annotations.Contract;
 
 /**
  * A Date used by the book's metadata.
@@ -13,7 +14,7 @@ import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
  * @author paul
  *
  */
-public class MetadataDate implements Serializable
+public class MetadataDate extends DublinCoreMetadataElement implements Serializable
 {
 	/**
 	 * 
@@ -46,7 +47,6 @@ public class MetadataDate implements Serializable
 	}
 
 	private Event event;
-	private String dateString;
 
 	public MetadataDate(java.util.Date date) {
 		this(date, (Event) null);
@@ -61,7 +61,7 @@ public class MetadataDate implements Serializable
 	}
 	
 	public MetadataDate(String dateString, Event event) {
-		this.dateString = dateString;
+		setValue(dateString);
 		this.event = event;
 	}
 	
@@ -71,16 +71,14 @@ public class MetadataDate implements Serializable
 	
 	public MetadataDate(String dateString, String event) {
 		this(checkDate(dateString), Event.fromValue(event));
-		this.dateString = dateString;
+		setValue(dateString);
 	}
 
+	@Contract(value = "null -> fail; !null -> !null", pure = true)
 	private static String checkDate(String dateString) {
 		if (dateString == null) {
 			throw new IllegalArgumentException("Cannot create a date from a blank string");
 		}
-		return dateString;
-	}
-	public String getValue() {
 		return dateString;
 	}
 	public Event getEvent() {
@@ -93,9 +91,9 @@ public class MetadataDate implements Serializable
 
 	public String toString() {
 		if (event == null) {
-			return dateString;
+			return getValue();
 		}
-		return "" + event + ":" + dateString;
+		return event + ":" + getValue();
 	}
 }
 

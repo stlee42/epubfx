@@ -1,15 +1,16 @@
 package de.machmireinebook.epubeditor.epublib.epub3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Element;
@@ -21,7 +22,7 @@ import org.jdom2.Element;
  */
 public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
 {
-    public static final Logger logger = Logger.getLogger(PackageDocumentEpub3MetadataReader.class);
+    private static final Logger logger = Logger.getLogger(PackageDocumentEpub3MetadataReader.class);
 
     public static Metadata readMetadata(Element root)
     {
@@ -43,9 +44,9 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
         result.setDates(readDates(metadataElement)); */
-        result.setOtherProperties(readOtherProperties(metadataElement));
-/*        result.setMetaAttributes(readMetaProperties(metadataElement));
-        result.setLanguage(metadataElement.getChildText(PackageDocumentBase.DCTags.language, NAMESPACE_DUBLIN_CORE));*/
+        result.setEpub3MetaProperties(readEpub3MetaProperties(metadataElement));
+        result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
+        result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
 
         return result;
     }
@@ -57,22 +58,51 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
      * @param metadataElement
      * @return
      */
-    private static Map<QName, String> readOtherProperties(Element metadataElement)
+    private static List<Epub3MetadataProperty> readEpub3MetaProperties(Element metadataElement)
     {
-        Map<QName, String> result = new HashMap<>();
+        List<Epub3MetadataProperty> result = new ArrayList<>();
 
         List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
+            Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
             String name = metaTag.getAttributeValue(OPFAttributes.property);
-            String value = metaTag.getText();
-            if (StringUtils.isNotEmpty(name))
+            if (StringUtils.isNotEmpty(name)) //ansonsten epub 2 metadaten, die wir uns merken ansonsten aber ignorieren
             {
-                result.put(new QName(name), value);
+                otherMetadataElement.setQName(new QName(name));
+                String value = metaTag.getText();
+                otherMetadataElement.setValue(value);
+                String refines = metaTag.getAttributeValue(OPFAttributes.refines);
+                otherMetadataElement.setRefines(refines);
+                String scheme = metaTag.getAttributeValue(OPFAttributes.scheme);
+                otherMetadataElement.setScheme(scheme);
+
+                result.add(otherMetadataElement);
             }
         }
 
         return result;
     }
+
+    private static Map<String, String> readEpub2MetaProperties(Element metadataElement)
+    {
+        Map<String, String> result = new HashMap<>();
+
+        List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
+        for (Element metaTag : metaTags)
+        {
+            if (metaTag.getAttribute(OPFAttributes.property) != null)
+            {
+                continue; //is epub 3 metadata, will be read in another method
+            }
+
+            String name = metaTag.getAttributeValue(OPFAttributes.name);
+            String value = metaTag.getAttributeValue(OPFAttributes.content);
+            result.put(name, value);
+        }
+
+        return result;
+    }
+
 
 }

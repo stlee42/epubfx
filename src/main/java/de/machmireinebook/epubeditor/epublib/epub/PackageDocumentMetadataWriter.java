@@ -1,9 +1,6 @@
 package de.machmireinebook.epubeditor.epublib.epub;
 
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
@@ -11,10 +8,9 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase
 {
@@ -93,13 +89,24 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         }
 
         // write other properties
-        if (book.getMetadata().getOtherProperties() != null)
+        if (book.getMetadata().getEpub3MetaProperties() != null)
         {
-            for (Map.Entry<QName, String> mapEntry : book.getMetadata().getOtherProperties().entrySet())
+            for (Epub3MetadataProperty otherProperty : book.getMetadata().getEpub3MetaProperties())
             {
-                Element otherElement = new Element(mapEntry.getKey().getLocalPart(),
-                        Namespace.getNamespace(mapEntry.getKey().getPrefix(), mapEntry.getKey().getNamespaceURI()));
-                otherElement.setText(mapEntry.getValue());
+                Element otherElement = new Element(OPFTags.meta, NAMESPACE_OPF);
+                if (otherProperty.getQName() != null)
+                {
+                    otherElement.setAttribute(OPFAttributes.property, otherProperty.getQName().getLocalPart());
+                }
+                if (StringUtils.isNotEmpty(otherProperty.getRefines()))
+                {
+                    otherElement.setAttribute(OPFAttributes.refines, otherProperty.getRefines());
+                }
+                if (StringUtils.isNotEmpty(otherProperty.getRefines()))
+                {
+                    otherElement.setAttribute(OPFAttributes.scheme, otherProperty.getScheme());
+                }
+                otherElement.setText(otherProperty.getValue());
                 metadataElement.addContent(otherElement);
             }
         }

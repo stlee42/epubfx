@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class CssCodeEditor extends AbstractCodeEditor
 {
-    public static final Logger logger = Logger.getLogger(CssCodeEditor.class);
+    private static final Logger logger = Logger.getLogger(CssCodeEditor.class);
 
     /**
      * a template for editing code - this can be changed to any template derived from the

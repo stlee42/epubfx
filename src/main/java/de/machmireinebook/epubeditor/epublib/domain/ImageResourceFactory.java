@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  */
 public class ImageResourceFactory implements ResourceFactory
 {
-    public static final Logger logger = Logger.getLogger(ImageResourceFactory.class);
+    private static final Logger logger = Logger.getLogger(ImageResourceFactory.class);
 
     private static final ImageResourceFactory instance = new ImageResourceFactory();
 

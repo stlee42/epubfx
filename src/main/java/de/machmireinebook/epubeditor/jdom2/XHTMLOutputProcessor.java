@@ -30,7 +30,7 @@ import org.jdom2.util.NamespaceStack;
  */
 public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 {
-    public static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
+    private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
     private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
@@ -206,7 +206,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                 }
                 else
                 {
-                    t = t.trim(); //hier kann getrimmt werden, da der komplette Inhalt aus Text besteht und vorn und hinten keine Leerzeichen übrigbleiben sollen
+                    t = t.trim(); //hier kann getrimmt werden, da der komplette Inhalt aus Text besteht und vorn und hinten keine Leerzeichen Ã¼rigbleiben sollen
                     textRawRemoveBreaks(out, t);
                 }
             }

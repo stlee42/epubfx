@@ -3,11 +3,10 @@ package de.machmireinebook.epubeditor.manager;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import javax.inject.Named;
-
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import javax.inject.Singleton;
 
 import com.sun.webkit.dom.ElementImpl;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -23,10 +22,10 @@ import org.w3c.dom.events.EventTarget;
  * Date: 22.07.2014
  * Time: 20:25
  */
-@Named
+@Singleton
 public class PreviewManager
 {
-    public static final Logger logger = Logger.getLogger(PreviewManager.class);
+    private static final Logger logger = Logger.getLogger(PreviewManager.class);
 
     private WebView webview;
     private EditorTabManager editorManager;

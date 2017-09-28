@@ -5,11 +5,9 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.epubeditor.cdi.ClipManagerProducer;
 import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.manager.ClipManager;
-
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,7 +35,7 @@ import org.apache.log4j.Logger;
  */
 public class ClipEditorController implements StandardController
 {
-    public static final Logger logger = Logger.getLogger(ClipEditorController.class);
+    private static final Logger logger = Logger.getLogger(ClipEditorController.class);
 
     @FXML
     private TextField filterTextField;
@@ -48,7 +46,6 @@ public class ClipEditorController implements StandardController
     private Stage stage;
 
     @Inject
-    @ClipManagerProducer
     private ClipManager clipManager;
 
     private static ClipEditorController instance;

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class XHTMLCodeEditor extends AbstractCodeEditor
 {
-    public static final Logger logger = Logger.getLogger(XHTMLCodeEditor.class);
+    private static final Logger logger = Logger.getLogger(XHTMLCodeEditor.class);
 
     @FunctionalInterface
     public interface TagInspector
@@ -134,17 +134,17 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
             EditorToken currentToken = getTokenAt(currentPos);
 
             boolean found = false;
-            do  //öffnendes Tag suchen
+            do  //Ã¶ffnendes Tag suchen
             {
-                logger.debug("suchen öffnendes Tag, currrent token " + currentToken.getContent());
+                logger.debug("suchen Ã¶ffnendes Tag, currrent token " + currentToken.getContent());
                 if (">".equals(currentToken.getContent()) && "tag bracket".equals(currentToken.getType()))
                 {
                     lastBracketBegin = new EditorPosition(currentLine, currentToken.getStart());
                 }
                 if (inspector.isTagFound(currentToken))
                 {
-                    //öffnendes BlockTag gefunden
-                    logger.info("öffnendes BlockTag gefunden " + currentToken.getContent());
+                    //Ã¶ffnendes BlockTag gefunden
+                    logger.info("Ã¶ffnendes BlockTag gefunden " + currentToken.getContent());
                     found = true;
                     tagName = currentToken.getContent();
                     openTagBegin = new EditorPosition(currentLine, currentToken.getStart());
@@ -177,24 +177,24 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
             currentLine = beginPos.getLine();
 
             found = false;
-            do  //schließendes Tag suchen
+            do  //schlieÃŸendes Tag suchen
             {
-                logger.debug("suchen schließendes Tag, currrent token " + currentToken.getContent());
+                logger.debug("suchen schlieÃŸendes Tag, currrent token " + currentToken.getContent());
                 if (inspector.isTagFound(currentToken))
                 {
-                    //BlockTag gleichen Namens gefunden, ist das aber auch ein passendes schließendes
+                    //BlockTag gleichen Namens gefunden, ist das aber auch ein passendes schlieÃŸendes
                     if (tagName.equals(currentToken.getContent()))
                     {
                         found = true;
                         if (isTokenClosingTag(currentLine, currentToken))
                         {
-                            logger.info("schließendes Tag gefunden " + currentToken.getContent());
+                            logger.info("schlieÃŸendes Tag gefunden " + currentToken.getContent());
                             closeTagBegin = new EditorPosition(currentLine, currentToken.getStart());
                             closeTagEnd = new EditorPosition(currentLine, currentToken.getEnd());
                         }
-                        else //öffnendes BlockTag gefunden (d.h. ungültiges HTML, wir brechen ab und ersetzen nur das öffnende Tag
+                        else //Ã¶ffnendes BlockTag gefunden (d.h. ungÃ¼ltiges HTML, wir brechen ab und ersetzen nur das Ã¶ffnende Tag
                         {
-                            logger.info("nächstes öffnende Tag gefunden " + currentToken.getContent() + ", breche ab");
+                            logger.info("nÃ¤chstes Ã¶ffnende Tag gefunden " + currentToken.getContent() + ", breche ab");
                             closeTagBegin = null;
                             closeTagEnd = null;
                         }
