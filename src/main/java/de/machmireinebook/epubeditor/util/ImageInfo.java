@@ -368,12 +368,9 @@ public class ImageInfo
             {
                 return checkPnm(b2 - '0');
             }
-            else if (b1 == 0x38 && b2 == 0x42)
+            else
             {
-                return checkPsd();
-            }
-			else {
-                return false;
+                return b1 == 0x38 && b2 == 0x42 && checkPsd();
             }
         }
         catch (IOException ioe)

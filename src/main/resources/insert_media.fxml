@@ -16,7 +16,7 @@
                   <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
                       <TableColumn prefWidth="270.0" text="Name" />
-                      <TableColumn prefWidth="185.0" text="Vorschau" />
+                      <TableColumn prefWidth="185.0" text="Preview" />
                     </columns>
                   </TableView>
                </children>
@@ -31,8 +31,8 @@
       </SplitPane>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="OK" />
-            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Abbrechen" />
+            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
+            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
          </children>
       </HBox>
       <VBox layoutX="26.0" layoutY="254.0" prefHeight="402.0" prefWidth="162.0" spacing="10.0" AnchorPane.topAnchor="20.0">
@@ -40,24 +40,24 @@
             <ComboBox fx:id="mediaTypeComboBox" prefHeight="25.0" prefWidth="150.0">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Alle" />
-                        <String fx:value="Bilder" />
+                        <String fx:value="All" />
+                        <String fx:value="Images" />
                         <String fx:value="Audio" />
                         <String fx:value="Video" />
                     </FXCollections>
                 </items>
             </ComboBox>
-            <Button mnemonicParsing="false" onAction="#otherFileButtonAction" prefHeight="25.0" prefWidth="150.0" text="Andere Datei laden..." />
+            <Button mnemonicParsing="false" onAction="#otherFileButtonAction" prefHeight="25.0" prefWidth="150.0" text="Load other file..." />
             <Separator prefHeight="4.0" prefWidth="115.0" />
-            <CheckBox fx:id="withCaptionCheckBox" mnemonicParsing="false" text="Bildunterschrift einfügen" />
-            <TextField fx:id="captionTextField" promptText="Bildunterschrift" />
+            <CheckBox fx:id="withCaptionCheckBox" mnemonicParsing="false" text="Insert caption" />
+            <TextField fx:id="captionTextField" promptText="Caption" />
             <Separator prefHeight="3.0" prefWidth="128.0" />
-            <RadioButton fx:id="noWidthHeightRadioButton" mnemonicParsing="false" selected="true" text="ohne Breite und Höhe">
+            <RadioButton fx:id="noWidthHeightRadioButton" mnemonicParsing="false" selected="true" text="without width and height">
                <toggleGroup>
                   <ToggleGroup fx:id="widthHeightGroup" />
                </toggleGroup>
             </RadioButton>
-            <RadioButton fx:id="fixWidthHeightRadioButton" mnemonicParsing="false" text="Fixe Breite und Höhe" toggleGroup="$widthHeightGroup" />
+            <RadioButton fx:id="fixWidthHeightRadioButton" mnemonicParsing="false" text="Fixed width and height" toggleGroup="$widthHeightGroup" />
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <TextField fx:id="widthPixelTextField" layoutX="26.0" layoutY="213.0" prefHeight="25.0" prefWidth="45.0" />
@@ -69,7 +69,7 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <RadioButton fx:id="flexibleWidthRadioButton" layoutX="26.0" layoutY="254.0" mnemonicParsing="false" selected="true" text="Flexible Breite" toggleGroup="$widthHeightGroup" />
+            <RadioButton fx:id="flexibleWidthRadioButton" layoutX="26.0" layoutY="254.0" mnemonicParsing="false" selected="true" text="Flexible width" toggleGroup="$widthHeightGroup" />
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <TextField fx:id="percentWidthTextField" prefHeight="25.0" prefWidth="45.0" text="100" />
@@ -79,13 +79,13 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <CheckBox fx:id="maxPhysicalWidthCheckBox" mnemonicParsing="false" selected="true" text="max. bis phys. Breite">
+            <CheckBox fx:id="maxPhysicalWidthCheckBox" mnemonicParsing="false" selected="true" text="max until phys. width">
                <VBox.margin>
                   <Insets left="10.0" />
                </VBox.margin>
             </CheckBox>
             <Separator prefHeight="0.0" prefWidth="115.0" />
-            <CheckBox fx:id="addBorderCheckBox" mnemonicParsing="false" text="Rand hinzufügen" />
+            <CheckBox fx:id="addBorderCheckBox" mnemonicParsing="false" text="Add border" />
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="34.0" text="Style" />

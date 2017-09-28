@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.epublib.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -49,7 +50,9 @@ public enum MediaType implements Serializable
 
     SMIL ("application/smil+xml", ".smil", DefaultResourceFactory.getInstance()),
     XPGT ("application/adobe-page-template+xml", ".xpgt", DefaultResourceFactory.getInstance()),
-    PLS ("application/pls+xml", ".pls", DefaultResourceFactory.getInstance());
+    PLS ("application/pls+xml", ".pls", DefaultResourceFactory.getInstance()),
+
+    UNKNWON_MEDIATYPE("", "", DefaultResourceFactory.getInstance());
 
     public boolean isBitmapImage()
     {
@@ -85,7 +88,7 @@ public enum MediaType implements Serializable
                 }
             }
         }
-        return null;
+        return UNKNWON_MEDIATYPE;
     }
 
     public static MediaType getByName(String mediaTypeName)
@@ -97,7 +100,7 @@ public enum MediaType implements Serializable
                 return mediatype;
             }
         }
-        return null;
+        return UNKNWON_MEDIATYPE;
 
     }
 
@@ -145,7 +148,7 @@ public enum MediaType implements Serializable
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
-        this.extensions = Arrays.asList(defaultExtension);
+        this.extensions = Collections.singletonList(defaultExtension);
         this.fileNamePrefix = fileNamePrefix;
         this.resourceFactory = resourceFactory;
     }

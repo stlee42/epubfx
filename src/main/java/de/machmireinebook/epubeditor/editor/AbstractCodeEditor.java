@@ -20,7 +20,9 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
+import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -42,7 +44,7 @@ import org.w3c.dom.events.EventTarget;
  */
 public abstract class AbstractCodeEditor extends AnchorPane implements CodeEditor
 {
-    private static final Logger logger = Logger.getLogger(AbstractCodeEditor.class);
+    public static final Logger logger = Logger.getLogger(AbstractCodeEditor.class);
 
     /**
      * a webview used to encapsulate the CodeMirror JavaScript.
@@ -81,8 +83,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
         }
 
         /**
-         * Interessant ist fÃ¼r undo/redo nur der code die cursorposition ist nur fÃ¼r die userexperience,
-         * eine reine cursorÃ¤nderung soll nicht versioniert werden
+         * Interessant ist für undo/redo nur der code die cursorposition ist nur für die userexperience,
+         * eine reine cursoränderung soll nicht versioniert werden
          * @param o
          * @return
          */
@@ -198,7 +200,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
      *
      * @param editingCode the initial code to be edited in the code editor.
      */
-    public AbstractCodeEditor()
+    AbstractCodeEditor()
     {
         AnchorPane.setTopAnchor(webview, 0.0);
         AnchorPane.setLeftAnchor(webview, 0.0);
@@ -219,8 +221,8 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
 
                 JSObject window = (JSObject) engine.executeScript("window");
                 window.setMember("onChangeListener", new OnChangeListener());
-                spellChecker = new SpellChecker();
-                window.setMember("spellChecker", spellChecker);
+/*                spellChecker = new SpellChecker();
+                window.setMember("spellChecker", spellChecker);*/
 
                 Element documentElement = document.getDocumentElement();
                 ((EventTarget) documentElement).addEventListener("keyup", evt ->
@@ -246,19 +248,19 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                     //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
                     if (isCtrlPressed && keyCode == 90)
                     {
-                        logger.debug("Ctrl-Z gedrÃ¼ckt");
+                        logger.debug("Ctrl-Z gedrückt");
                         evt.preventDefault();
                         undo();
                     }
                     else if (isCtrlPressed && keyCode == 89)
                     {
-                        logger.debug("Ctrl-Y gedrÃ¼ckt");
+                        logger.debug("Ctrl-Y gedrückt");
                         evt.preventDefault();
                         redo();
                     }
                     else if (isCtrlPressed && keyCode == 32)
                     {
-                        logger.debug("Ctrl-SPACE gedrÃ¼ckt");
+                        logger.debug("Ctrl-SPACE gedrückt");
                         evt.preventDefault();
                         removeTags();
                     }
@@ -269,14 +271,19 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
                 {
                     logger.debug("contextmenu event aufgefangen " + evt);
                     evt.preventDefault();
-//                    contextMenu.setShowRelativeToWindow(true);
+                    contextMenu.setImpl_showRelativeToWindow(true);
                     contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
                 }, false);
 
 
-                webview.setOnScroll(event -> {
-                    Double delta = event.getDeltaY() * -1;
-                    scroll(delta.intValue());
+                webview.setOnScroll(new EventHandler<ScrollEvent>()
+                {
+                    @Override
+                    public void handle(ScrollEvent event)
+                    {
+                        Double delta = event.getDeltaY() * -1;
+                        scroll(delta.intValue());
+                    }
                 });
                 state.setValue(Worker.State.SUCCEEDED);
             }
@@ -307,7 +314,7 @@ public abstract class AbstractCodeEditor extends AnchorPane implements CodeEdito
 /*        JSObject jsObject = (JSObject) webview.getEngine().executeScript("editor.getViewport();");
         int fromLine = (int) jsObject.getMember("from");
         int toLine = (int) jsObject.getMember("to");
-        spellChecker.onViewPortChanged(null, fromLine, toLine);    */
+        spellChecker.onViewPortChanged(null, fromLine, toLine);*/
     }
 
     /**

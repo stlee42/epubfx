@@ -19,12 +19,12 @@
     </VBox>
     <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
       <children>
-        <Button id="cancelButton" fx:id="chooserWindowOkButton" cancelButton="false" minWidth="90.0" mnemonicParsing="false" text="Übernehmen" HBox.hgrow="NEVER">
+        <Button id="cancelButton" fx:id="chooserWindowOkButton" cancelButton="false" minWidth="90.0" mnemonicParsing="false" text="Accept" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets left="110.0" />
           </HBox.margin>
         </Button>
-        <Button id="okButton" fx:id="chooserWindowCancelButton" minWidth="90.0" mnemonicParsing="false" text="Abbrechen" HBox.hgrow="NEVER">
+        <Button id="okButton" fx:id="chooserWindowCancelButton" minWidth="90.0" mnemonicParsing="false" text="Cancel" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets left="14.0" right="110.0" />
           </HBox.margin>

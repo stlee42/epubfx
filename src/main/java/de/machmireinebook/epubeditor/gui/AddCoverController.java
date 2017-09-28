@@ -12,12 +12,8 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -28,9 +24,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import jidefx.scene.control.searchable.TableViewSearchable;
 
 /**
@@ -69,25 +63,14 @@ public class AddCoverController implements Initializable
         tc2.setCellFactory(new ImageCellFactory<>(null, 100d));
         tc2.setSortable(false);
 
-        tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ImageResource>()
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshImageView(newValue));
+        tableView.setOnMouseClicked(event ->
         {
-            @Override
-            public void changed(ObservableValue<? extends ImageResource> observable, ImageResource oldValue, ImageResource newValue)
+            if (event.getButton().equals(MouseButton.PRIMARY))
             {
-                refreshImageView(newValue);
-            }
-        });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                if (event.getButton().equals(MouseButton.PRIMARY))
+                if (event.getClickCount() == 2)
                 {
-                    if (event.getClickCount() == 2)
-                    {
-                        insertCover();
-                    }
+                    insertCover();
                 }
             }
         });
@@ -148,14 +131,7 @@ public class AddCoverController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(new EventHandler<WindowEvent>()
-        {
-            @Override
-            public void handle(WindowEvent event)
-            {
-                refresh();
-            }
-        });
+        stage.setOnShown(event -> refresh());
     }
 
     public void setBook(Book book)

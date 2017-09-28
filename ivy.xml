@@ -3,5 +3,6 @@
     <dependencies>
         <dependency org="org.languagetool" name="language-de" rev="2.8"/>
         <dependency org="com.jidesoft" name="jidefx-common" rev="0.9.1"/>
+        <dependency org="org.controlsfx" name="controlsfx" rev="8.40.12"/>
     </dependencies>
 </ivy-module>

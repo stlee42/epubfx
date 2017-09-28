@@ -32,8 +32,7 @@ import org.jdom2.filter.Filter;
  * If the book contains a cover image then this will add a cover page to the book.
  * If the book contains a cover html page it will set that page's first image as the book's cover image.
  * <p>
- * FIXME:
- * will overwrite any "cover.jpg" or "cover.html" that are already there.
+ * FIXME:  will overwrite any "cover.jpg" or "cover.html" that are already there.
  *
  * @author paul
  */

@@ -31,7 +31,7 @@ public class Fileset2Epub {
 		String xslFile = "";
 		String coverImage = "";
 		String title = "";
-		List<String> authorNames = new ArrayList<String>();
+		List<String> authorNames = new ArrayList<>();
 		String type = "";
 		String isbn = "";
 		String inputEncoding = Constants.CHARACTER_ENCODING;
@@ -130,9 +130,9 @@ public class Fileset2Epub {
 
 
 	private static List<BookProcessor> createBookProcessors(List<String> bookProcessorNames) {
-		List<BookProcessor> result = new ArrayList<BookProcessor>(bookProcessorNames.size());
+		List<BookProcessor> result = new ArrayList<>(bookProcessorNames.size());
 		for (String bookProcessorName: bookProcessorNames) {
-			BookProcessor bookProcessor = null;
+			BookProcessor bookProcessor;
 			try {
 				bookProcessor = (BookProcessor) Class.forName(bookProcessorName).newInstance();
 				result.add(bookProcessor);

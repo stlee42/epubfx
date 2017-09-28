@@ -192,7 +192,7 @@
                                     <items>
                                         <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn" styleClass="flat">
                                             <tooltip>
-                                                <Tooltip styleClass="white-tooltip" text="Vergrößern" />
+                                                <Tooltip styleClass="white-tooltip" text="Zoom in" />
                                             </tooltip>
                                             <graphic>
                                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -217,7 +217,7 @@
                                         </Button>
                                         <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut" styleClass="flat">
                                             <tooltip>
-                                                <Tooltip styleClass="white-tooltip" text="Verkleinern" />
+                                                <Tooltip styleClass="white-tooltip" text="Zoom out" />
                                             </tooltip>
                                             <graphic>
                                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -246,7 +246,7 @@
                             <items>
                                 <Button fx:id="newBookButton" mnemonicParsing="false" onAction="#newEpubAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Neues E-Book erstellen" />
+                                        <Tooltip styleClass="white-tooltip" text="Create new ebook" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -258,7 +258,7 @@
                                 </Button>
                                 <Button fx:id="openBookButton" mnemonicParsing="false" onAction="#openEpubAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="E-Book öffnen" />
+                                        <Tooltip styleClass="white-tooltip" text="Open ebook" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -270,7 +270,7 @@
                                 </Button>
                                 <Button fx:id="addExistingFileButton" mnemonicParsing="false" onAction="#addExistingFilesAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Vorhandene Datei zum Buch hinzufügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Add existing file tp ebook" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -282,7 +282,7 @@
                                 </Button>
                                 <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#addEmptyHTMLFileAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Leere Datei einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Add empty html file" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -295,7 +295,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveEpubAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Speichern" />
+                                        <Tooltip styleClass="white-tooltip" text="Save" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -307,7 +307,7 @@
                                 </Button>
                                 <Button fx:id="saveAsButton" mnemonicParsing="false" onAction="#saveEpubAsAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Speichern als..." />
+                                        <Tooltip styleClass="white-tooltip" text="Save as..." />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -320,7 +320,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="undoButton" mnemonicParsing="false" onAction="#undoButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Rückgängig machen" />
+                                        <Tooltip styleClass="white-tooltip" text="Undo" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -332,7 +332,7 @@
                                 </Button>
                                 <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redoButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Wiederherstellen" />
+                                        <Tooltip styleClass="white-tooltip" text="Redo" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -345,7 +345,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="cutButton" mnemonicParsing="false" onAction="#cutButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Ausschneiden" />
+                                        <Tooltip styleClass="white-tooltip" text="Cut" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -357,7 +357,7 @@
                                 </Button>
                                 <Button fx:id="copyButton" mnemonicParsing="false" onAction="#copyButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Kopieren" />
+                                        <Tooltip styleClass="white-tooltip" text="Copy" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -369,7 +369,7 @@
                                 </Button>
                                 <Button fx:id="pasteButton" mnemonicParsing="false" onAction="#pasteButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Paste" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -382,7 +382,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="searchReplaceButton" mnemonicParsing="false" onAction="#searchReplaceButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Suchen und Ersetzen" />
+                                        <Tooltip styleClass="white-tooltip" text="Search and Replace" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -413,7 +413,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="increaseIndentButton" mnemonicParsing="false" onAction="#increaseIndentButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Einzug erhöhen" />
+                                        <Tooltip styleClass="white-tooltip" text="Increase indent" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -425,7 +425,7 @@
                                 </Button>
                                 <Button fx:id="decreaseIndentButton" mnemonicParsing="false" onAction="#decreaseIndentButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Einzug verringern" />
+                                        <Tooltip styleClass="white-tooltip" text="Decrease indent" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -450,7 +450,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="splitButton" mnemonicParsing="false" onAction="#splitButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Datei am Cursor teilen" />
+                                        <Tooltip styleClass="white-tooltip" text="Split file at cursor" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -463,7 +463,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" />
                                 <Button fx:id="insertTableButton" mnemonicParsing="false" onAction="#insertTableButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Tabelle einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Insert table" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -475,7 +475,7 @@
                                 </Button>
                                 <Button fx:id="insertImageButton" mnemonicParsing="false" onAction="#insertImageButtonAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Bild oder andere Mediendatei einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Add image or other media file" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -487,7 +487,7 @@
                                 </Button>
                                 <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false" onAction="#insertSpecialCharacterAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Sonderzeichen einfügen" />
+                                        <Tooltip styleClass="white-tooltip" text="Insert special character" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -508,7 +508,7 @@
                             <items>
                                 <Button fx:id="editMetadataButton" mnemonicParsing="false" onAction="#editMetadataAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Metadaten bearbeiten" />
+                                        <Tooltip styleClass="white-tooltip" text="Edit metadata" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
@@ -520,7 +520,7 @@
                                 </Button>
                                 <Button fx:id="createTocButton" mnemonicParsing="false" onAction="#createTocAction" styleClass="flat">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Inhaltsverzeichnis erzeugen" />
+                                        <Tooltip styleClass="white-tooltip" text="Create table of contents" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">

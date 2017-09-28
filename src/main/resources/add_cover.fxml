@@ -14,7 +14,7 @@
                   <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
                       <TableColumn prefWidth="122.0" text="Name" />
-                      <TableColumn prefWidth="171.0" text="Vorschau" />
+                      <TableColumn prefWidth="171.0" text="Preview" />
                     </columns>
                   </TableView>
                </children>
@@ -29,8 +29,8 @@
       </SplitPane>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="OK" />
-            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Abbrechen" />
+            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="OkS" />
+            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
          </children>
       </HBox>
    </children>
