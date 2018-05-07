@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/../demo/rest-service/src/main/resources/application-local.properties" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/MainStage.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/ImageResource.java" charset="UTF-8" />

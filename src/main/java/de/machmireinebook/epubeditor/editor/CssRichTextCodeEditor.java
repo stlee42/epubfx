@@ -5,11 +5,12 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
 import javafx.scene.control.ContextMenu;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
+
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * User: mjungierek
@@ -110,24 +111,14 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
             "glyph-orientation-vertical", "text-anchor", "writing-mode"
     };
 
-    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-    private static final String PAREN_PATTERN = "\\(|\\)";
-    private static final String BRACE_PATTERN = "\\{|\\}";
-    private static final String BRACKET_PATTERN = "\\[|\\]";
-    private static final String SEMICOLON_PATTERN = "\\;";
-    private static final String STRING_PATTERN = "\"([^\"]|\\\")*\"";
-
-    private static final Pattern PATTERN = Pattern.compile(
-            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
-                    + "|(?<PAREN>" + PAREN_PATTERN + ")"
-                    + "|(?<BRACE>" + BRACE_PATTERN + ")"
-                    + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
-                    + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
-                    + "|(?<STRING>" + STRING_PATTERN + ")"
-    );
+    private static final Pattern CLASS_SELECTOR = Pattern.compile("(.*)(?=\\{)");
+    private static final Pattern PATTERN = Pattern.compile("(?<CLASSSELECTOR>" + CLASS_SELECTOR + ")");
 
     public CssRichTextCodeEditor()
     {
+        super();
+        String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/css.css").toExternalForm();
+        setStyleSheet(stylesheet);
     }
 
     @Override
@@ -143,30 +134,6 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    public void setEditorCursorPosition(EditorPosition position)
-    {
-
-    }
-
-    @Override
-    public int getEditorCursorIndex()
-    {
-        return 0;
-    }
-
-    @Override
-    public void select(int fromIndex, int toIndex)
-    {
-
-    }
-
-    @Override
-    public void scrollTo(int index)
-    {
-
-    }
-
-    @Override
     public void spellCheck()
     {
 
@@ -175,22 +142,16 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     protected StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         while(matcher.find()) {
-            String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                            matcher.group("PAREN") != null ? "paren" :
-                                    matcher.group("BRACE") != null ? "brace" :
-                                            matcher.group("BRACKET") != null ? "bracket" :
-                                                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                                                            matcher.group("STRING") != null ? "string" :
-                                                                    null; /* never happens */ assert styleClass != null;
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+            if(matcher.group("CLASSSELECTOR") != null) {
+                spansBuilder.add(Collections.singleton("class-selector"), matcher.end() - matcher.start());
+            }
             lastKwEnd = matcher.end();
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
+        StyleSpans<Collection<String>> spans = spansBuilder.create();
+        return spans;
     }
 }

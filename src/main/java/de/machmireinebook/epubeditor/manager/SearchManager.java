@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
-import com.eaio.stringsearch.BoyerMooreHorspool;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.eaio.stringsearch.BoyerMooreHorspool;
+
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 /**
  * User: mjungierek
@@ -109,6 +113,7 @@ public class SearchManager
         }
     }
 
+    @PostConstruct
     private void init()
     {
         stringSearch = new BoyerMooreHorspool();

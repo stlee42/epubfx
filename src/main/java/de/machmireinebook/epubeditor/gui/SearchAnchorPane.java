@@ -10,10 +10,6 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import de.machmireinebook.epubeditor.manager.SearchManager;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,8 +21,14 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.manager.SearchManager;
 
 /**
 * User: mjungierek
@@ -88,7 +90,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     public void findNextAction()
     {
         CodeEditor editor = editorManager.getCurrentEditor();
-        int cursorIndex = editor.getEditorCursorIndex();
+        int cursorIndex = editor.getEditorCursorPosition();
         SearchManager.SearchParams params = new SearchManager.SearchParams(dotAllCheckBox.selectedProperty().get(),
                 minimalMatchCheckBox.selectedProperty().get(),
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
@@ -99,6 +101,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                     int fromIndex = searchResult.getBegin();
                     int toIndex = searchResult.getEnd();
                     editor.select(fromIndex, toIndex);
+                    editor.setEditorCursorPosition(toIndex);
                 }
         );
     }
@@ -106,7 +109,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     public void replaceNextAction()
     {
         CodeEditor editor = editorManager.getCurrentEditor();
-        int cursorIndex = editor.getEditorCursorIndex();
+        int cursorIndex = editor.getEditorCursorPosition();
         SearchManager.SearchParams params = new SearchManager.SearchParams(dotAllCheckBox.selectedProperty().get(),
                 minimalMatchCheckBox.selectedProperty().get(),
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
@@ -122,6 +125,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 editor.replaceSelection(replaceString);
                 editor.select(fromIndex, fromIndex + replaceString.length());
                 editor.scrollTo(fromIndex);
+                editor.setEditorCursorPosition(fromIndex + replaceString.length());
             }
         );
     }
@@ -151,7 +155,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
         }
         catch (UnsupportedEncodingException e)
         {
-            //schould not happens 
+            //schould not happens
         }
     }
 

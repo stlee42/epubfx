@@ -17,24 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import com.google.common.io.Files;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
-import de.machmireinebook.epubeditor.epublib.domain.Guide;
-import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
-import de.machmireinebook.epubeditor.gui.AddStylesheetController;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
-import de.machmireinebook.epubeditor.javafx.FXUtils;
-import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -63,8 +45,29 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.io.Files;
+
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
+import de.machmireinebook.epubeditor.epublib.domain.Guide;
+import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.gui.AddStylesheetController;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
+import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 
 /**
  * User: mjungierek
@@ -645,7 +648,7 @@ public class BookBrowserManager
             cssItem.getChildren().add(item);
         }
 
-        List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE,
+        List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE_UNTIL_3, MediaType.OPENTYPE_SINCE_3_1,
                 MediaType.TTF, MediaType.WOFF});
         fontResources.sort(new ResourceFilenameComparator());
         for (Resource fontResource : fontResources)

@@ -362,7 +362,7 @@ public class Book implements Serializable
         Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
         book.addSection("Start", textRes);
 
-        book.addResourceFromTemplate("/epub/standard.css", "Styles/standard.css");
+        book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css");
 
         return book;
     }

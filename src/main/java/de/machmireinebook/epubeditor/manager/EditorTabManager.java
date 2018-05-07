@@ -14,28 +14,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.domain.Clip;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.editor.CssCodeEditor;
-import de.machmireinebook.epubeditor.editor.EditorPosition;
-import de.machmireinebook.epubeditor.editor.EditorRange;
-import de.machmireinebook.epubeditor.editor.EditorToken;
-import de.machmireinebook.epubeditor.editor.XHTMLCodeEditor;
-import de.machmireinebook.epubeditor.editor.XMLCodeEditor;
-import de.machmireinebook.epubeditor.editor.XMLTagPair;
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
-import de.machmireinebook.epubeditor.gui.ExceptionDialog;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -69,9 +47,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
+
 import org.jdom2.Content;
 import org.jdom2.DocType;
 import org.jdom2.JDOMException;
@@ -83,6 +63,27 @@ import org.jdom2.located.LocatedJDOMFactory;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorPosition;
+import de.machmireinebook.epubeditor.editor.XHTMLCodeEditor;
+import de.machmireinebook.epubeditor.editor.XMLTagPair;
+import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
+import de.machmireinebook.epubeditor.gui.ExceptionDialog;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * User: mjungierek
@@ -343,8 +344,8 @@ public class EditorTabManager
     private void insertClip(Clip clip)
     {
         CodeEditor editor = currentEditor.getValue();
-        EditorRange selectedRange = editor.getSelection();
-        String insertedClip = selectedRange.getSelection().replaceAll("^(.*)$", clip.getContent());
+        String selection = editor.getSelection();
+        String insertedClip = selection.replaceAll("^(.*)$", clip.getContent());
         editor.replaceSelection(insertedClip);
         book.setBookIsChanged(true);
     }
@@ -367,7 +368,7 @@ public class EditorTabManager
         try
         {
             CodeEditor editor = currentEditor.getValue();
-            EditorPosition currentCursorPosition = editor.getEditorCursorPosition();
+            Integer currentCursorPosition = editor.getEditorCursorPosition();
             String code = editor.getCode();
             if (currentEditorIsXHTML.get())
             {
@@ -491,17 +492,17 @@ public class EditorTabManager
             CodeEditor editor;
             if (mediaType.equals(MediaType.CSS))
             {
-                editor = new CssCodeEditor();
+                editor = new CssRichTextCodeEditor();
                 editor.setContextMenu(contextMenuCSS);
             }
             else if (mediaType.equals(MediaType.XHTML))
             {
-                editor = new XHTMLCodeEditor();
+                editor = new XhtmlRichTextCodeEditor(mediaType);
                 editor.setContextMenu(contextMenuXHTML);
             }
             else if (mediaType.equals(MediaType.XML))
             {
-                editor = new XMLCodeEditor();
+                editor = new XhtmlRichTextCodeEditor(mediaType);
                 editor.setContextMenu(contextMenuXML);
             }
             else
@@ -531,7 +532,7 @@ public class EditorTabManager
             });
 
             editor.cursorPositionProperty().addListener((observable, oldValue, newValue) -> {
-                cursorPosLabelProperty.set(newValue.getLine() + ":" + newValue.getColumn());
+                cursorPosLabelProperty.set(String.valueOf(newValue));
             });
 
             editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
@@ -539,7 +540,7 @@ public class EditorTabManager
                 {
                     return;
                 }
-                if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+                 if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
                 {
                     try
                     {
@@ -643,19 +644,20 @@ public class EditorTabManager
             Resource resource;
             if (newValue != null && newValue.getContent() instanceof CodeEditor)
             {
+                CodeEditor selectedEditor = (CodeEditor) newValue.getContent();
                 resource = (Resource) newValue.getUserData();
                 currentSearchableResource.set(resource);
-                currentEditor.setValue((CodeEditor) tabPane.getSelectionModel().getSelectedItem().getContent());
+                currentEditor.setValue(selectedEditor);
 
-                if (newValue.getContent() instanceof XHTMLCodeEditor)
+                if (selectedEditor.getMediaType().equals(MediaType.XHTML))
                 {
                     currentXHTMLResource.set(resource);
                 }
-                else if (newValue.getContent() instanceof CssCodeEditor)
+                else if (selectedEditor.getMediaType().equals(MediaType.CSS))
                 {
                     currentCssResource.set(resource);
                 }
-                else if (newValue.getContent() instanceof XMLCodeEditor)
+                else if (selectedEditor.getMediaType().equals(MediaType.XML))
                 {
                     currentXMLResource.set(resource);
                 }
@@ -712,12 +714,10 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            EditorRange range = xhtmlCodeEditor.getSelection();
-            xhtmlCodeEditor.replaceRange("<" + tagName + ">" + range.getSelection() + "</" + tagName + ">",
-                    range.getFrom(), range.getTo());
+            String selection = currentEditor.get().getSelection();
+            currentEditor.get().replaceSelection("<" + tagName + ">" + selection + "</" + tagName + ">");
             refreshPreview();
-            xhtmlCodeEditor.requestFocus();
+            currentEditor.get();
         }
     }
 
@@ -887,7 +887,7 @@ public class EditorTabManager
 
     public void refreshPreview()
     {
-        XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+        CodeEditor xhtmlCodeEditor = (CodeEditor) currentEditor.getValue();
         if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null)
         {
             try
@@ -1055,22 +1055,17 @@ public class EditorTabManager
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
             XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.TagInspector()
-            {
-                @Override
-                public boolean isTagFound(EditorToken token)
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token -> {
+                String type = token.getType();
+                if ("tag".equals(type))
                 {
-                    String type = token.getType();
-                    if ("tag".equals(type))
+                    String content = token.getContent();
+                    if ("head".equals(content) || "body".equals(content) || "html".equals(content))
                     {
-                        String content = token.getContent();
-                        if ("head".equals(content) || "body".equals(content) || "html".equals(content))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    return false;
                 }
+                return false;
             });
             result = !(pair == null || "head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()));
         }

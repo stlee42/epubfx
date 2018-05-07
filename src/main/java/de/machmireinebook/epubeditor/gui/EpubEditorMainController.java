@@ -16,23 +16,6 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.editor.EditorRange;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.javafx.FXUtils;
-import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import de.machmireinebook.epubeditor.manager.PreviewManager;
-import de.machmireinebook.epubeditor.manager.SearchManager;
-import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -67,8 +50,27 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jidefx.scene.control.searchable.TreeViewSearchable;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
+import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.manager.PreviewManager;
+import de.machmireinebook.epubeditor.manager.SearchManager;
+import de.machmireinebook.epubeditor.manager.TOCViewManager;
+
+import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
  * User: mjungierek
@@ -993,8 +995,8 @@ public class EpubEditorMainController implements Initializable
     public void searchReplaceButtonAction()
     {
         searchRadioMenuItem.disableProperty().set(true);
-        EditorRange range = editorManager.getCurrentEditor().getSelection();
-        searchAnchorPane.setSearchString(range.getSelection());
+        String selection = editorManager.getCurrentEditor().getSelection();
+        searchAnchorPane.setSearchString(selection);
     }
 
     public void splitButtonAction(ActionEvent actionEvent)
