@@ -200,7 +200,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
                 {
                     continue;
                 }
-                Identifier identifier = new Identifier(schemeName, identifierValue);
+                Identifier identifier = new Identifier(null, schemeName, identifierValue);
                 if (bookIdId.equals(identifierElement.getAttributeValue("id")))
                 {
                     identifier.setBookId(true);

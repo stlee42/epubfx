@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @author paul
  *
  */
-public class Author implements Serializable
+public class Author extends DublinCoreMetadataElement implements Serializable
 {
 	
 	private static final long serialVersionUID = 6663408501416574200L;

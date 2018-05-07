@@ -31,7 +31,7 @@ public class Metadata implements Serializable
     private String language = DEFAULT_LANGUAGE;
     private List<Epub3MetadataProperty> epub3MetaProperties = new ArrayList<>();
     private List<String> rights = new ArrayList<>();
-    private List<String> titles = new ArrayList<>();
+    private List<DublinCoreMetadataElement> titles = new ArrayList<>();
     private List<Identifier> identifiers = new ArrayList<>();
     private List<String> subjects = new ArrayList<>();
     private String format = MediaType.EPUB.getName();
@@ -196,29 +196,29 @@ public class Metadata implements Serializable
         {
             return "";
         }
-        for (String title : titles)
+        for (DublinCoreMetadataElement title : titles)
         {
-            if (StringUtils.isNotBlank(title))
+            if (StringUtils.isNotBlank(title.getValue()))
             {
-                return title;
+                return title.getValue();
             }
         }
         return "";
     }
 
 
-    public String addTitle(String title)
+    public DublinCoreMetadataElement addTitle(DublinCoreMetadataElement title)
     {
         this.titles.add(title);
         return title;
     }
 
-    public void setTitles(List<String> titles)
+    public void setTitles(List<DublinCoreMetadataElement> titles)
     {
         this.titles = titles;
     }
 
-    public List<String> getTitles()
+    public List<DublinCoreMetadataElement> getTitles()
     {
         return titles;
     }

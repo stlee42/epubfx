@@ -11,6 +11,13 @@ public class DublinCoreMetadataElement
     private String scheme;
     private String value;
 
+    public DublinCoreMetadataElement(String id, String scheme, String value)
+    {
+        this.id = id;
+        this.scheme = scheme;
+        this.value = value;
+    }
+
     public String getId()
     {
         return id;

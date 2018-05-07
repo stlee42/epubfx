@@ -8,15 +8,14 @@ import java.util.ResourceBundle;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -26,7 +25,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.commons.lang.StringUtils;
@@ -188,7 +186,7 @@ public class EditMetadataController implements Initializable
         TableColumn<Author, String> tc2 = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(1);
         tc2.setCellValueFactory(new PropertyValueFactory<>("name"));
         tc2.setEditable(true);
-        tc2.setCellFactory(TextFieldTableCell.<Author>forTableColumn());
+        tc2.setCellFactory(TextFieldTableCell.forTableColumn());
         tc2.setOnEditCommit(event -> {
             String value = event.getNewValue();
             Author author = event.getTableView().getItems().get(event.getTablePosition().getRow());
@@ -207,7 +205,7 @@ public class EditMetadataController implements Initializable
         TableColumn<MetadataElement, String> tc5 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(1);
         tc5.setCellValueFactory(new PropertyValueFactory<>("value"));
         tc5.setEditable(true);
-        tc5.setCellFactory(TextFieldTableCell.<MetadataElement>forTableColumn());
+        tc5.setCellFactory(TextFieldTableCell.forTableColumn());
         tc5.setOnEditCommit(event -> {
             String value = event.getNewValue();
             MetadataElement element = event.getTableView().getItems().get(event.getTablePosition().getRow());
@@ -282,31 +280,21 @@ public class EditMetadataController implements Initializable
 
         ChooserWindowController chooserWindowController = ChooserWindowController.getInstance();
         TableView<MetadataTemplate> tableView = chooserWindowController.getChosserWindowTableView();
-        chooserWindowController.getChooserWindowOkButton().setOnAction(new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent event)
+        chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
+            MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
+            MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+            metadateTableView.getItems().add(metadataElement);
+            chooserWindowController.getChooserWindow().close();
+        });
+        tableView.setOnMouseClicked(event -> {
+            MouseButton mb = event.getButton();
+            int clicks = event.getClickCount();
+            if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
                 MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
                 metadateTableView.getItems().add(metadataElement);
                 chooserWindowController.getChooserWindow().close();
-            }
-        });
-        tableView.setOnMouseClicked(new EventHandler<MouseEvent>()
-        {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseButton mb = event.getButton();
-                int clicks = event.getClickCount();
-                if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
-                {
-                    MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
-                    MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
-                    metadateTableView.getItems().add(metadataElement);
-                    chooserWindowController.getChooserWindow().close();
-                }
             }
         });
 

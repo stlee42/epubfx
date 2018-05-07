@@ -7,7 +7,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
@@ -40,10 +42,10 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.rights.getName()));
         result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.type.getName()));
         result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.subject.getName()));
-/*        result.setIdentifiers(readIdentifiers(metadataElement));
+        result.setIdentifiers(readIdentifiers(metadataElement));
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
-        result.setDates(readDates(metadataElement)); */
+        result.setDates(readDates(metadataElement));
         result.setEpub3MetaProperties(readEpub3MetaProperties(metadataElement));
         result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
         result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
@@ -104,5 +106,80 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         return result;
     }
 
+    private static List<Identifier> readIdentifiers(Element metadataElement)
+    {
+        List<Element> identifierElements = metadataElement.getChildren(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
+        if (identifierElements.isEmpty())
+        {
+            logger.error("Package does not contain element " + DCTag.identifier.getName());
+            return new ArrayList<>();
+        }
+        String bookIdId = getBookIdId(metadataElement.getParentElement());
+        List<Identifier> result = new ArrayList<>(identifierElements.size());
+        if (StringUtils.isNotEmpty(bookIdId))
+        {
+            for (Element identifierElement : identifierElements)
+            {
+                String schemeName = identifierElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+                String identifierValue = identifierElement.getText();
+                if (StringUtils.isBlank(identifierValue))
+                {
+                    continue;
+                }
+                String idName = identifierElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+                Identifier identifier = new Identifier(idName, schemeName, identifierValue);
+                if (bookIdId.equals(idName))
+                {
+                    identifier.setBookId(true);
+                }
+                result.add(identifier);
+            }
+        }
+        return result;
+    }
 
+    private static String getBookIdId(Element root)
+    {
+        String result = root.getAttributeValue(OPFAttributes.uniqueIdentifier);
+        return result;
+    }
+
+    private static List<Author> readCreators(Element metadataElement)
+    {
+        return readAuthors(DCTag.creator.getName(), metadataElement);
+    }
+
+    private static List<Author> readContributors(Element metadataElement)
+    {
+        return readAuthors(DCTag.contributor.getName(), metadataElement);
+    }
+
+    private static List<Author> readAuthors(String authorTag, Element metadataElement)
+    {
+        List<Element> elements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
+        List<Author> result = new ArrayList<>(elements.size());
+        for (Element authorElement : elements)
+        {
+            Author author = createAuthor(authorElement);
+            if (author != null)
+            {
+                result.add(author);
+            }
+        }
+        return result;
+
+    }
+
+    private static Author createAuthor(Element authorElement)
+    {
+        String authorString = authorElement.getText();
+        if (StringUtils.isBlank(authorString))
+        {
+            return null;
+        }
+        Author result;
+        result = new Author(authorString);
+        result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
+        return result;
+    }
 }
