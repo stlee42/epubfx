@@ -5,19 +5,23 @@ import java.util.function.IntFunction;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.Node;
-import javafx.scene.control.IndexRange;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
+
+import org.apache.log4j.Logger;
+
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpans;
 
 /**
  * User: mjungierek
@@ -26,24 +30,25 @@ import org.fxmisc.richtext.StyleSpans;
  */
 public abstract class AbstractRichTextCodeEditor extends AnchorPane implements CodeEditor
 {
+    private static final Logger logger = Logger.getLogger(AbstractRichTextCodeEditor.class);
+
     private CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
     private BooleanProperty canRedo = new SimpleBooleanProperty();
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
-    private ObjectProperty<EditorPosition> cursorPosition = new SimpleObjectProperty<>(new EditorPosition(0,0));
-    private ReadOnlyObjectWrapper<String> code = new ReadOnlyObjectWrapper<>();
+    private IntegerProperty cursorPosition = new SimpleIntegerProperty();
 
     AbstractRichTextCodeEditor()
     {
-        AnchorPane.setTopAnchor(codeArea, 0.0);
-        AnchorPane.setLeftAnchor(codeArea, 0.0);
-        AnchorPane.setBottomAnchor(codeArea, 0.0);
-        AnchorPane.setRightAnchor(codeArea, 0.0);
+        VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
+        AnchorPane.setTopAnchor(scrollPane, 0.0);
+        AnchorPane.setLeftAnchor(scrollPane, 0.0);
+        AnchorPane.setBottomAnchor(scrollPane, 0.0);
+        AnchorPane.setRightAnchor(scrollPane, 0.0);
 
-        getChildren().add(codeArea);
+        getChildren().add(scrollPane);
 
         IntFunction<String> format = (digits -> " %" + digits + "d ");
-/*        String stylesheet = AbstractRichTextCodeEditor.class.getResource("java-keywords.css").toExternalForm();     */
         IntFunction<Node> factory = LineNumberFactory.get(codeArea, format);
         codeArea.setParagraphGraphicFactory(factory);
 
@@ -56,7 +61,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         canUndo.bind(codeArea.getUndoManager().undoAvailableProperty());
         canRedo.bind(codeArea.getUndoManager().redoAvailableProperty());
-        codeArea.fontProperty().set(Font.font("Source Code Pro", 14));
     }
 
     protected abstract StyleSpans<? extends Collection<String>> computeHighlighting(String newText);
@@ -68,15 +72,15 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public ObjectProperty<EditorPosition> cursorPositionProperty()
+    public IntegerProperty cursorPositionProperty()
     {
         return cursorPosition;
     }
 
     @Override
-    public ReadOnlyObjectProperty<String> codeProperty()
+    public ObservableValue<String> codeProperty()
     {
-        return code;
+        return codeArea.textProperty();
     }
 
     @Override
@@ -112,25 +116,31 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public String getCode()
     {
-        return code.getValue();
+        return codeArea.getText();
     }
 
     @Override
-    public EditorPosition getEditorCursorPosition()
+    public Integer getEditorCursorPosition()
     {
         return cursorPosition.getValue();
     }
 
     @Override
-    public void insertAt(String replacement, EditorPosition pos)
+    public void setEditorCursorPosition(Integer position)
     {
+        codeArea.moveTo(position);
+    }
 
+    @Override
+    public void insertAt(Integer pos , String insertion)
+    {
+        codeArea.insertText(pos, insertion);
     }
 
     @Override
     public void replaceSelection(String replacement)
     {
-
+        codeArea.replaceSelection(replacement);
     }
 
     @Override
@@ -146,16 +156,37 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public EditorRange getSelection()
+    public String getSelection()
     {
-        IndexRange range = codeArea.getSelection();
-        String selectedText = codeArea.getSelectedText();
-        return null;
+        return codeArea.getSelectedText();
     }
 
     @Override
     public void scrollTo(EditorPosition pos)
     {
 
+    }
+
+    @Override
+    public void select(int fromIndex, int toIndex)
+    {
+        codeArea.selectRange(fromIndex, toIndex);
+    }
+
+    @Override
+    public void scrollTo(int index)
+    {
+        codeArea.scrollXBy(index);
+    }
+
+    public void setStyleSheet(String styleSheet)
+    {
+        getStylesheets().add(styleSheet);
+    }
+
+    @Override
+    public void setContextMenu(ContextMenu contextMenu)
+    {
+        codeArea.setContextMenu(contextMenu);
     }
 }

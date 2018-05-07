@@ -8,16 +8,6 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.editor.EditorPosition;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
-import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import de.machmireinebook.epubeditor.util.NumberUtils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -39,10 +29,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.util.NumberUtils;
+
+import jidefx.scene.control.searchable.TableViewSearchable;
 
 /**
  * User: mjungierek
@@ -194,9 +196,8 @@ public class InsertMediaController implements Initializable, StandardController
             snippet = StringUtils.replace(snippet, "${style}", style);
 
             CodeEditor editor = editorManager.getCurrentEditor();
-            EditorPosition cursorPosition = editor.getEditorCursorPosition();
-            logger.info("current position" + cursorPosition.toJson());
-            editor.insertAt(snippet, cursorPosition);
+            Integer cursorPosition = editor.getEditorCursorPosition();
+            editor.insertAt(cursorPosition, snippet);
             editorManager.refreshPreview();
         }
         catch (IOException e)

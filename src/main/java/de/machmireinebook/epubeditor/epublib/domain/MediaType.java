@@ -27,6 +27,7 @@ public enum MediaType implements Serializable
     NCX ("application/x-dtbncx+xml", ".ncx", XMLResourceFactory.getInstance()),
 
     JAVASCRIPT ("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance()),
+    JAVASCRIPT_SINCE_3_1 ("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance(), 3.1F),
     CSS("text/css", ".css", "style", CSSResourceFactory.getInstance()),
 
     MIMETYPE ("text/plain", "mimetype", "", DefaultResourceFactory.getInstance()),
@@ -40,8 +41,10 @@ public enum MediaType implements Serializable
 
     // fonts
     TTF ("application/x-truetype-font", ".ttf", DefaultResourceFactory.getInstance()),
-    OPENTYPE ("application/vnd.ms-opentype", ".otf", DefaultResourceFactory.getInstance()),
+    OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", DefaultResourceFactory.getInstance()),
+    OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", DefaultResourceFactory.getInstance(), 3.1F),
     WOFF ("application/font-woff", ".woff", DefaultResourceFactory.getInstance()),
+    WOFF2 ("font/woff2", ".woff2", DefaultResourceFactory.getInstance(), 3.1F),
 
     // audio
     MP3 ("audio/mpeg", ".mp3", DefaultResourceFactory.getInstance()),
@@ -66,7 +69,7 @@ public enum MediaType implements Serializable
 
     public boolean isFont()
     {
-        return this.equals(TTF) || this.equals(OPENTYPE) || this.equals(WOFF);
+        return this.equals(TTF) || this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(WOFF) || this.equals(WOFF2);
     }
 
     /**
@@ -113,19 +116,26 @@ public enum MediaType implements Serializable
     private Collection<String> extensions;
     private String fileNamePrefix;
     private ResourceFactory resourceFactory;
+    private Float sinceVersion;
 
-    private MediaType(String name, String defaultExtension, ResourceFactory resourceFactory)
+    MediaType(String name, String defaultExtension, ResourceFactory resourceFactory)
     {
         this(name, defaultExtension, new String[]{defaultExtension}, resourceFactory);
     }
 
-    private MediaType(String name, String defaultExtension,
+    MediaType(String name, String defaultExtension, ResourceFactory resourceFactory, float sinceVersion)
+    {
+        this(name, defaultExtension, resourceFactory);
+        this.sinceVersion = sinceVersion;
+    }
+
+    MediaType(String name, String defaultExtension,
                      String[] extensions, ResourceFactory resourceFactory)
     {
         this(name, defaultExtension, Arrays.asList(extensions), resourceFactory);
     }
 
-    private MediaType(String name, String defaultExtension,
+    MediaType(String name, String defaultExtension,
                      Collection<String> extensions, ResourceFactory resourceFactory)
     {
         this.name = name;
@@ -134,7 +144,7 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    private MediaType(String name, String defaultExtension,
+    MediaType(String name, String defaultExtension,
                      String[] extensions, String fileNamePrefix, ResourceFactory resourceFactory)
     {
         this.name = name;
@@ -144,13 +154,19 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    private MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory)
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
         this.extensions = Collections.singletonList(defaultExtension);
         this.fileNamePrefix = fileNamePrefix;
         this.resourceFactory = resourceFactory;
+    }
+
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory, float sinceVersion)
+    {
+        this(name, defaultExtension, fileNamePrefix, resourceFactory);
+        this.sinceVersion = sinceVersion;
     }
 
     public String getName()
@@ -183,5 +199,10 @@ public enum MediaType implements Serializable
     public ResourceFactory getResourceFactory()
     {
         return resourceFactory;
+    }
+
+    public Float getSinceVersion()
+    {
+        return sinceVersion;
     }
 }

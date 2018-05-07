@@ -1,0 +1,10 @@
+.comment
+{
+    color: #008000;
+}
+
+.string, .class-selector
+{
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}

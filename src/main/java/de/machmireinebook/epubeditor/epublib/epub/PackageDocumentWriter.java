@@ -4,9 +4,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -17,13 +23,6 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 
 /**
@@ -144,14 +143,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
     private static List<Resource> getAllResourcesSortById(Book book)
     {
         List<Resource> allResources = new ArrayList<>(book.getResources().getAll());
-        Collections.sort(allResources, new Comparator<Resource>()
-        {
-            @Override
-            public int compare(Resource resource1, Resource resource2)
-            {
-                return resource1.getId().compareToIgnoreCase(resource2.getId());
-            }
-        });
+        allResources.sort((resource1, resource2) -> resource1.getId().compareToIgnoreCase(resource2.getId()));
         return allResources;
     }
 

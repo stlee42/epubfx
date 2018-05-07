@@ -13,13 +13,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -31,8 +24,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
+import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+import jidefx.scene.control.searchable.TableViewSearchable;
 
 /**
  * User: mjungierek
@@ -43,13 +46,7 @@ public class NewEBookController implements StandardController
 {
     private static final Logger logger = Logger.getLogger(NewEBookController.class);
 
-    DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>()
-    {
-        public boolean accept(Path file) throws IOException
-        {
-            return (!Files.isDirectory(file) && file.getFileName().toString().endsWith(".epub"));
-        }
-    };
+    DirectoryStream.Filter<Path> filter = file -> (!Files.isDirectory(file) && file.getFileName().toString().endsWith(".epub"));
 
     public ListView<String> typeListView;
     public TableView<BookTemplate> tableView;
@@ -123,7 +120,7 @@ public class NewEBookController implements StandardController
             {
                 ZipInputStream zis = new ZipInputStream(new FileInputStream(path.toFile()));
                 Book book = new EpubReader().readEpub(zis, "UTF-8");
-                if (book.getVersion() == 2.0)
+                if (book.getVersion() == EpubVersion.VERSION_2)
                 {
                     Image cover = null;
                     if (book.getCoverImage() != null)
@@ -138,7 +135,7 @@ public class NewEBookController implements StandardController
                     }
                     epub2Books.add(new BookTemplate(book.getTitle(), cover, description, path, 2.0));
                 }
-                else if (book.getVersion() == 3.0)
+                else if (book.getVersion() == EpubVersion.VERSION_3 || book.getVersion() == EpubVersion.VERSION_3_1)
                 {
                     Image cover = null;
                     if (book.getCoverImage() != null)

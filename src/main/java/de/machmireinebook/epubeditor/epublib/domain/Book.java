@@ -13,20 +13,24 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
-import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 
 /**
@@ -326,7 +330,7 @@ public class Book implements Serializable
     private Resource ncxResource;
     private ImageResource coverImage;
 
-    private double version = 2.0;
+    private EpubVersion version = EpubVersion.VERSION_2;
     private boolean isFixedLayout = false;
     private int fixedLayoutWidth;
     private int fixedLayoutHeight;
@@ -358,7 +362,7 @@ public class Book implements Serializable
         Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
         book.addSection("Start", textRes);
 
-        book.addResourceFromTemplate("/epub/standard.css", "Styles/standard.css");
+        book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css");
 
         return book;
     }
@@ -816,24 +820,24 @@ public class Book implements Serializable
         return ncxResource;
     }
 
-    public double getVersion()
+    public EpubVersion getVersion()
     {
         return version;
     }
 
-    public void setVersion(double version)
+    public void setVersion(EpubVersion version)
     {
         this.version = version;
     }
 
     public boolean isFixedLayout()
     {
-        return version >= 3.0 && isFixedLayout;
+        return (version == EpubVersion.VERSION_3 || version == EpubVersion.VERSION_3_1) && isFixedLayout;
     }
 
     public boolean isEpub3()
     {
-        return version >= 3.0;
+        return (version == EpubVersion.VERSION_3 || version == EpubVersion.VERSION_3_1);
     }
 
     public void setFixedLayout(boolean isFixedLayout)

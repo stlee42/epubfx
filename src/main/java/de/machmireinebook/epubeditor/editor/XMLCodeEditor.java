@@ -3,10 +3,10 @@ package de.machmireinebook.epubeditor.editor;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * User: mjungierek
@@ -65,7 +65,6 @@ public class XMLCodeEditor extends AbstractCodeEditor
         return editingTemplate;
     }
 
-    @Override
     public MediaType getMediaType()
     {
         return MediaType.XML;

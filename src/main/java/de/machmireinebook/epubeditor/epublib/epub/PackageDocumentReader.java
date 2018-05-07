@@ -12,7 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
@@ -25,12 +33,6 @@ import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigatonDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 /**
  * Reads the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -49,7 +51,7 @@ public class PackageDocumentReader extends PackageDocumentBase
     {
         Document packageDocument = ResourceUtil.getAsDocument(packageResource);
         Element root = packageDocument.getRootElement();
-        double version = Double.valueOf(root.getAttributeValue("version"));
+        EpubVersion version = EpubVersion.getByString(root.getAttributeValue("version"));
         book.setVersion(version);
 
         String packageHref = packageResource.getHref();
@@ -87,7 +89,7 @@ public class PackageDocumentReader extends PackageDocumentBase
     {
         Document packageDocument = ResourceUtil.getAsDocument(packageResource);
         Element root = packageDocument.getRootElement();
-        double version = Double.valueOf(root.getAttributeValue("version"));
+        EpubVersion version = EpubVersion.getByString(root.getAttributeValue("version"));
         book.setVersion(version);
 
         if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document

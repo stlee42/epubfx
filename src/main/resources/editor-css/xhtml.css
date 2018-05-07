@@ -1,0 +1,26 @@
+.tagmark {
+    -fx-fill: black;
+}
+
+.anytag {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+
+.attribute {
+    -fx-fill: black;
+}
+
+.avalue {
+    -fx-fill: #008000;
+    -fx-font-weight: bold;
+}
+
+.comment {
+    -fx-fill: #008000;
+}
