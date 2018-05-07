@@ -20,7 +20,8 @@ public class Author extends DublinCoreMetadataElement implements Serializable
     private String fileAs;
 	private Relator relator = Relator.AUTHOR;
 	
-	public Author(String name) {
+	public Author(String id, String scheme, String name) {
+	    super(id, scheme, name);
 		this.name = name;
 	}
 	
@@ -40,7 +41,6 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 		return HashCodeBuilder.reflectionHashCode(name);
 	}
 	
-	
 	public boolean equals(Object authorObject) {
 		if(! (authorObject instanceof Author)) {
 			return false;
@@ -58,11 +58,9 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 		return result;
 	}
 
-
 	public Relator getRelator() {
 		return relator;
 	}
-
 
 	public void setRelator(Relator relator) {
 		this.relator = relator;

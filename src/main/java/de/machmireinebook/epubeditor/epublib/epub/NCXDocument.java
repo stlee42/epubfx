@@ -11,13 +11,13 @@ import java.util.zip.ZipOutputStream;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.DocType;
@@ -186,12 +186,15 @@ public class NCXDocument
      */
     public static Document write(Book book) throws IllegalArgumentException, IllegalStateException, IOException
     {
-        return write(book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        return write(metadata.getIdentifiers(), book.getTitle(), metadata.getAuthors(), book.getTableOfContents());
     }
 
     public static Resource createNCXResource(Book book) throws IllegalArgumentException, IllegalStateException, IOException
     {
-        return createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getMetadata().getAuthors(), book.getTableOfContents());
+        Epub2Metadata metadata = new Epub2Metadata();
+        book.setMetadata(metadata);
+        return createNCXResource(metadata.getIdentifiers(), book.getTitle(), metadata.getAuthors(), book.getTableOfContents());
     }
 
     public static Resource createNCXResource(List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException

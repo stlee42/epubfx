@@ -1,17 +1,20 @@
-package de.machmireinebook.epubeditor.epublib.epub;
+package de.machmireinebook.epubeditor.epublib.epub3;
 
 import java.util.List;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Element;
 
-public class PackageDocumentMetadataWriter extends PackageDocumentBase
+public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
 {
 
 
@@ -31,15 +34,15 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
         root.addContent(metadataElement);
 
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
         writeIdentifiers(metadata, metadataElement);
-        writeSimpleMetdataElements(DCTag.title.getName(), metadata.getTitles(), metadataElement);
-        writeSimpleMetdataElements(DCTag.subject.getName(), metadata.getSubjects(), metadataElement);
-        writeSimpleMetdataElements(DCTag.description.getName(), metadata.getDescriptions(), metadataElement);
-        writeSimpleMetdataElements(DCTag.publisher.getName(), metadata.getPublishers(), metadataElement);
-        writeSimpleMetdataElements(DCTag.type.getName(), metadata.getTypes(), metadataElement);
-        writeSimpleMetdataElements(DCTag.rights.getName(), metadata.getRights(), metadataElement);
-        writeSimpleMetdataElements(DCTag.coverage.getName(), metadata.getCoverages(), metadataElement);
+        writeDublicCoreMetadataElements(DCTag.title.getName(), metadata.getTitles(), metadataElement);
+        writeSimpleMetadataElements(DCTag.subject.getName(), metadata.getSubjects(), metadataElement);
+        writeSimpleMetadataElements(DCTag.description.getName(), metadata.getDescriptions(), metadataElement);
+        writeSimpleMetadataElements(DCTag.publisher.getName(), metadata.getPublishers(), metadataElement);
+        writeSimpleMetadataElements(DCTag.type.getName(), metadata.getTypes(), metadataElement);
+        writeSimpleMetadataElements(DCTag.rights.getName(), metadata.getRights(), metadataElement);
+        writeSimpleMetadataElements(DCTag.coverage.getName(), metadata.getCoverages(), metadataElement);
 
         // write authors
         for (Author author : metadata.getAuthors())
@@ -88,6 +91,29 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
             metadataElement.addContent(langElement);
         }
 
+        // write other properties
+        if (metadata.getEpub3MetaProperties() != null)
+        {
+            for (Epub3MetadataProperty otherProperty : metadata.getEpub3MetaProperties())
+            {
+                Element otherElement = new Element(OPFTags.meta, NAMESPACE_OPF);
+                if (otherProperty.getQName() != null)
+                {
+                    otherElement.setAttribute(OPFAttributes.property, otherProperty.getQName().getLocalPart());
+                }
+                if (StringUtils.isNotEmpty(otherProperty.getRefines()))
+                {
+                    otherElement.setAttribute(OPFAttributes.refines, otherProperty.getRefines());
+                }
+                if (StringUtils.isNotEmpty(otherProperty.getRefines()))
+                {
+                    otherElement.setAttribute(OPFAttributes.scheme, otherProperty.getScheme());
+                }
+                otherElement.setText(otherProperty.getValue());
+                metadataElement.addContent(otherElement);
+            }
+        }
+
         // write coverimage
         if (book.getCoverImage() != null)
         { // write the cover image
@@ -104,7 +130,29 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         metadataElement.addContent(generatorElement);
     }
 
-    private static void writeSimpleMetdataElements(String tagName, List<String> values, Element metadataElement)
+    private static void writeDublicCoreMetadataElements(String tagName, List<DublinCoreMetadataElement> values, Element metadataElement)
+    {
+        for (DublinCoreMetadataElement value : values)
+        {
+            if (StringUtils.isBlank(value.getValue()))
+            {
+                continue;
+            }
+            Element dcElement = new Element(tagName, NAMESPACE_DUBLIN_CORE);
+            dcElement.setText(value.getValue());
+            if (StringUtils.isNotEmpty(value.getId()))
+            {
+                dcElement.setAttribute(DCAttributes.id, value.getId());
+            }
+            if (StringUtils.isNotEmpty(value.getScheme()))
+            {
+                dcElement.setAttribute(DCAttributes.scheme, value.getScheme());
+            }
+            metadataElement.addContent(dcElement);
+        }
+    }
+
+    private static void writeSimpleMetadataElements(String tagName, List<String> values, Element metadataElement)
     {
         for (String value : values)
         {
@@ -118,7 +166,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         }
     }
 
-
     /**
      * Writes out the complete list of Identifiers to the package document.
      * The first identifier for which the bookId is true is made the bookId identifier.
@@ -130,7 +177,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
      * @throws IllegalArgumentException
      * @
      */
-    private static void writeIdentifiers(Epub2Metadata metadata, Element metadataElement)
+    private static void writeIdentifiers(Epub3Metadata metadata, Element metadataElement)
     {
         Identifier bookIdIdentifier = metadata.getBookIdIdentifier();
         if (bookIdIdentifier == null)

@@ -8,7 +8,9 @@ import java.util.ResourceBundle;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
@@ -26,6 +28,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import jidefx.scene.control.searchable.TableViewSearchable;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
@@ -35,9 +38,9 @@ import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCT
  * Date: 27.07.2014
  * Time: 18:40
  */
-public class EditMetadataController implements Initializable
+public class Epub3EditMetadataController implements Initializable
 {
-    private static final Logger logger = Logger.getLogger(EditMetadataController.class);
+    private static final Logger logger = Logger.getLogger(Epub3EditMetadataController.class);
 
     @FXML
     private TextField saveAsAuthorTextField;
@@ -52,7 +55,7 @@ public class EditMetadataController implements Initializable
     @FXML
     private TextField authorTextField;
 
-    private static EditMetadataController instance;
+    private static Epub3EditMetadataController instance;
     private Stage stage;
     private Book book;
 
@@ -216,7 +219,7 @@ public class EditMetadataController implements Initializable
         instance = this;
     }
 
-    public static EditMetadataController getInstance()
+    public static Epub3EditMetadataController getInstance()
     {
         return instance;
     }
@@ -316,7 +319,7 @@ public class EditMetadataController implements Initializable
 
     public void okButtonAction(ActionEvent actionEvent)
     {
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
         //auhtor
         Author firstAuthor = new Author(null, null, authorTextField.getText());
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
@@ -338,7 +341,7 @@ public class EditMetadataController implements Initializable
         }
         //title
         metadata.getTitles().clear();
-        metadata.addTitle(titleTextField.getText());
+        metadata.addTitle(new DublinCoreMetadataElement(null, null, titleTextField.getText()));
 
         //metadata
         metadata.getDates().clear();
@@ -366,7 +369,7 @@ public class EditMetadataController implements Initializable
     public void setBook(Book book)
     {
         this.book = book;
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
         Author firstAuthor = metadata.getFirstAuthor();
         if (firstAuthor != null)
         {
@@ -395,13 +398,13 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        List<String> titles = metadata.getTitles();
+        List<DublinCoreMetadataElement> titles = metadata.getTitles();
         if (titles.size() > 0)
         {
             titles = titles.subList(1, titles.size());
-            for (String title : titles)
+            for (DublinCoreMetadataElement title : titles)
             {
-                MetadataElement element = new MetadataElement("title", title, "");
+                MetadataElement element = new MetadataElement("title", title.getValue(), "");
                 elements.add(element);
             }
         }
@@ -438,6 +441,21 @@ public class EditMetadataController implements Initializable
         for (String publisher : publishers)
         {
             MetadataElement element = new MetadataElement("publisher", publisher, "");
+            elements.add(element);
+        }
+
+        List<Epub3MetadataProperty> others = metadata.getEpub3MetaProperties();
+        for (Epub3MetadataProperty other : others)
+        {
+            MetadataElement element = new MetadataElement(other.getQName().getLocalPart(), other.getValue(), "");
+            if (StringUtils.isNotEmpty(other.getScheme()))
+            {
+                element.setScheme(other.getScheme());
+            }
+            if (StringUtils.isNotEmpty(other.getRefines()))
+            {
+                element.setRefines(other.getRefines());
+            }
             elements.add(element);
         }
 

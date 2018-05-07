@@ -8,10 +8,11 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,7 +33,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     public static Metadata readMetadata(Element root)
     {
-        Metadata result = new Metadata();
+        Epub2Metadata result = new Epub2Metadata();
         Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
@@ -51,7 +52,6 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
         result.setDates(readDates(metadataElement));
-        result.setEpub3MetaProperties(readOtherProperties(metadataElement));
         result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
         result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
 
@@ -174,7 +174,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             return null;
         }
         Author result;
-        result = new Author(authorString);
+        result = new Author(null, null, authorString);
         result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
         return result;
     }

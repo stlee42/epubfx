@@ -10,7 +10,6 @@ import de.machmireinebook.epubeditor.epublib.bookprocessor.DefaultBookProcessorP
 import de.machmireinebook.epubeditor.epublib.bookprocessor.XslBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessorPipeline;
@@ -18,7 +17,6 @@ import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.epublib.fileset.FilesetBookCreator;
 import de.machmireinebook.epubeditor.epublib.util.VFSUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
@@ -90,12 +88,12 @@ public class Fileset2Epub {
 		if(StringUtils.isNotBlank(title)) {
 			List<String> titles = new ArrayList<>();
 			titles.add(title);
-			book.getMetadata().setTitles(titles);
+			//book.getMetadata().setTitles(titles);
 		}
 		
 		if(StringUtils.isNotBlank(isbn))
         {
-			book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
+			//book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.ISBN, isbn));
 		}
 		
 		initAuthors(authorNames, book);
@@ -118,14 +116,14 @@ public class Fileset2Epub {
 			String[] authorNameParts = authorName.split(",");
 			Author authorObject = null;
 			if(authorNameParts.length > 1) {
-				authorObject = new Author(authorNameParts[1] + " " + authorNameParts[0]);
+				//authorObject = new Author(authorNameParts[1] + " " + authorNameParts[0]);
                 authorObject.setFileAs(authorName);
 			} else if(authorNameParts.length > 0) {
-				authorObject = new Author(authorNameParts[0]);
+			//	authorObject = new Author(authorNameParts[0]);
 			}
 			authorObjects.add(authorObject);
 		}
-		book.getMetadata().setAuthors(authorObjects);
+		//book.getMetadata().setAuthors(authorObjects);
 	}
 
 

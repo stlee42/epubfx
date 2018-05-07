@@ -2,37 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d6961331-f3a7-4db6-90f0-0a2987db56be" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/editor-css/css.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/editor-css/xhtml.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/epub/standard-small.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_fxmisc_flowless_flowless_0_4_5.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_fxmisc_richtext_richtextfx_0_6_10.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_fxmisc_undo_undofx_1_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_fxmisc_wellbehaved_wellbehavedfx_0_1_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_jetbrains_annotations_15_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_reactfx_reactfx_2_0_M4u1.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub2Metadata.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub3Metadata.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataWriter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/Epub3EditMetadataController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/epubeditor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/epubeditor.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractRichTextCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractRichTextCodeEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CodeEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssCodeEditor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/Fileset2Epub.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/Fileset2Epub.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/FixIdentifierBookProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/FixIdentifierBookProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Author.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Author.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Metadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Metadata.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MetadataDate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MetadataDate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/NCXDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/NCXDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/SearchManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/SearchManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/epub/standard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/epub/standard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -77,15 +67,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="MediaType.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MediaType.java">
+      <file leaf-file-name="PackageDocumentEpub3MetadataWriter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataWriter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="19" column="21" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="21" />
-              <folding>
-                <element signature="e#6848#6849#0" expanded="true" />
-                <element signature="e#6883#6884#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="92">
+              <caret line="38" column="39" selection-start-line="38" selection-start-column="39" selection-end-line="38" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -93,40 +79,8 @@
       <file leaf-file-name="XhtmlRichTextCodeEditor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="353">
-              <caret line="91" selection-start-line="91" selection-end-line="91" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#3886#3887#0" expanded="true" />
-                <element signature="e#3922#3923#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CssCodeEditor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssCodeEditor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="326">
-              <caret line="67" selection-start-line="67" selection-end-line="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XMLCodeEditor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="67" selection-start-line="67" selection-end-line="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EditorTabManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="393" selection-start-line="393" selection-end-line="393" />
+            <state relative-caret-position="210">
+              <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -134,144 +88,69 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EpubEditorMainController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java">
+      <file leaf-file-name="FixIdentifierBookProcessor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/FixIdentifierBookProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="172">
-              <caret line="998" column="50" selection-start-line="998" selection-start-column="50" selection-end-line="998" selection-end-column="50" />
+            <state relative-caret-position="384">
+              <caret line="29" column="26" selection-start-line="29" selection-start-column="26" selection-end-line="29" selection-end-column="26" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#794#795#0" expanded="true" />
+                <element signature="e#825#826#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InsertMediaController.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java">
+      <file leaf-file-name="DefaultBookProcessorPipeline.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/DefaultBookProcessorPipeline.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="199" column="51" selection-start-line="199" selection-start-column="51" selection-end-line="199" selection-end-column="51" />
+            <state relative-caret-position="384">
+              <caret line="33" column="20" selection-start-line="33" selection-start-column="20" selection-end-line="33" selection-end-column="20" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CodeEditor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CodeEditor.java">
+      <file leaf-file-name="NCXDocument.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/NCXDocument.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="43" column="9" selection-start-line="43" selection-start-column="9" selection-end-line="43" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="2080">
+              <caret line="195" column="33" selection-start-line="195" selection-start-column="33" selection-end-line="195" selection-end-column="33" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractRichTextCodeEditor.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractRichTextCodeEditor.java">
+      <file leaf-file-name="Book.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="186" column="13" lean-forward="true" selection-start-line="186" selection-start-column="13" selection-end-line="186" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2945#2946#0" expanded="true" />
-                <element signature="e#3014#3015#0" expanded="true" />
-                <element signature="e#3475#3476#0" expanded="true" />
-                <element signature="e#3505#3506#0" expanded="true" />
-                <element signature="e#3579#3580#0" expanded="true" />
-                <element signature="e#3602#3603#0" expanded="true" />
-                <element signature="e#3577#3578#0" expanded="true" />
-                <element signature="e#3601#3602#0" expanded="true" />
-                <element signature="e#3823#3824#0" expanded="true" />
-                <element signature="e#3874#3875#0" expanded="true" />
-                <element signature="e#3942#3943#0" expanded="true" />
-                <element signature="e#3991#3992#0" expanded="true" />
-                <element signature="e#4278#4279#0" expanded="true" />
-                <element signature="e#4301#4302#0" expanded="true" />
-                <element signature="e#4391#4392#0" expanded="true" />
-                <element signature="e#4432#4433#0" expanded="true" />
-                <element signature="e#4184#4185#0" expanded="true" />
-                <element signature="e#4236#4237#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="362">
+              <caret line="353" column="64" selection-start-line="353" selection-start-column="64" selection-end-line="353" selection-end-column="64" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NavigationActions.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/NavigationActions.java">
+      <file leaf-file-name="PackageDocumentWriter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="7" column="61" selection-start-line="7" selection-start-column="61" selection-end-line="7" selection-end-column="61" />
-              <folding>
-                <element signature="e#1539#1540#0" expanded="true" />
-                <element signature="e#1590#1591#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="218">
+              <caret line="84" column="94" selection-start-line="84" selection-start-column="94" selection-end-line="84" selection-end-column="94" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TextEditingArea.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/TextEditingArea.java">
+      <file leaf-file-name="PackageDocumentEpub3MetadataReader.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataReader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3353">
-              <caret line="213" column="24" selection-start-line="213" selection-start-column="24" selection-end-line="213" selection-end-column="24" />
+            <state relative-caret-position="368">
+              <caret line="177" column="75" selection-start-line="177" selection-start-column="60" selection-end-line="177" selection-end-column="75" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CodeArea.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/CodeArea.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StyleClassedTextArea.java" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/StyleClassedTextArea.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-32">
-              <caret line="13" column="49" lean-forward="true" selection-start-line="13" selection-start-column="49" selection-end-line="13" selection-end-column="49" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SearchManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/SearchManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="90" column="29" lean-forward="true" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XHTMLCodeEditor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="91" selection-start-line="91" selection-end-line="91" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SearchAnchorPane.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1455">
-              <caret line="159" column="5" lean-forward="true" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="CssRichTextCodeEditor.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CssRichTextCodeEditor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="145" selection-start-line="145" selection-end-line="145" />
+            <state relative-caret-position="288">
+              <caret line="154" column="18" lean-forward="true" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -279,36 +158,45 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="search_pane.fxml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/resources/search_pane.fxml">
+      <file leaf-file-name="StyleSpansBuilder.class" pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0.jar!/org/fxmisc/richtext/model/StyleSpansBuilder.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="20" column="87" lean-forward="true" selection-start-line="20" selection-start-column="87" selection-end-line="20" selection-end-column="87" />
-            </state>
-          </provider>
-          <provider editor-type-id="JavaFX-Scene-Builder" />
-        </entry>
-      </file>
-      <file leaf-file-name="BookBrowserManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="341">
-              <caret line="650" column="126" selection-start-line="650" selection-start-column="126" selection-end-line="650" selection-end-column="126" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbstractCodeEditor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2152">
-              <caret line="297" selection-start-line="297" selection-end-line="297" />
+            <state relative-caret-position="153">
+              <caret line="78" selection-start-line="78" selection-end-line="78" />
               <folding>
-                <element signature="e#3537#3538#0" expanded="true" />
-                <element signature="e#3602#3603#0" expanded="true" />
-                <element signature="e#18927#18928#0" expanded="true" />
-                <element signature="e#18973#18974#0" expanded="true" />
+                <element signature="e#2688#2689#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StyleSpan.java" pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/StyleSpan.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StyleSpansBuilder.java" pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/StyleSpansBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="113">
+              <caret line="121" column="60" lean-forward="true" selection-start-line="121" selection-start-column="60" selection-end-line="121" selection-end-column="60" />
+              <folding>
+                <element signature="e#3808#3809#0" expanded="true" />
+                <element signature="e#3866#3867#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="css.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/editor-css/css.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="128">
+              <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -319,14 +207,12 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>cursor</find>
-      <find>codeArea</find>
-      <find>caret</find>
       <find>pane</find>
       <find>cursorPosition</find>
       <find>margin-top</find>
@@ -354,7 +240,13 @@
       <find>stringSearch</find>
       <find>SearchManager</find>
       <find>contec</find>
+      <find>rights</find>
+      <find>metadataC</find>
+      <find>book.getMetadata()</find>
     </findStrings>
+    <replaceStrings>
+      <replace>metadata</replace>
+    </replaceStrings>
     <dirStrings>
       <dir>D:\Projects\epubfx\src\main</dir>
       <dir>D:\Projects\epubfx\src</dir>
@@ -372,22 +264,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/CoverpageBookProcessor.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorApplication.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/Fileset2Epub.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddCoverController.java" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/main/resources/main.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/add_stylesheet.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/add_cover.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/ChooserWindow.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/clip_editor.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/insert_media.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/metadata_editor.fxml" />
-        <option value="$PROJECT_DIR$/src/main/resources/new_ebook.fxml" />
         <option value="$PROJECT_DIR$/src/main/resources/search_pane.fxml" />
         <option value="$PROJECT_DIR$/src/main/resources/com/sun/javafx/scene/control/skin/resources/dialog_de_DE.properties" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/AddStylesheetController.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/jdom2/XHTMLOutputProcessor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/EpubEditorConfiguration.java" />
@@ -396,9 +274,7 @@
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MediaType.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/EPUB_VERSION.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/EpubVersion.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/BookProcessor.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java" />
@@ -406,23 +282,39 @@
         <option value="$PROJECT_DIR$/src/main/resources/application.css" />
         <option value="$PROJECT_DIR$/src/main/resources/xhtml.css" />
         <option value="$PROJECT_DIR$/src/main/resources/epub/standard-small.css" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" />
         <option value="$PROJECT_DIR$/src/main/resources/epub/standard.css" />
         <option value="$PROJECT_DIR$/src/main/resources/editor-css/css.css" />
         <option value="$PROJECT_DIR$/src/main/resources/editor-css/xhtml.css" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssCodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java" />
-        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/SearchManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java" />
         <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractRichTextCodeEditor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Author.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MetadataDate.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataReader.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub3Metadata.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Metadata.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataReader.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub2Metadata.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/Fileset2Epub.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/Epub3EditMetadataController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataWriter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataWriter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/FixIdentifierBookProcessor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/NCXDocument.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java" />
+        <option value="$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java" />
       </list>
     </option>
   </component>
@@ -455,10 +347,14 @@
       <select />
     </treeState>
   </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/src/main/resources/codemirror/package.json" />
+    </packageJsonPaths>
+  </component>
   <component name="PhpServers">
     <servers />
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-9" />
     <option name="y" value="-9" />
@@ -507,180 +403,107 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
               <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
               <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
               <item name="editor" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
               <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
               <item name="epublib" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
               <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
               <item name="epublib" type="462c0819:PsiDirectoryNode" />
               <item name="epub" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
+              <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
+              <item name="epublib" type="462c0819:PsiDirectoryNode" />
+              <item name="epub3" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
               <item name="gui" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
-              <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
-              <item name="httpserver" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
-              <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
-              <item name="manager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
-              <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="de" type="462c0819:PsiDirectoryNode" />
-              <item name="machmireinebook" type="462c0819:PsiDirectoryNode" />
-              <item name="epubeditor" type="462c0819:PsiDirectoryNode" />
-              <item name="xhtml" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
+              <item name="epub-editor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="epub-editor" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
               <item name="editor-css" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="epubfx" type="b2602c69:ProjectViewProjectNode" />
-              <item name="epubfx" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="modes" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -695,13 +518,18 @@
     <property name="settings.editor.splitter.proportion" value="0.23506366" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Projects\epubfx\src\main\resources\epub" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Projects\epubfx\src\main\resources\editor-css" />
       <recent name="D:\Projects\epubfx" />
       <recent name="D:\Projects\epubfx\" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="de.machmireinebook.epubeditor.epublib.epub" />
+      <recent name="de.machmireinebook.epubeditor.gui" />
+      <recent name="de.machmireinebook.epubeditor.epublib.domain" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Projects\epubfx\src\main\resources\epub" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -1001,11 +829,21 @@
       <workItem from="1524740945372" duration="417000" />
       <workItem from="1525352257426" duration="265000" />
       <workItem from="1525682507008" duration="17854000" />
+      <workItem from="1525717977352" duration="2275000" />
+      <workItem from="1525726841095" duration="7509000" />
     </task>
+    <task id="LOCAL-00001" summary="Merge branch 'master' of https://github.com/finanzer/epubfx&#10;&#10;# Conflicts:&#10;#&#9;.gitignore">
+      <created>1525718112775</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1525718112775</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="50755000" />
+    <option name="totallyTimeSpent" value="60539000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1017,39 +855,46 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.329718" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.35246843" />
-      <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="bottom" id="Java Enterprise" order="7" weight="0.329718" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="right" id="Maven Projects" order="3" weight="0.117359415" />
-      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" weight="0.32900432" />
+      <window_info anchor="right" id="Maven Projects" order="3" visible="true" weight="0.11727079" />
       <window_info anchor="right" id="CDI" order="3" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.23421355" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="IvyIDEA" order="8" weight="0.366127" />
-      <window_info anchor="bottom" id="CheckStyle" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.31236443" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26405868" />
       <window_info anchor="right" id="Database" order="3" weight="0.21218206" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.24110219" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24972972" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="UI Designer" order="2" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.42532468" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.329718" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.3517316" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="bottom" id="Java Enterprise" order="7" weight="0.329718" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.23421355" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="right" id="Graph Database" order="3" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.31236443" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3054371" />
+      <window_info anchor="bottom" id="Graph Database Console" order="7" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.31802526" />
-      <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info anchor="bottom" id="DB Execution Console" order="7" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="bottom" id="Docker" order="9" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info id="DB Browser" order="2" />
+      <window_info anchor="bottom" id="Docker" order="9" />
+      <window_info anchor="right" id="Bean Validation" order="3" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info id="DB Browser" order="2" />
+      <window_info anchor="bottom" id="CheckStyle" order="9" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.24110219" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="IvyIDEA" order="8" weight="0.366127" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1058,9 +903,29 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/finanzer/epubfx&#10;&#10;# Conflicts:&#10;#&#9;.gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/finanzer/epubfx&#10;&#10;# Conflicts:&#10;#&#9;.gitignore" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="18" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java</url>
+          <line>82</line>
+          <properties />
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java</url>
+          <line>156</line>
+          <properties />
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="22" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -1102,331 +967,19 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/scene/control/IndexRange.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1522">
-          <caret line="41" column="46" selection-start-line="41" selection-start-column="31" selection-end-line="41" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/EditorRange.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="19" column="11" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/TwoDimensional.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="70" column="15" lean-forward="true" selection-start-line="70" selection-start-column="15" selection-end-line="70" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/jre/lib/ext/jfxrt.jar!/javafx/scene/image/Image.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="43" selection-start-line="43" selection-end-line="43" />
-          <folding>
-            <element signature="e#0#24364#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/property/IntegerProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="53" column="2" lean-forward="true" selection-start-line="53" selection-start-column="2" selection-end-line="53" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="67" selection-start-line="67" selection-end-line="67" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/Codec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/StyledTextArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="23" column="51" selection-start-line="23" selection-start-column="51" selection-end-line="23" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/undo/undofx/2.0.0/undofx-2.0.0.jar!/org/fxmisc/undo/UndoManager.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/undo/undofx/2.0.0/undofx-2.0.0-sources.jar!/org/fxmisc/undo/UndoManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2152">
-          <caret line="297" selection-start-line="297" selection-end-line="297" />
-          <folding>
-            <element signature="e#3537#3538#0" expanded="true" />
-            <element signature="e#3602#3603#0" expanded="true" />
-            <element signature="e#18927#18928#0" expanded="true" />
-            <element signature="e#18973#18974#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/EditorPosition.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/scene/chart/XYChart.java">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/jre/lib/ext/jfxrt.jar!/javafx/scene/chart/XYChart.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#55736#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/controlsfx/controlsfx/8.40.14/controlsfx-8.40.14-sources.jar!/org/controlsfx/control/action/Action.java">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/controlsfx/controlsfx/8.40.14/controlsfx-8.40.14.jar!/org/controlsfx/control/action/Action.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#7659#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/GenericEditableStyledDocument.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="12" column="19" selection-start-line="12" selection-start-column="19" selection-end-line="12" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/GenericStyledArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="567" column="28" selection-start-line="567" selection-start-column="28" selection-end-line="567" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/reactfx/reactfx/2.0-M5/reactfx-2.0-M5.jar!/org/reactfx/value/Val.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="36" column="17" selection-start-line="36" selection-start-column="17" selection-end-line="36" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/reactfx/reactfx/2.0-M5/reactfx-2.0-M5-sources.jar!/org/reactfx/value/Val.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="36" column="27" selection-start-line="36" selection-start-column="27" selection-end-line="36" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/GenericEditableStyledDocumentBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="65" lean-forward="true" selection-start-line="65" selection-end-line="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/EditableStyledDocument.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14">
-          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/value/ObservableObjectValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="42" column="6" selection-start-line="42" selection-start-column="6" selection-end-line="42" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/binding/ObjectExpression.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-314">
-          <caret line="49" column="16" selection-start-line="49" selection-start-column="16" selection-end-line="49" selection-end-column="16" />
-          <folding>
-            <element signature="e#1046#1047#0" expanded="true" />
-            <element signature="e#1074#1075#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="998" column="50" selection-start-line="998" selection-start-column="50" selection-end-line="998" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="67" selection-start-line="67" selection-end-line="67" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/scene/Cursor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1195">
-          <caret line="39" column="22" selection-start-line="39" selection-start-column="22" selection-end-line="39" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/scene/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="1185" column="35" selection-start-line="1185" selection-start-column="35" selection-end-line="1185" selection-end-column="35" />
-          <folding>
-            <element signature="e#50073#50074#0" expanded="true" />
-            <element signature="e#50116#50117#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/Observable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="50" column="17" selection-start-line="50" selection-start-column="17" selection-end-line="50" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/value/ObservableValue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="82" column="47" lean-forward="true" selection-start-line="82" selection-start-column="47" selection-end-line="82" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/Caret.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="62" column="36" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/InsertMediaController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="199" column="51" selection-start-line="199" selection-start-column="51" selection-end-line="199" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/search_pane.fxml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="20" column="87" lean-forward="true" selection-start-line="20" selection-start-column="87" selection-end-line="20" selection-end-column="87" />
-        </state>
-      </provider>
-      <provider editor-type-id="JavaFX-Scene-Builder" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XHTMLCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="91" selection-start-line="91" selection-end-line="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="91" selection-start-line="91" selection-end-line="91" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3886#3887#0" expanded="true" />
-            <element signature="e#3922#3923#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="145" selection-start-line="145" selection-end-line="145" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/property/ObjectPropertyBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="113" selection-start-line="113" selection-end-line="113" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/property/ReadOnlyObjectWrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="103" selection-start-line="103" selection-end-line="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/property/ReadOnlyObjectPropertyBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="672">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-          <folding>
-            <element signature="e#1722#1723#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/src.zip!/javax/annotation/PostConstruct.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="864">
-          <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/beans/property/ReadOnlyObjectPropertyBase.java" />
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/src.zip!/javax/annotation/PostConstruct.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/SearchManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="90" column="29" lean-forward="true" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
+        <state relative-caret-position="1008">
+          <caret line="90" column="29" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/fxml/FXMLLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="1770" selection-start-line="1770" selection-end-line="1770" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_131/javafx-src.zip!/javafx/fxml/FXMLLoader.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CodeEditor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
+        <state relative-caret-position="688">
           <caret line="43" column="9" selection-start-line="43" selection-start-column="9" selection-end-line="43" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -1434,44 +987,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1455">
-          <caret line="159" column="5" lean-forward="true" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/InlineCssTextArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/NavigationActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="7" column="61" selection-start-line="7" selection-start-column="61" selection-end-line="7" selection-end-column="61" />
-          <folding>
-            <element signature="e#1539#1540#0" expanded="true" />
-            <element signature="e#1590#1591#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/TextEditingArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3353">
-          <caret line="213" column="24" selection-start-line="213" selection-start-column="24" selection-end-line="213" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/InlineCssTextArea.java" />
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/NavigationActions.java" />
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/TextEditingArea.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/EditorTabManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
+        <state relative-caret-position="6048">
           <caret line="393" selection-start-line="393" selection-end-line="393" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -1479,44 +1000,372 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/CodeArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="12" column="37" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/StyleClassedTextArea.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-32">
-          <caret line="13" column="49" lean-forward="true" selection-start-line="13" selection-start-column="49" selection-end-line="13" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/CodeArea.java" />
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/StyleClassedTextArea.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractRichTextCodeEditor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="186" column="13" lean-forward="true" selection-start-line="186" selection-start-column="13" selection-end-line="186" selection-end-column="13" />
+        <state relative-caret-position="1984">
+          <caret line="157" column="13" selection-start-line="157" selection-start-column="13" selection-end-line="157" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2945#2946#0" expanded="true" />
-            <element signature="e#3014#3015#0" expanded="true" />
-            <element signature="e#3475#3476#0" expanded="true" />
-            <element signature="e#3505#3506#0" expanded="true" />
             <element signature="e#3579#3580#0" expanded="true" />
-            <element signature="e#3602#3603#0" expanded="true" />
-            <element signature="e#3577#3578#0" expanded="true" />
-            <element signature="e#3601#3602#0" expanded="true" />
+            <element signature="e#3620#3621#0" expanded="true" />
             <element signature="e#3823#3824#0" expanded="true" />
-            <element signature="e#3874#3875#0" expanded="true" />
-            <element signature="e#3942#3943#0" expanded="true" />
-            <element signature="e#3991#3992#0" expanded="true" />
+            <element signature="e#3877#3878#0" expanded="true" />
             <element signature="e#4278#4279#0" expanded="true" />
-            <element signature="e#4301#4302#0" expanded="true" />
+            <element signature="e#4334#4335#0" expanded="true" />
             <element signature="e#4391#4392#0" expanded="true" />
             <element signature="e#4432#4433#0" expanded="true" />
-            <element signature="e#4184#4185#0" expanded="true" />
-            <element signature="e#4236#4237#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1888">
+          <caret line="118" column="24" selection-start-line="118" selection-start-column="24" selection-end-line="118" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/AbstractCodeEditor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2592">
+          <caret line="203" column="6" selection-start-line="203" selection-start-column="6" selection-end-line="203" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/SearchAnchorPane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2544">
+          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Relator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="95" column="4" selection-start-line="95" selection-start-column="4" selection-end-line="95" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Author.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="41" column="5" selection-start-line="41" selection-start-column="5" selection-end-line="41" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MediaType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="19" column="21" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="21" />
+          <folding>
+            <element signature="e#6848#6849#0" expanded="true" />
+            <element signature="e#6883#6884#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/manager/BookBrowserManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9280">
+          <caret line="650" column="126" selection-start-line="650" selection-start-column="126" selection-end-line="650" selection-end-column="126" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XMLCodeEditor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="880">
+          <caret line="67" selection-start-line="67" selection-end-line="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/Epub3NavigatonDocumentReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/PublishingDate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Identifier.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="20" selection-start-line="20" selection-end-line="23" selection-end-column="5" />
+          <folding>
+            <element signature="e#443#444#0" expanded="true" />
+            <element signature="e#474#475#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/DublinCoreMetadataElement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="45" column="16" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="16" />
+          <folding>
+            <element signature="e#789#790#0" expanded="true" />
+            <element signature="e#823#824#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/MetadataDate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="53" column="65" lean-forward="true" selection-start-line="53" selection-start-column="65" selection-end-line="53" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="20" column="45" selection-start-line="20" selection-start-column="45" selection-end-line="20" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub3MetadataProperty.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="9" column="34" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub3Metadata.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="16" column="51" selection-start-line="16" selection-start-column="51" selection-end-line="16" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Metadata.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="9" column="27" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="77" column="65" selection-start-line="77" selection-start-column="65" selection-end-line="77" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="35" column="13" lean-forward="true" selection-start-line="35" selection-start-column="13" selection-end-line="35" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Epub2Metadata.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="16" column="60" selection-start-line="16" selection-start-column="60" selection-end-line="16" selection-end-column="60" />
+          <folding>
+            <element signature="e#4368#4369#0" expanded="true" />
+            <element signature="e#4406#4407#0" expanded="true" />
+            <element signature="e#5061#5062#0" expanded="true" />
+            <element signature="e#5097#5098#0" expanded="true" />
+            <element signature="e#8514#8515#0" expanded="true" />
+            <element signature="e#8543#8544#0" expanded="true" />
+            <element signature="e#8597#8598#0" expanded="true" />
+            <element signature="e#8633#8634#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EditMetadataController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="443" selection-start-line="443" selection-end-line="443" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/EpubEditorMainController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="839" column="43" selection-start-line="839" selection-start-column="43" selection-end-line="839" selection-end-column="43" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#36449#36450#0" expanded="true" />
+            <element signature="e#36495#36496#0" expanded="true" />
+            <element signature="e#38926#38927#0" expanded="true" />
+            <element signature="e#38969#38970#0" expanded="true" />
+            <element signature="e#39197#39198#0" expanded="true" />
+            <element signature="e#39243#39244#0" expanded="true" />
+            <element signature="e#39300#39301#0" expanded="true" />
+            <element signature="e#39342#39343#0" expanded="true" />
+            <element signature="e#39395#39396#0" expanded="true" />
+            <element signature="e#39433#39434#0" expanded="true" />
+            <element signature="e#39500#39501#0" expanded="true" />
+            <element signature="e#39552#39553#0" expanded="true" />
+            <element signature="e#39603#39604#0" expanded="true" />
+            <element signature="e#39639#39640#0" expanded="true" />
+            <element signature="e#39691#39692#0" expanded="true" />
+            <element signature="e#39733#39734#0" expanded="true" />
+            <element signature="e#39778#39779#0" expanded="true" />
+            <element signature="e#39812#39813#0" expanded="true" />
+            <element signature="e#39873#39874#0" expanded="true" />
+            <element signature="e#39919#39920#0" expanded="true" />
+            <element signature="e#39966#39967#0" expanded="true" />
+            <element signature="e#40002#40003#0" expanded="true" />
+            <element signature="e#40067#40068#0" expanded="true" />
+            <element signature="e#40117#40118#0" expanded="true" />
+            <element signature="e#40163#40164#0" expanded="true" />
+            <element signature="e#40198#40199#0" expanded="true" />
+            <element signature="e#40261#40262#0" expanded="true" />
+            <element signature="e#40309#40310#0" expanded="true" />
+            <element signature="e#40354#40355#0" expanded="true" />
+            <element signature="e#40388#40389#0" expanded="true" />
+            <element signature="e#40449#40450#0" expanded="true" />
+            <element signature="e#40495#40496#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/Fileset2Epub.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="125" column="10" selection-start-line="125" selection-start-column="10" selection-end-line="125" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/Epub3EditMetadataController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="371" column="13" selection-start-line="371" selection-start-column="13" selection-end-line="371" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/gui/NewEBookController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-160">
+          <caret line="153" column="74" selection-start-line="153" selection-start-column="74" selection-end-line="153" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentMetadataWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="329">
+          <caret line="34" selection-start-line="33" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="177" column="75" selection-start-line="177" selection-start-column="60" selection-end-line="177" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub3/PackageDocumentEpub3MetadataWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="38" column="39" selection-start-line="38" selection-start-column="39" selection-end-line="38" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/DefaultBookProcessorPipeline.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="33" column="20" selection-start-line="33" selection-start-column="20" selection-end-line="33" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/bookprocessor/FixIdentifierBookProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="29" column="26" selection-start-line="29" selection-start-column="26" selection-end-line="29" selection-end-column="26" />
+          <folding>
+            <element signature="e#794#795#0" expanded="true" />
+            <element signature="e#825#826#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/NCXDocument.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2080">
+          <caret line="195" column="33" selection-start-line="195" selection-start-column="33" selection-end-line="195" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/domain/Book.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="353" column="64" selection-start-line="353" selection-start-column="64" selection-end-line="353" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/epublib/epub/PackageDocumentWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="84" column="94" selection-start-line="84" selection-start-column="94" selection-end-line="84" selection-end-column="94" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/editor-css/css.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0.jar!/org/fxmisc/richtext/model/StyleSpansBuilder.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="78" selection-start-line="78" selection-end-line="78" />
+          <folding>
+            <element signature="e#2688#2689#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/StyleSpan.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.9.0/richtextfx-0.9.0-sources.jar!/org/fxmisc/richtext/model/StyleSpansBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="113">
+          <caret line="121" column="60" lean-forward="true" selection-start-line="121" selection-start-column="60" selection-end-line="121" selection-end-column="60" />
+          <folding>
+            <element signature="e#3808#3809#0" expanded="true" />
+            <element signature="e#3866#3867#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/XhtmlRichTextCodeEditor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="56" column="40" selection-start-line="56" selection-start-column="40" selection-end-line="56" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/de/machmireinebook/epubeditor/editor/CssRichTextCodeEditor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="154" column="18" lean-forward="true" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

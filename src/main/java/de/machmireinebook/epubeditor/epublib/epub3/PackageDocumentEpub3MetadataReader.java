@@ -8,9 +8,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +31,7 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
 
     public static Metadata readMetadata(Element root)
     {
-        Metadata result = new Metadata();
+        Epub3Metadata result = new Epub3Metadata();
         Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
@@ -36,10 +39,11 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
             return result;
         }
 
-        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.title.getName()));
+        result.setTitles(readTitles(metadataElement));
         result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.publisher.getName()));
         result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.description.getName()));
         result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.rights.getName()));
+        result.setSources(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.source.getName()));
         result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.type.getName()));
         result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.subject.getName()));
         result.setIdentifiers(readIdentifiers(metadataElement));
@@ -68,10 +72,10 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         for (Element metaTag : metaTags)
         {
             Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
-            String name = metaTag.getAttributeValue(OPFAttributes.property);
-            if (StringUtils.isNotEmpty(name)) //ansonsten epub 2 metadaten, die wir uns merken ansonsten aber ignorieren
+            String property = metaTag.getAttributeValue(OPFAttributes.property);
+            if (StringUtils.isNotEmpty(property)) //ansonsten epub 2 metadaten, die wir uns merken ansonsten aber ignorieren
             {
-                otherMetadataElement.setQName(new QName(name));
+                otherMetadataElement.setQName(new QName(property));
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
                 String refines = metaTag.getAttributeValue(OPFAttributes.refines);
@@ -156,18 +160,79 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
 
     private static List<Author> readAuthors(String authorTag, Element metadataElement)
     {
-        List<Element> elements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
-        List<Author> result = new ArrayList<>(elements.size());
-        for (Element authorElement : elements)
+        List<Element> authorsElements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
+        if (authorsElements.isEmpty())
         {
-            Author author = createAuthor(authorElement);
-            if (author != null)
+            logger.info("Package does not contain element " + authorTag);
+            return new ArrayList<>();
+        }
+        List<Author> result = new ArrayList<>(authorsElements.size());
+        for (Element authorElement : authorsElements)
+        {
+            String schemeName = authorElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+            String authorValue = authorElement.getText();
+            if (StringUtils.isEmpty(authorValue))
             {
-                result.add(author);
+                continue;
             }
+            String idName = authorElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            Author author = new Author(idName, schemeName, authorValue);
+            result.add(author);
         }
         return result;
+    }
 
+    private static List<DublinCoreMetadataElement> readTitles(Element metadataElement)
+    {
+        return readDublinCoreMetadata(DCTag.title.getName(), metadataElement);
+    }
+
+    private static List<DublinCoreMetadataElement> readDublinCoreMetadata(String dcTagName, Element metadataElement)
+    {
+        List<Element> dcElements = metadataElement.getChildren(dcTagName, NAMESPACE_DUBLIN_CORE);
+        if (dcElements.isEmpty())
+        {
+            logger.info("Package does not contain element " + dcTagName);
+            return new ArrayList<>();
+        }
+        List<DublinCoreMetadataElement> result = new ArrayList<>(dcElements.size());
+        for (Element dcElement : dcElements)
+        {
+            String schemeName = dcElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+            String titleValue = dcElement.getText();
+            if (StringUtils.isEmpty(titleValue))
+            {
+                continue;
+            }
+            String idName = dcElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, schemeName, titleValue);
+            result.add(dublinCoreMetadataElement);
+        }
+        return result;
+    }
+
+    private static List<MetadataDate> readDates(Element metadataElement)
+    {
+        List<Element> dcDateElements = metadataElement.getChildren(DCTag.date.getName(), NAMESPACE_DUBLIN_CORE);
+        if (dcDateElements.isEmpty())
+        {
+            logger.info("Package does not contain element " + DCTag.date.getName());
+            return new ArrayList<>();
+        }
+        List<MetadataDate> result = new ArrayList<>(dcDateElements.size());
+        for (Element dcDateElement : dcDateElements)
+        {
+            String schemeName = dcDateElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+            String titleValue = dcDateElement.getText();
+            if (StringUtils.isEmpty(titleValue))
+            {
+                continue;
+            }
+            String idName = dcDateElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            MetadataDate dublinCoreMetadataElement = new MetadataDate(idName, schemeName, titleValue);
+            result.add(dublinCoreMetadataElement);
+        }
+        return result;
     }
 
     private static Author createAuthor(Element authorElement)
@@ -178,7 +243,7 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
             return null;
         }
         Author result;
-        result = new Author(authorString);
+        result = new Author(null, null, authorString);
         result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
         return result;
     }
