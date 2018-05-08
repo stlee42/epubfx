@@ -1,0 +1,7 @@
+.code-area {
+    -fx-font-family: "Source Code Pro", Consolas, monospace;
+}
+
+.code-area .context-menu {
+    -fx-font-family: initial;
+}

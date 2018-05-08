@@ -1,9 +1,5 @@
 package de.machmireinebook.epubeditor.editor;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -50,7 +46,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
 
     static
     {
-        logger.info("reading template file for xhtml editor");
+ /*       logger.info("reading template file for xhtml editor");
         InputStream is = XHTMLCodeEditor.class.getResourceAsStream("/modes/xhtml.html");
         try
         {
@@ -70,7 +66,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
             {
                 logger.error("", e);
             }
-        }
+        }*/
     }
 
     /**

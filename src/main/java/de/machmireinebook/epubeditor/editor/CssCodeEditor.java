@@ -1,9 +1,5 @@
 package de.machmireinebook.epubeditor.editor;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -26,7 +22,7 @@ public class CssCodeEditor extends AbstractCodeEditor
 
     static
     {
-        logger.info("reading template file for css editor");
+/*        logger.info("reading template file for css editor");
         InputStream is = CssCodeEditor.class.getResourceAsStream("/modes/css.html");
         try
         {
@@ -46,7 +42,7 @@ public class CssCodeEditor extends AbstractCodeEditor
             {
                 logger.error("", e);
             }
-        }
+        }*/
     }
 
     /**

@@ -8,9 +8,9 @@ import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -49,7 +49,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Content;
@@ -69,7 +68,6 @@ import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
-import de.machmireinebook.epubeditor.editor.XHTMLCodeEditor;
 import de.machmireinebook.epubeditor.editor.XMLTagPair;
 import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
 import de.machmireinebook.epubeditor.epublib.Constants;
@@ -215,6 +213,7 @@ public class EditorTabManager
         }
     }
 
+    @PostConstruct
     public void init()
     {
         currentEditor.addListener((observable, oldValue, newValue) -> {
@@ -237,6 +236,7 @@ public class EditorTabManager
         MenuItem separatorItem = new SeparatorMenuItem();
         //Html menu
         contextMenuXHTML = new ContextMenu();
+        contextMenuXHTML.getStyleClass().add("context-menu");
         contextMenuXHTML.setAutoFix(true);
         contextMenuXHTML.setAutoHide(true);
 
@@ -270,6 +270,7 @@ public class EditorTabManager
 
         //XML menu
         contextMenuXML = new ContextMenu();
+        contextMenuXML.getStyleClass().add("context-menu");
         contextMenuXML.setAutoFix(true);
         contextMenuXML.setAutoHide(true);
 
@@ -308,6 +309,7 @@ public class EditorTabManager
 
         //css menu
         contextMenuCSS = new ContextMenu();
+        contextMenuCSS.getStyleClass().add("context-menu");
         contextMenuCSS.setAutoFix(true);
         contextMenuCSS.setAutoHide(true);
         MenuItem formatCSSOneLineItem = new MenuItem("Styles in je einer Zeile formatieren");
@@ -669,14 +671,15 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
             if (pair != null)
             {
                 logger.info("found xml block tag " + pair.getTagName());
                 //erst das schließende Tag ersetzen, da sich sonst die Koordinaten verschieben können
+                /*
                 xhtmlCodeEditor.replaceRange(tagName, pair.getCloseTagBegin(), pair.getCloseTagEnd());
-                xhtmlCodeEditor.replaceRange(tagName, pair.getOpenTagBegin(), pair.getOpenTagEnd());
+                xhtmlCodeEditor.replaceRange(tagName, pair.getOpenTagBegin(), pair.getOpenTagEnd());*/
                 refreshPreview();
             }
         }
@@ -686,8 +689,10 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
+
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+            /*
+            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
             if (pair != null)
             {
                 logger.info("found xml block tag " + pair.getTagName());
@@ -706,7 +711,7 @@ public class EditorTabManager
                 }
                 refreshPreview();
                 xhtmlCodeEditor.requestFocus();
-            }
+            }*/
         }
     }
 
@@ -725,7 +730,8 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            /*
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
             if (pair != null)
             {
@@ -753,7 +759,7 @@ public class EditorTabManager
                 {
                     insertStyle("text-indent", "1em");
                 }
-            }
+            }*/
         }
     }
 
@@ -761,7 +767,8 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            /*
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
             if (pair != null)
             {
@@ -789,7 +796,7 @@ public class EditorTabManager
                 {
                     insertStyle("text-indent", "-1em");
                 }
-            }
+            }*/
         }
     }
 
@@ -798,8 +805,8 @@ public class EditorTabManager
         boolean result = false;
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
-            EditorPosition pos = xhtmlCodeEditor.getEditorCursorPosition();
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+            Integer pos = xhtmlCodeEditor.getEditorCursorPosition();
             XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token -> {
                 String type = token.getType();
                 if ("tag".equals(type))
@@ -825,7 +832,7 @@ public class EditorTabManager
             }
             logger.debug("umgebendes pair " + pair);
             //wir sind innerhalb des Body
-            int index = xhtmlCodeEditor.getIndexFromPosition(pos);
+            int index = 0; //xhtmlCodeEditor.getIndexFromPosition(pos);
             try
             {
                 String originalCode = xhtmlCodeEditor.getCode();
@@ -887,7 +894,7 @@ public class EditorTabManager
 
     public void refreshPreview()
     {
-        CodeEditor xhtmlCodeEditor = (CodeEditor) currentEditor.getValue();
+        CodeEditor xhtmlCodeEditor = currentEditor.getValue();
         if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null)
         {
             try
@@ -1054,7 +1061,7 @@ public class EditorTabManager
         boolean result = false;
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token -> {
                 String type = token.getType();
                 if ("tag".equals(type))
@@ -1076,7 +1083,7 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            XHTMLCodeEditor xhtmlCodeEditor = (XHTMLCodeEditor) currentEditor.getValue();
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             String code = xhtmlCodeEditor.getCode();
 /*            int index = code.indexOf(html);
             logger.info("index of clicked html " + index + " html: " + html);
@@ -1136,7 +1143,7 @@ public class EditorTabManager
                 LocatedElement locatedElement = (LocatedElement) currentElement;
                 EditorPosition pos = new EditorPosition(locatedElement.getLine() - 1, locatedElement.getColumn());
                 logger.info("pos for scrolling to is " + pos.toJson());
-                xhtmlCodeEditor.scrollTo(pos);
+                //xhtmlCodeEditor.scrollTo(pos);
             }
             catch (IOException | JDOMException e)
             {

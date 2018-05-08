@@ -35,6 +35,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -63,7 +64,6 @@ import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
@@ -124,7 +124,7 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private Button decreaseIndentButton;
     @FXML
-    private Button createTocButton;
+    private MenuButton createTocButton;
     @FXML
     private Button insertSpecialCharacterButton;
     @FXML
@@ -291,7 +291,7 @@ public class EpubEditorMainController implements Initializable
                 .and(Bindings.isNull(editorManager.currentXMLResourceProperty())));
 
         addCoverMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        editMetadataMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
+        editMetadataButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         saveMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
         savAsMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
         saveCopyMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
@@ -309,57 +309,23 @@ public class EpubEditorMainController implements Initializable
         h6Button.disableProperty().bind(isNoXhtmlEditorBinding);
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
-        boldButton.setGraphic(FXUtils.getIcon("/icons/font_style_bold.png", 18));
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        kursivButton.setGraphic(FXUtils.getIcon("/icons/font_style_italics.png", 18));
         kursivButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        orderedListButton.setGraphic(FXUtils.getIcon("/icons/list_style_numbered.png", 18));
         orderedListButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        unorderedListButton.setGraphic(FXUtils.getIcon("/icons/list_style_bullets.png", 18));
         unorderedListButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        underlineButton.setGraphic(FXUtils.getIcon("/icons/font_style_underline.png", 18));
         underlineButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        strikeButton.setGraphic(FXUtils.getIcon("/icons/font_style_strikethrough.png", 18));
         strikeButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        subscriptButton.setGraphic(FXUtils.getIcon("/icons/font_style_subscript.png", 18));
         subscriptButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        superscriptButton.setGraphic(FXUtils.getIcon("/icons/font_style_superscript.png", 18));
         superscriptButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        alignLeftButton.setGraphic(FXUtils.getIcon("/icons/text_align_left.png", 18));
         alignLeftButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        centerButton.setGraphic(FXUtils.getIcon("/icons/text_align_center.png", 18));
         centerButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        rightAlignButton.setGraphic(FXUtils.getIcon("/icons/text_align_right.png", 18));
         rightAlignButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        justifyButton.setGraphic(FXUtils.getIcon("/icons/text_align_justified.png", 18));
         justifyButton.disableProperty().bind(isNoXhtmlEditorBinding);
-
-        newBookButton.setGraphic(FXUtils.getIcon("/icons/book2_new.png", 18));
-        openBookButton.setGraphic(FXUtils.getIcon("/icons/book_open.png", 18));
-
-        addFileButton.setGraphic(FXUtils.getIcon("/icons/document_empty_add.png", 18));
         addFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
-
-        addExistingFileButton.setGraphic(FXUtils.getIcon("/icons/document_text_add.png", 18));
         addExistingFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
-        saveButton.setGraphic(FXUtils.getIcon("/icons/floppy_disk.png", 18));
         saveButton.setDisable(true);
-
-        undoButton.setGraphic(FXUtils.getIcon("/icons/undo.png", 18));
         undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canUndoProperty())));
-        redoButton.setGraphic(FXUtils.getIcon("/icons/redo.png", 18));
         redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canRedoProperty())));
 
         searchReplaceButton.disableProperty().bind(Bindings.isNull(currentBookProperty).or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
@@ -507,6 +473,7 @@ public class EpubEditorMainController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
+        stage.setTitle("Epub FX");
 
         stage.setOnCloseRequest(event -> {
             checkBeforeCloseBook();
@@ -1240,5 +1207,10 @@ public class EpubEditorMainController implements Initializable
 
     public void findNextAction(ActionEvent actionEvent)
     {
+    }
+
+    public void showAddMoreFilesAction(ActionEvent actionEvent)
+    {
+
     }
 }

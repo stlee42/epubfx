@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
 
 /**
@@ -61,7 +62,16 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         canUndo.bind(codeArea.getUndoManager().undoAvailableProperty());
         canRedo.bind(codeArea.getUndoManager().redoAvailableProperty());
+
+        String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/common.css").toExternalForm();
+        setStyleSheet(stylesheet);
     }
+
+    public void setWrapText(boolean wrapText)
+    {
+        codeArea.setWrapText(wrapText);
+    }
+
 
     protected abstract StyleSpans<? extends Collection<String>> computeHighlighting(String newText);
 
@@ -122,7 +132,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public Integer getEditorCursorPosition()
     {
-        return cursorPosition.getValue();
+        return codeArea.getCaretPosition();
     }
 
     @Override
@@ -162,12 +172,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void scrollTo(EditorPosition pos)
-    {
-
-    }
-
-    @Override
     public void select(int fromIndex, int toIndex)
     {
         codeArea.selectRange(fromIndex, toIndex);
@@ -189,4 +193,18 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     {
         codeArea.setContextMenu(contextMenu);
     }
+
+    public EditorToken getTokenAt(int pos)
+    {
+/*        JSObject jdoc = (JSObject) codeArea.get("editor.getTokenAt({line:" + pos.getLine() + ",ch:" + pos.getColumn() +"});");
+        return new EditorToken((int)jdoc.getMember("start"),
+                (int)jdoc.getMember("end"), (String)jdoc.getMember("string"), (String)jdoc.getMember("type"));*/
+        return null;
+    }
+
+    protected Paragraph<Collection<String>, String, Collection<String>> getCurrentParagraph()
+    {
+        return codeArea.getParagraph(codeArea.getCurrentParagraph());
+    }
+
 }

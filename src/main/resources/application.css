@@ -24,3 +24,30 @@
 .text-field.error {
     -fx-effect: dropshadow(three-pass-box, darkred, 7, 0, 0, 0);
 }
+
+.ribbon-group .button.letter-button
+{
+    -fx-font-size: 2em;
+    -fx-min-width: 50;
+}
+
+.ribbon-group .button
+{
+    -fx-alignment: CENTER;
+}
+
+.ribbon-group .button.left-align
+{
+    -fx-alignment: CENTER_LEFT;
+}
+
+.ribbon-group .button .text
+{
+    -fx-text-alignment: center;
+}
+
+.ribbon-group .button.letter-button .text
+{
+    -fx-font-weight: bold;
+    -fx-text-fill:black;
+}

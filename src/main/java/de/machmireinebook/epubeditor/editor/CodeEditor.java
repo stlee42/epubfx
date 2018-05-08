@@ -49,7 +49,6 @@ public interface CodeEditor
 
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
-    void scrollTo(EditorPosition pos);
 
     void spellCheck();
 }
