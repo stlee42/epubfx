@@ -11,7 +11,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @author paul
  *
  */
-public class Author implements Serializable
+public class Author extends DublinCoreMetadataElement implements Serializable
 {
 	
 	private static final long serialVersionUID = 6663408501416574200L;
@@ -20,7 +20,8 @@ public class Author implements Serializable
     private String fileAs;
 	private Relator relator = Relator.AUTHOR;
 	
-	public Author(String name) {
+	public Author(String id, String scheme, String name) {
+	    super(id, scheme, name);
 		this.name = name;
 	}
 	
@@ -40,7 +41,6 @@ public class Author implements Serializable
 		return HashCodeBuilder.reflectionHashCode(name);
 	}
 	
-	
 	public boolean equals(Object authorObject) {
 		if(! (authorObject instanceof Author)) {
 			return false;
@@ -58,11 +58,9 @@ public class Author implements Serializable
 		return result;
 	}
 
-
 	public Relator getRelator() {
 		return relator;
 	}
-
 
 	public void setRelator(Relator relator) {
 		this.relator = relator;

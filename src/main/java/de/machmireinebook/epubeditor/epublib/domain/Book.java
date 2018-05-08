@@ -322,7 +322,7 @@ public class Book implements Serializable
     private static final long serialVersionUID = 2068355170895770100L;
 
     private Resources resources = new Resources();
-    private Metadata metadata = new Metadata();
+    private Metadata metadata;
     private Spine spine = new Spine();
     private TableOfContents tableOfContents = new TableOfContents();
     private Guide guide = new Guide();

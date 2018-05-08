@@ -13,6 +13,16 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
+import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -24,18 +34,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
-import org.apache.log4j.Logger;
-
-import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import jidefx.scene.control.searchable.TableViewSearchable;
+import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek
@@ -127,7 +127,8 @@ public class NewEBookController implements StandardController
                     {
                         cover = book.getCoverImage().asNativeFormat();
                     }
-                    List<String> descriptions = book.getMetadata().getDescriptions();
+                    Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+                    List<String> descriptions = metadata.getDescriptions();
                     String description = "";
                     if (descriptions.size() > 0)
                     {
@@ -142,14 +143,15 @@ public class NewEBookController implements StandardController
                     {
                         cover = book.getCoverImage().asNativeFormat();
                     }
-                    List<String> descriptions = book.getMetadata().getDescriptions();
+                    Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
+                    List<String> descriptions = metadata.getDescriptions();
                     String description = "";
                     if (descriptions.size() > 0)
                     {
                         description = descriptions.get(0);
                     }
                     BookTemplate template = new BookTemplate(book.getTitle(), cover, description, path, 3.0);
-                    List<Epub3MetadataProperty> otherProperties = book.getMetadata().getEpub3MetaProperties();
+                    List<Epub3MetadataProperty> otherProperties = metadata.getEpub3MetaProperties();
                     boolean found = false;
                     for (Epub3MetadataProperty otherMetadataProperty : otherProperties)
                     {

@@ -5,12 +5,11 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import javafx.scene.control.ContextMenu;
-
+import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * User: mjungierek
@@ -112,7 +111,8 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     };
 
     private static final Pattern CLASS_SELECTOR = Pattern.compile("(.*)(?=\\{)");
-    private static final Pattern PATTERN = Pattern.compile("(?<CLASSSELECTOR>" + CLASS_SELECTOR + ")");
+    private static final Pattern COMMENT_SELECTOR = Pattern.compile("<!--[^<>]+-->");
+    private static final Pattern PATTERN = Pattern.compile("(?<CLASSSELECTOR>" + CLASS_SELECTOR + ")|(?<COMMENT>" + COMMENT_SELECTOR +")");
 
     public CssRichTextCodeEditor()
     {
@@ -146,7 +146,11 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         while(matcher.find()) {
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             if(matcher.group("CLASSSELECTOR") != null) {
-                spansBuilder.add(Collections.singleton("class-selector"), matcher.end() - matcher.start());
+                StyleSpan<Collection<String>> styleSpan = new StyleSpan<>(Collections.singletonList("class-selector"), matcher.end() - matcher.start());
+                spansBuilder.add(styleSpan);
+            }
+            else if(matcher.group("COMMENT") != null) {
+                spansBuilder.add(Collections.singletonList("comment"), matcher.end() - matcher.start());
             }
             lastKwEnd = matcher.end();
         }

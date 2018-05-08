@@ -6,14 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
@@ -23,6 +15,13 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataWriter;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 
 /**
@@ -83,11 +82,19 @@ public class PackageDocumentWriter extends PackageDocumentBase
         Document opfDocument = new Document();
         //<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
         Element root = new Element("package", NAMESPACE_OPF);
-        root.setAttribute(OPFAttributes.version, String.valueOf(book.getVersion()));
+        root.setAttribute(OPFAttributes.version, String.valueOf(book.getVersion().getVersion()));
         root.setAttribute(OPFAttributes.uniqueIdentifier, BOOK_ID_ID);
         opfDocument.setRootElement(root);
 
-        PackageDocumentMetadataWriter.writeMetaData(book, root);
+        if (book.isEpub3())
+        {
+            PackageDocumentEpub3MetadataWriter.writeMetaData(book, root);
+        }
+        else
+        {
+            PackageDocumentMetadataWriter.writeMetaData(book, root);
+        }
+
 
         writeManifest(book, root);
         writeSpine(book, root);

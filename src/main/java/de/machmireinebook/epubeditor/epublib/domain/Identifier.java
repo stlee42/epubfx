@@ -3,8 +3,6 @@ package de.machmireinebook.epubeditor.epublib.domain;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * A Book's identifier.
  * 
@@ -13,51 +11,54 @@ import org.apache.commons.lang.StringUtils;
  * @author paul
  *
  */
-public class Identifier implements Serializable {
+public class Identifier extends DublinCoreMetadataElement implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 955949951416391810L;
 
-	public interface Scheme {
-		String UUID = "UUID";
-		String ISBN = "ISBN";
-		String URL = "URL";
-		String URI = "URI";
+	public Identifier(String id, String scheme, String value)
+	{
+		super(id, scheme, value);
+	}
+
+	public enum Scheme {
+		UUID("uuid", false),
+		ISBN("isbn", false),
+		URL("URL", true),
+		URI("URI", true),
+		DOI("doi", false);
+
+		private String value;
+		private boolean isObsolete;
+
+		Scheme(String value, boolean isObsolete)
+		{
+			this.value = value;
+			this.isObsolete = isObsolete;
+		}
+
+		public String getValue()
+		{
+			return value;
+		}
+
+		public boolean isObsolete()
+		{
+			return isObsolete;
+		}
 	}
 	
 	private boolean bookId = false;
-	private String scheme;
-	private String value;
 
 	/**
 	 * Creates an Identifier with as value a random UUID and scheme "UUID"
 	 */
 	public Identifier() {
-		this(Scheme.UUID, UUID.randomUUID().toString());
+		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString());
 	}
 	
-	
-	public Identifier(String scheme, String value) {
-		this.scheme = scheme;
-		this.value = value;
-	}
-
-	public String getScheme() {
-		return scheme;
-	}
-	public void setScheme(String scheme) {
-		this.scheme = scheme;
-	}
-	public String getValue() {
-		return value;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-
 	public void setBookId(boolean bookId) {
 		this.bookId = bookId;
 	}
@@ -73,22 +74,5 @@ public class Identifier implements Serializable {
 	 */
 	public boolean isBookId() {
 		return bookId;
-	}
-
-	public int hashCode() {
-		return StringUtils.defaultString(scheme).hashCode() ^ StringUtils.defaultString(value).hashCode();
-	}
-	
-	public boolean equals(Object otherIdentifier) {
-        return otherIdentifier instanceof Identifier
-                && StringUtils.equals(scheme, ((Identifier) otherIdentifier).scheme)
-                && StringUtils.equals(value, ((Identifier) otherIdentifier).value);
-    }
-	
-	public String toString() {
-		if (StringUtils.isBlank(scheme)) {
-			return value;
-		}
-		return scheme + ":" + value;
 	}
 }

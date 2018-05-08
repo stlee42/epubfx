@@ -835,9 +835,18 @@ public class EpubEditorMainController implements Initializable
 
             Scene scene = new Scene(root);
 
-            EditMetadataController controller = EditMetadataController.getInstance();
-            controller.setBook(currentBookProperty.getValue());
-            controller.setStage(editMetadataStage);
+            if (currentBookProperty.getValue().isEpub3())
+            {
+                Epub3EditMetadataController controller = Epub3EditMetadataController.getInstance();
+                controller.setBook(currentBookProperty.getValue());
+                controller.setStage(editMetadataStage);
+            }
+            else
+            {
+                EditMetadataController controller = EditMetadataController.getInstance();
+                controller.setBook(currentBookProperty.getValue());
+                controller.setStage(editMetadataStage);
+            }
 
             editMetadataStage.setScene(scene);
             editMetadataStage.initOwner(stage);
@@ -1223,8 +1232,6 @@ public class EpubEditorMainController implements Initializable
 
     public void findReplaceAction(ActionEvent actionEvent)
     {
-
-
     }
 
     public void findBeforeAction(ActionEvent actionEvent)
@@ -1233,7 +1240,5 @@ public class EpubEditorMainController implements Initializable
 
     public void findNextAction(ActionEvent actionEvent)
     {
-
-
     }
 }

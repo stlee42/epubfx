@@ -1,9 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -48,27 +46,17 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 
 	private Event event;
 
-	public MetadataDate(java.util.Date date) {
-		this(date, (Event) null);
-	}
-	
-	public MetadataDate(String dateString) {
-		this(dateString, (Event) null);
-	}
-	
-	public MetadataDate(java.util.Date date, Event event) {
-		this((new SimpleDateFormat(PackageDocumentBase.dateFormat)).format(date), event);
-	}
-	
-	public MetadataDate(String dateString, Event event) {
-		setValue(dateString);
-		this.event = event;
-	}
-	
-	public MetadataDate(java.util.Date date, String event) {
-		this((new SimpleDateFormat(PackageDocumentBase.dateFormat)).format(date), event);
-	}
-	
+    public MetadataDate(String dateString, Event event) {
+        super(null, null, dateString);
+        this.event = event;
+    }
+
+    public MetadataDate(String id, String scheme, String value)
+    {
+        super(id, scheme, value);
+        this.event = Event.PUBLICATION;
+    }
+
 	public MetadataDate(String dateString, String event) {
 		this(checkDate(dateString), Event.fromValue(event));
 		setValue(dateString);
