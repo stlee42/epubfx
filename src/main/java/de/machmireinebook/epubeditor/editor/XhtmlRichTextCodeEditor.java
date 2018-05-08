@@ -106,8 +106,8 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                 }
                 else if(matcher.group("ELEMENTCLOSE") != null) {
                     spansBuilder.add(Collections.singleton("tag-close-open"), matcher.end(7) - matcher.start(7));
-                    spansBuilder.add(Collections.singleton("anytag"), matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
-                    spansBuilder.add(Collections.singleton("tag-close-close"), matcher.end(GROUP_CLOSE_BRACKET) - matcher.start(GROUP_CLOSE_BRACKET));
+                    spansBuilder.add(Collections.singleton("anytag"), matcher.end(8) - matcher.end(7));
+                    spansBuilder.add(Collections.singleton("tag-close-close"), matcher.end(10) - matcher.start(10));
                 }
             }
             lastKwEnd = matcher.end();
@@ -138,11 +138,11 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
             Collection<String> styles = segment.getStyle();
             for (String style : styles)
             {
-                if ("tagmark-open-open".equals(style))
+                if ("tag-open-open".equals(style))
                 {
                     logger.info("found open tag");
                 }
-                else if ("tagmark-close-open".equals(style))
+                else if ("tag-close-open".equals(style))
                 {
                     logger.info("found closing tag");
                 }
