@@ -2,17 +2,17 @@ package de.machmireinebook.epubeditor.editor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import javafx.scene.control.IndexRange;
 import org.apache.log4j.Logger;
-
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.fxmisc.richtext.model.StyledSegment;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 07.05.2018
@@ -38,24 +38,15 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     @FunctionalInterface
     public interface TagInspector
     {
-        boolean isTagFound(EditorToken token);
+        boolean isTagFound(String tagName);
     }
 
     public static class BlockTagInspector implements TagInspector
     {
-        public boolean isTagFound(EditorToken token)
+        public boolean isTagFound(String tagName)
         {
-            String type = token.getType();
-            if ("tag".equals(type))
-            {
-                String content = token.getContent();
-                if ("h1".equals(content) || "h2".equals(content) || "h3".equals(content) || "h4".equals(content)
-                        || "h5".equals(content) || "h6".equals(content) || "p".equals(content) || "div".equals(content))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return "h1".equals(tagName) || "h2".equals(tagName) || "h3".equals(tagName) || "h4".equals(tagName)
+                    || "h5".equals(tagName) || "h6".equals(tagName) || "p".equals(tagName) || "div".equals(tagName);
         }
     }
 
@@ -84,7 +75,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                 if(matcher.group("ELEMENTOPEN") != null) {
                     String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
                     spansBuilder.add(Collections.singleton("tag-open-open"), matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET));
-                    spansBuilder.add(Collections.singleton("anytag"), matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
+                    spansBuilder.add(Collections.singleton("opentag"), matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
                     if(!attributesText.isEmpty()) {
                         lastKwEnd = 0;
                         Matcher amatcher = ATTRIBUTES.matcher(attributesText);
@@ -106,7 +97,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                 }
                 else if(matcher.group("ELEMENTCLOSE") != null) {
                     spansBuilder.add(Collections.singleton("tag-close-open"), matcher.end(7) - matcher.start(7));
-                    spansBuilder.add(Collections.singleton("anytag"), matcher.end(8) - matcher.end(7));
+                    spansBuilder.add(Collections.singleton("closetag"), matcher.end(8) - matcher.end(7));
                     spansBuilder.add(Collections.singleton("tag-close-close"), matcher.end(10) - matcher.start(10));
                 }
             }
@@ -128,41 +119,135 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     {
     }
 
-    public XMLTagPair findSurroundingTags(TagInspector inspector)
+    public Optional<XMLTagPair> findSurroundingTags(TagInspector inspector)
     {
-        XMLTagPair pair;
+        XMLTagPair pair = null;
+        int paragraphIndex = getCurrentParagraphIndex();
+        int startParagraphIndex = paragraphIndex;
         Paragraph<Collection<String>, String, Collection<String>> paragraph = getCurrentParagraph();
+        boolean foundOpenOpen = false;
+        boolean foundOpenClose = false;
+        boolean foundCloseOpen = false;
+        boolean foundCloseClose = false;
 
-        for (StyledSegment<String, Collection<String>> segment : paragraph.getStyledSegments())
+        int openTagEnd = -1;
+
+        int openTagNameStartOffset = -1;
+        int openTagNameEndOffset = -1;
+        int closeTagNameStartOffset = -1;
+        int closeTagNameEndOffset = -1;
+
+        int openTagNameStartPosition = -1;
+        int openTagNameEndPosition = -1;
+        int openTagEndPosition = -1;
+        int closeTagNameStartPosition = -1;
+        int closeTagNameEndPosition = -1;
+
+        String openTagName = "open";
+        String closeTagName = "close";
+
+        boolean bothTagsNotFound = true;
+        boolean foundOpenTag = false;
+        boolean foundCloseTag = false;
+
+        while (bothTagsNotFound)
         {
-            Collection<String> styles = segment.getStyle();
-            for (String style : styles)
+            StyleSpans<Collection<String>> spans = paragraph.getStyleSpans();
+
+            int offset = 0;
+            for (StyleSpan<Collection<String>> span : spans)
             {
-                if ("tag-open-open".equals(style))
+                Collection<String> styles = span.getStyle();
+                for (String style : styles)
                 {
-                    logger.info("found open tag");
+                    if ("tag-open-open".equals(style))
+                    {
+                        logger.info("found open tag");
+                        foundOpenOpen = true;
+                    }
+                    else if ("tag-open-close".equals(style))
+                    {
+                        logger.info("found closing tag");
+                        openTagEnd = offset + span.getLength();
+                        foundOpenClose = true;
+                    }
+                    else if ("tag-close-open".equals(style))
+                    {
+                        logger.info("found open tag");
+                        foundCloseOpen = true;
+                    }
+                    else if ("tag-close-close".equals(style))
+                    {
+                        logger.info("found closing tag");
+                        foundCloseClose = true;
+                    }
                 }
-                else if ("tag-close-open".equals(style))
+                offset += span.getLength();
+            }
+            //nochmals drüberiterieren um tagnamen zu finden
+            offset = 0;
+            for (StyleSpan<Collection<String>> span : spans)
+            {
+                Collection<String> styles = span.getStyle();
+                for (String style : styles)
                 {
-                    logger.info("found closing tag");
+                    if (foundOpenOpen && foundOpenClose &&  "opentag".equals(style) && !foundOpenTag)
+                    {
+                        openTagNameStartOffset = offset;
+                        openTagNameEndOffset = offset + span.getLength();
+                        openTagName = paragraph.substring(openTagNameStartOffset, openTagNameEndOffset);
+                        if (inspector.isTagFound(openTagName))
+                        {
+                            foundOpenTag = true;
+                            openTagNameStartPosition = getAbsolutePosition(paragraphIndex, openTagNameStartOffset);
+                            openTagNameEndPosition = getAbsolutePosition(paragraphIndex, openTagNameEndOffset);
+                            openTagEndPosition = getAbsolutePosition(paragraphIndex, openTagEnd);
+                        }
+                    }
+                    if (foundCloseOpen && foundCloseClose &&  "closetag".equals(style) && !foundCloseTag)
+                    {
+                        closeTagNameStartOffset = offset;
+                        closeTagNameEndOffset = offset + span.getLength();
+                        closeTagName = paragraph.substring(closeTagNameStartOffset, closeTagNameEndOffset);
+                        if (inspector.isTagFound(closeTagName))
+                        {
+                            foundCloseTag = true;
+                            closeTagNameStartPosition = getAbsolutePosition(paragraphIndex, closeTagNameStartOffset);
+                            closeTagNameEndPosition = getAbsolutePosition(paragraphIndex, closeTagNameEndOffset);
+                        }
+                    }
                 }
+                offset += span.getLength();
+            }
+
+            if (foundOpenTag && foundCloseTag && openTagName.equals(closeTagName))
+            {
+                bothTagsNotFound = false;
+                pair = new XMLTagPair(new IndexRange(openTagNameStartPosition, openTagNameEndPosition), new IndexRange(closeTagNameStartPosition, closeTagNameEndPosition), openTagEndPosition);
+                pair.setTagName(openTagName);
+            }
+            else if (foundOpenTag)
+            {
+                paragraphIndex++;
+                paragraph = getParagraph(paragraphIndex);
+            }
+            else if (foundCloseTag)
+            {
+                paragraphIndex--;
+                if (paragraphIndex < 0)
+                {
+                    break;
+                }
+                paragraph = getParagraph(paragraphIndex);
+            }
+            else
+            {
+                //zuerst nach vorn
+                paragraphIndex++;
+                paragraph = getParagraph(paragraphIndex);
             }
         }
 
-       /* pair = new XMLTagPair(openTagBegin, openTagEnd, closeTagBegin, closeTagEnd, lastBracketBegin);
-        pair.setTagName(tagName);
-        return pair;*/
-
-        return null;
-    }
-
-    private boolean isTokenClosingTag(int line, EditorToken token)
-    {
-        /*
-        EditorPosition pos = new EditorPosition(line, token.getStart() - 1);
-        EditorToken tokenBefore = getTokenAt(pos);
-        return "</".equals(tokenBefore.getContent()) && "tag bracket".equals(tokenBefore.getType());
-        */
-        return false;
+        return Optional.ofNullable(pair);
     }
 }

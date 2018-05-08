@@ -30,38 +30,38 @@
             <menus>
                 <Menu fx:id="fileMenu" mnemonicParsing="false" text="Datei">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#newEpubAction" text="Neu...">
+                        <MenuItem mnemonicParsing="false" onAction="#newEpubAction" text="New...">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#openEpubAction" text="Öffnen…">
+                        <MenuItem mnemonicParsing="false" onAction="#openEpubAction" text="Open…">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="O" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <Menu fx:id="addMenu" mnemonicParsing="false" text="Hinzufügen">
+                        <Menu fx:id="addMenu" mnemonicParsing="false" text="Add">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Vorhandene Dateien…" />
+                                <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Existing Files…" />
                                 <SeparatorMenuItem mnemonicParsing="false" />
-                                <MenuItem mnemonicParsing="false" onAction="#addEmptyHTMLFileAction" text="Leere XHTML-Datei" />
-                                <MenuItem mnemonicParsing="false" onAction="#addEmptyCSSFileAction" text="Leeren Stylesheet" />
-                                <MenuItem mnemonicParsing="false" onAction="#addEmptySVGFileAction" text="Leere SVG-Datei" />
+                                <MenuItem mnemonicParsing="false" onAction="#addEmptyHTMLFileAction" text="Empty XHTML File" />
+                                <MenuItem mnemonicParsing="false" onAction="#addEmptyCSSFileAction" text="Empty Stylesheet" />
+                                <MenuItem mnemonicParsing="false" onAction="#addEmptySVGFileAction" text="Empty SVG File" />
                             </items>
                         </Menu>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#saveEpubAction" text="Speichern">
+                        <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#saveEpubAction" text="Save">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
                         </MenuItem>
-                        <MenuItem fx:id="savAsMenuItem" mnemonicParsing="false" onAction="#saveEpubAsAction" text="Speichern als…" />
-                        <MenuItem mnemonicParsing="false" onAction="#saveAsTemplateAction" text="Als Template speichern..." />
-                        <MenuItem fx:id="saveCopyMenuItem" mnemonicParsing="false" onAction="#saveEpubCopyAction" text="Kopie speichern…" />
+                        <MenuItem fx:id="savAsMenuItem" mnemonicParsing="false" onAction="#saveEpubAsAction" text="Save as…" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveAsTemplateAction" text="Save as Template ..." />
+                        <MenuItem fx:id="saveCopyMenuItem" mnemonicParsing="false" onAction="#saveEpubCopyAction" text="Save copy…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="printPreviewMenuItem" mnemonicParsing="false" onAction="#printPreviewAction" text="Druckvorschau…" />
-                        <MenuItem fx:id="printMenuItem" mnemonicParsing="false" onAction="#printAction" text="Drucken…" />
+                        <MenuItem fx:id="printPreviewMenuItem" mnemonicParsing="false" onAction="#printPreviewAction" text="Print Preview…" />
+                        <MenuItem fx:id="printMenuItem" mnemonicParsing="false" onAction="#printAction" text="Print…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <SeparatorMenuItem fx:id="recentFilesSeparatorMenuItem" mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#exitAction" text="Beenden" />
@@ -69,27 +69,27 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Bearbeiten">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Rückgängig">
+                        <MenuItem mnemonicParsing="false" text="Undo">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="Z" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
                         </MenuItem>
 
-                        <MenuItem mnemonicParsing="false" text="Wiederherstellen">
+                        <MenuItem mnemonicParsing="false" text="Redo">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="Y" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
                         </MenuItem>
 
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Ausschneiden" />
-                        <MenuItem mnemonicParsing="false" text="Kopieren" />
-                        <MenuItem mnemonicParsing="false" text="Einfügen" />
-                        <MenuItem mnemonicParsing="false" text="Einfügen aus Historie..." />
-                        <MenuItem mnemonicParsing="false" text="Zeile löschen..." />
+                        <MenuItem mnemonicParsing="false" text="Cut" />
+                        <MenuItem mnemonicParsing="false" text="Copy" />
+                        <MenuItem mnemonicParsing="false" text="Paste" />
+                        <MenuItem mnemonicParsing="false" text="Paste from History..." />
+                        <MenuItem mnemonicParsing="false" text="Delete line..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
 
-                        <MenuItem fx:id="searchRadioMenuItem" mnemonicParsing="false" onAction="#searchReplaceButtonAction" text="Suche">
+                        <MenuItem fx:id="searchRadioMenuItem" mnemonicParsing="false" onAction="#searchReplaceButtonAction" text="Search">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="F" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                             </accelerator>
@@ -105,49 +105,45 @@
                             </items>
                         </Menu>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Teilung am Cursor" />
-                        <MenuItem mnemonicParsing="false" text="Teilung an Markierungen" />
+                        <MenuItem mnemonicParsing="false" text="Split at Cursor" />
+                        <MenuItem mnemonicParsing="false" text="Split an Marks" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Einstellungen..." />
+                        <MenuItem mnemonicParsing="false" text="Settings..." />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Einfügen">
+                <Menu mnemonicParsing="false" text="Insert">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Teilungsmarkierung..." />
+                        <MenuItem mnemonicParsing="false" text="Split marker..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="insertImageMenuItem" mnemonicParsing="false" onAction="#insertImageButtonAction" text="Bild oder andere Mediendatei einfügen..." />
-                        <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Vorhandene Datei zum Buch hinzufügen..." />
-                        <MenuItem mnemonicParsing="false" onAction="#insertSpecialCharacterAction" text="Sonderzeichen..." />
+                        <MenuItem fx:id="insertImageMenuItem" mnemonicParsing="false" onAction="#insertImageButtonAction" text="Insert image..." />
+                        <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Existing file..." />
+                        <MenuItem mnemonicParsing="false" onAction="#insertSpecialCharacterAction" text="Special characters..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="ID..." />
                         <MenuItem mnemonicParsing="false" text="Link..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Schließendes Tag..." />
+                        <MenuItem mnemonicParsing="false" text="Closing Tag..." />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" text="Clip..." />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Werkzeuge">
                     <items>
-                        <MenuItem fx:id="addCoverMenuItem" mnemonicParsing="false" onAction="#addCoverAction" text="Cover hinzufügen…" />
-                        <Menu mnemonicParsing="false" text="Inhaltsverzeichnis">
-                            <items>
-                            </items>
-                        </Menu>
+                        <MenuItem fx:id="addCoverMenuItem" mnemonicParsing="false" onAction="#addCoverAction" text="Add Cover…" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#clipEditorAction" text="Clipeditor..." />
-                        <MenuItem mnemonicParsing="false" onAction="#generateUuidAction" text="Neue UUID generieren" />
+                        <MenuItem mnemonicParsing="false" onAction="#clipEditorAction" text="Clip editor..." />
+                        <MenuItem mnemonicParsing="false" onAction="#generateUuidAction" text="Genearte new UUID" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Validiere EPUB..." />
+                        <MenuItem mnemonicParsing="false" text="Validate EPUB..." />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Ansicht">
                     <items>
-                        <RadioMenuItem fx:id="showBookBrowserMenuItem" mnemonicParsing="false" selected="true" text="Buchinhalt" />
+                        <RadioMenuItem fx:id="showBookBrowserMenuItem" mnemonicParsing="false" selected="true" text="Book content" />
                         <RadioMenuItem fx:id="clipsMenuItem" mnemonicParsing="false" selected="true" text="Clips" />
-                        <RadioMenuItem fx:id="showPreviewMenuItem" mnemonicParsing="false" selected="true" text="Vorschau" />
-                        <RadioMenuItem fx:id="showTocMenuItem" mnemonicParsing="false" selected="true" text="Inhaltsverzeichnis" />
-                        <RadioMenuItem fx:id="showValidationResultsMenuItem" mnemonicParsing="false" selected="true" text="Validierungs-Ergebnisse" />
+                        <RadioMenuItem fx:id="showPreviewMenuItem" mnemonicParsing="false" selected="true" text="Preview" />
+                        <RadioMenuItem fx:id="showTocMenuItem" mnemonicParsing="false" selected="true" text="Tabel of contents" />
+                        <RadioMenuItem fx:id="showValidationResultsMenuItem" mnemonicParsing="false" selected="true" text="Validation results" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

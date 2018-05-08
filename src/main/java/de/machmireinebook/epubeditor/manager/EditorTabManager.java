@@ -7,13 +7,34 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorPosition;
+import de.machmireinebook.epubeditor.editor.XMLTagPair;
+import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
+import de.machmireinebook.epubeditor.gui.ExceptionDialog;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -35,6 +56,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -47,10 +69,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
-
 import org.jdom2.Content;
 import org.jdom2.DocType;
 import org.jdom2.JDOMException;
@@ -62,26 +83,6 @@ import org.jdom2.located.LocatedJDOMFactory;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
-
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.domain.Clip;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
-import de.machmireinebook.epubeditor.editor.EditorPosition;
-import de.machmireinebook.epubeditor.editor.XMLTagPair;
-import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
-import de.machmireinebook.epubeditor.gui.ExceptionDialog;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * User: mjungierek
@@ -113,7 +114,7 @@ public class EditorTabManager
     private ContextMenu contextMenuXML;
     private ContextMenu contextMenuCSS;
 
-    private static final Pattern indentRegex = Pattern.compile("style\\s*=\\s*\"(.*)text-indent:([-\\.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
+    private static final Pattern indentRegex = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-\\.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
 
     @Inject
     private ClipManager clipManager;
@@ -672,16 +673,14 @@ public class EditorTabManager
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
-            if (pair != null)
-            {
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+            optional.ifPresent(pair -> {
                 logger.info("found xml block tag " + pair.getTagName());
                 //erst das schließende Tag ersetzen, da sich sonst die Koordinaten verschieben können
-                /*
-                xhtmlCodeEditor.replaceRange(tagName, pair.getCloseTagBegin(), pair.getCloseTagEnd());
-                xhtmlCodeEditor.replaceRange(tagName, pair.getOpenTagBegin(), pair.getOpenTagEnd());*/
+                xhtmlCodeEditor.replaceRange(pair.getCloseTagRange(),  tagName);
+                xhtmlCodeEditor.replaceRange(pair.getOpenTagRange(), tagName);
                 refreshPreview();
-            }
+            });
         }
     }
 
@@ -691,27 +690,25 @@ public class EditorTabManager
         {
 
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            /*
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
-            if (pair != null)
-            {
+
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+            optional.ifPresent(pair -> {
                 logger.info("found xml block tag " + pair.getTagName());
-                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                String tagAtttributes = xhtmlCodeEditor.getRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()));
                 if (tagAtttributes.contains("style=")) //wenn bereits styles vorhanden, dann diese modifizieren
                 {
                     tagAtttributes = tagAtttributes.replaceAll("style\\s*=\\s*\"(.*)" + styleName +":([^;]*)(;?)(.*)\\s*\"",
                             "style=\"$1" + styleName +":" + value +"$3$4\"");
-                    xhtmlCodeEditor.replaceRange(tagAtttributes, pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                    xhtmlCodeEditor.replaceRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()), tagAtttributes);
                 }
                 else
                 {
-                    EditorPosition pos = new EditorPosition(pair.getOpenTagBegin().getLine(),
-                            pair.getOpenTagBegin().getColumn() + pair.getTagName().length());
-                    xhtmlCodeEditor.insertAt(" style=\"" + styleName +":" + value + "\"", pos);
+                    int pos = pair.getOpenTagRange().getEnd();
+                    xhtmlCodeEditor.insertAt(pos, " style=\"" + styleName +":" + value + "\"");
                 }
                 refreshPreview();
                 xhtmlCodeEditor.requestFocus();
-            }*/
+            });
         }
     }
 
@@ -730,13 +727,11 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            /*
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
-            if (pair != null)
-            {
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+            optional.ifPresent(pair -> {
                 logger.info("found xml block tag " + pair.getTagName());
-                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                String tagAtttributes = xhtmlCodeEditor.getRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()));
 
                 Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
                 if (regexMatcher.find())
@@ -749,17 +744,17 @@ public class EditorTabManager
                         case "%":
                         case "rem":
                         case "em":  currentIndent++;
-                                    break;
+                            break;
                         case "px":  currentIndent = currentIndent + 10;
                             break;
                     }
-                    insertStyle("text-indent", currentIndent + currentUnit);
+                    insertStyle("margin-left", currentIndent + currentUnit);
                 }
                 else
                 {
-                    insertStyle("text-indent", "1em");
+                    insertStyle("margin-left", "1em");
                 }
-            }*/
+            });
         }
     }
 
@@ -767,13 +762,12 @@ public class EditorTabManager
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
-            /*
+
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(new XHTMLCodeEditor.BlockTagInspector());
-            if (pair != null)
-            {
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+            optional.ifPresent(pair -> {
                 logger.info("found xml block tag " + pair.getTagName());
-                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagEnd(), pair.getTagAttributesEnd());
+                String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd());
 
                 Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
                 if (regexMatcher.find())
@@ -790,13 +784,13 @@ public class EditorTabManager
                         case "px":  currentIndent = currentIndent - 10;
                             break;
                     }
-                    insertStyle("text-indent", currentIndent + currentUnit);
+                    insertStyle("margin-left", currentIndent + currentUnit);
                 }
                 else
                 {
-                    insertStyle("text-indent", "-1em");
+                    insertStyle("margin-left", "-1em");
                 }
-            }*/
+            });
         }
     }
 
@@ -806,67 +800,59 @@ public class EditorTabManager
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            Integer pos = xhtmlCodeEditor.getEditorCursorPosition();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token -> {
-                String type = token.getType();
-                if ("tag".equals(type))
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
+            if (optional.isPresent())
+            {
+                XMLTagPair pair = optional.get();
+                if ("head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()))
                 {
-                    String content = token.getContent();
-                    if ("head".equals(content) || "body".equals(content) || "html".equals(content))
-                    {
-                        return true;
-                    }
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Teilung nicht möglich");
+                    alert.getDialogPane().setHeader(null);
+                    alert.getDialogPane().setHeaderText(null);
+                    alert.setContentText("Kann Datei nicht an dieser Position teilen. Eine Teilung ist nur innerhalb des XHTML-Bodys möglich.");
+                    alert.showAndWait();
+
+                    return false;
                 }
-                return false;
-            });
-            if (pair == null || "head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()))
-            {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Teilung nicht möglich");
-                alert.getDialogPane().setHeader(null);
-                alert.getDialogPane().setHeaderText(null);
-                alert.setContentText("Kann Datei nicht an dieser Position teilen. Eine Teilung ist nur innerhalb des XHTML-Bodys möglich.");
-                alert.showAndWait();
+                logger.debug("umgebendes pair " + pair);
+                //wir sind innerhalb des Body
+                int index = 0; //xhtmlCodeEditor.getIndexFromPosition(pos);
+                try
+                {
+                    String originalCode = xhtmlCodeEditor.getCode();
+                    org.jdom2.Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
+                    List<Content> originalHeadContent = getOriginalHeadContent(originalDocument);
 
-                return false;
+                    byte[] frontPart = originalCode.substring(0, index).getBytes("UTF-8");
+                    Resource oldResource = currentXHTMLResource.getValue();
+                    oldResource.setData(frontPart);
+                    HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
+                    processor.processResource(oldResource);
+                    xhtmlCodeEditor.setCode(new String(oldResource.getData(), "UTF-8"));
+
+                    byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes("UTF-8");
+                    String fileName = book.getNextStandardFileName(MediaType.XHTML);
+                    Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
+                    byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent);
+                    resource.setData(backPartXHTML);
+
+                    int spineIndex = book.getSpine().getResourceIndex(oldResource);
+                    book.addSpineResource(resource, spineIndex + 1);
+                    openFileInEditor(resource, MediaType.XHTML);
+
+                    bookBrowserManager.refreshBookBrowser();
+                    needsRefresh.setValue(true);
+                    needsRefresh.setValue(false);
+                }
+                catch (IOException | JDOMException | ResourceDataException e)
+                {
+                    logger.error("", e);
+                    ExceptionDialog.showAndWait(e, null, "Teilung nicht möglich", "Kann Datei nicht teilen. Bitte Fehlermeldung an den Hersteller übermitteln.");
+                }
+
+                result = true;
             }
-            logger.debug("umgebendes pair " + pair);
-            //wir sind innerhalb des Body
-            int index = 0; //xhtmlCodeEditor.getIndexFromPosition(pos);
-            try
-            {
-                String originalCode = xhtmlCodeEditor.getCode();
-                org.jdom2.Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
-                List<Content> originalHeadContent = getOriginalHeadContent(originalDocument);
-
-                byte[] frontPart = originalCode.substring(0, index).getBytes("UTF-8");
-                Resource oldResource = currentXHTMLResource.getValue();
-                oldResource.setData(frontPart);
-                HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
-                processor.processResource(oldResource);
-                xhtmlCodeEditor.setCode(new String(oldResource.getData(), "UTF-8"));
-
-                byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes("UTF-8");
-                String fileName = book.getNextStandardFileName(MediaType.XHTML);
-                Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
-                byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent);
-                resource.setData(backPartXHTML);
-
-                int spineIndex = book.getSpine().getResourceIndex(oldResource);
-                book.addSpineResource(resource, spineIndex +1);
-                openFileInEditor(resource, MediaType.XHTML);
-
-                bookBrowserManager.refreshBookBrowser();
-                needsRefresh.setValue(true);
-                needsRefresh.setValue(false);
-            }
-            catch (IOException | JDOMException | ResourceDataException e )
-            {
-                logger.error("", e);
-                ExceptionDialog.showAndWait(e, null, "Teilung nicht möglich", "Kann Datei nicht teilen. Bitte Fehlermeldung an den Hersteller übermitteln.");
-            }
-
-            result = true;
         }
         return result;
     }
@@ -1062,19 +1048,8 @@ public class EditorTabManager
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
         {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            XMLTagPair pair = xhtmlCodeEditor.findSurroundingTags(token -> {
-                String type = token.getType();
-                if ("tag".equals(type))
-                {
-                    String content = token.getContent();
-                    if ("head".equals(content) || "body".equals(content) || "html".equals(content))
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            });
-            result = !(pair == null || "head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()));
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
+            result = !(!optional.isPresent() || "head".equals(optional.get().getTagName()) || "html".equals(optional.get().getTagName()) || StringUtils.isEmpty(optional.get().getTagName()));
         }
         return result;
     }

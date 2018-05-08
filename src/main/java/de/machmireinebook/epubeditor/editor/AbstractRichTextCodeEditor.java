@@ -14,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 
 import org.apache.log4j.Logger;
@@ -153,6 +154,25 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.replaceSelection(replacement);
     }
 
+
+    @Override
+    public String getRange(int start, int end)
+    {
+        return getRange(new IndexRange(start, end));
+    }
+
+    @Override
+    public String getRange(IndexRange range)
+    {
+        return codeArea.getText(range);
+    }
+
+    @Override
+    public void replaceRange(IndexRange range, String replacement)
+    {
+        codeArea.replaceText(range, replacement);
+    }
+
     @Override
     public void setCodeEditorSize(double width, double height)
     {
@@ -194,17 +214,23 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setContextMenu(contextMenu);
     }
 
-    public EditorToken getTokenAt(int pos)
-    {
-/*        JSObject jdoc = (JSObject) codeArea.get("editor.getTokenAt({line:" + pos.getLine() + ",ch:" + pos.getColumn() +"});");
-        return new EditorToken((int)jdoc.getMember("start"),
-                (int)jdoc.getMember("end"), (String)jdoc.getMember("string"), (String)jdoc.getMember("type"));*/
-        return null;
-    }
-
     protected Paragraph<Collection<String>, String, Collection<String>> getCurrentParagraph()
     {
         return codeArea.getParagraph(codeArea.getCurrentParagraph());
     }
 
+    protected Paragraph<Collection<String>, String, Collection<String>> getParagraph(int paragraphIndex)
+    {
+        return codeArea.getParagraph(paragraphIndex);
+    }
+
+    int getCurrentParagraphIndex()
+    {
+        return codeArea.getCurrentParagraph();
+    }
+
+    int getAbsolutePosition(int paragraphIndex, int columnIndex)
+    {
+        return codeArea.getAbsolutePosition(paragraphIndex, columnIndex);
+    }
 }

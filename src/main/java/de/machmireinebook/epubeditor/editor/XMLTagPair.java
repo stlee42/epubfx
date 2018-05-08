@@ -1,5 +1,7 @@
 package de.machmireinebook.epubeditor.editor;
 
+import javafx.scene.control.IndexRange;
+
 /**
  * User: mjungierek
  * Date: 25.07.2014
@@ -7,72 +9,36 @@ package de.machmireinebook.epubeditor.editor;
  */
 public class XMLTagPair
 {
-    private EditorPosition openTagBegin;
-    private EditorPosition openTagEnd;
-    private EditorPosition closeTagBegin;
-    private EditorPosition closeTagEnd;
-    private EditorPosition tagAttributesEnd;
+    private IndexRange openTagRange;
+    private IndexRange closeTagRange;
+    private int tagAttributesEnd;
     private String tagName;
 
-    public XMLTagPair()
+    public XMLTagPair(IndexRange openTagRange, IndexRange closeTagRange, int tagAttributesEnd)
     {
-    }
-
-    public XMLTagPair(EditorPosition openTagBegin, EditorPosition openTagEnd, EditorPosition closeTagBegin, EditorPosition closeTagEnd)
-    {
-        this.openTagBegin = openTagBegin;
-        this.openTagEnd = openTagEnd;
-        this.closeTagBegin = closeTagBegin;
-        this.closeTagEnd = closeTagEnd;
-    }
-
-    public XMLTagPair(EditorPosition openTagBegin, EditorPosition openTagEnd, EditorPosition closeTagBegin, EditorPosition closeTagEnd, EditorPosition tagAttributesEnd)
-    {
-        this.openTagBegin = openTagBegin;
-        this.openTagEnd = openTagEnd;
-        this.closeTagBegin = closeTagBegin;
-        this.closeTagEnd = closeTagEnd;
+        this.openTagRange = openTagRange;
+        this.closeTagRange = closeTagRange;
         this.tagAttributesEnd = tagAttributesEnd;
     }
 
-    public EditorPosition getOpenTagBegin()
+    public IndexRange getOpenTagRange()
     {
-        return openTagBegin;
+        return openTagRange;
     }
 
-    public void setOpenTagBegin(EditorPosition openTagBegin)
+    public void setOpenTagRange(IndexRange openTagRange)
     {
-        this.openTagBegin = openTagBegin;
+        this.openTagRange = openTagRange;
     }
 
-    public EditorPosition getOpenTagEnd()
+    public IndexRange getCloseTagRange()
     {
-        return openTagEnd;
+        return closeTagRange;
     }
 
-    public void setOpenTagEnd(EditorPosition openTagEnd)
+    public void setCloseTagRange(IndexRange closeTagRange)
     {
-        this.openTagEnd = openTagEnd;
-    }
-
-    public EditorPosition getCloseTagBegin()
-    {
-        return closeTagBegin;
-    }
-
-    public void setCloseTagBegin(EditorPosition closeTagBegin)
-    {
-        this.closeTagBegin = closeTagBegin;
-    }
-
-    public EditorPosition getCloseTagEnd()
-    {
-        return closeTagEnd;
-    }
-
-    public void setCloseTagEnd(EditorPosition closeTagEnd)
-    {
-        this.closeTagEnd = closeTagEnd;
+        this.closeTagRange = closeTagRange;
     }
 
     public String getTagName()
@@ -85,25 +51,13 @@ public class XMLTagPair
         this.tagName = tagName;
     }
 
-    public EditorPosition getTagAttributesEnd()
+    public int getTagAttributesEnd()
     {
         return tagAttributesEnd;
     }
 
-    public void setTagAttributesEnd(EditorPosition tagAttributesEnd)
+    public void setTagAttributesEnd(int tagAttributesEnd)
     {
         this.tagAttributesEnd = tagAttributesEnd;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "XMLTagPair{" +
-                "closeTagBegin=" + closeTagBegin +
-                ", openTagBegin=" + openTagBegin +
-                ", openTagEnd=" + openTagEnd +
-                ", closeTagEnd=" + closeTagEnd +
-                ", tagName='" + tagName + '\'' +
-                '}';
     }
 }

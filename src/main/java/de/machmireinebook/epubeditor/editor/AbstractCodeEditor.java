@@ -24,21 +24,15 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
+import netscape.javascript.JSObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-
 import org.languagetool.MultiThreadedJLanguageTool;
 import org.languagetool.language.GermanyGerman;
 import org.languagetool.rules.RuleMatch;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.EventTarget;
-
-import com.sun.webkit.dom.KeyboardEventImpl;
-import com.sun.webkit.dom.MouseEventImpl;
-
-import netscape.javascript.JSObject;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -87,8 +81,8 @@ public abstract class AbstractCodeEditor extends AnchorPane
         }
 
         /**
-         * Interessant ist für undo/redo nur der code die cursorposition ist nur für die userexperience,
-         * eine reine cursoränderung soll nicht versioniert werden
+         * Interessant ist fï¿½r undo/redo nur der code die cursorposition ist nur fï¿½r die userexperience,
+         * eine reine cursorï¿½nderung soll nicht versioniert werden
          * @param o
          * @return
          */
@@ -202,7 +196,6 @@ public abstract class AbstractCodeEditor extends AnchorPane
     /**
      * Create a new code editor.
      *
-     * @param editingCode the initial code to be edited in the code editor.
      */
     AbstractCodeEditor()
     {
@@ -230,7 +223,7 @@ public abstract class AbstractCodeEditor extends AnchorPane
 
                 Element documentElement = document.getDocumentElement();
                 ((EventTarget) documentElement).addEventListener("keyup", evt ->
-                {
+                {    /*
                     boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
                     int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
                     String keyIdentifier = ((KeyboardEventImpl) evt).getKeyIdentifier();
@@ -241,42 +234,43 @@ public abstract class AbstractCodeEditor extends AnchorPane
                     {
                         return;
                     }
-                    cursorPosition.set(getEditorCursorPosition());
+                    cursorPosition.set(getEditorCursorPosition()); */
                 }, false);
 
                 ((EventTarget) documentElement).addEventListener("keydown", evt ->
                 {
-                    boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
+                   /* boolean isCtrlPressed = ((KeyboardEventImpl) evt).getCtrlKey();
                     int keyCode = ((KeyboardEventImpl) evt).getKeyCode();
                     logger.info("key down in content editor: " + isCtrlPressed + "-" + keyCode + ", Cancelable " + evt.getCancelable());
                     //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
                     if (isCtrlPressed && keyCode == 90)
                     {
-                        logger.debug("Ctrl-Z gedrückt");
+                        logger.debug("Ctrl-Z gedrÃ¼ckt");
                         evt.preventDefault();
                         undo();
                     }
                     else if (isCtrlPressed && keyCode == 89)
                     {
-                        logger.debug("Ctrl-Y gedrückt");
+                        logger.debug("Ctrl-Y gedrÃ¼ckt");
                         evt.preventDefault();
                         redo();
                     }
                     else if (isCtrlPressed && keyCode == 32)
                     {
-                        logger.debug("Ctrl-SPACE gedrückt");
+                        logger.debug("Ctrl-SPACE gedrÃ¼ckt");
                         evt.preventDefault();
                         removeTags();
-                    }
+                    }      */
 
                 }, false);
 
                 ((EventTarget) documentElement).addEventListener("contextmenu", evt ->
                 {
+                    /*
                     logger.debug("contextmenu event aufgefangen " + evt);
                     evt.preventDefault();
                     contextMenu.setImpl_showRelativeToWindow(true);
-                    contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());
+                    contextMenu.show(webview, ((MouseEventImpl) evt).getScreenX(), ((MouseEventImpl) evt).getScreenY());       */
                 }, false);
 
 

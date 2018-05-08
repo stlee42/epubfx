@@ -92,7 +92,7 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
 
     public XMLTagPair findSurroundingTags(TagInspector inspector)
     {
-        XMLTagPair pair;
+        XMLTagPair pair = null;
         EditorPosition beginPos = getEditorCursorPosition();
         int lineLength = getLineLength(beginPos.getLine());
         EditorToken startToken;
@@ -213,8 +213,8 @@ public class XHTMLCodeEditor extends AbstractCodeEditor
             while (!found);
 
         }
-        pair = new XMLTagPair(openTagBegin, openTagEnd, closeTagBegin, closeTagEnd, lastBracketBegin);
-        pair.setTagName(tagName);
+        //pair = new XMLTagPair(openTagBegin, openTagEnd, closeTagBegin, closeTagEnd, lastBracketBegin);
+        //pair.setTagName(tagName);
         return pair;
     }
 

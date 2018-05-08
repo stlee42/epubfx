@@ -2,7 +2,7 @@
     -fx-fill: black;
 }
 
-.anytag {
+.opentag, .closetag {
     -fx-fill: #000080;
     -fx-font-weight: bold;
 }

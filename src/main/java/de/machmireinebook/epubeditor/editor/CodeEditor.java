@@ -14,6 +14,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import javafx.scene.control.IndexRange;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -35,7 +36,7 @@ public interface CodeEditor
     BooleanProperty canUndoProperty();
     BooleanProperty canRedoProperty();
 
-    //methods of the underlying editor component e.g. codemirror
+    //methods of the underlying editor component
     void setCode(String newCode);
     String getCode();
     Integer getEditorCursorPosition();
@@ -46,6 +47,10 @@ public interface CodeEditor
     void replaceSelection(String replacement);
 
     void scrollTo(int index);
+
+    String getRange(int start, int end);
+    String getRange(IndexRange range);
+    void replaceRange(IndexRange range, String replacement);
 
     void setCodeEditorSize(double width, double height);
     void scroll(int delta);
