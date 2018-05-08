@@ -1,4 +1,5 @@
 .svn/
-out/
+/out/
 test.txt
 /.idea/
+/target/
