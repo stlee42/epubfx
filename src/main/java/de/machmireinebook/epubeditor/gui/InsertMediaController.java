@@ -196,14 +196,14 @@ public class InsertMediaController implements Initializable, StandardController
             snippet = StringUtils.replace(snippet, "${style}", style);
 
             CodeEditor editor = editorManager.getCurrentEditor();
-            Integer cursorPosition = editor.getEditorCursorPosition();
+            Integer cursorPosition = editor.getAbsoluteCursorPosition();
             editor.insertAt(cursorPosition, snippet);
             editorManager.refreshPreview();
         }
         catch (IOException e)
         {
             logger.error("", e);
-            ExceptionDialog.showAndWait(e, stage,  "Einfügen nicht möglich", "Wegen eines Fehler kann das Bild bzw. die Mediendatei nicht einfügen.");
+            ExceptionDialog.showAndWait(e, stage,  "Insert not possible", "Unknown error while inserting image.");
 
         }
     }

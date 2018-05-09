@@ -66,6 +66,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/common.css").toExternalForm();
         setStyleSheet(stylesheet);
+
+        codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> cursorPosition.set(newValue));
     }
 
     public void setWrapText(boolean wrapText)
@@ -131,13 +133,19 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public Integer getEditorCursorPosition()
+    public EditorPosition getCursorPosition()
+    {
+        return new EditorPosition(codeArea.getCurrentParagraph(), codeArea.getCaretColumn());
+    }
+
+    @Override
+    public Integer getAbsoluteCursorPosition()
     {
         return codeArea.getCaretPosition();
     }
 
     @Override
-    public void setEditorCursorPosition(Integer position)
+    public void setAbsoluteCursorPosition(Integer position)
     {
         codeArea.moveTo(position);
     }
@@ -180,12 +188,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void scroll(int delta)
-    {
-
-    }
-
-    @Override
     public String getSelection()
     {
         return codeArea.getSelectedText();
@@ -198,9 +200,22 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
+    public void scroll(int delta)
+    {
+
+    }
+
+    @Override
     public void scrollTo(int index)
     {
         codeArea.scrollXBy(index);
+    }
+
+    @Override
+    public void scrollTo(EditorPosition pos)
+    {
+        int index = codeArea.getAbsolutePosition(pos.getLine(), pos.getColumn());
+        codeArea.scrollYBy(index);
     }
 
     public void setStyleSheet(String styleSheet)

@@ -6,13 +6,16 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import javafx.scene.control.IndexRange;
+
 import org.apache.log4j.Logger;
+
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 07.05.2018
@@ -21,7 +24,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 {
     private static final Logger logger = Logger.getLogger(XHTMLCodeEditor.class);
 
-    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+)([^<>]*)(\\h*>))"
+    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))"
             + "|(?<COMMENT><!--[^<>]+-->)");
     private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
 

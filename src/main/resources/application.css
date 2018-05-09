@@ -41,7 +41,7 @@
     -fx-alignment: CENTER_LEFT;
 }
 
-.ribbon-group .button .text
+.ribbon-group .button .text, .ribbon-group .arrow-button .text
 {
     -fx-text-alignment: center;
 }

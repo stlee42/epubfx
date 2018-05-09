@@ -90,7 +90,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     public void findNextAction()
     {
         CodeEditor editor = editorManager.getCurrentEditor();
-        int cursorIndex = editor.getEditorCursorPosition();
+        int cursorIndex = editor.getAbsoluteCursorPosition();
         SearchManager.SearchParams params = new SearchManager.SearchParams(dotAllCheckBox.selectedProperty().get(),
                 minimalMatchCheckBox.selectedProperty().get(),
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
@@ -101,7 +101,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                     int fromIndex = searchResult.getBegin();
                     int toIndex = searchResult.getEnd();
                     editor.select(fromIndex, toIndex);
-                    editor.setEditorCursorPosition(toIndex);
+                    editor.setAbsoluteCursorPosition(toIndex);
                 }
         );
     }
@@ -109,7 +109,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
     public void replaceNextAction()
     {
         CodeEditor editor = editorManager.getCurrentEditor();
-        int cursorIndex = editor.getEditorCursorPosition();
+        int cursorIndex = editor.getAbsoluteCursorPosition();
         SearchManager.SearchParams params = new SearchManager.SearchParams(dotAllCheckBox.selectedProperty().get(),
                 minimalMatchCheckBox.selectedProperty().get(),
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
@@ -125,7 +125,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 editor.replaceSelection(replaceString);
                 editor.select(fromIndex, fromIndex + replaceString.length());
                 editor.scrollTo(fromIndex);
-                editor.setEditorCursorPosition(fromIndex + replaceString.length());
+                editor.setAbsoluteCursorPosition(fromIndex + replaceString.length());
             }
         );
     }
