@@ -12,9 +12,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.IndexRange;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import javafx.scene.control.IndexRange;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
@@ -25,6 +25,10 @@ import javafx.scene.control.IndexRange;
 public interface CodeEditor
 {
     MediaType getMediaType();
+
+    void scroll(int delta);
+    void scrollTo(int index);
+    void scrollTo(EditorPosition pos);
 
     //methods of the java part of editor
     void setContextMenu(ContextMenu contextMenu);
@@ -39,21 +43,21 @@ public interface CodeEditor
     //methods of the underlying editor component
     void setCode(String newCode);
     String getCode();
-    Integer getEditorCursorPosition();
-    void setEditorCursorPosition(Integer position);
+
+    EditorPosition getCursorPosition();
+
+    Integer getAbsoluteCursorPosition();
+    void setAbsoluteCursorPosition(Integer position);
     void insertAt(Integer pos , String insertion);
     void select(int fromIndex, int toIndex);
     String getSelection();
     void replaceSelection(String replacement);
-
-    void scrollTo(int index);
 
     String getRange(int start, int end);
     String getRange(IndexRange range);
     void replaceRange(IndexRange range, String replacement);
 
     void setCodeEditorSize(double width, double height);
-    void scroll(int delta);
 
     void spellCheck();
 }
