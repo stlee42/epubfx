@@ -16,6 +16,25 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorPosition;
+import de.machmireinebook.epubeditor.editor.XMLTagPair;
+import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
+import de.machmireinebook.epubeditor.gui.ExceptionDialog;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -50,11 +69,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
-
 import org.jdom2.Content;
 import org.jdom2.DocType;
 import org.jdom2.JDOMException;
@@ -66,26 +83,6 @@ import org.jdom2.located.LocatedJDOMFactory;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
-
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.domain.Clip;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
-import de.machmireinebook.epubeditor.editor.EditorPosition;
-import de.machmireinebook.epubeditor.editor.XMLTagPair;
-import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
-import de.machmireinebook.epubeditor.gui.ExceptionDialog;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * User: mjungierek
@@ -539,7 +536,9 @@ public class EditorTabManager
 
             editor.cursorPositionProperty().addListener((observable, oldValue, newValue) -> {
                 EditorPosition cursorPosition = editor.getCursorPosition();
-                cursorPosLabelProperty.set("Absolute: " + String.valueOf(newValue) + ", Relative: " + (cursorPosition.getLine() + 1) + ":" + (cursorPosition.getColumn() + 1));
+                String textIformation = editor.getTextInformation();
+                cursorPosLabelProperty.set("Absolute: " + String.valueOf(newValue) + ", Relative: " + (cursorPosition.getLine() + 1) + ":" + (cursorPosition.getColumn() + 1)
+                        + " | Text Information: " + textIformation);
             });
 
             editor.codeProperty().addListener((observable1, oldValue, newValue) -> {

@@ -9,6 +9,7 @@ package de.machmireinebook.epubeditor.editor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
@@ -60,4 +61,8 @@ public interface CodeEditor
     void setCodeEditorSize(double width, double height);
 
     void spellCheck();
+
+    ReadOnlyStringProperty textInformationProperty();
+
+    String getTextInformation();
 }

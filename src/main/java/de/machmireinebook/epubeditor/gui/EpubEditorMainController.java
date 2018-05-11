@@ -457,7 +457,7 @@ public class EpubEditorMainController implements Initializable
                 catch (IOException e)
                 {
                     logger.error("", e);
-                    ExceptionDialog.showAndWait(e, stage, "E-Book öffnen", "Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.");
+                    ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file " + recentFile.toFile().getName());
                 }
             });
             fileMenu.getItems().add(index, recentFileMenuItem);
@@ -555,7 +555,7 @@ public class EpubEditorMainController implements Initializable
     public void addExistingFiles()
     {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Einzufügende Dateien auswählen");
+        chooser.setTitle("Choose Files to Insert");
         List<File> files = chooser.showOpenMultipleDialog(stage);
         if (files != null)
         {

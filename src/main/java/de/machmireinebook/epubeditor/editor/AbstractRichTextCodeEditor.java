@@ -7,6 +7,8 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,9 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
-
+import javafx.scene.text.Font;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -39,6 +41,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private BooleanProperty canRedo = new SimpleBooleanProperty();
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
+    // textInformationProperty
+    private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
 
     AbstractRichTextCodeEditor()
     {
@@ -65,9 +69,15 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         canRedo.bind(codeArea.getUndoManager().redoAvailableProperty());
 
         String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/common.css").toExternalForm();
-        setStyleSheet(stylesheet);
+        codeArea.getStylesheets().add(stylesheet);
 
-        codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> cursorPosition.set(newValue));
+        codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
+            cursorPosition.set(newValue);
+            Collection<String> styles = codeArea.getStyleAtPosition(newValue);
+            textInformation.set("Styles: " + StringUtils.join(styles, ","));
+        });
+
+        logger.info("Available Font Families" + StringUtils.join(Font.getFamilies(), ","));
     }
 
     public void setWrapText(boolean wrapText)
@@ -218,7 +228,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.scrollYBy(index);
     }
 
-    public void setStyleSheet(String styleSheet)
+    public void addStyleSheet(String styleSheet)
     {
         getStylesheets().add(styleSheet);
     }
@@ -248,4 +258,19 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     {
         return codeArea.getAbsolutePosition(paragraphIndex, columnIndex);
     }
+
+    protected CodeArea getCodeArea()
+    {
+        return codeArea;
+    }
+
+    @Override
+    public final ReadOnlyStringProperty textInformationProperty() {
+        return textInformation.getReadOnlyProperty();
+    }
+    @Override
+    public final String getTextInformation() {
+        return textInformation.get();
+    }
+
 }
