@@ -1,15 +1,16 @@
 package de.machmireinebook.epubeditor.editor;
 
+import java.text.BreakIterator;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import org.fxmisc.richtext.model.StyleSpan;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import org.apache.log4j.Logger;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * User: mjungierek
@@ -18,8 +19,13 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  */
 public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 {
-    private static final String[] KEYWORDS = new String[] {
-            "align-content", "align-items", "align-self", "alignment-adjust",
+    private static final Logger logger = Logger.getLogger(CssRichTextCodeEditor.class);
+
+    private static final List<String> SELECTOR_DELIMITER = Arrays.asList(".", ",");
+
+    private static final List<String> CSS_PROPERTIES_VALUES = Arrays.asList("bold", "italic", "firebrick", "black", "transparent", "true", "px", "em");
+
+    private static final List<String> CSS_PROPERTIES = Arrays.asList("align-content", "align-items", "align-self", "alignment-adjust",
             "alignment-baseline", "anchor-point", "animation", "animation-delay",
             "animation-direction", "animation-duration", "animation-fill-mode",
             "animation-iteration-count", "animation-name", "animation-play-state",
@@ -107,8 +113,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
             "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin",
             "stroke-miterlimit", "stroke-opacity", "stroke-width", "text-rendering",
             "baseline-shift", "dominant-baseline", "glyph-orientation-horizontal",
-            "glyph-orientation-vertical", "text-anchor", "writing-mode"
-    };
+            "glyph-orientation-vertical", "text-anchor", "writing-mode");
 
     private static final Pattern CLASS_SELECTOR = Pattern.compile("(.*)(?=\\{)");
     private static final Pattern COMMENT_SELECTOR = Pattern.compile("<!--[^<>]+-->");
@@ -133,7 +138,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     }
 
-    protected StyleSpans<Collection<String>> computeHighlighting(String text) {
+/*    protected StyleSpans<Collection<String>> computeHighlighting(String text) {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
@@ -151,5 +156,88 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         StyleSpans<Collection<String>> spans = spansBuilder.create();
         return spans;
+    } */
+    protected StyleSpans<Collection<String>> computeHighlighting(String text) {
+
+        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+
+        BreakIterator wb = BreakIterator.getWordInstance();
+        wb.setText(text);
+
+        int lastIndex = wb.first();
+        int lastKwEnd = 0;
+        boolean insideBrackets = false;
+        boolean propertyValue = false;
+        boolean string = false;
+        while(lastIndex != BreakIterator.DONE) {
+            int firstIndex = lastIndex;
+            lastIndex = wb.next();
+            if (lastIndex != BreakIterator.DONE)
+            {
+                if ('{' == text.charAt(firstIndex))
+                {
+                    insideBrackets = true;
+                }
+                else if ('{' == text.charAt(firstIndex))
+                {
+                    insideBrackets = false;
+                    propertyValue = false;
+                }
+                else if (':' == text.charAt(firstIndex) && insideBrackets)
+                {
+                    propertyValue = true;
+                }
+                else if (';' == text.charAt(firstIndex) && insideBrackets)
+                {
+                    propertyValue = false;
+                }
+                else if ('"' == text.charAt(firstIndex))
+                {
+                    string = !string;
+                }
+
+                String word = text.substring(firstIndex, lastIndex).toLowerCase();
+                logger.info("current word " + word);
+                if (insideBrackets)
+                {
+                    if (CSS_PROPERTIES.contains(word))
+                    {
+                        spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
+                        spansBuilder.add(Collections.singleton("css-property"), lastIndex - firstIndex);
+                        lastKwEnd = lastIndex;
+                    }
+                    else if (propertyValue)
+                    {
+                        if (string)
+                        {
+                            spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
+                            spansBuilder.add(Collections.singleton("css-string"), lastIndex - firstIndex);
+                            lastKwEnd = lastIndex;
+                        }
+                        else if (CSS_PROPERTIES_VALUES.contains(word))
+                        {
+                            spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
+                            spansBuilder.add(Collections.singleton("css-string"), lastIndex - firstIndex);
+                            lastKwEnd = lastIndex;
+                        }
+                        else
+                        {
+                            spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
+                            spansBuilder.add(Collections.singleton("css-property-value"), lastIndex - firstIndex);
+                            lastKwEnd = lastIndex;
+                        }
+                    }
+                }
+                else if (!SELECTOR_DELIMITER.contains(word))
+                {
+                    spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
+                    spansBuilder.add(Collections.singleton("css-selector"), lastIndex - firstIndex);
+                    lastKwEnd = lastIndex;
+                }
+            }
+        }
+        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+
+        return spansBuilder.create();
     }
 }

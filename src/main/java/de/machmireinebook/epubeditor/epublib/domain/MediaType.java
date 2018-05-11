@@ -11,11 +11,6 @@ import org.apache.commons.lang.StringUtils;
  * MediaType is used to tell the type of content a resource is.
  * <p>
  * Examples of mediatypes are image/gif, text/css and application/xhtml+xml
- * <p>
- * All allowed mediaTypes are maintained bye the MediaTypeService.
- *
- * @author paul
- * @see de.machmireinebook.epubeditor.epublib.service.MediatypeService
  */
 public enum MediaType implements Serializable
 {
@@ -40,11 +35,16 @@ public enum MediaType implements Serializable
     SVG ("image/svg+xml", ".svg", ImageResourceFactory.getInstance()),
 
     // fonts
-    TTF ("application/x-truetype-font", ".ttf", DefaultResourceFactory.getInstance()),
-    OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", DefaultResourceFactory.getInstance()),
-    OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", DefaultResourceFactory.getInstance(), 3.1F),
-    WOFF ("application/font-woff", ".woff", DefaultResourceFactory.getInstance()),
-    WOFF2 ("font/woff2", ".woff2", DefaultResourceFactory.getInstance(), 3.1F),
+    TTF ("application/x-font-ttf", ".ttf", FontResourceFactory.getInstance()),
+    TTF_1 ("application//x-font-truetype", ".ttf", FontResourceFactory.getInstance()),
+    TTF_2 ("application/x-truetype-font", ".ttf", FontResourceFactory.getInstance()),
+    TTF_RFC_8081 ("font/ttf", ".ttf", FontResourceFactory.getInstance()),
+    OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", FontResourceFactory.getInstance()),
+    OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
+    OPENTYPE_RTF_8081 ("font/sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
+    WOFF ("application/font-woff", ".woff", FontResourceFactory.getInstance()),
+    WOFF_RFC_8081 ("font/woff", ".woff", FontResourceFactory.getInstance()),
+    WOFF2 ("font/woff2", ".woff2", FontResourceFactory.getInstance(), 3.1F),
 
     // audio
     MP3 ("audio/mpeg", ".mp3", DefaultResourceFactory.getInstance()),
@@ -72,6 +72,10 @@ public enum MediaType implements Serializable
         return this.equals(TTF) || this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(WOFF) || this.equals(WOFF2);
     }
 
+    public boolean isImage()
+    {
+        return this.equals(JPG) || this.equals(PNG) || this.equals(GIF) || this.equals(SVG);
+    }
     /**
      * Gets the MediaType based on the file extension.
      * Null of no matching extension found.

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
-
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.apache.commons.lang.StringUtils;
 
@@ -32,7 +32,10 @@ public class Resources implements Serializable {
 	private int lastId = 1;
 	
 	private ObservableMap<String, Resource> resources = FXCollections.observableMap(new HashMap<>());
-	
+	private ObservableList<Resource> cssResources = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<Resource> fontResources = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<Resource> imageResources = FXCollections.observableList(new ArrayList<>());
+
 	/**
 	 * Adds a resource to the resources.
 	 * 
@@ -515,4 +518,33 @@ public class Resources implements Serializable {
         return new String(array, 0, size - 1);  // lose trailing separator
     }
 
+    public ObservableList<Resource> getCssResources()
+    {
+        return cssResources;
+    }
+
+    public void setCssResources(ObservableList<Resource> cssResources)
+    {
+        this.cssResources = cssResources;
+    }
+
+    public ObservableList<Resource> getFontResources()
+    {
+        return fontResources;
+    }
+
+    public void setFontResources(ObservableList<Resource> fontResources)
+    {
+        this.fontResources = fontResources;
+    }
+
+    public ObservableList<Resource> getImageResources()
+    {
+        return imageResources;
+    }
+
+    public void setImageResources(ObservableList<Resource> imageResources)
+    {
+        this.imageResources = imageResources;
+    }
 }

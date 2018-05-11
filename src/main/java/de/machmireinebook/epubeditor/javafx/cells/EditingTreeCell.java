@@ -2,7 +2,6 @@ package de.machmireinebook.epubeditor.javafx.cells;
 
 
 import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
-
 import javafx.application.Platform;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
@@ -30,7 +29,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
     @Override
     protected Skin<?> createDefaultSkin()
     {
-        return new EditingTreeCellSkin<T>(this);
+        return new EditingTreeCellSkin<>(this);
     }
 
     @Override
@@ -138,6 +137,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
                 cancelEdit();
             }
         });
+        textField.getStyleClass().add("editing-tree-cell-textfield");
     }
 
 

@@ -172,7 +172,7 @@ public class ImageInfo
 {
     public enum Format
     {
-        FORMAT_UNKNOWN("unbekannt", null),
+        FORMAT_UNKNOWN("unknown", null),
         /**
          * Return value of {@link #getFormat()} for JPEG streams.
          * ImageInfo can extract physical resolution and comments

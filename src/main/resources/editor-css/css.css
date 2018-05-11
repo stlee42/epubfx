@@ -1,10 +1,17 @@
 .comment
 {
-    color: #008000;
+    -fx-text-fill: #008000;
 }
 
-.string, .class-selector
+.css-selector, .css-property-value
 {
     -fx-fill: #000080;
     -fx-font-weight: bold;
 }
+
+.css-string
+{
+    -fx-text-fill: #008000;
+    -fx-font-weight: bold;
+}
+

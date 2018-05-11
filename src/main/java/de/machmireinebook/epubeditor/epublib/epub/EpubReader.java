@@ -4,20 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
@@ -46,21 +40,9 @@ public class EpubReader
         return book;
     }
 
-    public Book readEpub(InputStream in) throws IOException
-    {
-        return readEpub(in, Constants.CHARACTER_ENCODING);
-    }
-
     public Book readEpub(ZipInputStream in) throws IOException
     {
         return readEpub(in, Constants.CHARACTER_ENCODING);
-    }
-
-    public Book readEpub(ZipFile zipfile) throws IOException
-    {
-        Book book = readEpub(zipfile, Constants.CHARACTER_ENCODING);
-        book.setPhysicalFileName(Paths.get(zipfile.getName()));
-        return book;
     }
 
     /**
@@ -77,46 +59,9 @@ public class EpubReader
     }
 
 
-    /**
-     * Reads this EPUB without loading any resources into memory.
-     *
-     * @param fileName the file to load
-     * @param encoding the encoding for XHTML files
-     * @return this Book without loading all resources into memory.
-     * @throws java.io.IOException
-     */
-    public Book readEpubLazy(ZipFile zipFile, String encoding) throws IOException
-    {
-        Book book = readEpubLazy(zipFile, encoding, Arrays.asList(MediaType.values()));
-        book.setPhysicalFileName(Paths.get(zipFile.getName()));
-        return book;
-    }
-
     public Book readEpub(ZipInputStream in, String encoding) throws IOException
     {
         return readEpub(ResourcesLoader.loadResources(in, encoding));
-    }
-
-    public Book readEpub(ZipFile in, String encoding) throws IOException
-    {
-        Book book = readEpub(ResourcesLoader.loadResources(in, encoding));
-        book.setPhysicalFileName(Paths.get(in.getName()));
-        return book;
-    }
-
-    /**
-     * Reads this EPUB without loading all resources into memory.
-     *
-     * @param fileName        the file to load
-     * @param encoding        the encoding for XHTML files
-     * @param lazyLoadedTypes a list of the MediaType to load lazily
-     * @return this Book without loading all resources into memory.
-     * @throws java.io.IOException
-     */
-    public Book readEpubLazy(ZipFile zipFile, String encoding, List<MediaType> lazyLoadedTypes) throws IOException
-    {
-        Resources resources = ResourcesLoader.loadResources(zipFile, encoding, lazyLoadedTypes);
-        return readEpub(resources);
     }
 
     public Book readEpub(Resources resources) throws IOException
@@ -124,13 +69,13 @@ public class EpubReader
         return readEpub(resources, new Book());
     }
 
-    public Book readEpub(Resources resources, Book book) throws IOException
+    public Book readEpub(Resources resources, Book book)
     {
         if (book == null)
         {
             book = new Book();
         }
-        handleMimeType(book, resources);
+        handleMimeType(resources);
         String packageResourceHref = getPackageResourceHref(resources);
         Resource packageResource = processPackageResource(packageResourceHref, book, resources);
         book.setOpfResource(packageResource);
@@ -139,7 +84,6 @@ public class EpubReader
         book = postProcessBook(book);
         return book;
     }
-
 
     private Book postProcessBook(Book book)
     {
@@ -198,7 +142,7 @@ public class EpubReader
         return result;
     }
 
-    private void handleMimeType(Book result, Resources resources)
+    private void handleMimeType(Resources resources)
     {
         resources.remove("mimetype");
     }
