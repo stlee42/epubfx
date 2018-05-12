@@ -145,7 +145,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void setAbsoluteCursorPosition(Integer position)
+    public void setAbsoluteCursorPosition(int position)
     {
         codeArea.moveTo(position);
     }
@@ -197,6 +197,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     public void select(int fromIndex, int toIndex)
     {
         codeArea.selectRange(fromIndex, toIndex);
+        codeArea.requestFollowCaret();
     }
 
     @Override
@@ -208,14 +209,18 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public void scrollTo(int index)
     {
-        codeArea.scrollXBy(index);
+//        codeArea.scrollXBy(index);
     }
 
     @Override
     public void scrollTo(EditorPosition pos)
     {
-        int index = codeArea.getAbsolutePosition(pos.getLine(), pos.getColumn());
-        codeArea.scrollYBy(index);
+        int line = 0;
+        if (pos.getLine() > 0)
+        {
+            line = pos.getLine() - 1;
+        }
+        codeArea.showParagraphInViewport(line);
     }
 
     public void setStyleSheet(String styleSheet)
@@ -247,5 +252,10 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     int getAbsolutePosition(int paragraphIndex, int columnIndex)
     {
         return codeArea.getAbsolutePosition(paragraphIndex, columnIndex);
+    }
+
+    int getNumberParagraphs()
+    {
+        return codeArea.getParagraphs().size();
     }
 }

@@ -10,6 +10,8 @@ public class EditorPosition
     private int line;
     private int column;
 
+    public static EditorPosition START = new EditorPosition(0, 0);
+
     public EditorPosition()
     {
     }

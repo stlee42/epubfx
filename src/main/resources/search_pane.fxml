@@ -6,14 +6,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.*?>
 
-<fx:root fx:id="searchAnchorPane" maxHeight="70.0" prefHeight="70.0" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="searchAnchorPane" maxHeight="70.0" prefHeight="70.0" type="de.machmireinebook.epubeditor.gui.SearchAnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <TextField layoutX="8.0" layoutY="7.0" prefHeight="25.0" prefWidth="210.0"  fx:id="searchStringTextField"/>
         <Button layoutX="227.0" layoutY="7.0" mnemonicParsing="false" prefWidth="31.0" styleClass="flat">
             <graphic>
                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="icons/arrow_up.png" />
+                        <Image url="icons/icons8_Up_96px.png" />
                     </image>
                 </ImageView>
             </graphic>
@@ -22,7 +22,7 @@
             <graphic>
                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="icons/arrow_down.png" />
+                        <Image url="icons/icons8_Down_Arrow_96px.png" />
                     </image>
                 </ImageView>
             </graphic>
@@ -53,7 +53,7 @@
             <graphic>
                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="icons/find_replace.png" />
+                        <Image url="icons/icons8_Find_and_Replace_96px.png" />
                     </image>
                 </ImageView>
             </graphic>
@@ -64,7 +64,7 @@
             <graphic>
                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="icons/close.png" />
+                        <Image url="icons/icons8_Close_Window_96px.png" />
                     </image>
                 </ImageView>
             </graphic>

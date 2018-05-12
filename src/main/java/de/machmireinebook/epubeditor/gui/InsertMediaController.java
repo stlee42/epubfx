@@ -161,14 +161,29 @@ public class InsertMediaController implements Initializable, StandardController
         try
         {
             String snippet;
+            boolean isEpub3 = currentBookProperty.get().isEpub3();
             if (withCaptionCheckBox.isSelected())
             {
-                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), "UTF-8");
+                if (isEpub3)
+                {
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure.html"), "UTF-8");
+                }
+                else
+                {
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), "UTF-8");
+                }
                 snippet = StringUtils.replace(snippet, "${caption}", captionTextField.getText());
             }
             else
             {
-                snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), "UTF-8");
+                if (isEpub3)
+                {
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure-without-caption.html"), "UTF-8");
+                }
+                else
+                {
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), "UTF-8");
+                }
             }
             snippet = StringUtils.replace(snippet, "${url}", "/" + resource.getHref());
 

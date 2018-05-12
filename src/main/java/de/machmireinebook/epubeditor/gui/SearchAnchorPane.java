@@ -101,6 +101,8 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                     int fromIndex = searchResult.getBegin();
                     int toIndex = searchResult.getEnd();
                     editor.select(fromIndex, toIndex);
+                    String selectedText = editor.getSelection();
+                    logger.info("selected Text: " + selectedText);
                     editor.setAbsoluteCursorPosition(toIndex);
                 }
         );
@@ -139,23 +141,26 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
         Resource resource = editorManager.getCurrentSearchableResource();
         List<SearchManager.SearchResult> result = searchManager.findAll(searchStringTextField.getText(), resource, params);
-        try
+        if (result.size() > 0)
         {
-            String code = new String(resource.getData(), resource.getInputEncoding());
-            String replaceText = StringUtils.defaultIfEmpty(replaceStringTextField.getText(), "");
-            for (SearchManager.SearchResult searchResult : result)
+            try
             {
-                int fromIndex = searchResult.getBegin();
-                int toIndex = searchResult.getEnd();
-                String beginPart = code.substring(0, fromIndex);
-                String endPart = code.substring(toIndex);
-                code = beginPart + replaceText + endPart;
+                String code = new String(resource.getData(), resource.getInputEncoding());
+                String replaceText = StringUtils.defaultIfEmpty(replaceStringTextField.getText(), "");
+                for (SearchManager.SearchResult searchResult : result)
+                {
+                    int fromIndex = searchResult.getBegin();
+                    int toIndex = searchResult.getEnd();
+                    String beginPart = code.substring(0, fromIndex);
+                    String endPart = code.substring(toIndex);
+                    code = beginPart + replaceText + endPart;
+                }
+                editor.setCode(code);
             }
-            editor.setCode(code);
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            //schould not happens
+            catch (UnsupportedEncodingException e)
+            {
+                //schould not happens
+            }
         }
     }
 

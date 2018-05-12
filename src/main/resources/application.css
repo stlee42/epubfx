@@ -1,7 +1,9 @@
-.white-tooltip {
+.tooltip .white-tooltip {
     -fx-background-color:white;
     -fx-color-label-visible: true;
     -fx-text-fill:black;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 .group-cell .text
@@ -27,27 +29,89 @@
 
 .ribbon-group .button.letter-button
 {
-    -fx-font-size: 2em;
+    -fx-font-size: 1.5em;
     -fx-min-width: 50;
 }
 
-.ribbon-group .button
+.ribbon-group .split-menu-button, .ribbon-group .toggle-button
 {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+
+    -fx-background-radius: 0;
+
+    -fx-background: white;
+    -fx-background-color: transparent;
+
+    -fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-font-size: 1em; /* 12 */
+    -fx-text-fill: #828282;
     -fx-alignment: CENTER;
+}
+
+.ribbon-group .split-menu-button .arrow-button, .ribbon-group .split-menu-button .label {
+    -fx-background: white;
+    -fx-background-color: transparent;
+}
+
+.ribbon-group .toggle-button:hover, .ribbon-group .split-menu-button .arrow-button:hover, .ribbon-group .split-menu-button .label:hover {
+    -fx-background-color: RIBBON_BUTTON_HIGHLIGHT_COLOR;
+}
+
+.ribbon-group .title {
+    -fx-padding: 0 10px 0 0;
+}
+
+.ribbon-group .separator.small .line {
+    -fx-padding: 0 6px 0 6px;
+}
+
+.ribbon-group .ribbon-group-content
+{
+    -fx-alignment: TOP_CENTER;
+    -fx-padding: 16px 10px 16px 0;
+}
+
+.ribbon-group .ribbon-group-content > .column
+{
+    -fx-padding: 0 0 0 0;
+    -fx-spacing: 6;
+}
+.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused
+{
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-insets: 0 0 0 0, 0;
 }
 
 .ribbon-group .button.left-align
 {
-    -fx-alignment: CENTER_LEFT;
+    -fx-alignment: TOP_LEFT;
 }
 
-.ribbon-group .button .text, .ribbon-group .arrow-button .text
+.ribbon-group .button .text, .ribbon-group .arrow-button .text, .ribbon-group .split-menu-button .text,
+.ribbon-group .toggle-button .text
 {
     -fx-text-alignment: center;
+}
+
+.ribbon-group .button:pressed, .ribbon-group .button:default:hover:pressed,
+.ribbon-group .toggle-button:pressed, .ribbon-group .toggle-button:default:hover:pressed, .ribbon-group .toggle-button:selected,
+.ribbon-group .split-menu-button .arrow-button:pressed, .ribbon-group .split-menu-button .arrow-button:default:hover:pressed,
+.ribbon-group .split-menu-button:pressed .label, .ribbon-group .split-menu-button .label:default:hover:pressed
+{
+    -fx-background-color: CONTROLS_ACCENT_COLOR;
+    -fx-text-fill: white;
 }
 
 .ribbon-group .button.letter-button .text
 {
     -fx-font-weight: bold;
     -fx-text-fill:black;
+}
+
+.ribbon-group-content > .column
+{
+    -fx-padding: 16px 10px 16px 0px;
+    -fx-spacing: 6;
 }

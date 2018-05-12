@@ -232,6 +232,10 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
             else if (foundOpenTag)
             {
                 paragraphIndex++;
+                if (paragraphIndex >= getNumberParagraphs()) //reaching the end
+                {
+                    break;
+                }
                 paragraph = getParagraph(paragraphIndex);
             }
             else if (foundCloseTag)
@@ -247,6 +251,10 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
             {
                 //zuerst nach vorn
                 paragraphIndex++;
+                if (paragraphIndex >= getNumberParagraphs()) //reaching the end
+                {
+                    break;
+                }
                 paragraph = getParagraph(paragraphIndex);
             }
         }

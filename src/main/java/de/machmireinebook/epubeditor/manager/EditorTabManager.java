@@ -533,6 +533,9 @@ public class EditorTabManager
                     editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
                     ((AnchorPane) editor).widthProperty().addListener((observable13, oldValue12, newValue12) -> editor.setCodeEditorSize(newValue12.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20));
                     ((AnchorPane) editor).heightProperty().addListener((observable14, oldValue13, newValue13) -> editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue13.doubleValue() - 20));
+                    editor.scrollTo(EditorPosition.START);
+                    editor.setAbsoluteCursorPosition(0);
+                    ((AnchorPane) editor).requestFocus();
                     openingEditorTab = false;
                 }
             });
@@ -1060,13 +1063,10 @@ public class EditorTabManager
 
     public void scrollTo(Deque<ElementPosition> nodeChain)
     {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML) && nodeChain.size() > 0)
         {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             String code = xhtmlCodeEditor.getCode();
-/*            int index = code.indexOf(html);
-            logger.info("index of clicked html " + index + " html: " + html);
-            xhtmlCodeEditor.scrollTo(index);*/
             LocatedJDOMFactory factory = new LocatedJDOMFactory();
             try
             {

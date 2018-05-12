@@ -15,6 +15,8 @@ import javax.inject.Named;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -330,7 +332,17 @@ public class Book implements Serializable
     private Resource ncxResource;
     private ImageResource coverImage;
 
+    // Property
     private EpubVersion version = EpubVersion.VERSION_2;
+
+    private final ReadOnlyObjectWrapper<EpubVersion> versionProperty = new ReadOnlyObjectWrapper<>(version, "version");
+    public final ReadOnlyObjectProperty<EpubVersion> versionProperty() {
+       return versionProperty.getReadOnlyProperty();
+    }
+    public final EpubVersion get() {
+       return versionProperty.get();
+    }
+
     private boolean isFixedLayout = false;
     private int fixedLayoutWidth;
     private int fixedLayoutHeight;

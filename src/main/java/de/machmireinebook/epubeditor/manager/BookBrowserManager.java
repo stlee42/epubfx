@@ -225,7 +225,7 @@ public class BookBrowserManager
             treeCell.setOnKeyTyped(event -> {
                 KeyCode keyCode = event.getCode();
                 logger.info("key typed in tree view editor: " + keyCode);
-                //Ctrl-Z abfangen um eigenen Undo/Redo-Manager zu verwenden
+
                 if (keyCode.equals(KeyCode.DELETE))
                 {
                     logger.debug("Delete gedrückt");

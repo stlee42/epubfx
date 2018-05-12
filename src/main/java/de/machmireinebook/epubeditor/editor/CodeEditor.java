@@ -47,7 +47,7 @@ public interface CodeEditor
     EditorPosition getCursorPosition();
 
     Integer getAbsoluteCursorPosition();
-    void setAbsoluteCursorPosition(Integer position);
+    void setAbsoluteCursorPosition(int position);
     void insertAt(Integer pos , String insertion);
     void select(int fromIndex, int toIndex);
     String getSelection();
