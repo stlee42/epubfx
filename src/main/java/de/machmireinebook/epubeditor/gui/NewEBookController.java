@@ -119,7 +119,7 @@ public class NewEBookController implements StandardController
             for (Path path : stream)
             {
                 ZipInputStream zis = new ZipInputStream(new FileInputStream(path.toFile()));
-                Book book = new EpubReader().readEpub(zis, "UTF-8");
+                Book book = new EpubReader().readEpub(zis);
                 if (book.getVersion() == EpubVersion.VERSION_2)
                 {
                     Image cover = null;

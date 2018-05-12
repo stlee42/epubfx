@@ -58,7 +58,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         super();
         this.mediaType = mediaType;
         String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/xhtml.css").toExternalForm();
-        setStyleSheet(stylesheet);
+        addStyleSheet(stylesheet);
         setWrapText(true);
     }
 

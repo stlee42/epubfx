@@ -1,10 +1,17 @@
-.comment
+.code-area .comment
 {
-    color: #008000;
+    -fx-fill: #008000;
 }
 
-.string, .class-selector
+.code-area .text.css-selector, .code-area .text.css-property-value
 {
     -fx-fill: #000080;
     -fx-font-weight: bold;
 }
+
+.code-area .text.css-textvalue
+{
+    -fx-fill: #008000;
+    -fx-font-weight: bold;
+}
+

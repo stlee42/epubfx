@@ -16,6 +16,21 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
+import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.manager.PreviewManager;
+import de.machmireinebook.epubeditor.manager.SearchManager;
+import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -72,6 +87,7 @@ import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
+import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek
@@ -471,7 +487,7 @@ public class EpubEditorMainController implements Initializable
                 catch (IOException e)
                 {
                     logger.error("", e);
-                    ExceptionDialog.showAndWait(e, stage, "E-Book öffnen", "Kann E-Book-Datei " + recentFile.toFile().getName() + " nicht öffnen.");
+                    ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file " + recentFile.toFile().getName());
                 }
             });
             fileMenu.getItems().add(index, recentFileMenuItem);
@@ -567,7 +583,7 @@ public class EpubEditorMainController implements Initializable
     public void addExistingFiles()
     {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Einzufügende Dateien auswählen");
+        chooser.setTitle("Choose Files to Insert");
         List<File> files = chooser.showOpenMultipleDialog(stage);
         if (files != null)
         {

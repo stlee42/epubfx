@@ -27,11 +27,10 @@ public class DefaultBookProcessorPipeline extends BookProcessorPipeline {
 	}
 
 	private static List<BookProcessor> createDefaultBookProcessors() {
-		List<BookProcessor> result = new ArrayList<>();
-		result.addAll(Arrays.asList(new SectionHrefSanityCheckBookProcessor(),
-                new HtmlCleanerBookProcessor(),
-                new CoverpageBookProcessor(),
-                new FixIdentifierBookProcessor()));
+		List<BookProcessor> result = new ArrayList<>(Arrays.asList(new SectionHrefSanityCheckBookProcessor(),
+				new HtmlCleanerBookProcessor(),
+				new CoverpageBookProcessor(),
+				new FixIdentifierBookProcessor()));
 		return result;
 	}
 }

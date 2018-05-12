@@ -75,7 +75,7 @@ public class ResourceUtil
         MediaType mediaType = MediaType.getByFileName(zipEntry.getName());
 		if (mediaType != null)
 		{
-			return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName());
+			return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName(), mediaType);
 		}
 		else
 		{
@@ -88,7 +88,7 @@ public class ResourceUtil
     public static Resource createResource(ZipEntry zipEntry, InputStream zipInputStream) throws IOException
     {
         MediaType mediaType = MediaType.getByFileName(zipEntry.getName());
-        return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName());
+        return mediaType.getResourceFactory().createResource(IOUtils.toByteArray(zipInputStream), zipEntry.getName(), mediaType);
     }
 
 	/**

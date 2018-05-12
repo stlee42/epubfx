@@ -17,6 +17,24 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import com.google.common.io.Files;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
+import de.machmireinebook.epubeditor.epublib.domain.Guide;
+import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.gui.AddStylesheetController;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
+import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -45,29 +63,8 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
-import com.google.common.io.Files;
-
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
-import de.machmireinebook.epubeditor.epublib.domain.Guide;
-import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
-import de.machmireinebook.epubeditor.gui.AddStylesheetController;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
-import de.machmireinebook.epubeditor.javafx.FXUtils;
-import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 
 /**
  * User: mjungierek
@@ -111,11 +108,11 @@ public class BookBrowserManager
         {
             if (newValue)
             {
-                item.setGraphic(FXUtils.getIcon("/icons/folder_open.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Open_48px.png", 24));
             }
             else
             {
-                item.setGraphic(FXUtils.getIcon("/icons/folder.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
             }
         }
     }
@@ -299,25 +296,25 @@ public class BookBrowserManager
 
         Resource textResource = new Resource("Text");
         textItem = new TreeItem<>(textResource);
-        textItem.setGraphic(FXUtils.getIcon("/icons/folder.png", 24));
+        textItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         textItem.expandedProperty().addListener(new FolderSymbolListener(textItem));
         rootItem.getChildren().add(textItem);
 
         Resource cssResource = new Resource("Styles");
         cssItem = new TreeItem<>(cssResource);
-        cssItem.setGraphic(FXUtils.getIcon("/icons/folder.png", 24));
+        cssItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         cssItem.expandedProperty().addListener(new FolderSymbolListener(cssItem));
         rootItem.getChildren().add(cssItem);
 
         Resource imagesResource = new Resource("Bilder");
         imagesItem = new TreeItem<>(imagesResource);
-        imagesItem.setGraphic(FXUtils.getIcon("/icons/folder.png", 24));
+        imagesItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         imagesItem.expandedProperty().addListener(new FolderSymbolListener(imagesItem));
         rootItem.getChildren().add(imagesItem);
 
         Resource fontsResource = new Resource("Fonts");
         fontsItem = new TreeItem<>(fontsResource);
-        fontsItem.setGraphic(FXUtils.getIcon("/icons/folder.png", 24));
+        fontsItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         fontsItem.expandedProperty().addListener(new FolderSymbolListener(fontsItem));
         rootItem.getChildren().add(fontsItem);
     }
@@ -328,24 +325,24 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Löschen...");
+        MenuItem item = new MenuItem("Delete...");
         item.setUserData(treeItem);
         item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
-        item = new MenuItem("Umbenennen...");
+        item = new MenuItem("Rename...");
         item.setUserData(treeItem);
         item.setOnAction(event -> renameItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
         menu.getItems().add(item);
 
-        item = new MenuItem("Zusammenfügen");
+        item = new MenuItem("Join");
         item.setUserData(treeItem);
         item.setOnAction(event -> joinXHTMLItemWitPreviousItem(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Sortieren");
+        item = new MenuItem("Sort");
         item.setUserData(treeItem);
         item.setOnAction(event -> sortSelectedItems());
         menu.getItems().add(item);
@@ -353,23 +350,23 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Stylesheets hinzufügen...");
+        item = new MenuItem("Add Stylesheet...");
         item.setUserData(treeItem);
         item.setOnAction(event -> addStylesheet());
         menu.getItems().add(item);
 
-        Menu semantikMenu = new Menu("Semantik hinzufügen");
+        Menu semantikMenu = new Menu("Add Semantics");
         menu.getItems().add(semantikMenu);
         addSemanticsMenuItems(semantikMenu, treeItem);
 
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        Menu openWithItem = new Menu("Öffnen mit");
+        Menu openWithItem = new Menu("Open with");
         menu.getItems().add(openWithItem);
         addXhtmlOpenWithApplicationItems(openWithItem, treeItem);
 
-        item = new MenuItem("Speichern unter...");
+        item = new MenuItem("Save as...");
         item.setUserData(treeItem);
         item.setOnAction(event -> saveAs(treeItem));
         menu.getItems().add(item);
@@ -377,17 +374,17 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Leere Datei hinzufügen");
+        item = new MenuItem("Add empty File");
         item.setUserData(treeItem);
         item.setOnAction(event -> addEmptyXHTMLFile(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Kopie hinzufügen");
+        item = new MenuItem("Add Copy");
         item.setUserData(treeItem);
         item.setOnAction(event -> addCopy(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item = new MenuItem("Add existing Files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
@@ -395,7 +392,7 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Alles auswählen");
+        item = new MenuItem("Select all");
         item.setUserData(treeItem);
         item.setOnAction(event -> selectAll(textItem));
         menu.getItems().add(item);
@@ -581,7 +578,7 @@ public class BookBrowserManager
     private void addImageSemantikMenuItems(Menu menu, TreeItem<Resource> treeItem)
     {
         ImageResource resource = (ImageResource)treeItem.getValue();
-        CheckMenuItem item = new CheckMenuItem("Deckblatt-Bild");
+        CheckMenuItem item = new CheckMenuItem("Cover Image");
         if (resource.coverProperty().getValue())
         {
             item.setSelected(true);
@@ -627,6 +624,7 @@ public class BookBrowserManager
         textItem.getChildren().clear();
         cssItem.getChildren().clear();
         imagesItem.getChildren().clear();
+        fontsItem.getChildren().clear();
 
         rootItem.getChildren().remove(opfItem);
         rootItem.getChildren().remove(ncxItem);
@@ -635,7 +633,7 @@ public class BookBrowserManager
         for (SpineReference xhtmlResource : xhtmlResources)
         {
             TreeItem<Resource> xhtmlItem = new TreeItem<>(xhtmlResource.getResource());
-            xhtmlItem.setGraphic(FXUtils.getIcon("/icons/document_text.png", 24));
+            xhtmlItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
             textItem.getChildren().add(xhtmlItem);
         }
 
@@ -644,17 +642,27 @@ public class BookBrowserManager
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
-            item.setGraphic(FXUtils.getIcon("/icons/document_gear.png", 24));
+            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px_1.png", 24));
             cssItem.getChildren().add(item);
         }
 
-        List<Resource> fontResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{MediaType.OPENTYPE_UNTIL_3, MediaType.OPENTYPE_SINCE_3_1,
-                MediaType.TTF, MediaType.WOFF});
+        List<Resource> fontResources = book.getResources().getFontResources();
         fontResources.sort(new ResourceFilenameComparator());
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
-            item.setGraphic(FXUtils.getIcon("/icons/font.png", 24));
+            if (MediaType.TTF.equals(fontResource.getMediaType()))
+            {
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_TTF_48px.png", 24));
+            }
+            else if (MediaType.OPENTYPE_UNTIL_3.equals(fontResource.getMediaType()) || MediaType.OPENTYPE_SINCE_3_1.equals(fontResource.getMediaType()))
+            {
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_OTF_48px.png", 24));
+            }
+            else if (MediaType.WOFF.equals(fontResource.getMediaType()) || MediaType.WOFF2.equals(fontResource.getMediaType()))
+            {
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_WOFF_48px.png", 24));
+            }
             fontsItem.getChildren().add(item);
         }
 
@@ -669,26 +677,26 @@ public class BookBrowserManager
             TreeItem<Resource> item = new TreeItem<>(imageResource);
             if (imageResource.getMediaType().equals(MediaType.GIF))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/document_image.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.PNG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/document_image.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.SVG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/document_image.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.JPG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/document_image.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
             }
             imagesItem.getChildren().add(item);
         }
 
         opfItem = new TreeItem<>();
         opfItem.valueProperty().bind(book.opfResourceProperty());
-        opfItem.setGraphic(FXUtils.getIcon("/icons/document_tag.png", 24));
+        opfItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
         rootItem.getChildren().add(opfItem);
 
         if (!book.isEpub3())
@@ -701,7 +709,7 @@ public class BookBrowserManager
             Resource navResource = book.getEpub3NavResource();
             ncxItem = new TreeItem<>(navResource);
         }
-        ncxItem.setGraphic(FXUtils.getIcon("/icons/document_tag.png", 24));
+        ncxItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
         rootItem.getChildren().add(ncxItem);
 
         textItem.expandedProperty().setValue(true);
@@ -996,7 +1004,8 @@ public class BookBrowserManager
                                     catch (IOException e)
                                     {
                                         logger.error("error while reading content written by external program", e);
-                                    }                                    });
+                                    }
+                                });
 
                             }
                         }
