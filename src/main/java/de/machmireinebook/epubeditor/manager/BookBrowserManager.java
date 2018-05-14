@@ -17,24 +17,6 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import com.google.common.io.Files;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
-import de.machmireinebook.epubeditor.epublib.domain.Guide;
-import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
-import de.machmireinebook.epubeditor.gui.AddStylesheetController;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
-import de.machmireinebook.epubeditor.javafx.FXUtils;
-import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -63,8 +45,29 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
+import de.machmireinebook.epubeditor.epublib.domain.Guide;
+import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.JavascriptResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
+import de.machmireinebook.epubeditor.gui.AddStylesheetController;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
+import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.io.Files;
 
 /**
  * User: mjungierek
@@ -642,7 +645,7 @@ public class BookBrowserManager
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
-            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px_1.png", 24));
+            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px.png", 24));
             cssItem.getChildren().add(item);
         }
 
@@ -876,8 +879,15 @@ public class BookBrowserManager
             index = textItem.getChildren().indexOf(treeItem);
         }
         TreeItem<Resource> xhtmlItem = new TreeItem<>(res);
-        xhtmlItem.setGraphic(FXUtils.getIcon("/icons/document_text.png", 24));
-        textItem.getChildren().add(index + 1, xhtmlItem);
+        xhtmlItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
+        if (textItem.getChildren().size() > 0)
+        {
+            textItem.getChildren().add(index + 1, xhtmlItem);
+        }
+        else
+        {
+            textItem.getChildren().add(xhtmlItem);
+        }
 
         book.addSpineResource(res, index + 1);
         book.setBookIsChanged(true);
@@ -1126,7 +1136,7 @@ public class BookBrowserManager
         }
 
         TreeItem<Resource> emptyItem = new TreeItem<>(res);
-        emptyItem.setGraphic(FXUtils.getIcon("/icons/document_gear.png", 24));
+        emptyItem.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px.png", 24));
         cssItem.getChildren().add(emptyItem);
 
         book.addResource(res);
