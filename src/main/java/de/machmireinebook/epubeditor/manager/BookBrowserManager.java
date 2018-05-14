@@ -883,15 +883,19 @@ public class BookBrowserManager
         if (textItem.getChildren().size() > 0)
         {
             textItem.getChildren().add(index + 1, xhtmlItem);
+            treeView.getSelectionModel().clearAndSelect(index + 2);
         }
         else
         {
             textItem.getChildren().add(xhtmlItem);
+            treeView.getSelectionModel().clearAndSelect(0);
         }
 
         book.addSpineResource(res, index + 1);
         book.setBookIsChanged(true);
         editorManager.refreshEditorCode(book.getOpfResource());
+
+        editorManager.openFileInEditor(res, MediaType.XHTML);
     }
 
     private void addCopy(TreeItem<Resource> treeItem)
@@ -1136,7 +1140,7 @@ public class BookBrowserManager
         }
 
         TreeItem<Resource> emptyItem = new TreeItem<>(res);
-        emptyItem.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px.png", 24));
+        emptyItem.setGraphic(FXUtils.getIcon("/icons/document_gear.png", 24));
         cssItem.getChildren().add(emptyItem);
 
         book.addResource(res);

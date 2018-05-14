@@ -243,6 +243,10 @@ public class EpubEditorMainController implements Initializable
     private Button insertLinkButton;
     @FXML
     private AnchorPane centerAnchorPane;
+    @FXML
+    private Button uppercaseButton;
+    @FXML
+    private Button lowercaseButton;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -358,6 +362,8 @@ public class EpubEditorMainController implements Initializable
         insertTableButton.disableProperty().bind(isNoXhtmlEditorBinding);
         insertSpecialCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
         insertLinkButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        lowercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        uppercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         createHtmlTocButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         createNcxButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
@@ -1263,7 +1269,7 @@ public class EpubEditorMainController implements Initializable
 
     public void quotationMarksButtonAction(ActionEvent actionEvent)
     {
-        
+
 
     }
 
