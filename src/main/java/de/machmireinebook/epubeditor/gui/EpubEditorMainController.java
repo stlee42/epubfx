@@ -16,21 +16,6 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import de.machmireinebook.epubeditor.manager.PreviewManager;
-import de.machmireinebook.epubeditor.manager.SearchManager;
-import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -87,7 +72,6 @@ import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
-import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek
@@ -246,6 +230,10 @@ public class EpubEditorMainController implements Initializable
     private Button insertLinkButton;
     @FXML
     private AnchorPane centerAnchorPane;
+    @FXML
+    private Button uppercaseButton;
+    @FXML
+    private Button lowercaseButton;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -361,6 +349,8 @@ public class EpubEditorMainController implements Initializable
         insertTableButton.disableProperty().bind(isNoXhtmlEditorBinding);
         insertSpecialCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
         insertLinkButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        lowercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        uppercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         createHtmlTocButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         createNcxButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
