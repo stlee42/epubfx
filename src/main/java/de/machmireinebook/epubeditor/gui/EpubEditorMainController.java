@@ -36,7 +36,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
@@ -87,8 +86,6 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private SeparatorMenuItem recentFilesSeparatorMenuItem;
     @FXML
-    private MenuItem insertImageMenuItem;
-    @FXML
     private SplitPane mainDivider;
     @FXML
     private SplitPane centerDivider;
@@ -97,19 +94,19 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private AnchorPane previewAnchorPane;
     @FXML
-    private RadioMenuItem showBookBrowserMenuItem;
+    private ToggleButton showBookBrowserToggleButton;
     @FXML
-    private RadioMenuItem showPreviewMenuItem;
+    private ToggleButton showPreviewToggleButton;
     @FXML
-    private RadioMenuItem showTocMenuItem;
+    private ToggleButton showTocToggleButton;
     @FXML
-    private RadioMenuItem showValidationResultsMenuItem;
+    private ToggleButton showValidationResultsToggleButton;
     @FXML
     private Button insertTableButton;
     @FXML
     private SplitPane leftDivider;
     @FXML
-    private RadioMenuItem clipsMenuItem;
+    private ToggleButton showClipsToggleButton;
     @FXML
     private Button zoomInButton;
     @FXML
@@ -310,8 +307,6 @@ public class EpubEditorMainController implements Initializable
         printMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
         addMenu.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
-        insertImageMenuItem.disableProperty().bind(isNoXhtmlEditorBinding);
-
         h1Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h2Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h3Button.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -357,65 +352,85 @@ public class EpubEditorMainController implements Initializable
 
         cursorPosLabel.textProperty().bind(editorManager.cursorPosLabelProperty());
 
-        //Teile der Oberfläche an-/abschalten, per Binding an die Menüeinträge
-        clipListView.visibleProperty().bindBidirectional(clipsMenuItem.selectedProperty());
-        clipsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
+        clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());
+        showClipsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
             {
                 leftDivider.getItems().remove(clipListView);
+                leftDivider.setDividerPosition(0, 1.0);
             }
             else
             {
-                leftDivider.getItems().add(clipListView);
-                leftDivider.setDividerPosition(0, 0.7);
+                if (!leftDivider.getItems().contains(clipListView))
+                {
+                    leftDivider.getItems().add(clipListView);
+                    leftDivider.setDividerPosition(0, 0.7);
+                }
             }
         });
-        epubStructureTreeView.visibleProperty().bindBidirectional(showBookBrowserMenuItem.selectedProperty());
-        showBookBrowserMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        epubStructureTreeView.visibleProperty().bindBidirectional(showBookBrowserToggleButton.selectedProperty());
+        showBookBrowserToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
             {
-                leftDivider.getItems().add(epubStructureTreeView);
-                leftDivider.setDividerPosition(0, 0.7);
+                if (!leftDivider.getItems().contains(epubStructureTreeView))
+                {
+                    leftDivider.getItems().add(epubStructureTreeView);
+                    leftDivider.setDividerPosition(0, 0.7);
+                }
             }
             else
             {
                 leftDivider.getItems().remove(epubStructureTreeView);
+                leftDivider.setDividerPosition(0, 1.0);
             }
         });
-        validationResultsListView.visibleProperty().bindBidirectional(showValidationResultsMenuItem.selectedProperty());
-        showValidationResultsMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        validationResultsListView.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
+        showValidationResultsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
             {
                 centerDivider.getItems().remove(validationResultsListView);
+                centerDivider.setDividerPosition(0, 1.0);
             }
             else
             {
-                centerDivider.getItems().add(validationResultsListView);
-                centerDivider.setDividerPosition(0, 0.8);
+                if (!centerDivider.getItems().contains(validationResultsListView))
+                {
+                    centerDivider.getItems().add(validationResultsListView);
+                    centerDivider.setDividerPosition(0, 0.8);
+                }
             }
         });
-        previewAnchorPane.visibleProperty().bindBidirectional(showPreviewMenuItem.selectedProperty());
-        showPreviewMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        previewAnchorPane.visibleProperty().bindBidirectional(showPreviewToggleButton.selectedProperty());
+        showPreviewToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
             {
-                rightDivider.getItems().add(previewAnchorPane);
-                rightDivider.setDividerPosition(0, 0.7);
+                if (!rightDivider.getItems().contains(previewAnchorPane))
+                {
+                    rightDivider.getItems().add(previewAnchorPane);
+                    rightDivider.setDividerPosition(0, 0.7);
+                }
             }
             else
             {
                 rightDivider.getItems().remove(previewAnchorPane);
+                rightDivider.setDividerPosition(0, 1.0);
             }
         });
-        tocTreeView.visibleProperty().bindBidirectional(showTocMenuItem.selectedProperty());
-        showTocMenuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        tocTreeView.visibleProperty().bindBidirectional(showTocToggleButton.selectedProperty());
+        showTocToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
             {
                 rightDivider.getItems().remove(tocTreeView);
+                rightDivider.setDividerPosition(0, 1.0);
             }
             else
             {
-                rightDivider.getItems().add(tocTreeView);
-                rightDivider.setDividerPosition(0, 0.7);
+                if (!rightDivider.getItems().contains(tocTreeView))
+                {
+                    rightDivider.getItems().add(tocTreeView);
+                    rightDivider.setDividerPosition(0, 0.7);
+                }
             }
         });
 
@@ -640,7 +655,7 @@ public class EpubEditorMainController implements Initializable
     @SuppressWarnings("UnusedParameters")
     public void addEmptyCSSFileAction(ActionEvent actionEvent)
     {
-
+        bookBrowserManager.addEmptyCssFile();
         currentBookProperty.get().setBookIsChanged(true);
     }
 
@@ -1126,29 +1141,29 @@ public class EpubEditorMainController implements Initializable
         previewWebview.setZoom(oldZoom - 0.1);
     }
 
-    public RadioMenuItem getShowBookBrowserMenuItem()
+    public ToggleButton getShowBookBrowserToggleButton()
     {
-        return showBookBrowserMenuItem;
+        return showBookBrowserToggleButton;
     }
 
-    public RadioMenuItem getShowPreviewMenuItem()
+    public ToggleButton getShowPreviewToggleButton()
     {
-        return showPreviewMenuItem;
+        return showPreviewToggleButton;
     }
 
-    public RadioMenuItem getShowTocMenuItem()
+    public ToggleButton getShowTocToggleButton()
     {
-        return showTocMenuItem;
+        return showTocToggleButton;
     }
 
-    public RadioMenuItem getShowValidationResultsMenuItem()
+    public ToggleButton getShowValidationResultsToggleButton()
     {
-        return showValidationResultsMenuItem;
+        return showValidationResultsToggleButton;
     }
 
-    public RadioMenuItem getClipsMenuItem()
+    public ToggleButton getShowClipsToggleButton()
     {
-        return clipsMenuItem;
+        return showClipsToggleButton;
     }
 
     public SplitPane getMainDivider()

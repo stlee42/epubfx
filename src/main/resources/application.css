@@ -77,7 +77,8 @@
     -fx-padding: 0 0 0 0;
     -fx-spacing: 6;
 }
-.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused
+.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused, .ribbon-group .toggle-button:focused:selected,
+.ribbon-group .toggle-button:selected, .ribbon-group .toggle-button:hover:selected, .ribbon-group .toggle-button:pressed
 {
     -fx-border-color: transparent;
     -fx-border-width: 0;

@@ -12,10 +12,6 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.domain.Clip;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.manager.ClipManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
@@ -23,6 +19,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Appender;
@@ -32,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
+
 import org.jdom2.CDATA;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -39,6 +37,11 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.manager.ClipManager;
 
 /**
  * User: mjungierek
@@ -169,6 +172,26 @@ public class EpubEditorConfiguration
                             }
                         }
 
+                        Element visibilityElement = layoutElement.getChild("visibility");
+                        boolean showBookBrowser = false;
+                        boolean showClips = false;
+                        boolean showToc = false;
+                        boolean showValidationResults = false;
+                        boolean showPreview = false;
+                        if (visibilityElement != null)
+                        {
+                            showBookBrowser = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("book-browser"));
+                            epubEditorMainController.getShowBookBrowserToggleButton().selectedProperty().set(showBookBrowser);
+                            showClips = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("clips-list"));
+                            epubEditorMainController.getShowClipsToggleButton().selectedProperty().set(showClips);
+                            showToc = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("toc"));
+                            epubEditorMainController.getShowTocToggleButton().selectedProperty().set(showToc);
+                            showValidationResults = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results"));
+                            epubEditorMainController.getShowValidationResultsToggleButton().selectedProperty().set(showValidationResults);
+                            showPreview = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview"));
+                            epubEditorMainController.getShowPreviewToggleButton().selectedProperty().set(showPreview);
+                        }
+
                         Element dividersElement = layoutElement.getChild("dividers");
                         if (dividersElement != null)
                         {
@@ -194,9 +217,14 @@ public class EpubEditorConfiguration
                             if (leftDividerElement != null)
                             {
                                 List<SplitPane.Divider> dividers = epubEditorMainController.getLeftDivider().getDividers();
-                                if (!"none".equals(leftDividerElement.getAttributeValue("divider-1")))
+                                if (!"none".equals(leftDividerElement.getAttributeValue("divider-1")) && showBookBrowser && showClips)
                                 {
                                     dividers.get(0).setPosition(Double.parseDouble(leftDividerElement.getAttributeValue("divider-1")));
+                                }
+                                else
+                                {
+                                    logger.info("no divider on left side");
+                                    dividers.get(0).setPosition(1.0);
                                 }
                             }
 
@@ -204,7 +232,7 @@ public class EpubEditorConfiguration
                             if (rightDividerElement != null)
                             {
                                 List<SplitPane.Divider> dividers = epubEditorMainController.getRightDivider().getDividers();
-                                if (!"none".equals(rightDividerElement.getAttributeValue("divider-1")))
+                                if (!"none".equals(rightDividerElement.getAttributeValue("divider-1")) && showPreview && showToc)
                                 {
                                     dividers.get(0).setPosition(Double.parseDouble(rightDividerElement.getAttributeValue("divider-1")));
                                 }
@@ -214,24 +242,14 @@ public class EpubEditorConfiguration
                             if (centerDividerElement != null)
                             {
                                 List<SplitPane.Divider> dividers = epubEditorMainController.getCenterDivider().getDividers();
-                                if (!"none".equals(centerDividerElement.getAttributeValue("divider-1")))
+                                if (!"none".equals(centerDividerElement.getAttributeValue("divider-1")) && showValidationResults)
                                 {
                                     dividers.get(0).setPosition(Double.parseDouble(centerDividerElement.getAttributeValue("divider-1")));
                                 }
                             }
                         }
 
-                        Element visibilityElement = layoutElement.getChild("visibility");
-                        if (visibilityElement != null)
-                        {
-                            epubEditorMainController.getShowBookBrowserMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("book-browser")));
-                            epubEditorMainController.getShowTocMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("toc")));
-                            epubEditorMainController.getShowValidationResultsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results")));
-                            epubEditorMainController.getClipsMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("clips-list")));
-                            epubEditorMainController.getShowPreviewMenuItem().selectedProperty().set(BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview")));
-                        }
                     }
-
 
                     Element clipsElement = root.getChild("clips");
                     List<Element> children = clipsElement.getChildren();
@@ -411,11 +429,11 @@ public class EpubEditorConfiguration
                     visibilityElement = new Element("visibility");
                     layoutElement.addContent(visibilityElement);
                 }
-                visibilityElement.setAttribute("book-browser", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowBookBrowserMenuItem().isSelected()));
-                visibilityElement.setAttribute("toc", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowTocMenuItem().isSelected()));
-                visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowValidationResultsMenuItem().isSelected()));
-                visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(epubEditorMainController.getClipsMenuItem().isSelected()));
-                visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowPreviewMenuItem().isSelected()));
+                visibilityElement.setAttribute("book-browser", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowBookBrowserToggleButton().isSelected()));
+                visibilityElement.setAttribute("toc", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowTocToggleButton().isSelected()));
+                visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowValidationResultsToggleButton().isSelected()));
+                visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowClipsToggleButton().isSelected()));
+                visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowPreviewToggleButton().isSelected()));
 
                 Element dividersElement = layoutElement.getChild("dividers");
                 if (dividersElement == null)

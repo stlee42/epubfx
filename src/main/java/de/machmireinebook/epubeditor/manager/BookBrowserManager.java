@@ -39,6 +39,7 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -222,17 +223,6 @@ public class BookBrowserManager
                 treeCell.getStyleClass().remove("dnd-below");
             });
 
-            treeCell.setOnKeyTyped(event -> {
-                KeyCode keyCode = event.getCode();
-                logger.info("key typed in tree view editor: " + keyCode);
-
-                if (keyCode.equals(KeyCode.DELETE))
-                {
-                    logger.debug("Delete gedrückt");
-                    deleteSelectedItems();
-                }
-            });
-
             return treeCell;
         }
     }
@@ -296,6 +286,17 @@ public class BookBrowserManager
             editorManager.refreshAll();
             book.setBookIsChanged(true);
         });
+        treeView.setOnKeyPressed(event -> {
+            KeyCode keyCode = event.getCode();
+            logger.info("key typed in tree view editor: " + keyCode);
+
+            if (keyCode.equals(KeyCode.DELETE))
+            {
+                logger.debug("Delete gedrückt");
+                deleteSelectedItems();
+            }
+        });
+
 
         Resource textResource = new Resource("Text");
         textItem = new TreeItem<>(textResource);
@@ -331,7 +332,7 @@ public class BookBrowserManager
         MenuItem item = new MenuItem("Delete...");
         item.setUserData(treeItem);
         item.setOnAction(event -> deleteSelectedItems());
-        item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE));
         menu.getItems().add(item);
 
         item = new MenuItem("Rename...");
@@ -377,6 +378,11 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
+        item = new MenuItem("Add existing Files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
         item = new MenuItem("Add empty File");
         item.setUserData(treeItem);
         item.setOnAction(event -> addEmptyXHTMLFile(treeItem));
@@ -387,17 +393,13 @@ public class BookBrowserManager
         item.setOnAction(event -> addCopy(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Add existing Files...");
-        item.setUserData(treeItem);
-        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
-        menu.getItems().add(item);
-
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
         item = new MenuItem("Select all");
         item.setUserData(treeItem);
         item.setOnAction(event -> selectAll(textItem));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(item);
 
         return menu;
@@ -491,7 +493,7 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Leeren Stylesheet hinzufügen");
+        item = new MenuItem("Add empty CSS File");
         item.setUserData(treeItem);
         item.setOnAction(event -> addEmptyCssFile());
         menu.getItems().add(item);
@@ -1117,7 +1119,7 @@ public class BookBrowserManager
         treeView.getSelectionModel().selectIndices(indices[0], indices);
     }
 
-    private void addEmptyCssFile()
+    public void addEmptyCssFile()
     {
         String fileName = book.getNextStandardFileName(MediaType.CSS);
         Resource res = book.addResourceFromTemplate("/epub/template.css", "Styles/" + fileName);

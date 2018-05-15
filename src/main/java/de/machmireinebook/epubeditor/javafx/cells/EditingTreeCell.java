@@ -1,14 +1,16 @@
 package de.machmireinebook.epubeditor.javafx.cells;
 
 
-import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 import javafx.application.Platform;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 
 /**
  * User: mjungierek
@@ -107,7 +109,8 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
     private void createTextField()
     {
         textField = new TextField(getString());
-        textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+        textField.setMinWidth(this.getWidth() - this.getGraphic().getLayoutBounds().getWidth() - this.getGraphicTextGap());
+        logger.debug("widthes " +  this.getWidth() + ", min " +  this.getMinWidth() + ", max " +  this.getMaxWidth() + ", pref " +  this.getPrefWidth());
         textField.focusedProperty().addListener((value, bool1, bool2) -> {
             if (!bool2)
             {

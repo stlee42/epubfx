@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTreeView?>
-<?import com.pixelduke.control.Ribbon?>
-<?import com.pixelduke.control.ribbon.Column?>
-<?import com.pixelduke.control.ribbon.RibbonGroup?>
-<?import com.pixelduke.control.ribbon.RibbonTab?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -24,7 +19,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
 <?import com.pixelduke.control.Ribbon?>
 <?import com.pixelduke.control.ribbon.Column?>
@@ -53,13 +47,6 @@
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <Menu fx:id="addMenu" mnemonicParsing="false" text="Add">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction"
-                                          text="Existing Files…"/>
-                                <SeparatorMenuItem mnemonicParsing="false"/>
-                                <MenuItem mnemonicParsing="false" onAction="#addEmptyHTMLFileAction"
-                                          text="Empty XHTML File"/>
-                                <MenuItem mnemonicParsing="false" onAction="#addEmptyCSSFileAction"
-                                          text="Empty Stylesheet"/>
                                 <MenuItem mnemonicParsing="false" onAction="#addEmptySVGFileAction"
                                           text="Empty SVG File"/>
                             </items>
@@ -119,22 +106,14 @@
                             </items>
                         </Menu>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem mnemonicParsing="false" text="Split at Cursor"/>
-                        <MenuItem mnemonicParsing="false" text="Split an Marks"/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem mnemonicParsing="false" text="Settings..."/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Insert">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Split marker..."/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
-                        <MenuItem fx:id="insertImageMenuItem" mnemonicParsing="false"
-                                  onAction="#insertImageButtonAction" text="Insert image..."/>
-                        <MenuItem mnemonicParsing="false" onAction="#addExistingFilesAction" text="Existing file..."/>
                         <MenuItem mnemonicParsing="false" onAction="#insertSpecialCharacterAction"
                                   text="Special characters..."/>
-                        <SeparatorMenuItem mnemonicParsing="false"/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
                         <MenuItem mnemonicParsing="false" text="Closing Tag..."/>
                         <SeparatorMenuItem mnemonicParsing="false"/>
@@ -150,13 +129,6 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Ansicht">
                     <items>
-                        <RadioMenuItem fx:id="showBookBrowserMenuItem" mnemonicParsing="false" selected="true"
-                                       text="Book content"/>
-                        <RadioMenuItem fx:id="clipsMenuItem" mnemonicParsing="false" selected="true" text="Clips"/>
-                        <RadioMenuItem fx:id="showPreviewMenuItem" mnemonicParsing="false" selected="true"
-                                       text="Preview"/>
-                        <RadioMenuItem fx:id="showTocMenuItem" mnemonicParsing="false" selected="true"
-                                       text="Tabel of contents"/>
                         <RadioMenuItem fx:id="showValidationResultsMenuItem" mnemonicParsing="false" selected="true"
                                        text="Validation results"/>
                     </items>
@@ -175,8 +147,8 @@
                 <SplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL"
                            SplitPane.resizableWithParent="false">
                     <items>
-                        <TreeView fx:id="epubStructureTreeView" SplitPane.resizableWithParent="false" />
-                        <ListView fx:id="clipListView" />
+                        <TreeView fx:id="epubStructureTreeView" SplitPane.resizableWithParent="false"/>
+                        <ListView fx:id="clipListView"/>
                     </items>
                 </SplitPane>
                 <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
@@ -207,7 +179,7 @@
                                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/zoom_in.png" />
+                                                        <Image url="icons/zoom_in.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -221,7 +193,7 @@
                                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/view_1_1.png" />
+                                                        <Image url="icons/view_1_1.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -236,7 +208,7 @@
                                                 <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/zoom_out.png" />
+                                                        <Image url="icons/zoom_out.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -981,7 +953,8 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="uppercaseButton" mnemonicParsing="false" onAction="#uppercaseButtonAction">
+                                    <Button fx:id="uppercaseButton" mnemonicParsing="false"
+                                            onAction="#uppercaseButtonAction">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
@@ -1003,7 +976,8 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="lowercaseButton" mnemonicParsing="false" onAction="#lowercaseButtonAction">
+                                    <Button fx:id="lowercaseButton" mnemonicParsing="false"
+                                            onAction="#lowercaseButtonAction">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
@@ -1261,6 +1235,69 @@
                             </nodes>
                         </RibbonGroup>
 
+                    </ribbonGroups>
+                </RibbonTab>
+                <RibbonTab text=" View">
+                    <ribbonGroups>
+                        <RibbonGroup title="Panels">
+                            <nodes>
+                                <ToggleButton fx:id="showBookBrowserToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                              text="Show Book Browser" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Folder_Tree_96px.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </ToggleButton>
+                                <ToggleButton fx:id="showClipsToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                              text="Show Clips" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Open_Box_96px.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </ToggleButton>
+                                <ToggleButton fx:id="showPreviewToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                              text="Show Preview" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Preview_Pane_96px_1.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </ToggleButton>
+                                <ToggleButton fx:id="showTocToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                              text="Show Table of Contents" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Content_96px.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </ToggleButton>
+                                <ToggleButton fx:id="showValidationResultsToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                              text="Show Validation Results" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Inspection_96px.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </ToggleButton>
+                            </nodes>
+                        </RibbonGroup>
                     </ribbonGroups>
                 </RibbonTab>
 
