@@ -18,8 +18,16 @@ import javax.inject.Singleton;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,10 +59,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.EpubEditorStarter;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -70,6 +77,12 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 
+import org.apache.log4j.Logger;
+
+import com.dlsc.preferencesfx.PreferencesFx;
+import com.dlsc.preferencesfx.model.Category;
+import com.dlsc.preferencesfx.model.Group;
+import com.dlsc.preferencesfx.model.Setting;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -1267,5 +1280,37 @@ public class EpubEditorMainController implements Initializable
     public void lowercaseButtonAction(ActionEvent actionEvent)
     {
 
+    }
+
+    public void quotationMarksButtonAction(ActionEvent actionEvent)
+    {
+
+
+    }
+
+    public void settingsButtonAction(ActionEvent actionEvent)
+    {
+        StringProperty stringProperty = new SimpleStringProperty("String");
+        BooleanProperty booleanProperty = new SimpleBooleanProperty(true);
+        IntegerProperty integerProperty = new SimpleIntegerProperty(12);
+        DoubleProperty doubleProperty = new SimpleDoubleProperty(6.5);
+
+        PreferencesFx preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
+                Category.of("Category title 1",
+                        Setting.of("Setting title 1", stringProperty), // creates a group automatically
+                        Setting.of("Setting title 2", booleanProperty) // which contains both settings
+                ),
+                Category.of("Category title 2")
+                        .subCategories( // adds a subcategory to "Category title 2"
+                                Category.of("Category title 3",
+                                        Group.of("Group title 1",
+                                                Setting.of("Setting title 3", integerProperty)
+                                        ),
+                                        Group.of( // group without title
+                                                Setting.of("Setting title 3", doubleProperty)
+                                        )
+                                )
+                        )        );
+        preferencesFx.show();
     }
 }

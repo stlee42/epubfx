@@ -647,7 +647,7 @@ public class BookBrowserManager
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
-            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px_1.png", 24));
+            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px.png", 24));
             cssItem.getChildren().add(item);
         }
 
@@ -882,9 +882,16 @@ public class BookBrowserManager
         }
         TreeItem<Resource> xhtmlItem = new TreeItem<>(res);
         xhtmlItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
-        textItem.getChildren().add(index + 1, xhtmlItem);
-
-        treeView.getSelectionModel().clearAndSelect(index + 2);
+        if (textItem.getChildren().size() > 0)
+        {
+            textItem.getChildren().add(index + 1, xhtmlItem);
+            treeView.getSelectionModel().clearAndSelect(index + 2);
+        }
+        else
+        {
+            textItem.getChildren().add(xhtmlItem);
+            treeView.getSelectionModel().clearAndSelect(0);
+        }
 
         book.addSpineResource(res, index + 1);
         book.setBookIsChanged(true);

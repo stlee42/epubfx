@@ -592,7 +592,7 @@
             <tabs>
                 <RibbonTab text="Start">
                     <ribbonGroups>
-                        <RibbonGroup title="Datei">
+                        <RibbonGroup title="File">
                             <nodes>
                                 <Button fx:id="newBookButton" contentDisplay="TOP" mnemonicParsing="false"
                                         onAction="#newEpubAction" text="New EPUB" wrapText="true">
@@ -651,7 +651,7 @@
 
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Hinzufügen">
+                        <RibbonGroup title="Add Files">
                             <nodes>
                                 <Button fx:id="addExistingFileButton" contentDisplay="TOP" mnemonicParsing="false"
                                         onAction="#addExistingFilesAction" text="Add File" wrapText="true">
@@ -708,7 +708,7 @@
                                 </Column>
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Rückgängig">
+                        <RibbonGroup title="Edit">
                             <nodes>
                                 <Button fx:id="undoButton" mnemonicParsing="false" onAction="#undoButtonAction"
                                         contentDisplay="TOP" text="Undo" wrapText="true">
@@ -738,10 +738,6 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-                            </nodes>
-                        </RibbonGroup>
-                        <RibbonGroup title="Bearbeiten">
-                            <nodes>
                                 <Button fx:id="cutButton" mnemonicParsing="false" onAction="#cutButtonAction"
                                         contentDisplay="TOP" text="Cut" wrapText="true">
                                     <tooltip>
@@ -786,7 +782,7 @@
                                 </Button>
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Suche">
+                        <RibbonGroup title="Search">
                             <nodes>
                                 <ToggleButton fx:id="searchReplaceButton" mnemonicParsing="false"
                                               onAction="#searchReplaceButtonAction" contentDisplay="TOP"
@@ -805,26 +801,58 @@
                                 </ToggleButton>
                             </nodes>
                         </RibbonGroup>
+                        <RibbonGroup title="Settings">
+                            <nodes>
+                                <Button fx:id="settingsButton" mnemonicParsing="false"
+                                              onAction="#settingsButtonAction" contentDisplay="TOP"
+                                              text="Settings" wrapText="true">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Settings_96px_1.png"/>
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                            </nodes>
+                        </RibbonGroup>
                     </ribbonGroups>
                 </RibbonTab>
                 <RibbonTab text=" Layout">
                     <ribbonGroups>
                         <RibbonGroup title="Format">
                             <nodes>
-                                <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction"
+                                <Column>
+                                    <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction"
                                         styleClass="letter-button" text="h1"/>
+                                    <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction"
+                                            styleClass="letter-button" text="„“"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction"
                                         styleClass="letter-button" text="h2"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction"
                                         styleClass="letter-button" text="h3"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction"
                                         styleClass="letter-button" text="h4"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction"
                                         styleClass="letter-button" text="h5"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction"
                                         styleClass="letter-button" text="h6"/>
+                                </Column>
+                                <Column>
                                 <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false"
                                         onAction="#paragraphButtonAction" styleClass="letter-button" text="p"/>
+                                </Column>
                             </nodes>
                         </RibbonGroup>
                         <RibbonGroup title="Absatz">
@@ -1078,9 +1106,9 @@
                                 </Button>
                                 <Button fx:id="insertSpecialCharacterButton" mnemonicParsing="false"
                                         onAction="#insertSpecialCharacterAction" contentDisplay="TOP"
-                                        text="Insert Special Character" wrapText="true">
+                                        text="Insert Symbol" wrapText="true">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Insert special character"/>
+                                        <Tooltip styleClass="white-tooltip" text="Insert Symbol"/>
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"

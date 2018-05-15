@@ -14,11 +14,15 @@ import javax.inject.Singleton;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import de.machmireinebook.epubeditor.config.StageSizer;
+import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.manager.ClipManager;
 
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang.BooleanUtils;
@@ -53,15 +57,13 @@ public class EpubEditorConfiguration
 {
     private static final Logger logger = Logger.getLogger(EpubEditorConfiguration.class);
 
-    //color
-    String color = "#0093FF";
-
     private Stage mainWindow;
     private Document configurationDocument;
     private List<OpenWithApplication> xhtmlOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> imageOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> cssOpenWithApplications = new ArrayList<>();
     private List<OpenWithApplication> fontOpenWithApplications = new ArrayList<>();
+    private StageSizer stageSizer = new StageSizer();
 
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 
@@ -147,29 +149,13 @@ public class EpubEditorConfiguration
                         Element mainWindoElement = layoutElement.getChild("main-window");
                         if (mainWindoElement != null)
                         {
-                            Boolean isFullscreen = BooleanUtils.toBoolean(mainWindoElement.getAttributeValue("is-fullscreen"));
-                            Double width = Double.valueOf(mainWindoElement.getAttributeValue("width"));
-                            Double height = Double.valueOf(mainWindoElement.getAttributeValue("height"));
-                            Double x = Double.valueOf(mainWindoElement.getAttributeValue("x"));
-                            Double y = Double.valueOf(mainWindoElement.getAttributeValue("y"));
+                            stageSizer.setMaximized(BooleanUtils.toBoolean(mainWindoElement.getAttributeValue("is-fullscreen")));
+                            stageSizer.setWidth(Double.valueOf(mainWindoElement.getAttributeValue("width")));
+                            stageSizer.setHeight(Double.valueOf(mainWindoElement.getAttributeValue("height")));
+                            stageSizer.setX(Double.valueOf(mainWindoElement.getAttributeValue("x")));
+                            stageSizer.setY(Double.valueOf(mainWindoElement.getAttributeValue("y")));
 
-                            Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-                            if (isFullscreen)
-                            {
-                                mainWindow.setFullScreen(true);
-                                mainWindow.setWidth(primaryScreenBounds.getWidth());
-                                mainWindow.setHeight(primaryScreenBounds.getHeight());
-                                mainWindow.setX(0);
-                                mainWindow.setY(0);
-                            }
-                            else if (x >= 0.0 && y >= 0.0 && x < primaryScreenBounds.getWidth() - 100 && y < primaryScreenBounds.getHeight() - 100) // verhindern dass Fenster ausserhalb des sichtbaren Bereichs göffnet wird
-                            {
-                                mainWindow.setFullScreen(false);
-                                mainWindow.setWidth(width);
-                                mainWindow.setHeight(height);
-                                mainWindow.setX(x);
-                                mainWindow.setY(y);
-                            }
+                            stageSizer.setStage(mainWindow);
                         }
 
                         Element visibilityElement = layoutElement.getChild("visibility");
