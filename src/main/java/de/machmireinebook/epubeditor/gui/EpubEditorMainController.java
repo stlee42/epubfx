@@ -18,16 +18,8 @@ import javax.inject.Singleton;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -59,9 +51,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.log4j.Logger;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.EpubEditorStarter;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -71,18 +64,14 @@ import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
-import org.apache.log4j.Logger;
-
-import com.dlsc.preferencesfx.PreferencesFx;
-import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.model.Group;
-import com.dlsc.preferencesfx.model.Setting;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -101,9 +90,9 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private SplitPane mainDivider;
     @FXML
-    private SplitPane centerDivider;
+    private StashableSplitPane centerDivider;
     @FXML
-    private SplitPane rightDivider;
+    private StashableSplitPane rightDivider;
     @FXML
     private AnchorPane previewAnchorPane;
     @FXML
@@ -117,7 +106,7 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private Button insertTableButton;
     @FXML
-    private SplitPane leftDivider;
+    private StashableSplitPane leftDivider;
     @FXML
     private ToggleButton showClipsToggleButton;
     @FXML
@@ -263,6 +252,8 @@ public class EpubEditorMainController implements Initializable
     private SearchManager searchManager;
     @Inject
     private SearchAnchorPane searchAnchorPane;
+    @Inject
+    private PreferencesManager preferencesManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -368,12 +359,7 @@ public class EpubEditorMainController implements Initializable
         //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
         clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());
         showClipsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue)
-            {
-                leftDivider.getItems().remove(clipListView);
-                leftDivider.setDividerPosition(0, 1.0);
-            }
-            else
+            if (newValue)
             {
                 if (!leftDivider.getItems().contains(clipListView))
                 {
@@ -381,6 +367,7 @@ public class EpubEditorMainController implements Initializable
                     leftDivider.setDividerPosition(0, 0.7);
                 }
             }
+            leftDivider.setVisibility(1, newValue);
         });
         epubStructureTreeView.visibleProperty().bindBidirectional(showBookBrowserToggleButton.selectedProperty());
         showBookBrowserToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -392,20 +379,11 @@ public class EpubEditorMainController implements Initializable
                     leftDivider.setDividerPosition(0, 0.7);
                 }
             }
-            else
-            {
-                leftDivider.getItems().remove(epubStructureTreeView);
-                leftDivider.setDividerPosition(0, 1.0);
-            }
+            leftDivider.setVisibility(0, newValue);
         });
         validationResultsListView.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
         showValidationResultsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue)
-            {
-                centerDivider.getItems().remove(validationResultsListView);
-                centerDivider.setDividerPosition(0, 1.0);
-            }
-            else
+            if (newValue)
             {
                 if (!centerDivider.getItems().contains(validationResultsListView))
                 {
@@ -413,6 +391,7 @@ public class EpubEditorMainController implements Initializable
                     centerDivider.setDividerPosition(0, 0.8);
                 }
             }
+            centerDivider.setVisibility(1, newValue);
         });
         previewAnchorPane.visibleProperty().bindBidirectional(showPreviewToggleButton.selectedProperty());
         showPreviewToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -424,20 +403,11 @@ public class EpubEditorMainController implements Initializable
                     rightDivider.setDividerPosition(0, 0.7);
                 }
             }
-            else
-            {
-                rightDivider.getItems().remove(previewAnchorPane);
-                rightDivider.setDividerPosition(0, 1.0);
-            }
+            rightDivider.setVisibility(0, newValue);
         });
         tocTreeView.visibleProperty().bindBidirectional(showTocToggleButton.selectedProperty());
         showTocToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue)
-            {
-                rightDivider.getItems().remove(tocTreeView);
-                rightDivider.setDividerPosition(0, 1.0);
-            }
-            else
+            if (newValue)
             {
                 if (!rightDivider.getItems().contains(tocTreeView))
                 {
@@ -445,6 +415,7 @@ public class EpubEditorMainController implements Initializable
                     rightDivider.setDividerPosition(0, 0.7);
                 }
             }
+            rightDivider.setVisibility(1, newValue);
         });
 
         ObservableList<Path> recentFiles = configuration.getRecentFiles();
@@ -574,6 +545,11 @@ public class EpubEditorMainController implements Initializable
                 Book currentBook = reader.readEpub(file);
                 currentBookProperty.set(currentBook);
                 configuration.getRecentFiles().add(0, file.toPath());
+                if (!currentBook.getSpine().isEmpty())
+                {
+                    Resource firstResource = currentBook.getSpine().getResource(0);
+                    editorManager.openFileInEditor(firstResource, firstResource.getMediaType());
+                }
             }
             catch (IOException e)
             {
@@ -1184,39 +1160,19 @@ public class EpubEditorMainController implements Initializable
         return mainDivider;
     }
 
-    public void setMainDivider(SplitPane mainDivider)
-    {
-        this.mainDivider = mainDivider;
-    }
-
-    public SplitPane getCenterDivider()
+    public StashableSplitPane getCenterDivider()
     {
         return centerDivider;
     }
 
-    public void setCenterDivider(SplitPane centerDivider)
-    {
-        this.centerDivider = centerDivider;
-    }
-
-    public SplitPane getRightDivider()
+    public StashableSplitPane getRightDivider()
     {
         return rightDivider;
     }
 
-    public void setRightDivider(SplitPane rightDivider)
-    {
-        this.rightDivider = rightDivider;
-    }
-
-    public SplitPane getLeftDivider()
+    public StashableSplitPane getLeftDivider()
     {
         return leftDivider;
-    }
-
-    public void setLeftDivider(SplitPane leftDivider)
-    {
-        this.leftDivider = leftDivider;
     }
 
     public void generateUuidAction(ActionEvent actionEvent)
@@ -1245,11 +1201,6 @@ public class EpubEditorMainController implements Initializable
 
     public void findNextAction(ActionEvent actionEvent)
     {
-    }
-
-    public void showAddMoreFilesAction(ActionEvent actionEvent)
-    {
-
     }
 
     public void editTocAction(ActionEvent actionEvent)
@@ -1290,27 +1241,6 @@ public class EpubEditorMainController implements Initializable
 
     public void settingsButtonAction(ActionEvent actionEvent)
     {
-        StringProperty stringProperty = new SimpleStringProperty("String");
-        BooleanProperty booleanProperty = new SimpleBooleanProperty(true);
-        IntegerProperty integerProperty = new SimpleIntegerProperty(12);
-        DoubleProperty doubleProperty = new SimpleDoubleProperty(6.5);
-
-        PreferencesFx preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
-                Category.of("Category title 1",
-                        Setting.of("Setting title 1", stringProperty), // creates a group automatically
-                        Setting.of("Setting title 2", booleanProperty) // which contains both settings
-                ),
-                Category.of("Category title 2")
-                        .subCategories( // adds a subcategory to "Category title 2"
-                                Category.of("Category title 3",
-                                        Group.of("Group title 1",
-                                                Setting.of("Setting title 3", integerProperty)
-                                        ),
-                                        Group.of( // group without title
-                                                Setting.of("Setting title 3", doubleProperty)
-                                        )
-                                )
-                        )        );
-        preferencesFx.show();
+        preferencesManager.showPreferencesDialog();
     }
 }

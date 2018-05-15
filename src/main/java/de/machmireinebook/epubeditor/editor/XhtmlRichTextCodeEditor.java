@@ -18,7 +18,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 07.05.2018
+ * Created by Michail Jungierek
  */
 public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 {

@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.config;
+package de.machmireinebook.epubeditor.preferences;
 
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -11,9 +11,9 @@ import javafx.stage.Stage;
  */
 public class StageSizer
 {
-    private static int MINIMUM_VISIBLE_WIDTH = 100;
-    private static int MINIMUM_VISIBLE_HEIGHT = 50;
-    private static int MARGIN = 50;
+    private static final int MINIMUM_VISIBLE_WIDTH = 100;
+    private static final int MINIMUM_VISIBLE_HEIGHT = 50;
+    private static final int MARGIN = 0;
 
     private Boolean maximized;
     private Number x;

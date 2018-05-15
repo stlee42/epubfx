@@ -77,8 +77,12 @@
     -fx-padding: 0 0 0 0;
     -fx-spacing: 6;
 }
-.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused, .ribbon-group .toggle-button:focused:selected,
-.ribbon-group .toggle-button:selected, .ribbon-group .toggle-button:hover:selected, .ribbon-group .toggle-button:pressed
+.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused, ribbon-group .toggle-button,
+.ribbon-group .toggle-button:hover,
+.ribbon-group .toggle-button:focused, .ribbon-group .toggle-button:hover:focused,
+.ribbon-group .toggle-button:focused:selected,
+.ribbon-group .toggle-button:selected, .ribbon-group .toggle-button:hover:selected, .ribbon-group .toggle-button:pressed,
+.ribbon-group .toggle-button:hover:pressed:focused:armed, .ribbon-group .toggle-button:hover:pressed:focused:armed:selected, .ribbon-group .toggle-button:armed
 {
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -115,4 +119,9 @@
 {
     -fx-padding: 16px 10px 16px 0px;
     -fx-spacing: 6;
+}
+
+.split-pane.no-divider *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+    -fx-background-color: transparent;
 }

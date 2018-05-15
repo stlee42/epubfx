@@ -1,7 +1,7 @@
 package de.machmireinebook.epubeditor.epublib;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 06.10.2017
+ * Created by Michail Jungierek
  */
 public enum EpubVersion
 {

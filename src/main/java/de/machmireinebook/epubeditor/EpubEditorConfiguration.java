@@ -18,12 +18,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
-import de.machmireinebook.epubeditor.config.StageSizer;
-import de.machmireinebook.epubeditor.domain.Clip;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.manager.ClipManager;
-
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Appender;
@@ -42,8 +36,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import de.machmireinebook.epubeditor.preferences.StageSizer;
 import de.machmireinebook.epubeditor.domain.Clip;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.ClipManager;
 
@@ -65,6 +61,9 @@ public class EpubEditorConfiguration
     private List<OpenWithApplication> fontOpenWithApplications = new ArrayList<>();
     private StageSizer stageSizer = new StageSizer();
 
+    /**
+     * Use a SetUniqueList and not a set, because stes have no guaranteed order, but this is needed for recent list
+     */
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 
     public static final int RECENT_FILE_NUMBER = 3;
@@ -164,18 +163,31 @@ public class EpubEditorConfiguration
                         boolean showToc = false;
                         boolean showValidationResults = false;
                         boolean showPreview = false;
+                        StashableSplitPane leftDivider = epubEditorMainController.getLeftDivider();
+                        StashableSplitPane rightDivider = epubEditorMainController.getRightDivider();
+                        StashableSplitPane centerDivider = epubEditorMainController.getCenterDivider();
+
                         if (visibilityElement != null)
                         {
                             showBookBrowser = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("book-browser"));
                             epubEditorMainController.getShowBookBrowserToggleButton().selectedProperty().set(showBookBrowser);
+                            leftDivider.setVisibility(0, showBookBrowser);
+
                             showClips = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("clips-list"));
                             epubEditorMainController.getShowClipsToggleButton().selectedProperty().set(showClips);
-                            showToc = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("toc"));
-                            epubEditorMainController.getShowTocToggleButton().selectedProperty().set(showToc);
-                            showValidationResults = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results"));
-                            epubEditorMainController.getShowValidationResultsToggleButton().selectedProperty().set(showValidationResults);
+                            leftDivider.setVisibility(1, showClips);
+
                             showPreview = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("preview"));
                             epubEditorMainController.getShowPreviewToggleButton().selectedProperty().set(showPreview);
+                            rightDivider.setVisibility(0, showPreview);
+
+                            showToc = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("toc"));
+                            epubEditorMainController.getShowTocToggleButton().selectedProperty().set(showToc);
+                            rightDivider.setVisibility(1, showToc);
+
+                            showValidationResults = BooleanUtils.toBoolean(visibilityElement.getAttributeValue("validation-results"));
+                            epubEditorMainController.getShowValidationResultsToggleButton().selectedProperty().set(showValidationResults);
+                            centerDivider.setVisibility(1, showValidationResults);
                         }
 
                         Element dividersElement = layoutElement.getChild("dividers");
@@ -202,15 +214,11 @@ public class EpubEditorConfiguration
                             Element leftDividerElement = dividersElement.getChild("left-divider");
                             if (leftDividerElement != null)
                             {
-                                List<SplitPane.Divider> dividers = epubEditorMainController.getLeftDivider().getDividers();
+                                List<SplitPane.Divider> dividers = leftDivider.getDividers();
                                 if (!"none".equals(leftDividerElement.getAttributeValue("divider-1")) && showBookBrowser && showClips)
                                 {
-                                    dividers.get(0).setPosition(Double.parseDouble(leftDividerElement.getAttributeValue("divider-1")));
-                                }
-                                else
-                                {
-                                    logger.info("no divider on left side");
-                                    dividers.get(0).setPosition(1.0);
+                                    SplitPane.Divider divider = dividers.get(0);
+                                    divider.setPosition(Double.parseDouble(leftDividerElement.getAttributeValue("divider-1")));
                                 }
                             }
 
@@ -325,11 +333,11 @@ public class EpubEditorConfiguration
         EpubEditorMainController epubEditorMainController =  BeanFactory.getInstance().getBean(EpubEditorMainController.class);
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
 
-        double width = mainWindow.getWidth();
-        double height = mainWindow.getHeight();
-        double x = mainWindow.getX();
-        double y = mainWindow.getY();
-        boolean isFullscreen = mainWindow.isMaximized();
+        double width = stageSizer.getWidth().doubleValue();
+        double height = stageSizer.getHeight().doubleValue();
+        double x = stageSizer.getX().doubleValue();
+        double y = stageSizer.getY().doubleValue();
+        boolean isFullscreen = stageSizer.getMaximized();
         if (configurationDocument != null)
         {
             Element root = configurationDocument.getRootElement();

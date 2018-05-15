@@ -24,6 +24,7 @@
 <?import com.pixelduke.control.ribbon.Column?>
 <?import com.pixelduke.control.ribbon.RibbonGroup?>
 <?import com.pixelduke.control.ribbon.RibbonTab?>
+<?import de.machmireinebook.epubeditor.javafx.StashableSplitPane?>
 <AnchorPane prefHeight="812.0" prefWidth="1324.0" xmlns="http://javafx.com/javafx/8.0.121"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="de.machmireinebook.epubeditor.gui.EpubEditorMainController">
@@ -140,20 +141,20 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <SplitPane fx:id="mainDivider" dividerPositions="0.4, 1" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0"
-                   AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                   AnchorPane.topAnchor="189.0">
+        <SplitPane fx:id="mainDivider" dividerPositions="0.4, 0.7" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0"
+                            AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                            AnchorPane.topAnchor="189.0">
             <items>
-                <SplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL"
+                <StashableSplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL"
                            SplitPane.resizableWithParent="false">
                     <items>
                         <TreeView fx:id="epubStructureTreeView" SplitPane.resizableWithParent="false"/>
                         <ListView fx:id="clipListView"/>
                     </items>
-                </SplitPane>
-                <SplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
+                </StashableSplitPane>
+                <StashableSplitPane fx:id="centerDivider" dividerPositions="0.7854014598540145" orientation="VERTICAL">
                     <items>
-                        <AnchorPane fx:id="centerAnchorPane" prefHeight="817.0" prefWidth="629.0">
+                        <AnchorPane fx:id="centerAnchorPane" minWidth="200">
                             <children>
                                 <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS"
                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
@@ -162,8 +163,8 @@
                         </AnchorPane>
                         <ListView fx:id="validationResultsListView"/>
                     </items>
-                </SplitPane>
-                <SplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL">
+                </StashableSplitPane>
+                <StashableSplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL">
                     <items>
                         <AnchorPane fx:id="previewAnchorPane" SplitPane.resizableWithParent="false">
                             <children>
@@ -176,10 +177,10 @@
                                                 <Tooltip styleClass="white-tooltip" text="Zoom in"/>
                                             </tooltip>
                                             <graphic>
-                                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/zoom_in.png"/>
+                                                        <Image url="icons/icons8_Zoom_In_96px.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -190,10 +191,10 @@
                                                 <Tooltip styleClass="white-tooltip" text="100%"/>
                                             </tooltip>
                                             <graphic>
-                                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/view_1_1.png"/>
+                                                        <Image url="icons/icons8_Zoom_to_Actual_Size_96px.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -205,10 +206,10 @@
                                                 <Tooltip styleClass="white-tooltip" text="Zoom out"/>
                                             </tooltip>
                                             <graphic>
-                                                <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
                                                            preserveRatio="true">
                                                     <image>
-                                                        <Image url="icons/zoom_out.png"/>
+                                                        <Image url="icons/icons8_Zoom_Out_96px.png"/>
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -223,7 +224,7 @@
                         </AnchorPane>
                         <TreeView fx:id="tocTreeView"/>
                     </items>
-                </SplitPane>
+                </StashableSplitPane>
             </items>
         </SplitPane>
         <!--TabPane layoutY="27.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" visible="false">
@@ -595,7 +596,7 @@
                         <RibbonGroup title="File">
                             <nodes>
                                 <Button fx:id="newBookButton" contentDisplay="TOP" mnemonicParsing="false"
-                                        onAction="#newEpubAction" text="New EPUB" wrapText="true">
+                                        onAction="#newEpubAction" text="New" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -606,7 +607,7 @@
                                     </graphic>
                                 </Button>
                                 <Button fx:id="openBookButton" contentDisplay="TOP" mnemonicParsing="false"
-                                        onAction="#openEpubAction" text="Open EPUB" wrapText="true">
+                                        onAction="#openEpubAction" text="Open" wrapText="true">
                                     <tooltip>
                                         <Tooltip styleClass="white-tooltip" text="Open ebook"/>
                                     </tooltip>
@@ -683,7 +684,7 @@
                                 </Button>
                                 <Column>
                                     <Button fx:id="addCSSFilesButton" minWidth="-Infinity" mnemonicParsing="false"
-                                            onAction="#showAddMoreFilesAction" styleClass="left-align" text="Empty CSS">
+                                            onAction="#addEmptyCSSFileAction" styleClass="left-align" text="Empty CSS">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
@@ -694,7 +695,7 @@
                                         </graphic>
                                     </Button>
                                     <Button fx:id="addOtherFilesButton" minWidth="-Infinity" mnemonicParsing="false"
-                                            onAction="#showAddMoreFilesAction" styleClass="left-align"
+                                            onAction="#addEmptySVGFileAction" styleClass="left-align"
                                             text="Other File">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
@@ -805,7 +806,7 @@
                             <nodes>
                                 <Button fx:id="settingsButton" mnemonicParsing="false"
                                               onAction="#settingsButtonAction" contentDisplay="TOP"
-                                              text="Settings" wrapText="true">
+                                              text="Settings" minWidth="-Infinity" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -826,8 +827,17 @@
                                 <Column>
                                     <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction"
                                         styleClass="letter-button" text="h1"/>
-                                    <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction"
-                                            styleClass="letter-button" text="„“"/>
+                                    <Button fx:id="quotationMarksButton" mnemonicParsing="false"
+                                            onAction="#quotationMarksButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <image>
+                                                    <Image url="icons/icons8_Get_Quote_96px.png"/>
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
                                 </Column>
                                 <Column>
                                 <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction"
@@ -1269,7 +1279,7 @@
                     <ribbonGroups>
                         <RibbonGroup title="Panels">
                             <nodes>
-                                <ToggleButton fx:id="showBookBrowserToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                <ToggleButton fx:id="showBookBrowserToggleButton" mnemonicParsing="false" contentDisplay="TOP"
                                               text="Show Book Browser" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -1280,7 +1290,7 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showClipsToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                <ToggleButton fx:id="showClipsToggleButton" mnemonicParsing="false" contentDisplay="TOP"
                                               text="Show Clips" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -1291,7 +1301,7 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showPreviewToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
+                                <ToggleButton fx:id="showPreviewToggleButton" mnemonicParsing="false" contentDisplay="TOP"
                                               text="Show Preview" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -1303,7 +1313,7 @@
                                     </graphic>
                                 </ToggleButton>
                                 <ToggleButton fx:id="showTocToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
-                                              text="Show Table of Contents" wrapText="true">
+                                              text="Show Table&#10;of Contents" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -1313,8 +1323,8 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showValidationResultsToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
-                                              text="Show Validation Results" wrapText="true">
+                                <ToggleButton fx:id="showValidationResultsToggleButton"  minWidth="-Infinity" mnemonicParsing="false" contentDisplay="TOP"
+                                              text="Show&#10;Validation Results" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
