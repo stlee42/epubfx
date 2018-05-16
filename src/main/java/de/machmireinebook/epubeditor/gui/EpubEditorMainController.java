@@ -32,6 +32,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -51,8 +52,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -71,6 +70,8 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+
+import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -233,6 +234,8 @@ public class EpubEditorMainController implements Initializable
     private Button uppercaseButton;
     @FXML
     private Button lowercaseButton;
+    @FXML
+    private ComboBox<String> languageSpellComboBox;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -445,6 +448,10 @@ public class EpubEditorMainController implements Initializable
         });
 
         searchManager.currentBookProperty().bind(currentBookProperty);
+
+        //not bind bidiretional, because selectinModel has only read only properties and preferences can not set values from preferences store if property is bind
+        preferencesManager.languageSpellSelectionProperty().addListener((observable, oldValue, newValue) -> languageSpellComboBox.getSelectionModel().select(newValue));
+        languageSpellComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> preferencesManager.languageSpellSelectionProperty().set(newValue));
     }
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)

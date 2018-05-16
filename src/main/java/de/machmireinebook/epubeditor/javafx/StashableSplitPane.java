@@ -1,20 +1,18 @@
 package de.machmireinebook.epubeditor.javafx;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * Created by Michail Jungierek
  */
 public class StashableSplitPane extends SplitPane
 {
-    private static final Logger logger = Logger.getLogger(StashableSplitPane.class);
+    private static final Logger logger = Logger.getLogger(StashableSplitPane.class.getName());
     private Node[] originalItems;
     private boolean[] visibles;
     private double[] proportions;
@@ -57,29 +55,26 @@ public class StashableSplitPane extends SplitPane
         }
         final ObservableList<Node> items = getItems();
         if (items.size() <= 1) {
-            logger.warn("All other children panes were hidden, so ignore this action.");
+            logger.warning("All other children panes were hidden, so ignore this action.");
             return;
         }
         final Node node = originalItems[index];
         // find the node in the item list
         final int pos = findNode(items, node);
         if (pos >= items.size()) {
-            logger.error("Try to hide a non-exist node.");
+            logger.severe("Try to hide a non-exist node.");
             return;
         }
         // member the proportion that the node occupies
         double[] positions = getDividerPositions();
-        logger.debug("pos = " + pos);
-        logger.debug("positions = " + StringUtils.join(positions, ','));
+        logger.fine("pos = " + pos);
         proportions[index] = getProportion(positions, pos);
-        logger.debug("proportions[index] = " + proportions[index]);
+        logger.fine("proportions[index] = " + proportions[index]);
         // remove the node from the item list
         items.remove(pos);
         // set the new divider positions
         double[] newPositions = getPositionsAfterRemoving(positions, pos);
-        logger.debug("newPositions = " + StringUtils.join(newPositions, ','));
         setDividerPositions(newPositions);
-        logger.debug("After setting, positions = " + StringUtils.join(getDividerPositions(), ','));
         visibles[index] = false;
     }
 
@@ -104,7 +99,7 @@ public class StashableSplitPane extends SplitPane
      *           if the index is invalid.
      */
     public void showItem(int index) {
-        logger.trace("Show item " + index);
+        logger.fine("Show item " + index);
         if (visibles == null) {
             init();
         }
@@ -121,9 +116,8 @@ public class StashableSplitPane extends SplitPane
         // find the insertion position of the node
         ObservableList<Node> items = getItems();
         int pos = findInsertPosition(items, node);
-        logger.debug("pos = " + pos);
+        logger.fine("pos = " + pos);
         double[] positions = getDividerPositions();
-        logger.debug("positions = " + StringUtils.join(positions, ','));
         // insert the node to the item list, if its not yet included e.g. by fxml
         if (!items.contains(node))
         {
@@ -132,10 +126,8 @@ public class StashableSplitPane extends SplitPane
         // restore the original proportion occupied by the node
         double[] newPositions = getPositionsAfterInsertion(positions, pos,
                 proportions[index]);
-        logger.debug("proportions[index] = " + proportions[index]);
-        logger.debug("newPositions = " + StringUtils.join(newPositions, ','));
+        logger.fine("proportions[index] = " + proportions[index]);
         setDividerPositions(newPositions);
-        logger.debug("After setting, positions = " + StringUtils.join(getDividerPositions(), ','));
 
         visibles[index] = true;
     }
@@ -234,10 +226,11 @@ public class StashableSplitPane extends SplitPane
      *           if the index is invalid.
      */
     public final void setVisibility(int index, boolean visible) {
-        logger.trace("Set item " + index + " visible to " + visible);
+        logger.fine("Set item " + index + " visible to " + visible);
         if (visible) {
             showItem(index);
         } else {
             hideItem(index);
         }
-    }}
+    }
+}
