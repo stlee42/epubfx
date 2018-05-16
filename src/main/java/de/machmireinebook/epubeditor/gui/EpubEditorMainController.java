@@ -284,13 +284,13 @@ public class EpubEditorMainController implements Initializable
             editorManager.setBook(newValue);
             previewManager.reset();
             saveButton.disableProperty().unbind();
+            createHtmlTocButton.disableProperty().unbind();
+            createNcxButton.disableProperty().unbind();
             if (newValue != null)
             {
                 saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
-                createHtmlTocButton.disableProperty().unbind();
-                createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
-                createNcxButton.disableProperty().unbind();
-                createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
+                createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
+                createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
             }
 
         });

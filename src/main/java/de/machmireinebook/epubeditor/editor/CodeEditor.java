@@ -32,6 +32,7 @@ public interface CodeEditor
     void scrollTo(EditorPosition pos);
 
     //methods of the java part of editor
+    boolean isChangingCode();
     void setContextMenu(ContextMenu contextMenu);
     ObjectProperty<Worker.State> stateProperty();
     IntegerProperty cursorPositionProperty();

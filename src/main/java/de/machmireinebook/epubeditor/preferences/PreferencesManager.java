@@ -4,12 +4,8 @@ import java.util.Arrays;
 
 import javax.inject.Singleton;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,32 +25,77 @@ import de.machmireinebook.epubeditor.EpubEditorStarter;
 @Singleton
 public class PreferencesManager
 {
+    private StringProperty headlineToc = new SimpleStringProperty("Contents");
+    private IntegerProperty integerProperty = new SimpleIntegerProperty(1);
+
+    private ObservableList<String> languageItems = FXCollections.observableArrayList(Arrays.asList(
+            "English", "Deutsch", "Francais", "Italiano")
+    );
+    private ObjectProperty<String> languageSelection = new SimpleObjectProperty<>("Deutsch");
+
+    private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
+            "“ ” (English)", "„“ (Deutsch)", "»« (Deutsch)", "«» (Français)")
+    );
+    private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
+
     public void showPreferencesDialog()
     {
-        StringProperty stringProperty = new SimpleStringProperty("String");
-        BooleanProperty booleanProperty = new SimpleBooleanProperty(true);
-        IntegerProperty integerProperty = new SimpleIntegerProperty(12);
-        DoubleProperty doubleProperty = new SimpleDoubleProperty(6.5);
-
-        ObservableList<String> languageItems = FXCollections.observableArrayList(Arrays.asList(
-                "English", "Deutsch", "Francais", "Italiano")
-        );
-        ObjectProperty<String> languageSelection = new SimpleObjectProperty<>("Deutsch");
-
-        ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
-                "“ ” (English)", "„“ (Deutsch)", "»« (Deutsch)", "«» (Français)")
-        );
-        ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
 
         PreferencesFx preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
-                Category.of("Language Settings",
+                Category.of("Language specific Settings",
                         Setting.of("Language", languageItems, languageSelection),
-                        Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection)
+                        Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
+                        Setting.of("Headline of Table of Contents", headlineToc)
                 ),
                 Category.of("Category title 2",
                         Setting.of("Setting title 3", integerProperty),
                         Setting.of("Setting title 4", integerProperty)
                 ));
         preferencesFx.show();
+    }
+
+    public String getHeadlineToc()
+    {
+        return headlineToc.get();
+    }
+
+    public StringProperty headlineTocProperty()
+    {
+        return headlineToc;
+    }
+
+    public void setHeadlineToc(String headlineToc)
+    {
+        this.headlineToc.set(headlineToc);
+    }
+
+    public String getLanguageSelection()
+    {
+        return languageSelection.get();
+    }
+
+    public ObjectProperty<String> languageSelectionProperty()
+    {
+        return languageSelection;
+    }
+
+    public void setLanguageSelection(String languageSelection)
+    {
+        this.languageSelection.set(languageSelection);
+    }
+
+    public String getQuotationMarkSelection()
+    {
+        return quotationMarkSelection.get();
+    }
+
+    public ObjectProperty<String> quotationMarkSelectionProperty()
+    {
+        return quotationMarkSelection;
+    }
+
+    public void setQuotationMarkSelection(String quotationMarkSelection)
+    {
+        this.quotationMarkSelection.set(quotationMarkSelection);
     }
 }

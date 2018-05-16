@@ -42,6 +42,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private BooleanProperty canRedo = new SimpleBooleanProperty();
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
+    private boolean isChangingCode = false;
+
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
 
@@ -132,7 +134,10 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public void setCode(String newCode)
     {
-        codeArea.replaceText(0, 0, newCode);
+        isChangingCode = true; //this change of code is not relevant for listeners
+        codeArea.clear();
+        isChangingCode = false;
+        codeArea.insertText(0, newCode);
     }
 
     @Override
@@ -282,4 +287,9 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         return textInformation.get();
     }
 
+    @Override
+    public boolean isChangingCode()
+    {
+        return isChangingCode;
+    }
 }

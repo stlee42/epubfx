@@ -1275,12 +1275,12 @@
 
                     </ribbonGroups>
                 </RibbonTab>
-                <RibbonTab text=" View">
+                <RibbonTab text="View">
                     <ribbonGroups>
                         <RibbonGroup title="Panels">
                             <nodes>
-                                <ToggleButton fx:id="showBookBrowserToggleButton" mnemonicParsing="false" contentDisplay="TOP"
-                                              text="Show Book Browser" wrapText="true">
+                                <ToggleButton fx:id="showBookBrowserToggleButton" mnemonicParsing="false" contentDisplay="TOP" prefWidth="120"
+                                              prefHeight="80" text="Book Browser" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -1290,8 +1290,8 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showClipsToggleButton" mnemonicParsing="false" contentDisplay="TOP"
-                                              text="Show Clips" wrapText="true">
+                                <ToggleButton fx:id="showClipsToggleButton" mnemonicParsing="false" contentDisplay="TOP" prefWidth="120"
+                                              prefHeight="80" text="Clips" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -1301,8 +1301,8 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showPreviewToggleButton" mnemonicParsing="false" contentDisplay="TOP"
-                                              text="Show Preview" wrapText="true">
+                                <ToggleButton fx:id="showPreviewToggleButton" mnemonicParsing="false" contentDisplay="TOP" prefWidth="120"
+                                              prefHeight="80" text="Preview" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -1312,8 +1312,8 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showTocToggleButton" mnemonicParsing="false" minWidth="-Infinity" contentDisplay="TOP"
-                                              text="Show Table&#10;of Contents" wrapText="true">
+                                <ToggleButton fx:id="showTocToggleButton" mnemonicParsing="false" prefWidth="120" contentDisplay="TOP"
+                                              prefHeight="80" text="Table&#10;of Contents" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
@@ -1323,8 +1323,8 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showValidationResultsToggleButton"  minWidth="-Infinity" mnemonicParsing="false" contentDisplay="TOP"
-                                              text="Show&#10;Validation Results" wrapText="true">
+                                <ToggleButton fx:id="showValidationResultsToggleButton"  prefWidth="120" mnemonicParsing="false" contentDisplay="TOP"
+                                              prefHeight="80" text="Validation&#10;Results" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
