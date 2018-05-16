@@ -91,9 +91,9 @@ public class InsertMediaController implements Initializable, StandardController
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
 
     @Inject
-    EditorTabManager editorManager;
+    private EditorTabManager editorManager;
     @Inject
-    EpubEditorMainController mainController;
+    private EpubEditorMainController mainController;
 
     private static InsertMediaController instance;
 
@@ -274,9 +274,7 @@ public class InsertMediaController implements Initializable, StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(event -> {
-            refresh();
-        });
+        stage.setOnShown(event -> refresh());
     }
 
     @Override

@@ -292,4 +292,10 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     {
         return isChangingCode;
     }
+
+    @Override
+    public void clearUndoHistory()
+    {
+        codeArea.getUndoManager().forgetHistory();
+    }
 }

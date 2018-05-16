@@ -797,7 +797,6 @@ public class EpubEditorMainController implements Initializable
             AddCoverController addCoverController = AddCoverController.getInstance();
             addCoverController.setBook(currentBookProperty.getValue());
             addCoverController.setStage(addCoverStage);
-            addCoverController.setBookBrowserManager(bookBrowserManager);
 
             addCoverStage.setScene(scene);
             addCoverStage.initOwner(stage);

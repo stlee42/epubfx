@@ -62,8 +62,9 @@ public interface CodeEditor
     void setCodeEditorSize(double width, double height);
 
     void spellCheck();
+    void clearUndoHistory();
 
     ReadOnlyStringProperty textInformationProperty();
-
     String getTextInformation();
+
 }

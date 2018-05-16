@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.collections.*?>
 
-<AnchorPane minWidth="372.0" prefHeight="450.0" prefWidth="623.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.AddCoverController">
-   <children>
-      <SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <columns>
-                      <TableColumn prefWidth="122.0" text="Name" />
-                      <TableColumn prefWidth="171.0" text="Preview" />
-                    </columns>
-                  </TableView>
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <ImageView fx:id="imageView" fitHeight="365.0" fitWidth="308.0" layoutX="71.0" layoutY="88.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0" />
-                  <Label fx:id="imageValuesLabel" layoutX="14.0" layoutY="376.0" text="Label" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="20.0" />
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
-      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="OkS" />
-            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
-         </children>
-      </HBox>
-   </children>
+<AnchorPane minWidth="372.0" prefHeight="526.0" prefWidth="959.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.AddCoverController">
+    <children>
+        <SplitPane dividerPositions="0.6261558784676354" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <columns>
+                                <TableColumn prefWidth="270.0" text="Name" />
+                                <TableColumn prefWidth="185.0" text="Preview" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <ImageView fx:id="imageView" fitHeight="365.0" fitWidth="308.0" layoutX="71.0" layoutY="88.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0" />
+                        <Label fx:id="imageValuesLabel" layoutX="14.0" layoutY="376.0" text="Label" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="20.0" />
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
+                <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
+            </children>
+        </HBox>
+        <VBox layoutX="26.0" layoutY="254.0" prefHeight="402.0" prefWidth="162.0" spacing="10.0" AnchorPane.topAnchor="20.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#otherFileButtonAction" prefHeight="25.0" prefWidth="150.0" text="Load other file..." />
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

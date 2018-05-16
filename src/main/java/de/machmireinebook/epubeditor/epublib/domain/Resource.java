@@ -1,24 +1,27 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.ByteArrayInputStream;
+import java.io.Externalizable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Reader;
-import java.io.Serializable;
 import java.nio.file.Path;
-
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
-import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
-import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
+import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
+import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 
 /**
  * Represents a resource that is part of the epub.
@@ -27,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author paul
  *
  */
-public class Resource<T> implements Serializable, ToStringConvertible
+public class Resource<T> implements Externalizable, ToStringConvertible
 {
     private static final Logger logger = Logger.getLogger(Resource.class);
 	/**
@@ -427,4 +430,41 @@ public class Resource<T> implements Serializable, ToStringConvertible
         }
         setHref(getHref().replace(fileName, string));
     }
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException
+	{
+/*
+	private String id;
+	private String title;
+	private StringProperty href = new SimpleStringProperty();
+	protected String originalHref;
+    private String properties;
+	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
+	private String inputEncoding = Constants.CHARACTER_ENCODING;
+	protected byte[] data;
+
+ */
+		out.writeObject(id);
+		out.writeObject(title);
+		out.writeObject(href.get());
+		out.writeObject(originalHref);
+		out.writeObject(properties);
+		out.writeObject(mediaType.get());
+		out.writeObject(inputEncoding);
+		out.writeObject(data);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+	{
+		id = (String) in.readObject();
+		title = (String) in.readObject();
+		href.set((String) in.readObject());
+		originalHref = (String) in.readObject();
+		properties = (String) in.readObject();
+		mediaType.set((MediaType) in.readObject());
+		inputEncoding = (String) in.readObject();
+		data = (byte[]) in.readObject();
+	}
 }

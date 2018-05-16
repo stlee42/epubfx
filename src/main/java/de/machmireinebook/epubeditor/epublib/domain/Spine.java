@@ -120,7 +120,7 @@ public class Spine implements Serializable
             this.spineReferences = new ArrayList<>();
         }
 
-        if (index == null || index == 0)
+        if (index == null)
         {
             spineReferences.add(spineReference);
         }

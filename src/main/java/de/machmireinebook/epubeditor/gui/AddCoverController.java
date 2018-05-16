@@ -5,13 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import javax.inject.Inject;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +20,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
+
+import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+
 import jidefx.scene.control.searchable.TableViewSearchable;
 
 /**
@@ -44,7 +49,13 @@ public class AddCoverController implements Initializable
     private static AddCoverController instance;
     private Stage stage;
     private Book book;
+
+    @Inject
     private BookBrowserManager bookBrowserManager;
+    @Inject
+    private EpubEditorMainController mainController;
+    @Inject
+    private EditorTabManager editorTabManager;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -59,7 +70,7 @@ public class AddCoverController implements Initializable
         tc.setSortable(true);
 
         TableColumn<ImageResource, Image> tc2 = (TableColumn<ImageResource, Image>) tableView.getColumns().get(1);
-        tc2.setCellValueFactory(new PropertyValueFactory<>("cover"));
+        tc2.setCellValueFactory(new PropertyValueFactory<>("image"));
         tc2.setCellFactory(new ImageCellFactory<>(null, 100d));
         tc2.setSortable(false);
 
@@ -74,6 +85,7 @@ public class AddCoverController implements Initializable
                 }
             }
         });
+
         instance = this;
     }
 
@@ -95,9 +107,17 @@ public class AddCoverController implements Initializable
 
     private void refreshImageView(ImageResource resource)
     {
-        Image image = resource.asNativeFormat();
-        imageView.setImage(image);
-        imageValuesLabel.setText(image.getWidth() + "×" + image.getHeight() + " | " + resource.getSize());
+        if (resource != null)
+        {
+            Image image = resource.asNativeFormat();
+            imageView.setImage(image);
+            imageValuesLabel.setText(resource.getImageDescription());
+        }
+        else
+        {
+            imageView.setImage(null);
+            imageValuesLabel.setText("");
+        }
     }
 
 
@@ -120,6 +140,7 @@ public class AddCoverController implements Initializable
         book.getSpine().addResource(coverPage, 0);
         bookBrowserManager.refreshBookBrowser();
         bookBrowserManager.selectTextItem(coverPage);
+        editorTabManager.openFileInEditor(coverPage, coverPage.getMediaType());
         stage.close();
     }
 
@@ -139,8 +160,9 @@ public class AddCoverController implements Initializable
         this.book = book;
     }
 
-    public void setBookBrowserManager(BookBrowserManager bookBrowserManager)
+    public void otherFileButtonAction(ActionEvent actionEvent)
     {
-        this.bookBrowserManager = bookBrowserManager;
+        mainController.addExistingFiles();
+        refresh();
     }
 }

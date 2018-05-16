@@ -11,6 +11,16 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.filter.ElementFilter;
+import org.jdom2.filter.Filter;
+
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -18,15 +28,6 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.filter.ElementFilter;
-import org.jdom2.filter.Filter;
 
 /**
  * If the book contains a cover image then this will add a cover page to the book.
@@ -186,7 +187,7 @@ public class CoverpageBookProcessor implements BookProcessor
                 "<body>\n" +
                 "  <div class=\"sgc-1\">\n" +
                 "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" viewBox=\"0 0 " + (long)width + " " + (long)height + "\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n" +
-                "      <image width=\"" + (long)width + "\" height=\"" + (long)height + "\"  xlink:href=\"" + StringEscapeUtils.escapeHtml(imageHref) + "\"></image>\n" +
+                "      <image width=\"" + (long)width + "\" height=\"" + (long)height + "\"  xlink:href=\"/" + StringEscapeUtils.escapeHtml(imageHref) + "\"></image>\n" +
                 "    </svg>\n" +
                 "  </div>\n" +
                 "</body>\n" +

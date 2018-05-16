@@ -24,6 +24,6 @@ public class ImageCellFactory<S> implements Callback<TableColumn<S, Image>, Tabl
     @Override
     public TableCell<S, Image> call(TableColumn tableColumn)
     {
-        return new ImageCell<S>(width, height);
+        return new ImageCell<>(width, height);
     }
 }
