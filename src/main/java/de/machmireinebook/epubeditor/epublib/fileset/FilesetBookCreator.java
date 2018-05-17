@@ -15,7 +15,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
@@ -66,7 +66,7 @@ public class FilesetBookCreator {
 	 */
 	public static Book createBookFromDirectory(FileObject rootDirectory, String encoding) throws IOException {
 		Book result = new Book();
-		List<TOCReference> sections = new ArrayList<>();
+		List<TocEntry> sections = new ArrayList<>();
 		Resources resources = new Resources();
 		processDirectory(rootDirectory, rootDirectory, sections, resources, encoding);
 		result.setResources(resources);
@@ -79,7 +79,7 @@ public class FilesetBookCreator {
 		return result;
 	}
 
-	private static void processDirectory(FileObject rootDir, FileObject directory, List<TOCReference> sections, Resources resources, String inputEncoding) throws IOException {
+	private static void processDirectory(FileObject rootDir, FileObject directory, List<TocEntry> sections, Resources resources, String inputEncoding) throws IOException {
 		FileObject[] files = directory.getChildren();
 		Arrays.sort(files, fileComparator);
         for (FileObject file : files)
@@ -102,7 +102,7 @@ public class FilesetBookCreator {
                 resources.add(resource);
                 if (MediaType.XHTML == resource.getMediaType())
                 {
-                    TOCReference section = new TOCReference(file.getName().getBaseName(), resource);
+                    TocEntry section = new TocEntry(file.getName().getBaseName(), resource);
                     sections.add(section);
                 }
             }
@@ -110,15 +110,15 @@ public class FilesetBookCreator {
 	}
 
 	private static void processSubdirectory(FileObject rootDir, FileObject file,
-			List<TOCReference> sections, Resources resources, String inputEncoding)
+                                            List<TocEntry> sections, Resources resources, String inputEncoding)
 			throws IOException {
-		List<TOCReference> childTOCReferences = new ArrayList<TOCReference>();
+		List<TocEntry> childTOCReferences = new ArrayList<TocEntry>();
 		processDirectory(rootDir, file, childTOCReferences, resources, inputEncoding);
 		if(! childTOCReferences.isEmpty()) {
 			String sectionName = file.getName().getBaseName();
 			Resource sectionResource = ResourceUtil.createResource(sectionName, VFSUtil.calculateHref(rootDir,file));
 			resources.add(sectionResource);
-			TOCReference section = new TOCReference(sectionName, sectionResource);
+			TocEntry section = new TocEntry(sectionName, sectionResource);
 			section.setChildren(childTOCReferences);
 			sections.add(section);
 		}

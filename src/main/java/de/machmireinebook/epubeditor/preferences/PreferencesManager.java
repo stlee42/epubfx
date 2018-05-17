@@ -5,8 +5,10 @@ import java.util.Collections;
 
 import javax.inject.Singleton;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,11 +16,13 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import de.machmireinebook.epubeditor.EpubEditorStarter;
-
+import com.dlsc.formsfx.model.structure.Field;
+import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Setting;
+
+import de.machmireinebook.epubeditor.EpubEditorStarter;
 
 /**
  * Created by Michail Jungierek
@@ -44,9 +48,16 @@ public class PreferencesManager
     );
     private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
 
+    private DoubleProperty version = new SimpleDoubleProperty(2.0);
+    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1), 0).render(
+            new RadioButtonControl<>());
+
     public PreferencesManager()
     {
         preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
+                Category.of("Book",
+                        Setting.of("Version of new ebooks", versionControl, version)
+                ),
                 Category.of("Language specific Settings",
                         Setting.of("UI Language", languageItems, languageSelection),
                         Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
@@ -122,5 +133,15 @@ public class PreferencesManager
     public void setLanguageSpellSelection(String languageSpellSelection)
     {
         this.languageSpellSelection.set(languageSpellSelection);
+    }
+
+    public double getVersion()
+    {
+        return version.get();
+    }
+
+    public DoubleProperty versionProperty()
+    {
+        return version;
     }
 }

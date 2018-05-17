@@ -7,8 +7,9 @@ import javax.inject.Singleton;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -26,12 +27,12 @@ public class TOCViewManager
 {
     private static final Logger logger = Logger.getLogger(TOCViewManager.class);
 
-    private TreeView<TOCReference> treeView;
+    private TreeView<TocEntry> treeView;
     private Book book;
     private EditorTabManager editorManager;
-    private TreeItem<TOCReference> rootItem;
+    private TreeItem<TocEntry> rootItem;
 
-    public void setTreeView(TreeView<TOCReference> treeView)
+    public void setTreeView(TreeView<TocEntry> treeView)
     {
         this.treeView = treeView;
         this.treeView = treeView;
@@ -45,8 +46,8 @@ public class TOCViewManager
             {
                 if (event.getClickCount() == 2)
                 {
-                    TreeItem<TOCReference> item = treeView.getSelectionModel().getSelectedItem();
-                    TOCReference tocRef = item.getValue();
+                    TreeItem<TocEntry> item = treeView.getSelectionModel().getSelectedItem();
+                    TocEntry tocRef = item.getValue();
                     Resource res = tocRef.getResource();
                     if (res == null)
                     {
@@ -54,7 +55,7 @@ public class TOCViewManager
                         alert.setTitle("File not exists");
                         alert.getDialogPane().setHeader(null);
                         alert.getDialogPane().setHeaderText(null);
-                        alert.setContentText("The file attached to toc item " + tocRef.getNcxReference()  + " don't exists and can not be open.");
+                        alert.setContentText("The file attached to toc item " + tocRef.getReference()  + " don't exists and can not be open.");
                         alert.showAndWait();
 
                         return;
@@ -73,10 +74,10 @@ public class TOCViewManager
 
         TableOfContents toc = book.getTableOfContents();
 
-        List<TOCReference> references = toc.getTocReferences();
-        for (TOCReference reference : references)
+        List<TocEntry> references = toc.getTocReferences();
+        for (TocEntry reference : references)
         {
-            TreeItem<TOCReference> tocItem = new TreeItem<>(reference);
+            TreeItem<TocEntry> tocItem = new TreeItem<>(reference);
             rootItem.getChildren().add(tocItem);
             if (reference.hasChildren())
             {
@@ -85,13 +86,13 @@ public class TOCViewManager
         }
     }
 
-    private void addChildren(TreeItem<TOCReference> parentItem)
+    private void addChildren(TreeItem<TocEntry> parentItem)
     {
-        TOCReference parent = parentItem.getValue();
-        List<TOCReference> children = parent.getChildren();
-        for (TOCReference child : children)
+        TocEntry parent = parentItem.getValue();
+        List<TocEntry> children = parent.getChildren();
+        for (TocEntry child : children)
         {
-            TreeItem<TOCReference> childItem = new TreeItem<>(child);
+            TreeItem<TocEntry> childItem = new TreeItem<>(child);
             parentItem.getChildren().add(childItem);
             if (child.hasChildren())
             {

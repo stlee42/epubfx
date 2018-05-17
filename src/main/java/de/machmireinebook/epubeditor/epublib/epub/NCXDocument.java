@@ -8,6 +8,16 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.DocType;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -15,17 +25,9 @@ import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.DocType;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 /**
  * Writes the ncx document as defined by namespace http://www.daisy.org/z3986/2005/ncx/
@@ -99,22 +101,22 @@ public class NCXDocument
         return ncxResource;
     }
 
-    private static List<TOCReference> readTOCReferences(List<Element> navpoints, Book book)
+    private static List<TocEntry> readTOCReferences(List<Element> navpoints, Book book)
     {
         if (navpoints == null)
         {
             return new ArrayList<>();
         }
-        List<TOCReference> result = new ArrayList<>(navpoints.size());
+        List<TocEntry> result = new ArrayList<>(navpoints.size());
         for (Element navpoint : navpoints)
         {
-            TOCReference tocReference = readTOCReference(navpoint, book);
+            TocEntry tocReference = readTOCReference(navpoint, book);
             result.add(tocReference);
         }
         return result;
     }
 
-    private static TOCReference readTOCReference(Element navpointElement, Book book)
+    private static TocEntry readTOCReference(Element navpointElement, Book book)
     {
         String label = readNavLabel(navpointElement);
         String tocResourceRoot = StringUtils.substringBeforeLast(book.getSpine().getTocResource().getHref(), "/");
@@ -134,8 +136,8 @@ public class NCXDocument
         {
             log.error("Resource with href " + href + " in NCX document not found");
         }
-        TOCReference result = new TOCReference(label, resource, fragmentId);
-        result.setNcxReference(reference);
+        TocEntry result = new TocEntry(label, resource, fragmentId);
+        result.setReference(reference);
         result.setChildren(readTOCReferences(navpointElement.getChildren("navPoint", NAMESPACE_NCX), book));
         return result;
     }
@@ -264,10 +266,10 @@ public class NCXDocument
         headElement.addContent(metaElement);
     }
 
-    private static int writeNavPoints(List<TOCReference> tocReferences, int playOrder,
+    private static int writeNavPoints(List<TocEntry> tocReferences, int playOrder,
                                       Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
     {
-        for (TOCReference tocReference : tocReferences)
+        for (TocEntry tocReference : tocReferences)
         {
             if (tocReference.getResource() == null)
             {
@@ -285,7 +287,7 @@ public class NCXDocument
     }
 
 
-    private static void writeNavPointStart(TOCReference tocReference, int playOrder, Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
+    private static void writeNavPointStart(TocEntry tocReference, int playOrder, Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
     {
         Element navPointElement = new Element(NCXTags.navPoint, NAMESPACE_NCX);
         navPointElement.setAttribute(NCXAttributes.id, "navPoint-" + playOrder);

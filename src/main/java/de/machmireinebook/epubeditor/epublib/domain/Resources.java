@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+
 import org.apache.commons.lang.StringUtils;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
 
 /**
  * All the resources that make up the book.
@@ -346,7 +348,7 @@ public class Resources implements Serializable {
     }
 	
 	/**
-	 * Gets the first resource (random order) with the give mediatype.
+	 * Gets the first resource (random order) with the given mediatype.
 	 * 
 	 * Useful for looking up the table of contents as it's supposed to be the only resource with NCX mediatype.
 	 * 

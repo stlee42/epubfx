@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathFactory;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,8 +32,8 @@ public class SectionTitleBookProcessor implements BookProcessor
         return resource;
     }
 
-    private void processSections(List<TOCReference> tocReferences, Book book, XPath xpath) {
-		for(TOCReference tocReference: tocReferences) {
+    private void processSections(List<TocEntry> tocReferences, Book book, XPath xpath) {
+		for(TocEntry tocReference: tocReferences) {
 			if(! StringUtils.isBlank(tocReference.getTitle())) {
 				continue;
 			}
@@ -48,7 +48,7 @@ public class SectionTitleBookProcessor implements BookProcessor
 	}
 	
 	
-	private String getTitle(TOCReference tocReference, Book book, XPath xpath) throws IOException, XPathExpressionException {
+	private String getTitle(TocEntry tocReference, Book book, XPath xpath) throws IOException, XPathExpressionException {
 		Resource resource = tocReference.getResource();
 		if(resource == null) {
 			return null;

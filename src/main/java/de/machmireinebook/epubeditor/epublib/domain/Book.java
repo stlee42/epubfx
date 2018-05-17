@@ -462,15 +462,15 @@ public class Book implements Serializable
      * @param resource
      * @return The table of contents
      */
-    public TOCReference addSection(TOCReference parentSection, String sectionTitle,
-                                   Resource resource)
+    public TocEntry addSection(TocEntry parentSection, String sectionTitle,
+                               Resource resource)
     {
         getResources().add(resource);
         if (spine.findFirstResourceById(resource.getId()) < 0)
         {
             spine.addSpineReference(new SpineReference(resource), null);
         }
-        return parentSection.addChildSection(new TOCReference(sectionTitle, resource));
+        return parentSection.addChildSection(new TocEntry(sectionTitle, resource));
     }
 
     public void generateSpineFromTableOfContents()
@@ -490,10 +490,10 @@ public class Book implements Serializable
      * @param resource
      * @return The table of contents
      */
-    public TOCReference addSection(String title, Resource resource)
+    public TocEntry addSection(String title, Resource resource)
     {
         getResources().add(resource);
-        TOCReference tocReference = tableOfContents.addTOCReference(new TOCReference(title, resource));
+        TocEntry tocReference = tableOfContents.addTOCReference(new TocEntry(title, resource));
         if (spine.findFirstResourceById(resource.getId()) < 0)
         {
             spine.addSpineReference(new SpineReference(resource), null);

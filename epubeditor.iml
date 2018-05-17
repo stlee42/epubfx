@@ -12,7 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.jfoenix:jfoenix:8.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.pixelduke:FXRibbon:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.dlsc.preferencesfx:preferencesfx-core:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.9.1" level="project" />
@@ -79,7 +78,7 @@
     <orderEntry type="library" name="Maven: com.helger:ph-css:5.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.helger:ph-commons:8.6.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
   </component>
 </module>

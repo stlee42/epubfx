@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TOCReference;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
 
 public class FixMissingResourceBookProcessor implements BookProcessor {
@@ -14,8 +14,8 @@ public class FixMissingResourceBookProcessor implements BookProcessor {
 		return book;
 	}
 
-	private void fixMissingResources(Collection<TOCReference> tocReferences, Book book) {
-		for (TOCReference tocReference:  tocReferences) {
+	private void fixMissingResources(Collection<TocEntry> tocReferences, Book book) {
+		for (TocEntry tocReference:  tocReferences) {
 			if (tocReference.getResource() == null) {
 				
 			}
