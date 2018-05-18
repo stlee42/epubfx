@@ -37,7 +37,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.preferences.StageSizer;
-import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;

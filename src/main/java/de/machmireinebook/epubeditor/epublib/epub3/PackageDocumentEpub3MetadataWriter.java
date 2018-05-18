@@ -6,26 +6,20 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Element;
 
+import static de.machmireinebook.epubeditor.epublib.Constants.*;
+
 public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
 {
-
-
     /**
      * Writes the book's metadata.
-     *
-     * @param book
-     * @param serializer
-     * @throws java.io.IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     public static void writeMetaData(Book book, Element root)
     {
@@ -170,12 +164,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
      * Writes out the complete list of Identifiers to the package document.
      * The first identifier for which the bookId is true is made the bookId identifier.
      * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-     *
-     * @param identifiers
-     * @param serializer
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
-     * @
      */
     private static void writeIdentifiers(Epub3Metadata metadata, Element metadataElement)
     {
@@ -208,5 +196,4 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             metadataElement.addContent(otherIdentifierElement);
         }
     }
-
 }

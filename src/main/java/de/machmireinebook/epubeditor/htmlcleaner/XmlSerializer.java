@@ -190,9 +190,9 @@ public abstract class XmlSerializer extends Serializer {
             writer.write("<" + tagName);
             Iterator<Map.Entry<String, String>> it = tagAtttributes.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String, String> entry = (Map.Entry<String,String>) it.next();
-                String attName = (String) entry.getKey();
-                String attValue = (String) entry.getValue();
+                Map.Entry<String, String> entry = it.next();
+                String attName = entry.getKey();
+                String attValue = entry.getValue();
                 serializeAttribute(tagNode, writer, attName, attValue);
             }
 

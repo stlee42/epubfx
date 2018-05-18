@@ -111,11 +111,11 @@ public class CleanerProperties implements HtmlModificationListener
     /**
      * blacklist of tags
      */
-    private Set<ITagNodeCondition> pruneTagSet = new HashSet<ITagNodeCondition>();
+    private Set<ITagNodeCondition> pruneTagSet = new HashSet<>();
     /**
      * the list of allowed tags (whitelist approach v. blacklist approach of pruneTags )
      */
-    private Set<ITagNodeCondition> allowTagSet = new HashSet<ITagNodeCondition>();
+    private Set<ITagNodeCondition> allowTagSet = new HashSet<>();
     private String charset = DEFAULT_CHARSET;
     private boolean transResCharsToNCR;
 
@@ -477,7 +477,7 @@ public class CleanerProperties implements HtmlModificationListener
         cleanerTransformations.clear();
         resetPruneTagSet();
         tagInfoProvider = DefaultTagProvider.INSTANCE;
-        htmlModificationListeners = new ArrayList < HtmlModificationListener >();
+        htmlModificationListeners = new ArrayList<>();
         omitCdataOutsideScriptAndStyle = false;
     }
 

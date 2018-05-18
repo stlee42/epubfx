@@ -23,6 +23,9 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
+
 
 /**
  * Writes the opf package document as defined by namespace http://www.idpf.org/2007/opf

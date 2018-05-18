@@ -2,7 +2,7 @@ package de.machmireinebook.epubeditor.manager;
 
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.clips.Clip;
 import javafx.scene.control.TreeItem;
 
 /**

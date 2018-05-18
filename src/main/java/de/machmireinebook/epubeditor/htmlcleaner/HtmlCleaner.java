@@ -37,14 +37,11 @@
 
 package de.machmireinebook.epubeditor.htmlcleaner;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -343,64 +340,12 @@ public class HtmlCleaner {
         }
     }
 
-    public TagNode clean(File file, String charset) throws IOException {
-        FileInputStream in = new FileInputStream(file);
-        Reader reader = null;
-        try {
-            reader = new InputStreamReader(in, charset);
-            return clean(reader, new CleanTimeValues());
-        } finally {
-            if ( reader != null) {
-                try{ reader.close(); } catch(IOException e) {//
-                }
-            }
-            try{ in.close(); } catch(IOException e) {//
-            //
-            }
-        }
-     }
-
-    public TagNode clean(File file) throws IOException {
-        return clean(file, properties.getCharset());
-    }
-
-    /**
-     * Deprecated because unmanaged network IO does not handle proxies, slow servers or broken connections well.
-     * the htmlcleaner caller should be managing the connections themselves and just providing the htmlcleaner library with a stream.
-     * @param url
-     * @param charset
-     * @return
-     * @throws IOException
-     */
-    @Deprecated // Removing network I/O will make htmlcleaner better suited to a server environment which needs managed connections
-    public TagNode clean(URL url, String charset) throws IOException {
-        CharSequence content = Utils.readUrl(url, charset);
-        Reader reader = new StringReader( content.toString() );
-        return clean(reader, new CleanTimeValues()) ;
-    }
-    /**
-     * Creates instance from the content downloaded from specified URL.
-     * HTML encoding is resolved following the attempts in the sequence:
-     * 1. reading Content-Type response header, 2. Analyzing META tags at the
-     * beginning of the html, 3. Using platform's default charset.
-     * @param url
-     * @return
-     * @throws IOException
-     */
-    public TagNode clean(URL url) throws IOException {
-        return clean(url, properties.getCharset());
-    }
-
     public TagNode clean(InputStream in, String charset) throws IOException {
         return clean( new InputStreamReader(in, charset), new CleanTimeValues() );
     }
 
     public TagNode clean(InputStream in) throws IOException {
         return clean(in, properties.getCharset());
-    }
-
-    public TagNode clean(Reader reader) throws IOException {
-        return clean(reader, new CleanTimeValues());
     }
 
     /**

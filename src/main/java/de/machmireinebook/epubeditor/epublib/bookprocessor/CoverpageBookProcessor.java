@@ -1,8 +1,6 @@
 package de.machmireinebook.epubeditor.epublib.bookprocessor;
 
-import java.awt.AlphaComposite;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -10,6 +8,14 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -20,14 +26,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.filter.ElementFilter;
 import org.jdom2.filter.Filter;
-
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.Resources;
-import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
-import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**
  * If the book contains a cover image then this will add a cover page to the book.
@@ -124,7 +122,6 @@ public class CoverpageBookProcessor implements BookProcessor
     {
         return DEFAULT_COVER_PAGE_HREF;
     }
-
 
     private String getCoverImageHref(Resource imageResource, Book book)
     {

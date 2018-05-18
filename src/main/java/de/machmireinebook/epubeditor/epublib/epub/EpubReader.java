@@ -26,7 +26,7 @@ import org.jdom2.Namespace;
 public class EpubReader
 {
 
-    private static final Logger log = Logger.getLogger(EpubReader.class);
+    private static final Logger logger = Logger.getLogger(EpubReader.class);
     private BookProcessor bookProcessor = new HtmlCleanerBookProcessor();
 
     public Book readEpub(File file) throws IOException
@@ -64,7 +64,7 @@ public class EpubReader
         return readEpub(ResourcesLoader.loadResources(in, encoding));
     }
 
-    public Book readEpub(Resources resources) throws IOException
+    public Book readEpub(Resources resources)
     {
         return readEpub(resources, new Book());
     }
@@ -108,7 +108,7 @@ public class EpubReader
         }
         catch (Exception e)
         {
-            log.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         return packageResource;
     }
@@ -133,7 +133,7 @@ public class EpubReader
         }
         catch (Exception e)
         {
-            log.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         if (StringUtils.isBlank(result))
         {

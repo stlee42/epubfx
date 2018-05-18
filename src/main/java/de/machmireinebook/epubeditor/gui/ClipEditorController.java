@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.manager.ClipManager;
 import javafx.application.Platform;

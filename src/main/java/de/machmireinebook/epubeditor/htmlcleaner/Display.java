@@ -39,7 +39,7 @@ public enum Display {
     private boolean afterTagLineBreakNeeded;
     private boolean leadingAndEndWhitespacesAllowed;
 
-    private Display(boolean afterTagLineBreakNeeded, boolean leadingAndEndWhitespacesAllowed) {
+    Display(boolean afterTagLineBreakNeeded, boolean leadingAndEndWhitespacesAllowed) {
         this.afterTagLineBreakNeeded = afterTagLineBreakNeeded;
         this.leadingAndEndWhitespacesAllowed = leadingAndEndWhitespacesAllowed;
     }

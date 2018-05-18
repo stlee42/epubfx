@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
@@ -17,6 +17,9 @@ import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Element;
+
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
 
 /**
  * Reads the package document metadata.
@@ -29,7 +32,7 @@ import org.jdom2.Element;
 class PackageDocumentMetadataReader extends PackageDocumentBase
 {
 
-    private static final Logger log = Logger.getLogger(PackageDocumentMetadataReader.class);
+    private static final Logger logger = Logger.getLogger(PackageDocumentMetadataReader.class);
 
     public static Metadata readMetadata(Element root)
     {
@@ -37,7 +40,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
-            log.error("Package does not contain element " + OPFTags.metadata);
+            logger.error("Package does not contain element " + OPFTags.metadata);
             return result;
         }
 
@@ -159,7 +162,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             }
             catch (IllegalArgumentException e)
             {
-                log.error(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
         return result;
@@ -185,7 +188,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         List<Element> identifierElements = metadataElement.getChildren(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         if (identifierElements.isEmpty())
         {
-            log.error("Package does not contain element " + DCTag.identifier.getName());
+            logger.error("Package does not contain element " + DCTag.identifier.getName());
             return new ArrayList<>();
         }
         String bookIdId = getBookIdId(metadataElement.getParentElement());

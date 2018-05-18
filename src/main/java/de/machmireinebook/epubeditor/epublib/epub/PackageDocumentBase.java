@@ -1,8 +1,6 @@
 package de.machmireinebook.epubeditor.epublib.epub;
 
 
-import org.jdom2.Namespace;
-
 /**
  * Functionality shared by the PackageDocumentReader and the PackageDocumentWriter
  *  
@@ -11,15 +9,6 @@ import org.jdom2.Namespace;
  */
 public class PackageDocumentBase
 {
-    public static final String BOOK_ID_ID = "BookId";
-    public static final Namespace NAMESPACE_OPF = Namespace.getNamespace("http://www.idpf.org/2007/opf");
-    public static final Namespace NAMESPACE_OPF_WITH_PREFIX = Namespace.getNamespace("opf", "http://www.idpf.org/2007/opf");
-    public static final Namespace NAMESPACE_DUBLIN_CORE = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
-    public static final Namespace NAMESPACE_EPUB = Namespace.getNamespace("epub", "http://www.idpf.org/2007/ops");
-    public static final String dateFormat = "yyyy-MM-dd";
-
-    public static final String EPUB3_NAV_DOCUMENT_TAG_VALUE = "nav";
-
     public enum DCTag
     {
         title("title"),
@@ -89,6 +78,7 @@ public class PackageDocumentBase
         String version = "version";
         String scheme = "scheme";
         String property = "property";
+        String properties = "properties";
         String refines = "refines";
     }
 
@@ -115,10 +105,6 @@ public class PackageDocumentBase
     {
         String toc = "toc";
         String page_list = "page-list";
-        String cover = "cover";
         String landmarks = "landmarks";
-        String titlepage = "titlepage";
-        String bodymatter = "bodymatter";
-        String index = "index";
     }
 }

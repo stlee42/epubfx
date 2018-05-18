@@ -68,7 +68,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.domain.Clip;
+import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;

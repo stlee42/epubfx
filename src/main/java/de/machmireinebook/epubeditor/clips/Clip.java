@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.domain;
+package de.machmireinebook.epubeditor.clips;
 
 /**
  * User: mjungierek

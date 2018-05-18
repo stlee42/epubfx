@@ -20,6 +20,14 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
+import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,12 +35,6 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.util.IteratorIterable;
-
-import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
-import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 
 /**
@@ -328,6 +330,7 @@ public class Book implements Serializable
     private Spine spine = new Spine();
     private TableOfContents tableOfContents = new TableOfContents();
     private Guide guide = new Guide();
+    private Landmarks landmarks = new Landmarks();
     private ObjectProperty<Resource> opfResource = new SimpleObjectProperty<>();
     private Resource ncxResource;
     private ImageResource coverImage;
@@ -840,11 +843,17 @@ public class Book implements Serializable
             addToContentsResult(resource, result);
         }
 
-        if (isEpub3() && getEpub3NavResource() != null)
+        if (isEpub3())
         {
-            result.remove(getEpub3NavResource().getHref());
+            if (getEpub3NavResource() != null)
+            {
+                result.remove(getEpub3NavResource().getHref());
+            }
+            removeLandmarkEntries(result, LandmarkReference.Semantics.COPYRIGHT_PAGE);
+            removeLandmarkEntries(result, LandmarkReference.Semantics.COVER);
+            removeLandmarkEntries(result, LandmarkReference.Semantics.TITLE_PAGE);
         }
-        else if (getGuide() != null) //EPUB 2
+        else //EPUB 2
         {
             if (getGuide().getCoverPage() != null)
             {
@@ -861,12 +870,24 @@ public class Book implements Serializable
 
     private void removeGuideEntries(Map<String, Resource> result, GuideReference.Semantics semantic)
     {
-        List<GuideReference> copyrightPageReferences = getGuide().getGuideReferencesByType(semantic);
-        if (!copyrightPageReferences.isEmpty())
+        List<GuideReference> references = getGuide().getGuideReferencesByType(semantic);
+        if (!references.isEmpty())
         {
-            for (GuideReference copyrightPageReference : copyrightPageReferences)
+            for (GuideReference reference : references)
             {
-                result.remove(copyrightPageReference.getResource().getHref());
+                result.remove(reference.getResource().getHref());
+            }
+        }
+    }
+
+    private void removeLandmarkEntries(Map<String, Resource> result, LandmarkReference.Semantics semantic)
+    {
+        List<LandmarkReference> references = getLandmarks().getLandmarkReferencesByType(semantic);
+        if (!references.isEmpty())
+        {
+            for (LandmarkReference reference : references)
+            {
+                result.remove(reference.getResource().getHref());
             }
         }
     }
@@ -1045,6 +1066,11 @@ public class Book implements Serializable
             //nach href und src
         }
         refreshOpfResource();
+    }
+
+    public Landmarks getLandmarks()
+    {
+        return landmarks;
     }
 }
 

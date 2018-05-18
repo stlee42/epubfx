@@ -735,9 +735,6 @@ public class HtmlTokenizer {
             if (isTagStartOrEnd()) {
                 break;
             }
-
-
-
         }
 
         return addSavedAsContent();
@@ -825,7 +822,6 @@ public class HtmlTokenizer {
             saveCurrent();
             go();
         }
-
         
         if (startsWith(CData.SAFE_END_CDATA)){
         	go(CData.SAFE_END_CDATA.length());

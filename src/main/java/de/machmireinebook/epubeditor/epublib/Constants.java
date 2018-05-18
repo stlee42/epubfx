@@ -12,4 +12,13 @@ public interface Constants {
 	String EPUBLIB_GENERATOR_NAME = "epub4mmee version 1.0";
 	String FRAGMENT_SEPARATOR_CHAR = "#";
 	String DEFAULT_TOC_ID = "toc";
+
+	String BOOK_ID_ID = "BookId";
+	Namespace NAMESPACE_OPF = Namespace.getNamespace("http://www.idpf.org/2007/opf");
+	Namespace NAMESPACE_OPF_WITH_PREFIX = Namespace.getNamespace("opf", "http://www.idpf.org/2007/opf");
+	Namespace NAMESPACE_DUBLIN_CORE = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
+	Namespace NAMESPACE_EPUB = Namespace.getNamespace("epub", "http://www.idpf.org/2007/ops");
+	String dateFormat = "yyyy-MM-dd";
+
+	String EPUB3_NAV_DOCUMENT_TAG_VALUE = "nav";
 }

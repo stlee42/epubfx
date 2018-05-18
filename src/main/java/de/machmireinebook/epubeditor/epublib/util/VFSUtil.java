@@ -36,7 +36,7 @@ public class VFSUtil {
 		return result;
 	}
 	
-	public static String calculateHref(FileObject rootDir, FileObject currentFile) throws IOException {
+	public static String calculateHref(FileObject rootDir, FileObject currentFile) {
 		String result = currentFile.getName().toString().substring(rootDir.getName().toString().length() + 1);
 		result += ".html";
 		return result;

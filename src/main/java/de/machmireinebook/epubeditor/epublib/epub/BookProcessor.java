@@ -12,25 +12,6 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
  *
  */
 public interface BookProcessor {
-	
-	/**
-	 * A BookProcessor that returns the input book unchanged.
-	 */
-	BookProcessor IDENTITY_BOOKPROCESSOR = new BookProcessor() {
-		
-		@Override
-		public Book processBook(Book book)
-        {
-			return book;
-		}
-
-        @Override
-        public Resource processResource(Resource resource)
-        {
-            return resource;
-        }
-    };
-	
 	Book processBook(Book book);
     Resource processResource(Resource resource);
 }

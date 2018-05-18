@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -23,6 +23,8 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
@@ -60,8 +62,22 @@ public class CreateTocController implements StandardController
         this.stage = stage;
         stage.setOnShowing(event -> {
             List<TocEntry> tocEntries = tocGenerator.generateTocEntriesFromText();
-            tableView.setItems(FXCollections.observableList(tocEntries));
+            ObservableList<TocEntry> tableViewItems = tableView.getItems();
+            for (TocEntry tocEntry : tocEntries)
+            {
+                addTocEntryToTableView(tocEntry, tableViewItems, 0);
+            }
         });
+    }
+
+    private void addTocEntryToTableView(TocEntry tocEntry, ObservableList<TocEntry> tableViewItems, int level)
+    {
+        tocEntry.setTitle(StringUtils.leftPad(tocEntry.getTitle(), tocEntry.getTitle().length() + level * 4, " "));
+        tableViewItems.add(tocEntry);
+        for (TocEntry childEntry : tocEntry.getChildren())
+        {
+            addTocEntryToTableView(childEntry, tableViewItems, level + 1);
+        }
     }
 
     @Override
@@ -127,11 +143,11 @@ public class CreateTocController implements StandardController
 
     public void onOkAction(ActionEvent actionEvent)
     {
-
+        stage.close();
     }
 
     public void onCancelAction(ActionEvent actionEvent)
     {
-
+        stage.close();
     }
 }

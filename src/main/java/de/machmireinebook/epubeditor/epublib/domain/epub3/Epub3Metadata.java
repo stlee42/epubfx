@@ -1,10 +1,17 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
 
 import org.apache.commons.lang.StringUtils;
 

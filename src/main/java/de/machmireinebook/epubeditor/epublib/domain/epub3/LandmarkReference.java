@@ -1,15 +1,18 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
+
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.TitledResourceReference;
 
 
 /**
  * These are references to elements of the book's guide.
  */
-public class GuideReference extends TitledResourceReference implements Serializable
+public class LandmarkReference extends TitledResourceReference implements Serializable
 {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -316179702440631834L;
 
@@ -59,7 +62,7 @@ public class GuideReference extends TitledResourceReference implements Serializa
         /**
          * human-readable page with title, author, publisher, and other metadata
          */
-        TITLE_PAGE("title-page", "Titelseite");
+        TITLE_PAGE("titlepage", "Titelseite");
 
         private String name;
         private String description;
@@ -95,25 +98,25 @@ public class GuideReference extends TitledResourceReference implements Serializa
     }
 
 	private Semantics type;
-	
-	public GuideReference(Resource resource) {
+
+	public LandmarkReference(Resource resource) {
 		this(resource, null);
 	}
-	
-	public GuideReference(Resource resource, String title) {
+
+	public LandmarkReference(Resource resource, String title) {
 		super(resource, title);
 	}
-	
-	public GuideReference(Resource resource, String type, String title) {
+
+	public LandmarkReference(Resource resource, String type, String title) {
 		this(resource, type, title, null);
 	}
 
-    public GuideReference(Resource resource, Semantics type, String title) {
+    public LandmarkReference(Resource resource, Semantics type, String title) {
         super(resource, title);
         this.type = type;
     }
 
-	public GuideReference(Resource resource, String type, String title, String fragmentId) {
+	public LandmarkReference(Resource resource, String type, String title, String fragmentId) {
         super(resource, title, fragmentId);
 		this.type = Semantics.getByName(type);
 	}

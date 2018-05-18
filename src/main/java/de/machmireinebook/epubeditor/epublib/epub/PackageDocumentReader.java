@@ -5,19 +5,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
@@ -30,9 +22,20 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigatonDocumentReader;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigationDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
+import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
 
 /**
  * Reads the opf package document as defined by namespace http://www.idpf.org/2007/opf
@@ -58,9 +61,9 @@ public class PackageDocumentReader extends PackageDocumentBase
         resources = fixHrefs(packageHref, resources);
         if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
         {
-            Resource resource = Epub3NavigatonDocumentReader.read(root, resources);
-            book.setEpub3NavResource(resource);
-            readEpub3CoverAndToc(resource, book);
+            XHTMLResource navResource = Epub3NavigationDocumentReader.read(root, resources);
+            book.setEpub3NavResource(navResource);
+            Epub3NavigationDocumentReader.readLandmarks(navResource, book, resources);
         }
         else
         {
@@ -79,6 +82,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         }
         else
         {
+            readCoverImage(root, book);
             book.setMetadata(PackageDocumentEpub3MetadataReader.readMetadata(root));
         }
         book.setSpine(readSpine(root, book, idMapping));
@@ -94,9 +98,9 @@ public class PackageDocumentReader extends PackageDocumentBase
 
         if (book.isEpub3()) //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
         {
-            Resource resource = Epub3NavigatonDocumentReader.read(root, book.getResources());
+            XHTMLResource resource = Epub3NavigationDocumentReader.read(root, book.getResources());
             book.setEpub3NavResource(resource);
-            readEpub3CoverAndToc(resource, book);
+            Epub3NavigationDocumentReader.readLandmarks(resource, book, book.getResources());
         }
         else
         {
@@ -115,6 +119,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         }
         else
         {
+            readCoverImage(root, book);
             book.setMetadata(PackageDocumentEpub3MetadataReader.readMetadata(root));
         }
         book.setSpine(readSpine(root, book, idMapping));
@@ -156,7 +161,7 @@ public class PackageDocumentReader extends PackageDocumentBase
             String href = itemElement.getAttributeValue(OPFAttributes.href);
             try
             {
-                href = URLDecoder.decode(href, Constants.CHARACTER_ENCODING);
+                href = URLDecoder.decode(href, CHARACTER_ENCODING);
             }
             catch (UnsupportedEncodingException e)
             {
@@ -349,9 +354,8 @@ public class PackageDocumentReader extends PackageDocumentBase
     private static Spine generateSpineFromResources(Resources resources)
     {
         Spine result = new Spine();
-        List<String> resourceHrefs = new ArrayList<>();
-        resourceHrefs.addAll(resources.getAllHrefs());
-        Collections.sort(resourceHrefs, String.CASE_INSENSITIVE_ORDER);
+        List<String> resourceHrefs = new ArrayList<>(resources.getAllHrefs());
+        resourceHrefs.sort(String.CASE_INSENSITIVE_ORDER);
         for (String resourceHref : resourceHrefs)
         {
             Resource resource = resources.getByHref(resourceHref);
@@ -415,7 +419,6 @@ public class PackageDocumentReader extends PackageDocumentBase
         }
         return tocResource;
     }
-
 
     /**
      * Find all resources that have something to do with the coverpage and the cover image.
@@ -499,9 +502,7 @@ public class PackageDocumentReader extends PackageDocumentBase
      * Finds the cover resource in the packageDocument and adds it to the book if found.
      * Keeps the cover resource in the resources map
      *
-     * @param packageDocument
      * @param book
-     * @param resources
      */
     private static void readCover(Element root, Book book)
     {
@@ -526,56 +527,35 @@ public class PackageDocumentReader extends PackageDocumentBase
         }
     }
 
-    private static void readEpub3CoverAndToc(Resource navResource, Book book) throws JDOMException, IOException
+    private static void readCoverImage(Element root, Book book)
     {
-        Document doc = ResourceUtil.getAsDocument(navResource);
-        Element root = doc.getRootElement();
-        Element bodyElement = root.getChild("body", NAMESPACE_OPF);
-        if (bodyElement != null)
+        Element manifestElement = root.getChild(OPFTags.manifest, NAMESPACE_OPF);
+        if (manifestElement != null)
         {
-            Element sectionElement = bodyElement.getChild("section", NAMESPACE_OPF);
-            if (sectionElement != null)
+            List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
+            for (Element itemElement : itemElements)
             {
-                List<Element> navElements = sectionElement.getChildren("nav", NAMESPACE_OPF);
-                for (Element navElement : navElements)
+                //noinspection ConstantConditions
+                if (Epub3ManifestPropertiesValues.cover_image.equals(itemElement.getAttributeValue(OPFAttributes.properties)))
                 {
-                    if (Epub3NavTypes.toc.equals(navElement.getAttributeValue("type",NAMESPACE_EPUB)))
+                    String coverHref = itemElement.getAttributeValue(OPFAttributes.href);
+                    Resource resource = book.getResources().getByHref(coverHref);
+                    if (resource == null)
                     {
-                        //readEpub3Toc();
+                        log.error("Cover image resource " + coverHref + " not found");
+                        continue;
                     }
-                    else if (Epub3NavTypes.landmarks.equals(navElement.getAttributeValue("type",NAMESPACE_EPUB)))
+                    if (resource.getMediaType().isBitmapImage())
                     {
-                        Element olElement = navElement.getChild("ol", NAMESPACE_OPF);
-                        if (olElement != null)
-                        {
-                            List<Element> liElements = olElement.getChildren("li", NAMESPACE_OPF);
-                            for (Element liElement : liElements)
-                            {
-                                Element anchorElement = liElement.getChild("a", NAMESPACE_OPF);
-                                if (anchorElement != null && Epub3NavTypes.cover.equals(anchorElement.getAttributeValue("type", NAMESPACE_EPUB)))
-                                {
-                                    String href = anchorElement.getAttributeValue("href");
-                                    Resource resource = book.getResources().getByHref(href);
-                                    if (resource == null)
-                                    {
-                                        log.error("Cover resource " + href + " not found");
-                                        continue;
-                                    }
-                                    if (resource.getMediaType() == MediaType.XHTML)
-                                    {
-                                        book.setCoverPage(resource);
-                                    }
-                                    else if (resource.getMediaType().isBitmapImage())
-                                    {
-                                        book.setCoverImage((ImageResource)resource);
-                                    }
-                                }
-                            }
-                        }
+                        book.setCoverImage((ImageResource)resource);
+                        break;
+                    }
+                    else
+                    {
+                        log.error("Cover image resource " + coverHref + " is not an image");
                     }
                 }
             }
         }
     }
-
 }
