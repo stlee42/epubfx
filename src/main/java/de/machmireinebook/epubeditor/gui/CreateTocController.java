@@ -1,10 +1,10 @@
 package de.machmireinebook.epubeditor.gui;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import javax.inject.Inject;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,16 +19,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.filter.AbstractFilter;
-import org.jdom2.util.IteratorIterable;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 
 /**
@@ -48,29 +41,13 @@ public class CreateTocController implements StandardController
     private CheckBox showTocItemsCheckBox;
     @FXML
     private ComboBox headingLevelComboBox;
+    @Inject
+    private TocGenerator tocGenerator;
 
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
 
     private static CreateTocController instance;
-
-    private static class PossibleTocEntryFilter extends AbstractFilter<Element>
-    {
-        private static final List<String> ELEMENT_NAMES = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6");
-
-        @Override
-        public Element filter(Object content)
-        {
-            if (content instanceof Element) {
-                Element el = (Element) content;
-                if (ELEMENT_NAMES.contains(el.getName()))
-                {
-                    return el;
-                }
-            }
-            return null;
-        }
-    }
 
     public static CreateTocController getInstance()
     {
@@ -81,6 +58,10 @@ public class CreateTocController implements StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
+        stage.setOnShowing(event -> {
+            List<TocEntry> tocEntries = tocGenerator.generateTocEntriesFromText();
+            tableView.setItems(FXCollections.observableList(tocEntries));
+        });
     }
 
     @Override
@@ -104,38 +85,19 @@ public class CreateTocController implements StandardController
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        currentBook.addListener((observable, oldValue, newValue) -> {
+        TableColumn<TocEntry, String> tc = (TableColumn<TocEntry, String>) tableView.getColumns().get(0);
+        tc.setCellValueFactory(new PropertyValueFactory<>("title"));
+        tc.setCellFactory(new WrappableTextCellFactory<>());
+        tc.setSortable(true);
 
-            TableColumn<TocEntry, String> tc = (TableColumn<TocEntry, String>) tableView.getColumns().get(0);
-            tc.setCellValueFactory(new PropertyValueFactory<>("title"));
-            tc.setCellFactory(new WrappableTextCellFactory<>());
-            tc.setSortable(true);
+        TableColumn<TocEntry, String> tc2 = (TableColumn<TocEntry, String>) tableView.getColumns().get(1);
+        tc2.setCellValueFactory(new PropertyValueFactory<>("level"));
+        tc2.setCellFactory(new WrappableTextCellFactory<>());
+        tc2.setSortable(true);
 
-            TableColumn<TocEntry, String> tc2 = (TableColumn<TocEntry, String>) tableView.getColumns().get(1);
-            tc2.setCellValueFactory(new PropertyValueFactory<>("level"));
-            tc2.setCellFactory(new WrappableTextCellFactory<>());
-            tc2.setSortable(true);
+        tocGenerator.bookProperty().bind(currentBook);
 
-            List<TocEntry> tocEntries = generateTocEntriesFromText();
-            tableView.setItems(FXCollections.observableList(tocEntries));
-        });
         instance = this;
-    }
-
-    private List<TocEntry> generateTocEntriesFromText()
-    {
-        List<TocEntry> tocEntries = new ArrayList<>();
-        List<Resource> contentResources = currentBook.get().getContents();
-        for (Resource resource : contentResources)
-        {
-            if (resource.getMediaType().equals(MediaType.XHTML))
-            {
-                XHTMLResource xhtmlResource = (XHTMLResource) resource;
-                Document document = xhtmlResource.asNativeFormat();
-                IteratorIterable<Element> possibleTocEntries = document.getDescendants(new PossibleTocEntryFilter());
-            }
-        }
-        return tocEntries;
     }
 
     public void renameButtonAction(ActionEvent actionEvent)

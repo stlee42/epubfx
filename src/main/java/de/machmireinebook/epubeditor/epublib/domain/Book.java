@@ -814,6 +814,63 @@ public class Book implements Serializable
         return new ArrayList<>(result.values());
     }
 
+    /**
+     * All Resources of the Book that can be reached via the Spine or the TableOfContents.
+     * <p>
+     * Consists of a list of "readable" resources, excludes the meta pages of the book like toc, cover page, impressum and so on:
+     * <ul>
+     * <li>The resources of the Spine that are not already in the result</li>
+     * <li>The resources of the Table of Contents that are not already in the result</li>
+     * </ul>
+     * To get all html files that make up the epub file use {@link #getResources()}
+     *
+     * @return All Resources of the Book that can be reached via the Spine, the TableOfContents.
+     */
+    public List<Resource> getReadableContents()
+    {
+        Map<String, Resource> result = new LinkedHashMap<>();
+
+        for (SpineReference spineReference : getSpine().getSpineReferences())
+        {
+            addToContentsResult(spineReference.getResource(), result);
+        }
+
+        for (Resource resource : getTableOfContents().getAllUniqueResources())
+        {
+            addToContentsResult(resource, result);
+        }
+
+        if (isEpub3() && getEpub3NavResource() != null)
+        {
+            result.remove(getEpub3NavResource().getHref());
+        }
+        else if (getGuide() != null) //EPUB 2
+        {
+            if (getGuide().getCoverPage() != null)
+            {
+                result.remove(getGuide().getCoverPage().getHref());
+            }
+            removeGuideEntries(result, GuideReference.Semantics.COPYRIGHT_PAGE);
+            removeGuideEntries(result, GuideReference.Semantics.COVER);
+            removeGuideEntries(result, GuideReference.Semantics.TITLE_PAGE);
+            removeGuideEntries(result, GuideReference.Semantics.TOC);
+        }
+
+        return new ArrayList<>(result.values());
+    }
+
+    private void removeGuideEntries(Map<String, Resource> result, GuideReference.Semantics semantic)
+    {
+        List<GuideReference> copyrightPageReferences = getGuide().getGuideReferencesByType(semantic);
+        if (!copyrightPageReferences.isEmpty())
+        {
+            for (GuideReference copyrightPageReference : copyrightPageReferences)
+            {
+                result.remove(copyrightPageReference.getResource().getHref());
+            }
+        }
+    }
+
     private static void addToContentsResult(Resource resource, Map<String, Resource> allReachableResources)
     {
         if (resource != null && (!allReachableResources.containsKey(resource.getHref())))

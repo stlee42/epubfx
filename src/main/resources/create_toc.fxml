@@ -12,9 +12,9 @@
    <children>
       <TableView fx:id="tableView" layoutX="21.0" layoutY="22.0" prefHeight="393.0" prefWidth="410.0" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="20.0" >
          <columns>
-            <TableColumn prefWidth="50" text="Title" />
-            <TableColumn prefWidth="20" text="Level" />
-            <TableColumn prefWidth="20" text="Include" />
+            <TableColumn prefWidth="290" text="Title" />
+            <TableColumn prefWidth="35" text="Level" />
+            <TableColumn prefWidth="70" text="Include" />
          </columns>
       </TableView>
       <Button fx:id="renameButton" layoutX="449.0" layoutY="20.0" mnemonicParsing="false" onAction="#renameButtonAction" styleClass="flat" text="Rename" AnchorPane.topAnchor="20.0" />
