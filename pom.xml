@@ -28,6 +28,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>net.sourceforge.htmlcleaner</groupId>
+            <artifactId>htmlcleaner</artifactId>
+            <version>2.22</version>
+        </dependency>
+        <dependency>
             <groupId>com.pixelduke</groupId>
             <artifactId>FXRibbon</artifactId>
             <version>1.0.1</version>

@@ -7,13 +7,14 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
-import de.machmireinebook.epubeditor.htmlcleaner.HtmlCleaner;
-import de.machmireinebook.epubeditor.htmlcleaner.JDomSerializer;
-import de.machmireinebook.epubeditor.htmlcleaner.TagNode;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import org.apache.log4j.Logger;
+
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.JDomSerializer;
+import org.htmlcleaner.TagNode;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.IllegalAddException;
