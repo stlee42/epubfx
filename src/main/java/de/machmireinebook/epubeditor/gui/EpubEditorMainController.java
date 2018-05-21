@@ -35,9 +35,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
@@ -51,8 +51,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -73,6 +71,11 @@ import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
+import org.apache.log4j.Logger;
+
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
+
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -84,10 +87,6 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
 public class EpubEditorMainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
-    @FXML
-    private Menu fileMenu;
-    @FXML
-    private SeparatorMenuItem recentFilesSeparatorMenuItem;
     @FXML
     private SplitPane mainDivider;
     @FXML
@@ -165,7 +164,7 @@ public class EpubEditorMainController implements Initializable
     @FXML
     private Button newBookButton;
     @FXML
-    private Button openBookButton;
+    private MenuButton openBookButton;
     @FXML
     private Button addFileButton;
     @FXML
@@ -194,18 +193,6 @@ public class EpubEditorMainController implements Initializable
     private Button boldButton;
     @FXML
     private Button kursivButton;
-    @FXML
-    private Menu addMenu;
-    @FXML
-    private MenuItem saveMenuItem;
-    @FXML
-    private MenuItem savAsMenuItem;
-    @FXML
-    private MenuItem saveCopyMenuItem;
-    @FXML
-    private MenuItem printPreviewMenuItem;
-    @FXML
-    private MenuItem printMenuItem;
     @FXML
     private ListView<Resource> clipListView;
     @FXML
@@ -236,6 +223,8 @@ public class EpubEditorMainController implements Initializable
     private Button lowercaseButton;
     @FXML
     private ComboBox<String> languageSpellComboBox;
+    @FXML
+    private SplitMenuButton openRecentBookButton;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -261,6 +250,7 @@ public class EpubEditorMainController implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
         TreeViewSearchable<Resource> searchable = new TreeViewSearchable<>(epubStructureTreeView);
         searchable.setRecursive(true);
 
@@ -307,12 +297,6 @@ public class EpubEditorMainController implements Initializable
 
         addCoverButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         editMetadataButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        saveMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        savAsMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        saveCopyMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        printPreviewMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        printMenuItem.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        addMenu.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
         h1Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h2Button.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -456,14 +440,7 @@ public class EpubEditorMainController implements Initializable
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
     {
-        recentFilesSeparatorMenuItem.setVisible(recentFiles.size() > 0);
-        for (MenuItem recentFilesMenuItem : recentFilesMenuItems)
-        {
-            fileMenu.getItems().remove(recentFilesMenuItem);
-        }
-        recentFilesMenuItems.clear();
-
-        int index = fileMenu.getItems().indexOf(recentFilesSeparatorMenuItem);
+        openBookButton.getItems().clear();
         int number = 0;
         for (Path recentFile : recentFiles)
         {
@@ -486,9 +463,8 @@ public class EpubEditorMainController implements Initializable
                     ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file " + recentFile.toFile().getName());
                 }
             });
-            fileMenu.getItems().add(index, recentFileMenuItem);
+            openBookButton.getItems().add(recentFileMenuItem);
             recentFilesMenuItems.add(recentFileMenuItem);
-            index++;
             number++;
         }
     }
@@ -496,7 +472,7 @@ public class EpubEditorMainController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setTitle("Epub FX");
+        stage.setTitle("EpubFX");
 
         stage.setOnCloseRequest(event -> {
             checkBeforeCloseBook();
@@ -1247,5 +1223,11 @@ public class EpubEditorMainController implements Initializable
     public void settingsButtonAction(ActionEvent actionEvent)
     {
         preferencesManager.showPreferencesDialog();
+    }
+
+    public void openRecentBookAction(ActionEvent actionEvent)
+    {
+
+
     }
 }

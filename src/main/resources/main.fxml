@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.pixelduke.control.Ribbon?>
-<?import com.pixelduke.control.ribbon.Column?>
-<?import com.pixelduke.control.ribbon.RibbonGroup?>
-<?import com.pixelduke.control.ribbon.RibbonItem?>
-<?import com.pixelduke.control.ribbon.RibbonTab?>
-<?import de.machmireinebook.epubeditor.javafx.StashableSplitPane?>
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
@@ -13,12 +7,10 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.ToggleButton?>
@@ -27,13 +19,17 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.web.WebView?>
-
+<?import de.machmireinebook.epubeditor.javafx.StashableSplitPane?>
+<?import com.pixelduke.control.Ribbon?>
+<?import com.pixelduke.control.ribbon.Column?>
+<?import com.pixelduke.control.ribbon.RibbonGroup?>
+<?import com.pixelduke.control.ribbon.RibbonItem?>
+<?import com.pixelduke.control.ribbon.RibbonTab?>
 <AnchorPane prefHeight="812.0" prefWidth="1324.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.EpubEditorMainController">
     <children>
-        <MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <!--MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <menus>
                 <Menu fx:id="fileMenu" mnemonicParsing="false" text="Datei">
                     <items>
@@ -109,7 +105,7 @@
                     </items>
                 </Menu>
             </menus>
-        </MenuBar>
+        </MenuBar-->
         <SplitPane fx:id="mainDivider" dividerPositions="0.4, 0.7" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="189.0">
             <items>
                 <StashableSplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL" SplitPane.resizableWithParent="false">
@@ -550,6 +546,7 @@
                     <ribbonGroups>
                         <RibbonGroup title="File">
                             <nodes>
+                                <Column>
                                 <Button fx:id="newBookButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#newEpubAction" text="New" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -559,18 +556,21 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-                                <Button fx:id="openBookButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#openEpubAction" text="Open" wrapText="true">
-                                    <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Open ebook" />
-                                    </tooltip>
-                                    <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Literature_96px.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                </Button>
+                                </Column>
+                                <Column>
+                                    <SplitMenuButton fx:id="openBookButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#openEpubAction" text="Open" wrapText="true">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                                <image>
+                                                    <Image url="icons/icons8_Literature_96px.png" />
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                        <items>
+                                        </items>
+                                    </SplitMenuButton >
+                                </Column>
+                                <Column>
                                 <Button fx:id="saveButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#saveEpubAction" text="Save" wrapText="true">
                                     <tooltip>
                                         <Tooltip styleClass="white-tooltip" text="Save" />
@@ -583,6 +583,8 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
+                                </Column>
+                                <Column>
                                 <Button fx:id="saveAsButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveEpubAsAction" text="Save as" wrapText="true">
                                     <tooltip>
                                         <Tooltip styleClass="white-tooltip" text="Save as..." />
@@ -595,14 +597,14 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-
+                                </Column>
                             </nodes>
                         </RibbonGroup>
                         <RibbonGroup title="Add Files">
                             <nodes>
                                 <Button fx:id="addExistingFileButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#addExistingFilesAction" text="Add File" wrapText="true">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Add existing file tp ebook" />
+                                        <Tooltip styleClass="white-tooltip" text="Add existing file to ebook" />
                                     </tooltip>
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -810,7 +812,7 @@
                                 </Column>
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Absatz">
+                        <RibbonGroup title="Paragraph">
                             <nodes>
                                 <Column>
                                     <Button fx:id="orderedListButton" mnemonicParsing="false" onAction="#orderedListButtonAction">
@@ -1099,7 +1101,7 @@
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="icons/index2.png" />
+                                                <Image url="icons/icons8_Content_96px_edit.png" />
                                             </image>
                                         </ImageView>
                                     </graphic>
@@ -1117,7 +1119,7 @@
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="icons/index2.png" />
+                                                <Image url="icons/icons8_Source_Code_50px.png" />
                                             </image>
                                         </ImageView>
                                     </graphic>
@@ -1161,7 +1163,7 @@
                 </RibbonTab>
                 <RibbonTab text="View">
                     <ribbonGroups>
-                        <RibbonGroup title="Panels">
+                        <RibbonGroup title="Visible Panels">
                             <nodes>
                                 <ToggleButton fx:id="showBookBrowserToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Book Browser" wrapText="true">
                                     <graphic>
@@ -1194,7 +1196,7 @@
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="icons/icons8_Content_96px.png" />
+                                                <Image url="icons/icons8_Content_96px_view.png" />
                                             </image>
                                         </ImageView>
                                     </graphic>

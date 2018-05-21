@@ -33,7 +33,7 @@
     -fx-min-width: 50;
 }
 
-.ribbon-group .split-menu-button, .ribbon-group .toggle-button
+.ribbon-group .split-menu-button, .ribbon-group .toggle-button, .ribbon-group .menu-button
 {
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -102,8 +102,7 @@
 
 .ribbon-group .button:pressed, .ribbon-group .button:default:hover:pressed,
 .ribbon-group .toggle-button:pressed, .ribbon-group .toggle-button:default:hover:pressed, .ribbon-group .toggle-button:selected,
-.ribbon-group .split-menu-button .arrow-button:pressed, .ribbon-group .split-menu-button .arrow-button:default:hover:pressed,
-.ribbon-group .split-menu-button:pressed .label, .ribbon-group .split-menu-button .label:default:hover:pressed
+.ribbon-group .split-menu-button .arrow-button:pressed, .ribbon-group .split-menu-button .arrow-button:default:hover:pressed
 {
     -fx-background-color: CONTROLS_ACCENT_COLOR;
     -fx-text-fill: white;
