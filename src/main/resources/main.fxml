@@ -1088,7 +1088,8 @@
                         </RibbonGroup>
                         <RibbonGroup title="Table of Contents">
                             <nodes>
-                                <Button fx:id="createTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createTocAction" text="Create" wrapText="true">
+                                <Button fx:id="createTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createTocAction"
+                                        text="Generate" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -1097,7 +1098,8 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-                                <Button fx:id="editTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTocAction" text="Edit" wrapText="true">
+                                <Button fx:id="editTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTocAction"
+                                        text="Edit" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -1106,7 +1108,8 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-                                <Button fx:id="createNcxButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createNcxAction" text="Create Ncx" wrapText="true">
+                                <Button fx:id="createNcxButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createNcxAction"
+                                        text="Create Ncx" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -1115,7 +1118,8 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
-                                <Button fx:id="createHtmlTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createHtmlTocAction" text="Create Html Toc" wrapText="true">
+                                <Button fx:id="createHtmlTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false"
+                                        onAction="#createHtmlTocAction" text="Create Html Toc" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>

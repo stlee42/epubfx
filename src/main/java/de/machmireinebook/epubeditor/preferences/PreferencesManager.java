@@ -5,9 +5,11 @@ import java.util.Collections;
 
 import javax.inject.Singleton;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,6 +22,7 @@ import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
+import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 
 import de.machmireinebook.epubeditor.EpubEditorStarter;
@@ -52,11 +55,24 @@ public class PreferencesManager
     private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1), 0).render(
             new RadioButtonControl<>());
 
+    private StringProperty referenceType = new SimpleStringProperty("Footnote");
+    private SingleSelectionField referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList("Footnote", "Endnote"), 0).render(
+            new RadioButtonControl<>());
+
+    BooleanProperty generateNCX = new SimpleBooleanProperty(true);
+
+
     public PreferencesManager()
     {
         preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
                 Category.of("Book",
-                        Setting.of("Version of new ebooks", versionControl, version)
+                        Group.of("EPUB Version",
+                                Setting.of("Version of new ebooks", versionControl, version),
+                                Setting.of("Generate NCX automatically", generateNCX)
+                        ),
+                        Group.of("Structure",
+                                Setting.of("Type of References", referenceTypeControl, referenceType)
+                        )
                 ),
                 Category.of("Language specific Settings",
                         Setting.of("UI Language", languageItems, languageSelection),
@@ -143,5 +159,25 @@ public class PreferencesManager
     public DoubleProperty versionProperty()
     {
         return version;
+    }
+
+    public String getReferenceType()
+    {
+        return referenceType.get();
+    }
+
+    public StringProperty referenceTypeProperty()
+    {
+        return referenceType;
+    }
+
+    public boolean isGenerateNCX()
+    {
+        return generateNCX.get();
+    }
+
+    public BooleanProperty generateNCXProperty()
+    {
+        return generateNCX;
     }
 }
