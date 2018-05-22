@@ -106,7 +106,7 @@
                 </Menu>
             </menus>
         </MenuBar-->
-        <SplitPane fx:id="mainDivider" dividerPositions="0.4, 0.7" layoutY="96.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="189.0">
+        <SplitPane fx:id="mainDivider" dividerPositions="0.4, 0.7" layoutY="69.0" prefHeight="716.0" prefWidth="1207.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="162.0">
             <items>
                 <StashableSplitPane fx:id="leftDivider" dividerPositions="0.5" orientation="VERTICAL" SplitPane.resizableWithParent="false">
                     <items>
@@ -540,7 +540,7 @@
                 <Insets top="-5.0"/>
             </padding>
         </TabPane-->
-        <Ribbon layoutY="27.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Ribbon AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <tabs>
                 <RibbonTab text="Start">
                     <ribbonGroups>
