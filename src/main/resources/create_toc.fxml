@@ -21,7 +21,8 @@
       <Button fx:id="renameButton" layoutX="449.0" layoutY="20.0" mnemonicParsing="false" onAction="#renameButtonAction" styleClass="flat" text="Rename" AnchorPane.rightAnchor="92.0" AnchorPane.topAnchor="20.0" />
       <Button fx:id="higherLevelButton" layoutX="449.0" layoutY="65.0" mnemonicParsing="false" onAction="#higherLevelButtonAction" prefHeight="25.0" prefWidth="25.0" styleClass="flat" text="&lt;" AnchorPane.rightAnchor="126.0" AnchorPane.topAnchor="65.0" />
       <Button fx:id="deeperLevelButton" layoutX="483.0" layoutY="65.0" mnemonicParsing="false" onAction="#deeperLevelButtonAction" prefHeight="25.0" prefWidth="25.0" styleClass="flat" text="&gt;" AnchorPane.rightAnchor="92.0" AnchorPane.topAnchor="65.0" />
-      <CheckBox fx:id="showTocItemsCheckBox" layoutX="226.0" layoutY="430.0" mnemonicParsing="false" onAction="#showTocItemsCheckBoxAction" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="226.0" />
+      <CheckBox fx:id="showTocItemsCheckBox" layoutX="226.0" layoutY="430.0" mnemonicParsing="false"
+                onAction="#showTocItemsCheckBoxAction" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="226.0"/>
       <Label layoutX="20.0" layoutY="459.0" text="Level of heading to include in TOC" AnchorPane.bottomAnchor="66.0" AnchorPane.leftAnchor="20.0" />
       <Label layoutX="20.0" layoutY="430.0" text="Show only TOC items" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="20.0" />
       <ComboBox fx:id="headingLevelComboBox" layoutX="225.0" layoutY="455.0" onAction="#headingLevelComboBoxAction" prefWidth="150.0" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="225.0" />

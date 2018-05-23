@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * An item in the Table of Contents.
  */
-public class TocEntry extends TitledResourceReference implements Serializable {
+public class TocEntry<T extends TocEntry> extends TitledResourceReference implements Serializable {
 
 	/**
 	 * 
@@ -17,7 +17,7 @@ public class TocEntry extends TitledResourceReference implements Serializable {
 	private List<TocEntry> children;
     private String reference;
 	private String level;
-	private static final Comparator<TocEntry> COMPARATOR_BY_TITLE_IGNORE_CASE = (tocReference1, tocReference2) -> String.CASE_INSENSITIVE_ORDER.compare(tocReference1.getTitle(), tocReference2.getTitle());
+	private static final Comparator<? super TocEntry> COMPARATOR_BY_TITLE_IGNORE_CASE = (tocReference1, tocReference2) -> String.CASE_INSENSITIVE_ORDER.compare(tocReference1.getTitle(), tocReference2.getTitle());
 	
 	public TocEntry() {
 		this(null, null, null);
@@ -36,7 +36,7 @@ public class TocEntry extends TitledResourceReference implements Serializable {
 		this.children = children;
 	}
 
-	public static Comparator<TocEntry> getComparatorByTitleIgnoreCase() {
+	public static Comparator<? super TocEntry> getComparatorByTitleIgnoreCase() {
 		return COMPARATOR_BY_TITLE_IGNORE_CASE;
 	}
 	

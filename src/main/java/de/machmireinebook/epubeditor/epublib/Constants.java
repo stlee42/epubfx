@@ -21,4 +21,7 @@ public interface Constants {
 	String dateFormat = "yyyy-MM-dd";
 
 	String EPUB3_NAV_DOCUMENT_TAG_VALUE = "nav";
+
+	String CLASS_SIGIL_NOT_IN_TOC = "sigil_not_in_toc";
+	String IGNORE_IN_TOC = "ignore-in-toc";
 }

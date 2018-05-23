@@ -18,6 +18,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import org.apache.log4j.Logger;
+
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.PreferencesFx;
@@ -33,6 +35,7 @@ import de.machmireinebook.epubeditor.EpubEditorStarter;
 @Singleton
 public class PreferencesManager
 {
+    private static final Logger logger = Logger.getLogger(PreferencesManager.class);
     private PreferencesFx preferencesFx;
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
@@ -55,8 +58,13 @@ public class PreferencesManager
     private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1), 0).render(
             new RadioButtonControl<>());
 
-    private StringProperty referenceType = new SimpleStringProperty("Footnote");
-    private SingleSelectionField referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList("Footnote", "Endnote"), 0).render(
+    private ObjectProperty<ReferenceType> referenceType = new SimpleObjectProperty<>(ReferenceType.FOOTNOTE);
+    private SingleSelectionField<ReferenceType> referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList(ReferenceType.values()), 0).render(
+            new RadioButtonControl<>());
+
+    private ObjectProperty<TocPosition> tocPosition = new SimpleObjectProperty<>(TocPosition.AFTER_COVER);
+
+    private SingleSelectionField<TocPosition> positionTocControl = Field.ofSingleSelectionType(Arrays.asList(TocPosition.values()), 0).render(
             new RadioButtonControl<>());
 
     BooleanProperty generateNCX = new SimpleBooleanProperty(true);
@@ -71,19 +79,22 @@ public class PreferencesManager
                                 Setting.of("Generate NCX automatically", generateNCX)
                         ),
                         Group.of("Structure",
-                                Setting.of("Type of References", referenceTypeControl, referenceType)
+                                Setting.of("Type of References", referenceTypeControl, referenceType),
+                                Setting.of("Position of generated Toc", positionTocControl, tocPosition)
                         )
                 ),
                 Category.of("Language specific Settings",
                         Setting.of("UI Language", languageItems, languageSelection),
                         Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
                         Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
-                        Setting.of("Headline of Table of Contents", headlineToc)
+                        Setting.of("Headline of Table of Contents", headlineToc),
+                        Setting.of("Headline of Landmarks", headlineToc)
                 ),
                 Category.of("Category title 2",
                         Setting.of("Setting title 3", integerProperty),
                         Setting.of("Setting title 4", integerProperty)
                 ));
+        tocPosition.addListener((observable, oldValue, newValue) -> logger.info("changed tocPosition " + newValue));
     }
 
     public void showPreferencesDialog()
@@ -161,12 +172,12 @@ public class PreferencesManager
         return version;
     }
 
-    public String getReferenceType()
+    public ReferenceType getReferenceType()
     {
         return referenceType.get();
     }
 
-    public StringProperty referenceTypeProperty()
+    public ObjectProperty<ReferenceType> referenceTypeProperty()
     {
         return referenceType;
     }
@@ -179,5 +190,15 @@ public class PreferencesManager
     public BooleanProperty generateNCXProperty()
     {
         return generateNCX;
+    }
+
+    public TocPosition getTocPosition()
+    {
+        return tocPosition.get();
+    }
+
+    public ObjectProperty<TocPosition> tocPositionProperty()
+    {
+        return tocPosition;
     }
 }

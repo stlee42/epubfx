@@ -2,10 +2,12 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.IOException;
 
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import org.apache.log4j.Logger;
+
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * User: mjungierek
@@ -33,6 +35,11 @@ public class XHTMLResource extends Resource<Document>
 
     public XHTMLResource()
     {
+    }
+
+    public XHTMLResource(Document document, String href)
+    {
+        super(XHTMLUtils.outputXHTMLDocument(document), href, MediaType.XHTML);
     }
 
     public XHTMLResource(byte[] data, String href, MediaType mediaType)
