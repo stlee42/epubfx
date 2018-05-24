@@ -7,18 +7,20 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Element;
+
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -76,9 +78,18 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         {
             Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
             String property = metaTag.getAttributeValue(OPFAttributes.property);
-            if (StringUtils.isNotEmpty(property)) //ansonsten epub 2 metadaten, die wir uns merken ansonsten aber ignorieren
+            if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata
             {
-                otherMetadataElement.setQName(new QName(property));
+                String[] qNameParts = StringUtils.split(property, ":");
+                if (qNameParts.length == 1)
+                {
+                    otherMetadataElement.setQName(new QName(property));
+                }
+                else if (qNameParts.length == 2)
+                {
+                    //TODO: search ns uri in prefix attributes or n predefined prefixes
+                    otherMetadataElement.setQName(new QName(null, qNameParts[1], qNameParts[0]));
+                }
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
                 String refines = metaTag.getAttributeValue(OPFAttributes.refines);

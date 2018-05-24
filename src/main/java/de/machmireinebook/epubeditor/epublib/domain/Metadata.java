@@ -9,4 +9,5 @@ public interface Metadata
 {
     String getFirstTitle();
     void generateNewUuid();
+    String getLanguage();
 }

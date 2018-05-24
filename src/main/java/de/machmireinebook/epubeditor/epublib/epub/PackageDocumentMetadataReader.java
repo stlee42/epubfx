@@ -7,16 +7,18 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Element;
+
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -79,7 +81,16 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             String name = metaTag.getAttributeValue(OPFAttributes.property);
             if (StringUtils.isNotEmpty(name)) //epub 3 metadata, read in, but ignore in epub 2 context
             {
-                otherMetadataElement.setQName(new QName(name));
+                String[] qNameParts = org.apache.commons.lang3.StringUtils.split(name, ":");
+                if (qNameParts.length == 1)
+                {
+                    otherMetadataElement.setQName(new QName(name));
+                }
+                else if (qNameParts.length == 2)
+                {
+                    //TODO: search ns uri in prefix attributes or n predefined prefixes
+                    otherMetadataElement.setQName(new QName(null, qNameParts[1], qNameParts[0]));
+                }
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
                 String refines = metaTag.getAttributeValue(OPFAttributes.refines);

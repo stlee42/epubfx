@@ -37,9 +37,10 @@ public class PreferencesManager
 {
     private static final Logger logger = Logger.getLogger(PreferencesManager.class);
     private PreferencesFx preferencesFx;
+    private IntegerProperty integerProperty = new SimpleIntegerProperty(1);
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
-    private IntegerProperty integerProperty = new SimpleIntegerProperty(1);
+    private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
 
     private ObservableList<String> languageItems = FXCollections.observableArrayList(Collections.singletonList(
             "English"));
@@ -62,12 +63,12 @@ public class PreferencesManager
     private SingleSelectionField<ReferenceType> referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList(ReferenceType.values()), 0).render(
             new RadioButtonControl<>());
 
-    private ObjectProperty<TocPosition> tocPosition = new SimpleObjectProperty<>(TocPosition.AFTER_COVER);
-
+    private ObjectProperty<TocPosition> tocPosition = new SettingEnumObjectProperty<>(TocPosition.AFTER_COVER, TocPosition.class);
     private SingleSelectionField<TocPosition> positionTocControl = Field.ofSingleSelectionType(Arrays.asList(TocPosition.values()), 0).render(
             new RadioButtonControl<>());
 
-    BooleanProperty generateNCX = new SimpleBooleanProperty(true);
+    private BooleanProperty generateNCX = new SimpleBooleanProperty(true);
+    private BooleanProperty generateHtmlToc = new SimpleBooleanProperty(true);
 
 
     public PreferencesManager()
@@ -75,8 +76,13 @@ public class PreferencesManager
         preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
                 Category.of("Book",
                         Group.of("EPUB Version",
-                                Setting.of("Version of new ebooks", versionControl, version),
-                                Setting.of("Generate NCX automatically", generateNCX)
+                                Setting.of("Version of ebook at Start", versionControl, version) //could be a chooser for template to open at start
+                        ),
+                        Group.of("EPUB 2",
+                                Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
+                        ),
+                        Group.of("EPUB 3",
+                                Setting.of("Generate NCX automatically ", generateNCX)
                         ),
                         Group.of("Structure",
                                 Setting.of("Type of References", referenceTypeControl, referenceType),
@@ -88,13 +94,8 @@ public class PreferencesManager
                         Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
                         Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
                         Setting.of("Headline of Table of Contents", headlineToc),
-                        Setting.of("Headline of Landmarks", headlineToc)
-                ),
-                Category.of("Category title 2",
-                        Setting.of("Setting title 3", integerProperty),
-                        Setting.of("Setting title 4", integerProperty)
+                        Setting.of("Headline of Landmarks", landmarksToc)
                 ));
-        tocPosition.addListener((observable, oldValue, newValue) -> logger.info("changed tocPosition " + newValue));
     }
 
     public void showPreferencesDialog()
@@ -200,5 +201,25 @@ public class PreferencesManager
     public ObjectProperty<TocPosition> tocPositionProperty()
     {
         return tocPosition;
+    }
+
+    public boolean isGenerateHtmlToc()
+    {
+        return generateHtmlToc.get();
+    }
+
+    public BooleanProperty generateHtmlTocProperty()
+    {
+        return generateHtmlToc;
+    }
+
+    public String getLandmarksToc()
+    {
+        return landmarksToc.get();
+    }
+
+    public StringProperty landmarksTocProperty()
+    {
+        return landmarksToc;
     }
 }

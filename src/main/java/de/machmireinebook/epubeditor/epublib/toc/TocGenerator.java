@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import org.apache.log4j.Logger;
 
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -157,15 +158,59 @@ public class TocGenerator
         book.getTableOfContents().setTocReferences(tocEntries);
         try
         {
-            Document navDoc = templateManager.getNavTemplate();
+            Document navDoc;
+            if(book.getSpine().getTocResource() == null)
+            {
+                navDoc = templateManager.getNavTemplate();
+            }
+            else
+            {
+                navDoc = (Document)book.getSpine().getTocResource().asNativeFormat();
+            }
+
+            //for now we presume that nav template is in most parts how we expect it
             Element root = navDoc.getRootElement();
-            //for now we presume that nav template is how we expect this
+
+            Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
+            if (langAttribute == null)
+            {
+                root.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+            }
+            else
+            {
+                langAttribute.setValue(book.getMetadata().getLanguage());
+            }
+            Element headElement = root.getChild("head", Namespace.XML_NAMESPACE);
+            if (headElement != null)
+            {
+                Element titleElement = headElement.getChild("title", Namespace.XML_NAMESPACE);
+                if (titleElement == null)
+                {
+                    titleElement = new Element("title", Namespace.XML_NAMESPACE);
+                    headElement.addContent(titleElement);
+                }
+                titleElement.setText(book.getTitle());
+            }
+
             Element bodyElement = root.getChild("body", Namespace.XML_NAMESPACE);
             if (bodyElement != null)
             {
-                List<Element> navElements = root.getChildren("nav", Namespace.XML_NAMESPACE);
+                //language attribute
+                langAttribute = bodyElement.getAttribute("lang", Namespace.XML_NAMESPACE);
+                if (langAttribute == null)
+                {
+                    bodyElement.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+                }
+                else
+                {
+                    langAttribute.setValue(book.getMetadata().getLanguage());
+                }
+
+                //the different navs
+                List<Element> navElements = bodyElement.getChildren("nav", Namespace.XML_NAMESPACE);
                 for (Element navElement : navElements)
                 {
+                    navElement.getChildren().clear();
                     if (navElement.getAttributeValue("id").equals("nav"))
                     {
                         generateToc(tocEntries, navElement);
@@ -176,14 +221,21 @@ public class TocGenerator
                     }
                 }
             }
-            XHTMLResource resource = new XHTMLResource(navDoc, "../Text/nav.xhtml");
-            if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
+            if (book.getSpine().getTocResource() == null)
             {
-                book.getSpine().getResourceIndex(book.getCoverPage());
+                XHTMLResource resource = new XHTMLResource(navDoc, "../Text/nav.xhtml");
+                if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
+                {
+                    int index = book.getSpine().getResourceIndex(book.getCoverPage());
+                    book.addSpineResource(resource, index);
+                }
+                else //if no cover or other setting put new toc at the end
+                {
+                    //add to spine and set as toc resource beacuse its xhtml too
+                    book.addSpineResource(resource);
+                    book.getSpine().setTocResource(resource);
+                }
             }
-            //add to spine and set as toc resource beacuse its xhtml too
-            book.addSpineResource(resource);
-            book.getSpine().setTocResource(resource);
         }
         catch (IOException | JDOMException e)
         {
@@ -196,6 +248,7 @@ public class TocGenerator
         Element h1Element = navElement.getChild("h1");
         String tocHeadline = preferencesManager.getHeadlineToc();
         h1Element.setText(tocHeadline);
+
         Element olElement = new Element("ol", Namespace.XML_NAMESPACE);
         navElement.addContent(olElement);
     }

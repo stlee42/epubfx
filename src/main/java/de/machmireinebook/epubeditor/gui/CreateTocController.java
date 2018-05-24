@@ -30,6 +30,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.ChoosableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
@@ -48,8 +49,11 @@ public class CreateTocController implements StandardController
     private CheckBox showTocItemsCheckBox;
     @FXML
     private ComboBox headingLevelComboBox;
+
     @Inject
     private TocGenerator tocGenerator;
+    @Inject
+    private BookBrowserManager bookBrowserManager;
 
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
@@ -172,6 +176,7 @@ public class CreateTocController implements StandardController
     public void onOkAction(ActionEvent actionEvent)
     {
         tocGenerator.generateNav(new ArrayList<>(tableView.getItems()));
+        bookBrowserManager.refreshBookBrowser();
         stage.close();
     }
 

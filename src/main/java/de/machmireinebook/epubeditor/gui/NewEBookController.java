@@ -13,16 +13,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
-import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -34,8 +24,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+
+import jidefx.scene.control.searchable.TableViewSearchable;
+
+import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_EPUB_2_BOOK;
 
 /**
  * User: mjungierek
@@ -81,7 +86,7 @@ public class NewEBookController implements StandardController
         });
         typeListView.getSelectionModel().select(0);
 
-        epub2Books.add(BookTemplate.MINIMAL_EPUB_2_BOOK);
+        epub2Books.add(MINIMAL_EPUB_2_BOOK);
         TableViewSearchable<BookTemplate> searchable = new TableViewSearchable<>(tableView);
         searchable.setCaseSensitive(false);
 
@@ -202,9 +207,9 @@ public class NewEBookController implements StandardController
         return instance;
     }
 
-    public void onOkAction(ActionEvent actionEvent)
+    public void onOkAction(ActionEvent actionEvent) throws IOException
     {
-        if (tableView.getSelectionModel().getSelectedIndex() == 0)
+        if (tableView.getSelectionModel().getSelectedItem().equals(MINIMAL_EPUB_2_BOOK))
         {
             Book minimalBook = Book.createMinimalBook();
             currentBookProperty.set(minimalBook);
@@ -212,7 +217,10 @@ public class NewEBookController implements StandardController
         }
         else
         {
-            //
+            BookTemplate template = tableView.getSelectionModel().getSelectedItem();
+            Book book = new EpubReader().readEpub(template.getPath().toFile());
+            currentBookProperty.set(book);
+            currentBookProperty.get().setBookIsChanged(true);
         }
         stage.close();
     }
