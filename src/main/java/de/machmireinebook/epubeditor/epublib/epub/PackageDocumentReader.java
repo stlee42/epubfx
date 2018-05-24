@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -26,13 +33,6 @@ import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigationDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -310,6 +310,10 @@ public class PackageDocumentReader extends PackageDocumentBase
         if (!book.isEpub3())
         {
             result.setTocResource(findTableOfContentsResource(spineElement, resources));
+        }
+        else
+        {
+            result.setTocResource(book.getEpub3NavResource());
         }
         List<Element> spineItems = spineElement.getChildren(OPFTags.itemref, NAMESPACE_OPF);
         List<SpineReference> spineReferences = new ArrayList<>(spineItems.size());

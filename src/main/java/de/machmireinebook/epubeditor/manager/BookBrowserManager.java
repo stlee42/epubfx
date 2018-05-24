@@ -704,18 +704,13 @@ public class BookBrowserManager
         opfItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
         rootItem.getChildren().add(opfItem);
 
-        if (!book.isEpub3())
+        Resource ncxResource = book.getNcxResource();
+        if (ncxResource != null) //in case of epub it could be null
         {
-            Resource ncxResource = book.getNcxResource();
             ncxItem = new TreeItem<>(ncxResource);
+            ncxItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
+            rootItem.getChildren().add(ncxItem);
         }
-        else
-        {
-            Resource navResource = book.getEpub3NavResource();
-            ncxItem = new TreeItem<>(navResource);
-        }
-        ncxItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
-        rootItem.getChildren().add(ncxItem);
 
         textItem.expandedProperty().setValue(true);
         treeView.getSelectionModel().clearSelection();

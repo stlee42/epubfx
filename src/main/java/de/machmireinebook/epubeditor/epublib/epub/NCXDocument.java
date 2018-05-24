@@ -81,14 +81,15 @@ public class NCXDocument
     public static Resource read(Book book)
     {
         Resource ncxResource = null;
-        if (book.getSpine().getTocResource() == null)
+        Resource tocResource = book.getSpine().getTocResource();
+        if (tocResource == null || (book.isEpub3() && !tocResource.getMediaType().equals(MediaType.NCX)))
         {
             log.error("Book does not contain a table of contents file");
             return null;
         }
         try
         {
-            ncxResource = book.getSpine().getTocResource();
+            ncxResource = tocResource;
             Document ncxDocument = ResourceUtil.getAsDocument(ncxResource);
             Element navMapElement = ncxDocument.getRootElement().getChild(NCXTags.navMap, NAMESPACE_NCX);
             TableOfContents tableOfContents = new TableOfContents(readTOCReferences(navMapElement.getChildren("navPoint", NAMESPACE_NCX), book));

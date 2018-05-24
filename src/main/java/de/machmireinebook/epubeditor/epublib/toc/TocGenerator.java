@@ -29,9 +29,11 @@ import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CLASS_SIGIL_NOT_IN_TOC;
 import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_XHTML;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 18.05.2018
@@ -159,47 +161,48 @@ public class TocGenerator
         try
         {
             Document navDoc;
-            if(book.getSpine().getTocResource() == null)
+            Resource tocResource = book.getSpine().getTocResource();
+            if(tocResource == null)
             {
                 navDoc = templateManager.getNavTemplate();
             }
             else
             {
-                navDoc = (Document)book.getSpine().getTocResource().asNativeFormat();
+                navDoc = (Document) tocResource.asNativeFormat();
             }
 
             //for now we presume that nav template is in most parts how we expect it
             Element root = navDoc.getRootElement();
 
-            Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
+            Attribute langAttribute = root.getAttribute("lang");
             if (langAttribute == null)
             {
-                root.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+                root.setAttribute("lang", book.getMetadata().getLanguage(),  NAMESPACE_XHTML);
             }
             else
             {
                 langAttribute.setValue(book.getMetadata().getLanguage());
             }
-            Element headElement = root.getChild("head", Namespace.XML_NAMESPACE);
+            Element headElement = root.getChild("head", NAMESPACE_XHTML);
             if (headElement != null)
             {
-                Element titleElement = headElement.getChild("title", Namespace.XML_NAMESPACE);
+                Element titleElement = headElement.getChild("title", NAMESPACE_XHTML);
                 if (titleElement == null)
                 {
-                    titleElement = new Element("title", Namespace.XML_NAMESPACE);
+                    titleElement = new Element("title", NAMESPACE_XHTML);
                     headElement.addContent(titleElement);
                 }
                 titleElement.setText(book.getTitle());
             }
 
-            Element bodyElement = root.getChild("body", Namespace.XML_NAMESPACE);
+            Element bodyElement = root.getChild("body", NAMESPACE_XHTML);
             if (bodyElement != null)
             {
                 //language attribute
-                langAttribute = bodyElement.getAttribute("lang", Namespace.XML_NAMESPACE);
+                langAttribute = bodyElement.getAttribute("lang");
                 if (langAttribute == null)
                 {
-                    bodyElement.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+                    bodyElement.setAttribute("lang", book.getMetadata().getLanguage());
                 }
                 else
                 {
@@ -207,7 +210,7 @@ public class TocGenerator
                 }
 
                 //the different navs
-                List<Element> navElements = bodyElement.getChildren("nav", Namespace.XML_NAMESPACE);
+                List<Element> navElements = bodyElement.getChildren("nav", NAMESPACE_XHTML);
                 for (Element navElement : navElements)
                 {
                     navElement.getChildren().clear();
@@ -221,7 +224,7 @@ public class TocGenerator
                     }
                 }
             }
-            if (book.getSpine().getTocResource() == null)
+            if (tocResource == null)
             {
                 XHTMLResource resource = new XHTMLResource(navDoc, "../Text/nav.xhtml");
                 if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
@@ -235,6 +238,10 @@ public class TocGenerator
                     book.addSpineResource(resource);
                     book.getSpine().setTocResource(resource);
                 }
+            }
+            else
+            {
+                tocResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc));
             }
         }
         catch (IOException | JDOMException e)

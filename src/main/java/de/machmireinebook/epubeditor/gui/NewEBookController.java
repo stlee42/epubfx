@@ -86,7 +86,6 @@ public class NewEBookController implements StandardController
         });
         typeListView.getSelectionModel().select(0);
 
-        epub2Books.add(MINIMAL_EPUB_2_BOOK);
         TableViewSearchable<BookTemplate> searchable = new TableViewSearchable<>(tableView);
         searchable.setCaseSensitive(false);
 
@@ -117,6 +116,10 @@ public class NewEBookController implements StandardController
 
     private void findTemplates()
     {
+        epub2Books.clear();
+        epub2Books.add(MINIMAL_EPUB_2_BOOK);
+        epub3ReflowableBooks.clear();
+        epub3PrepaginatedBooks.clear();
         try
         {
             Path templatePath = new File(NewEBookController.class.getResource("/epub/templates/").getFile()).toPath();
