@@ -15,18 +15,8 @@ import javax.inject.Named;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-
-import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
-import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
-import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +25,14 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
+import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 
 /**
@@ -335,17 +333,8 @@ public class Book implements Serializable
     private Resource ncxResource;
     private ImageResource coverImage;
 
-    // Property
-    private EpubVersion version = EpubVersion.VERSION_2;
-
-    private final ReadOnlyObjectWrapper<EpubVersion> versionProperty = new ReadOnlyObjectWrapper<>(version, "version");
-    public final ReadOnlyObjectProperty<EpubVersion> versionProperty() {
-       return versionProperty.getReadOnlyProperty();
-    }
-    public final EpubVersion get() {
-       return versionProperty.get();
-    }
-
+    // versionProperty
+    private final ObjectProperty<EpubVersion> versionProperty = new SimpleObjectProperty<>(this, "version");
     private boolean isFixedLayout = false;
     private int fixedLayoutWidth;
     private int fixedLayoutHeight;
@@ -365,6 +354,7 @@ public class Book implements Serializable
             book.setNcxResource(ncxResource);
             book.getSpine().setTocResource(ncxResource);
             book.addResource(ncxResource, false);
+            book.setVersion(EpubVersion.VERSION_2);
 
             Resource opfResource = PackageDocumentWriter.createOPFResource(book);
             book.setOpfResource(opfResource);
@@ -910,24 +900,24 @@ public class Book implements Serializable
         return ncxResource;
     }
 
-    public EpubVersion getVersion()
-    {
-        return version;
+    public final ObjectProperty<EpubVersion> versionProperty() {
+        return versionProperty;
     }
-
-    public void setVersion(EpubVersion version)
-    {
-        this.version = version;
+    public final EpubVersion getVersion() {
+        return versionProperty.get();
+    }
+    public final void setVersion(EpubVersion value) {
+        versionProperty.set(value);
     }
 
     public boolean isFixedLayout()
     {
-        return (version == EpubVersion.VERSION_3 || version == EpubVersion.VERSION_3_1) && isFixedLayout;
+        return (versionProperty.get() == EpubVersion.VERSION_3 || versionProperty.get() == EpubVersion.VERSION_3_1) && isFixedLayout;
     }
 
     public boolean isEpub3()
     {
-        return (version == EpubVersion.VERSION_3 || version == EpubVersion.VERSION_3_1);
+        return (versionProperty.get() == EpubVersion.VERSION_3 || versionProperty.get() == EpubVersion.VERSION_3_1);
     }
 
     public void setFixedLayout(boolean isFixedLayout)
