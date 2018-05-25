@@ -23,14 +23,16 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.ChoosableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
@@ -54,6 +56,8 @@ public class CreateTocController implements StandardController
     private TocGenerator tocGenerator;
     @Inject
     private BookBrowserManager bookBrowserManager;
+    @Inject
+    private EditorTabManager editorTabManager;
 
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
@@ -175,8 +179,17 @@ public class CreateTocController implements StandardController
 
     public void onOkAction(ActionEvent actionEvent)
     {
-        tocGenerator.generateNav(new ArrayList<>(tableView.getItems()));
+        Resource resource;
+        if (currentBook.get().isEpub3())
+        {
+            resource = tocGenerator.generateNav(new ArrayList<>(tableView.getItems()));
+        }
+        else
+        {
+            resource = tocGenerator.generateNcx(new ArrayList<>(tableView.getItems()));
+        }
         bookBrowserManager.refreshBookBrowser();
+        editorTabManager.refreshEditorCode(resource);
         stage.close();
     }
 

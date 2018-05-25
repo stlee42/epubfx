@@ -11,16 +11,6 @@ import javax.inject.Named;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-import org.apache.log4j.Logger;
-
-import org.jdom2.Attribute;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.AbstractFilter;
-import org.jdom2.util.IteratorIterable;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
@@ -31,9 +21,17 @@ import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.CLASS_SIGIL_NOT_IN_TOC;
-import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_XHTML;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.AbstractFilter;
+import org.jdom2.util.IteratorIterable;
+
+import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 18.05.2018
@@ -153,15 +151,16 @@ public class TocGenerator
         return level;
     }
 
-    public void generateNav(List<TocEntry> tocEntries)
+    public Resource generateNav(List<TocEntry> tocEntries)
     {
         //first add entries to books toc
         Book book = getBook();
+        book.setBookIsChanged(true);
         book.getTableOfContents().setTocReferences(tocEntries);
+        Resource tocResource = book.getSpine().getTocResource();
         try
         {
             Document navDoc;
-            Resource tocResource = book.getSpine().getTocResource();
             if(tocResource == null)
             {
                 navDoc = templateManager.getNavTemplate();
@@ -248,6 +247,7 @@ public class TocGenerator
         {
             logger.error("can't generate nav", e);
         }
+        return tocResource;
     }
 
     private void generateToc(List<TocEntry> tocEntries, Element navElement)
@@ -265,9 +265,9 @@ public class TocGenerator
 
     }
 
-    public void generateNcx(List<TocEntry> tocEntries)
+    public Resource generateNcx(List<TocEntry> tocEntries)
     {
-
+        return null;
     }
 
 

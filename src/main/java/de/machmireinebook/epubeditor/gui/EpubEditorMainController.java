@@ -37,7 +37,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
@@ -72,9 +71,6 @@ import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
 import org.apache.log4j.Logger;
-
-import org.controlsfx.glyphfont.GlyphFont;
-import org.controlsfx.glyphfont.GlyphFontRegistry;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -223,8 +219,6 @@ public class EpubEditorMainController implements Initializable
     private Button lowercaseButton;
     @FXML
     private ComboBox<String> languageSpellComboBox;
-    @FXML
-    private SplitMenuButton openRecentBookButton;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -250,7 +244,6 @@ public class EpubEditorMainController implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        GlyphFont fontAwesome = GlyphFontRegistry.font("FontAwesome");
         TreeViewSearchable<Resource> searchable = new TreeViewSearchable<>(epubStructureTreeView);
         searchable.setRecursive(true);
 
@@ -284,6 +277,8 @@ public class EpubEditorMainController implements Initializable
                 saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
                 createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
                 createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
+                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                        + " - EPUB " + newValue.getVersion().getVersion() + " - EpubFX");
             }
 
         });
