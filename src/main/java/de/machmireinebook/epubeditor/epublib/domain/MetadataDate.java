@@ -2,8 +2,6 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
 
-import org.jetbrains.annotations.Contract;
-
 /**
  * A Date used by the book's metadata.
  * 
@@ -62,7 +60,6 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 		setValue(dateString);
 	}
 
-	@Contract(value = "null -> fail; !null -> !null", pure = true)
 	private static String checkDate(String dateString) {
 		if (dateString == null) {
 			throw new IllegalArgumentException("Cannot create a date from a blank string");

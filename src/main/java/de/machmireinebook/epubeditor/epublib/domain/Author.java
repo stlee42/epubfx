@@ -2,8 +2,8 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Represents one of the authors of the book

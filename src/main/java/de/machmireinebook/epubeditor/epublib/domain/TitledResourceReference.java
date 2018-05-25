@@ -2,9 +2,9 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class TitledResourceReference extends ResourceReference implements Serializable {
 

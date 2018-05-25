@@ -30,10 +30,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
@@ -43,6 +39,10 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.util.NumberUtils;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TableViewSearchable;
 

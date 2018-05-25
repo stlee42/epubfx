@@ -1,0 +1,25 @@
+/**
+ * User: Michail Jungierek
+ * Date: 25.05.2018
+ * Time: 23:54
+ */
+module epubFX {
+    requires java.desktop;
+    requires javax.inject;
+
+    requires javafx.base;
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires javafx.web;
+
+    requires commons.lang3;
+    requires log4j.core;
+    requires log4j.api;
+    requires log4j;
+    requires jdom2;
+    requires commons.io;
+    requires com.google.guava;
+    requires jidefx.common;
+    requires htmlcleaner;
+
+}

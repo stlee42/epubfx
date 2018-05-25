@@ -5,13 +5,15 @@ import java.util.Deque;
 
 import javax.inject.Singleton;
 
-import com.sun.webkit.dom.ElementImpl;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -77,11 +79,11 @@ public class PreviewManager
                     {
                         ((EventTarget) documentElement).addEventListener("click", evt ->
                         {
-                            if (evt.getTarget() instanceof ElementImpl)
+                            if (evt.getTarget() instanceof Element)
                             {
                                 Deque<ElementPosition> positions = new ArrayDeque<>();
-                                ElementImpl currentElement = ((ElementImpl)evt.getTarget());
-                                ElementImpl parent = (ElementImpl)currentElement.getParentElement();
+                                Element currentElement = ((Element)evt.getTarget());
+                                Element parent = (Element)currentElement.getParentNode();
                                 while(parent != null)
                                 {
                                     NodeList children;
@@ -102,7 +104,7 @@ public class PreviewManager
                                         }
                                     }
                                     currentElement = parent;
-                                    parent = (ElementImpl)currentElement.getParentElement();
+                                    parent = (Element)currentElement.getParentNode();
                                 }
                                 editorManager.scrollTo(positions);
                             }

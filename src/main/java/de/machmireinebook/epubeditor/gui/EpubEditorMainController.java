@@ -430,6 +430,8 @@ public class EpubEditorMainController implements Initializable
 
         //not bind bidiretional, because selectinModel has only read only properties and preferences can not set values from preferences store if property is bind
         preferencesManager.languageSpellSelectionProperty().addListener((observable, oldValue, newValue) -> languageSpellComboBox.getSelectionModel().select(newValue));
+        //initialize the value in combobox
+        languageSpellComboBox.getSelectionModel().select(preferencesManager.languageSpellSelectionProperty().get());
         languageSpellComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> preferencesManager.languageSpellSelectionProperty().set(newValue));
     }
 
@@ -997,7 +999,7 @@ public class EpubEditorMainController implements Initializable
         }
     }
 
-    public void clipEditorAction(ActionEvent actionEvent)
+    public void clipEditorAction()
     {
         createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
     }

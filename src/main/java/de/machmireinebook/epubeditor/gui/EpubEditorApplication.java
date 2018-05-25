@@ -6,12 +6,6 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import com.sun.net.httpserver.HttpServer;
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.MainStage;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -30,13 +24,22 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.MainStage;
+import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
+
 import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
+import com.sun.net.httpserver.HttpServer;
+
 public class EpubEditorApplication extends Application
 {
-    Logger logger = Logger.getLogger(EpubEditorApplication.class);
+    private static final Logger logger = Logger.getLogger(EpubEditorApplication.class);
 
     private Pane splashLayout;
     private ProgressBar loadProgress;

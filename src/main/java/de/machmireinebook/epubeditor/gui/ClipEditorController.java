@@ -5,9 +5,6 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import de.machmireinebook.epubeditor.clips.Clip;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.manager.ClipManager;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,6 +23,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.converter.DefaultStringConverter;
+
+import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.manager.ClipManager;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -67,7 +69,7 @@ public class ClipEditorController implements StandardController
                     e -> {
                         if (e.getButton() == MouseButton.SECONDARY)
                         {
-                            contextMenu.setImpl_showRelativeToWindow(false);
+                            //contextMenu.setShowRelativeToWindow(false);
                             contextMenu.show(cell, e.getScreenX(), e.getScreenY());
                         }
                     });
@@ -97,7 +99,7 @@ public class ClipEditorController implements StandardController
                     e -> {
                         if (e.getButton() == MouseButton.SECONDARY)
                         {
-                            contextMenu.setImpl_showRelativeToWindow(false);
+                            //contextMenu.setImpl_showRelativeToWindow(false);
                             contextMenu.show(cell, e.getScreenX(), e.getScreenY());
                         }
                     });

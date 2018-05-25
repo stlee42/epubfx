@@ -14,14 +14,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Represents a resource that is part of the epub.

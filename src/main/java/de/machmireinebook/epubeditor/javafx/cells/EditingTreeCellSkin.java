@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import com.sun.javafx.css.converters.SizeConverter;
-import com.sun.javafx.scene.control.skin.CellSkinBase;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.WritableValue;
 import javafx.css.CssMetaData;
@@ -20,6 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+
+import com.sun.javafx.css.converters.SizeConverter;
+import com.sun.javafx.scene.control.skin.CellSkinBase;
 
 public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTreeCellBehavior<T>>
 {
@@ -81,23 +82,19 @@ public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTre
 
         updateTreeItem();
 
-        registerChangeListener(control.treeItemProperty(), "TREE_ITEM");
-        registerChangeListener(control.textProperty(), "TEXT");
-        registerChangeListener(control.getTreeView().fixedCellSizeProperty(), "FIXED_CELL_SIZE");
-    }
 
-    @Override protected void handleControlPropertyChanged(String p) {
-        super.handleControlPropertyChanged(p);
-        if ("TREE_ITEM".equals(p)) {
+        control.treeItemProperty().addListener((observable, oldValue, newValue) -> {
             updateTreeItem();
             disclosureNodeDirty = true;
             getSkinnable().requestLayout();
-        } else if ("TEXT".equals(p)) {
-            getSkinnable().requestLayout();
-        } else if ("FIXED_CELL_SIZE".equals(p)) {
-            this.fixedCellSize = getSkinnable().getTreeView().getFixedCellSize();
-            this.fixedCellSizeEnabled = fixedCellSize > 0;
-        }
+        });
+        control.textProperty().addListener(
+                observableValue -> getSkinnable().requestLayout()
+        );
+        control.getTreeView().fixedCellSizeProperty().addListener((observable, oldValue, newValue) -> {
+            fixedCellSize = getSkinnable().getTreeView().getFixedCellSize();
+            fixedCellSizeEnabled = fixedCellSize > 0;
+        });
     }
 
     private void updateTreeItem() {

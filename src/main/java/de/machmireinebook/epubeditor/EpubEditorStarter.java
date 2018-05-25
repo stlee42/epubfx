@@ -11,7 +11,7 @@ import de.machmireinebook.epubeditor.gui.EpubEditorApplication;
  */
 public class EpubEditorStarter
 {
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         Application.launch(EpubEditorApplication.class);
     }

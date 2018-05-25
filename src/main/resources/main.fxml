@@ -744,10 +744,9 @@
                                 <Column>
                                     <RibbonItem>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Language_96px_1.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Language_96px_1.png"/>
                                             </ImageView>
 
                                         </graphic>
@@ -771,6 +770,17 @@
                                           </padding>
 
                                     </RibbonItem>
+                                    <Button  text="Text Snippets Editor" wrapText="true" onAction="#clipEditorAction">
+                                        <graphic>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                                <Image url="icons/icons8_Coupon_96px_1.png" />
+                                            </ImageView>
+                                        </graphic>
+                                        <padding>
+                                            <Insets left="20.0" top="10" bottom="10" right="20" />
+                                        </padding>
+
+                                    </Button>
                                 </Column>
                             </nodes>
                         </RibbonGroup>

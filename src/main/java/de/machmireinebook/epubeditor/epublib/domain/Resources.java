@@ -12,9 +12,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * All the resources that make up the book.
