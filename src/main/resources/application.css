@@ -45,8 +45,13 @@
 
     -fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;
     -fx-font-size: 1em; /* 12 */
-    -fx-text-fill: #828282;
+    -fx-text-fill: black;
     -fx-alignment: CENTER;
+}
+
+.ribbon-group .button, .ribbon-group .label
+{
+    -fx-text-fill: black;
 }
 
 .ribbon-group .split-menu-button .arrow-button, .ribbon-group .split-menu-button .label {

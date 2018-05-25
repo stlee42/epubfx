@@ -24,7 +24,7 @@
       <Button layoutX="333.0" layoutY="10.0" mnemonicParsing="false" onAction="#filterAction" text="Apply" AnchorPane.rightAnchor="194.0" AnchorPane.topAnchor="10.0" />
       <TreeTableView fx:id="treeTableView" layoutX="14.0" layoutY="45.0" prefHeight="305.0" prefWidth="543.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="45.0">
         <columns>
-          <TreeTableColumn prefWidth="190.0" text="Clipname" />
+          <TreeTableColumn prefWidth="190.0" text="Snippet Name" />
           <TreeTableColumn prefWidth="731.0" text="Inhalt" />
         </columns>
          <contextMenu>
@@ -32,7 +32,7 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#editClipAction" text="Edit" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#addClip" text="Add clip" />
+                  <MenuItem mnemonicParsing="false" onAction="#addClip" text="Add Snippet" />
                   <MenuItem mnemonicParsing="false" onAction="#addClipGroup" text="Add group" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#cutClip" text="Cut" />
@@ -57,7 +57,7 @@
          </children>
       </HBox>
       <Button layoutX="573.0" layoutY="45.0" minWidth="120.0" mnemonicParsing="false" onAction="#insertClipIntoText" text="Insert into text" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="45.0" />
-      <Button layoutX="576.0" layoutY="107.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClip" text="Add clip" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="107.0" />
+      <Button layoutX="576.0" layoutY="107.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClip" text="Add Snippet" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="107.0" />
       <Button layoutX="576.0" layoutY="139.0" minWidth="120.0" mnemonicParsing="false" onAction="#addClipGroup" text="Add group" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="139.0" />
       <Button layoutX="1017.0" layoutY="198.0" maxWidth="25.0" minWidth="25.0" mnemonicParsing="false" onAction="#clipUpAction" prefWidth="25.0" AnchorPane.rightAnchor="52.0" AnchorPane.topAnchor="198.0">
           <graphic>

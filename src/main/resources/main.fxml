@@ -750,7 +750,7 @@
                                             </ImageView>
 
                                         </graphic>
-                                        <label>
+                                        <label >
                                             Spellcheck Language
                                         </label>
                                         <item>
@@ -766,7 +766,7 @@
                                             </ComboBox>
                                         </item>
                                           <padding>
-                                             <Insets left="20.0" />
+                                             <Insets left="20.0"/>
                                           </padding>
 
                                     </RibbonItem>
@@ -1188,7 +1188,7 @@
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showClipsToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Clips" wrapText="true">
+                                <ToggleButton fx:id="showClipsToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Text Snippets" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
