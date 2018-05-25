@@ -102,22 +102,22 @@ public class NCXDocument
         return ncxResource;
     }
 
-    private static List<TocEntry> readTOCReferences(List<Element> navpoints, Book book)
+    private static List<TocEntry<? extends TocEntry>> readTOCReferences(List<Element> navpoints, Book book)
     {
         if (navpoints == null)
         {
             return new ArrayList<>();
         }
-        List<TocEntry> result = new ArrayList<>(navpoints.size());
+        List<TocEntry<?>> result = new ArrayList<>(navpoints.size());
         for (Element navpoint : navpoints)
         {
-            TocEntry tocReference = readTOCReference(navpoint, book);
+            TocEntry<? extends TocEntry> tocReference = readTOCReference(navpoint, book);
             result.add(tocReference);
         }
         return result;
     }
 
-    private static TocEntry readTOCReference(Element navpointElement, Book book)
+    private static TocEntry<? extends TocEntry> readTOCReference(Element navpointElement, Book book)
     {
         String label = readNavLabel(navpointElement);
         String tocResourceRoot = StringUtils.substringBeforeLast(book.getSpine().getTocResource().getHref(), "/");
@@ -137,7 +137,7 @@ public class NCXDocument
         {
             log.error("Resource with href " + href + " in NCX document not found");
         }
-        TocEntry result = new TocEntry(label, resource, fragmentId);
+        TocEntry<? extends TocEntry> result = new TocEntry<>(label, resource, fragmentId);
         result.setReference(reference);
         result.setChildren(readTOCReferences(navpointElement.getChildren("navPoint", NAMESPACE_NCX), book));
         return result;
@@ -267,10 +267,10 @@ public class NCXDocument
         headElement.addContent(metaElement);
     }
 
-    private static int writeNavPoints(List<TocEntry> tocReferences, int playOrder,
+    private static int writeNavPoints(List<TocEntry<? extends TocEntry>> tocReferences, int playOrder,
                                       Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
     {
-        for (TocEntry tocReference : tocReferences)
+        for (TocEntry<? extends TocEntry> tocReference : tocReferences)
         {
             if (tocReference.getResource() == null)
             {

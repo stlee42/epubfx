@@ -14,7 +14,7 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 	 * 
 	 */
 	private static final long serialVersionUID = 5787958246077042456L;
-	private List<TocEntry> children;
+	private List<TocEntry<? extends TocEntry>> children;
     private String reference;
 	private String level;
 	private static final Comparator<? super TocEntry> COMPARATOR_BY_TITLE_IGNORE_CASE = (tocReference1, tocReference2) -> String.CASE_INSENSITIVE_ORDER.compare(tocReference1.getTitle(), tocReference2.getTitle());
@@ -31,7 +31,7 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 		this(name, resource, fragmentId, new ArrayList<>());
 	}
 	
-	public TocEntry(String title, Resource resource, String fragmentId, List<TocEntry> children) {
+	public TocEntry(String title, Resource resource, String fragmentId, List<TocEntry<? extends TocEntry>> children) {
 		super(resource, title, fragmentId);
 		this.children = children;
 	}
@@ -40,16 +40,16 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 		return COMPARATOR_BY_TITLE_IGNORE_CASE;
 	}
 	
-	public List<TocEntry> getChildren() {
+	public List<TocEntry<? extends TocEntry>> getChildren() {
 		return children;
 	}
 
-	public TocEntry addChildSection(TocEntry childSection) {
+	public TocEntry<? extends TocEntry> addChildSection(TocEntry<? extends TocEntry> childSection) {
 		this.children.add(childSection);
 		return childSection;
 	}
 	
-	public void setChildren(List<TocEntry> children) {
+	public void setChildren(List<TocEntry<? extends TocEntry>> children) {
 		this.children = children;
 	}
 

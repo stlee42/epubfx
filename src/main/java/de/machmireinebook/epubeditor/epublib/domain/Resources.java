@@ -176,7 +176,7 @@ public class Resources implements Serializable {
 
 	private void fixResourceHref(Resource resource) {
 		if(StringUtils.isNotBlank(resource.getHref())
-				&& ! resources.containsKey(resource.getHref())) {
+				&& !resources.containsKey(resource.getHref())) {
 			return;
 		}
 		if(StringUtils.isBlank(resource.getHref())) {
@@ -310,42 +310,47 @@ public class Resources implements Serializable {
      * @return null if not found.
      */
     public Resource getByResolvedHref(Resource resource, String href) {
-        if (StringUtils.isBlank(href)) {
-            return null;
-        }
-
-        String resourceHref = "/" + StringUtils.substringBefore(resource.getHref(), Constants.FRAGMENT_SEPARATOR_CHAR);
-        int lastIndex = resourceHref.lastIndexOf("/");
-        resourceHref = resourceHref.substring(0, lastIndex + 1);
-        String combinedHref = "";
-        if (href.startsWith("/"))
-        {
-            combinedHref = href;
-        }
-        else if (StringUtils.isEmpty(href))
-        {
-            combinedHref = resourceHref;
-        }
-        else if (href.startsWith(".."))
-        {
-            combinedHref =  doNormalize(resourceHref + "/" + href);
-        }
-        else if (href.startsWith("."))
-        {
-            combinedHref =  doNormalize(resourceHref + "/" + href.substring(2));
-        }
-        else if (!href.startsWith("/"))
-        {
-            combinedHref = resourceHref + href;
-        }
-
-        combinedHref = StringUtils.substringBefore(combinedHref, Constants.FRAGMENT_SEPARATOR_CHAR);
-        if (combinedHref.startsWith("/"))
-        {
-            combinedHref = combinedHref.substring(1);
-        }
+    	String combinedHref = resolveHref(resource.getHref(), href);
         return resources.get(combinedHref);
     }
+
+	public static String resolveHref(String baseHref, String href) {
+		if (StringUtils.isBlank(href)) {
+			return null;
+		}
+
+		String resourceHref = "/" + StringUtils.substringBefore(baseHref, Constants.FRAGMENT_SEPARATOR_CHAR);
+		int lastIndex = resourceHref.lastIndexOf("/");
+		resourceHref = resourceHref.substring(0, lastIndex + 1);
+		String combinedHref = "";
+		if (href.startsWith("/"))
+		{
+			combinedHref = href;
+		}
+		else if (StringUtils.isEmpty(href))
+		{
+			combinedHref = resourceHref;
+		}
+		else if (href.startsWith(".."))
+		{
+			combinedHref =  doNormalize(resourceHref + "/" + href);
+		}
+		else if (href.startsWith("."))
+		{
+			combinedHref =  doNormalize(resourceHref + "/" + href.substring(2));
+		}
+		else if (!href.startsWith("/"))
+		{
+			combinedHref = resourceHref + href;
+		}
+
+		combinedHref = StringUtils.substringBefore(combinedHref, Constants.FRAGMENT_SEPARATOR_CHAR);
+		if (combinedHref.startsWith("/"))
+		{
+			combinedHref = combinedHref.substring(1);
+		}
+		return combinedHref;
+	}
 	
 	/**
 	 * Gets the first resource (random order) with the given mediatype.

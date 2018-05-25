@@ -1,5 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.toc;
 
+import org.jdom2.Document;
+
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 
 /**
@@ -8,6 +10,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry>
 {
     private boolean choosed;
+    private Document document;
 
     public boolean getChoosed()
     {
@@ -17,5 +20,15 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry>
     public void setChoosed(boolean choosed)
     {
         this.choosed = choosed;
+    }
+
+    public Document getDocument()
+    {
+        return document;
+    }
+
+    public void setDocument(Document document)
+    {
+        this.document = document;
     }
 }

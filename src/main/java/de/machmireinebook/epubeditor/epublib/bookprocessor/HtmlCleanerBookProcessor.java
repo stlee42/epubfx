@@ -3,15 +3,9 @@ package de.machmireinebook.epubeditor.epublib.bookprocessor;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
 import org.apache.log4j.Logger;
 
+import org.htmlcleaner.EpubJDomSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.JDomSerializer;
 import org.htmlcleaner.TagNode;
@@ -22,6 +16,13 @@ import org.jdom2.filter.Filters;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * Cleans up regular html into xhtml. Uses HtmlCleaner to do this.
@@ -45,7 +46,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
             HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
 
             TagNode rootNode = cleaner.clean(resource.getInputStream());
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
             Element root = jdomDocument.getRootElement();
             root.setNamespace(Constants.NAMESPACE_XHTML);
             root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);

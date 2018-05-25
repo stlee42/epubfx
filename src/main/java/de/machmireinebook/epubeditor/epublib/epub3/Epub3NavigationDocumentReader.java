@@ -4,19 +4,20 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
-
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -80,11 +81,11 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
             for (Element navElement : navElements)
             {
                 String type = navElement.getAttributeValue("type", NAMESPACE_EPUB);
-                if (PackageDocumentBase.Epub3NavTypes.toc.equals(type))
+                if (EpubType.toc.getSepcificationName().equals(type))
                 {
                     readToc(book, navElement, resources);
                 }
-                else if (PackageDocumentBase.Epub3NavTypes.landmarks.equals(type))
+                else if (EpubType.landmarks.getSepcificationName().equals(type))
                 {
                     readLandmarks(book, navElement, resources);
                 }

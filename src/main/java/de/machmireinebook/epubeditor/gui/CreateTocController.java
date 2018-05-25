@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -23,6 +24,10 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import org.apache.commons.lang3.StringUtils;
+
+import org.jdom2.Document;
+
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
@@ -31,8 +36,7 @@ import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
-
-import org.apache.commons.lang3.StringUtils;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
@@ -179,17 +183,25 @@ public class CreateTocController implements StandardController
 
     public void onOkAction(ActionEvent actionEvent)
     {
-        Resource resource;
+        TocGenerator.TocGeneratorResult result;
         if (currentBook.get().isEpub3())
         {
-            resource = tocGenerator.generateNav(new ArrayList<>(tableView.getItems()));
+            result = tocGenerator.generateNav(new ArrayList<>(tableView.getItems()));
         }
         else
         {
-            resource = tocGenerator.generateNcx(new ArrayList<>(tableView.getItems()));
+            result = tocGenerator.generateNcx(new ArrayList<>(tableView.getItems()));
         }
+
+        Map<Resource, Document> resourcesToRewrite = result.getResourcesToRewrite();
+        for (Resource resource : resourcesToRewrite.keySet())
+        {
+            resource.setData(XHTMLUtils.outputXHTMLDocument(resourcesToRewrite.get(resource)));
+            editorTabManager.refreshEditorCode(resource);
+        }
+
         bookBrowserManager.refreshBookBrowser();
-        editorTabManager.refreshEditorCode(resource);
+        editorTabManager.refreshEditorCode(result.getTocResource());
         stage.close();
     }
 

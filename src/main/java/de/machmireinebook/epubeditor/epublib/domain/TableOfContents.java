@@ -30,21 +30,21 @@ public class TableOfContents implements Serializable {
 	
 	public static final String DEFAULT_PATH_SEPARATOR = "/";
 	
-	private List<TocEntry> tocReferences;
+	private List<TocEntry<?>> tocReferences;
 
 	public TableOfContents() {
 		this(new ArrayList<>());
 	}
 	
-	public TableOfContents(List<TocEntry> tocReferences) {
+	public TableOfContents(List<TocEntry<? extends TocEntry>> tocReferences) {
 		this.tocReferences = tocReferences;
 	}
 
-	public List<TocEntry> getTocReferences() {
+	public List<TocEntry<? extends TocEntry>> getTocReferences() {
 		return tocReferences;
 	}
 
-	public void setTocReferences(List<TocEntry> tocReferences) {
+	public void setTocReferences(List<TocEntry<? extends TocEntry>> tocReferences) {
 		this.tocReferences = tocReferences;
 	}
 	
@@ -76,7 +76,7 @@ public class TableOfContents implements Serializable {
 	 * @param tocReferences
 	 * @return null if not found.
 	 */
-	private static TocEntry findTocReferenceByTitle(String title, List<TocEntry> tocReferences) {
+	private static TocEntry findTocReferenceByTitle(String title, List<TocEntry<? extends TocEntry>> tocReferences) {
 		for (TocEntry tocReference: tocReferences) {
 			if (title.equals(tocReference.getTitle())) {
 				return tocReference;
@@ -106,7 +106,7 @@ public class TableOfContents implements Serializable {
 			return null;
 		}
 		TocEntry result = null;
-		List<TocEntry> currentTocReferences = this.tocReferences;
+		List<TocEntry<? extends TocEntry>> currentTocReferences = this.tocReferences;
 		for (int i = 0; i < pathElements.length; i++) {
 			String currentTitle = pathElements[i];
 			result = findTocReferenceByTitle(currentTitle, currentTocReferences);
@@ -141,7 +141,7 @@ public class TableOfContents implements Serializable {
 			return null;
 		}
 		TocEntry result = null;
-		List<TocEntry> currentTocReferences = this.tocReferences;
+		List<TocEntry<? extends TocEntry>> currentTocReferences = this.tocReferences;
 		for (int i = 0; i < pathElements.length; i++) {
 			int currentIndex = pathElements[i];
 			if (currentIndex > 0 && currentIndex < (currentTocReferences.size() - 1)) {
@@ -159,7 +159,7 @@ public class TableOfContents implements Serializable {
 		return result;
 	}
 	
-	private void paddTOCReferences(List<TocEntry> currentTocReferences,
+	private void paddTOCReferences(List<TocEntry<? extends TocEntry>> currentTocReferences,
 			int[] pathElements, int pathPos, String sectionPrefix, String sectionNumberSeparator) {
 		for (int i = currentTocReferences.size(); i <= pathElements[pathPos]; i++) {
 			String sectionTitle = createSectionTitle(pathElements, pathPos, i, sectionPrefix,
@@ -205,7 +205,7 @@ public class TableOfContents implements Serializable {
 	}
 	
 	
-	private static void getAllUniqueResources(Set<String> uniqueHrefs, List<Resource> result, List<TocEntry> tocReferences) {
+	private static void getAllUniqueResources(Set<String> uniqueHrefs, List<Resource> result, List<TocEntry<? extends TocEntry>> tocReferences) {
 		for (TocEntry tocReference: tocReferences) {
 			Resource resource = tocReference.getResource();
 			if (resource != null && ! uniqueHrefs.contains(resource.getHref())) {
@@ -225,7 +225,7 @@ public class TableOfContents implements Serializable {
 		return getTotalSize(tocReferences);
 	}
 	
-	private static int getTotalSize(Collection<TocEntry> tocReferences) {
+	private static int getTotalSize(Collection<TocEntry<? extends TocEntry>> tocReferences) {
 		int result = tocReferences.size();
 		for (TocEntry tocReference: tocReferences) {
 			result += getTotalSize(tocReference.getChildren());
@@ -241,7 +241,7 @@ public class TableOfContents implements Serializable {
 		return calculateDepth(tocReferences, 0);
 	}
 
-	private int calculateDepth(List<TocEntry> tocReferences, int currentDepth) {
+	private int calculateDepth(List<TocEntry<? extends TocEntry>> tocReferences, int currentDepth) {
 		int maxChildDepth = 0;
 		for (TocEntry tocReference: tocReferences) {
 			int childDepth = calculateDepth(tocReference.getChildren(), 1);
