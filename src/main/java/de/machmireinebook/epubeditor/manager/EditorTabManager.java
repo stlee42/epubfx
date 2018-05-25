@@ -244,7 +244,7 @@ public class EditorTabManager
         contextMenuXHTML.setAutoFix(true);
         contextMenuXHTML.setAutoHide(true);
 
-        Menu clipsItem = new Menu("Clips");
+        Menu clipsItem = new Menu("Text Snippets");
         clipManager.getClipsRoot().addEventHandler(TreeItem.<Clip>childrenModificationEvent(), event -> {
             clipsItem.getItems().clear();
             writeClipMenuItemChildren(clipManager.getClipsRoot(), clipsItem);
@@ -252,13 +252,13 @@ public class EditorTabManager
         contextMenuXHTML.getItems().add(clipsItem);
         contextMenuXHTML.getItems().add(separatorItem);
 
-        MenuItem itemRepairHTML = new MenuItem("HTML reparieren");
+        MenuItem itemRepairHTML = new MenuItem("Repair HTML");
         itemRepairHTML.setOnAction(e -> {
             beautifyOrRepairHTML("repair");
         });
         contextMenuXHTML.getItems().add(itemRepairHTML);
 
-        MenuItem itemBeautifyHTML = new MenuItem("HTML formatieren");
+        MenuItem itemBeautifyHTML = new MenuItem("Format HTML");
         itemBeautifyHTML.setOnAction(e -> {
             beautifyOrRepairHTML("format");
         });
@@ -266,7 +266,7 @@ public class EditorTabManager
 
         contextMenuXHTML.getItems().add(separatorItem);
 
-        MenuItem openInExternalBrowserItem = new MenuItem("In externem Browser öffnen");
+        MenuItem openInExternalBrowserItem = new MenuItem("Open in external Browser");
         openInExternalBrowserItem.setOnAction(e -> {
             openInExternalBrowser(currentEditor);
         });
@@ -278,7 +278,7 @@ public class EditorTabManager
         contextMenuXML.setAutoFix(true);
         contextMenuXML.setAutoHide(true);
 
-        MenuItem generateUuidMenuItem = new MenuItem("Neue UUID generieren");
+        MenuItem generateUuidMenuItem = new MenuItem("Generate new UUID");
         generateUuidMenuItem.setOnAction(e -> {
             book.getMetadata().generateNewUuid();
             bookBrowserManager.refreshOpf();
@@ -299,13 +299,13 @@ public class EditorTabManager
         contextMenuXML.getItems().add(separatorItem2);
         separatorItem2.visibleProperty().bind(generateUuidMenuItem.visibleProperty());
 
-        MenuItem itemRepairXML = new MenuItem("XML reparieren");
+        MenuItem itemRepairXML = new MenuItem("Repair XML");
         itemRepairXML.setOnAction(e -> {
             beautifyOrRepairXML("repair");
         });
         contextMenuXML.getItems().add(itemRepairXML);
 
-        MenuItem itemBeautifyXML = new MenuItem("XML formatieren");
+        MenuItem itemBeautifyXML = new MenuItem("Format XML");
         itemBeautifyXML.setOnAction(e -> {
             beautifyOrRepairXML("format");
         });
@@ -316,11 +316,11 @@ public class EditorTabManager
         contextMenuCSS.getStyleClass().add("context-menu");
         contextMenuCSS.setAutoFix(true);
         contextMenuCSS.setAutoHide(true);
-        MenuItem formatCSSOneLineItem = new MenuItem("Styles in je einer Zeile formatieren");
+        MenuItem formatCSSOneLineItem = new MenuItem("Format styles in one line");
         formatCSSOneLineItem.setOnAction(e -> beautifyCSS("one_line"));
         contextMenuCSS.getItems().add(formatCSSOneLineItem);
 
-        MenuItem formatCSSMultipleLinesItem = new MenuItem("Styles in mehreren Zeilen formatieren");
+        MenuItem formatCSSMultipleLinesItem = new MenuItem("Format styles in multiple lines");
         formatCSSMultipleLinesItem.setOnAction(e -> beautifyCSS("multiple_lines"));
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
@@ -404,7 +404,7 @@ public class EditorTabManager
         catch (IOException | JDOMException e)
         {
             logger.error("", e);
-            ExceptionDialog.showAndWait(e, null,  "Formatierung nicht möglich", "Kann Datei nicht formatieren. Bitte die Fehlermeldung an den Hersteller weitergeben.");
+            ExceptionDialog.showAndWait(e, null,  "Format not possible", "Kann Datei nicht formatieren. Bitte die Fehlermeldung an den Hersteller weitergeben.");
         }
     }
 
@@ -419,7 +419,7 @@ public class EditorTabManager
         if (resource == null)
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Datei nicht vorhanden");
+            alert.setTitle("File not found");
             alert.getDialogPane().setHeader(null);
             alert.getDialogPane().setHeaderText(null);
             alert.setContentText("Die angeforderte Datei ist nicht vorhanden und kann deshalb nicht geöffnet werden.");
@@ -472,7 +472,7 @@ public class EditorTabManager
             if (resource == null)
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Datei nicht vorhanden");
+                alert.setTitle("File not found");
                 alert.getDialogPane().setHeader(null);
                 alert.getDialogPane().setHeaderText(null);
                 alert.setContentText("Die angeforderte Datei ist nicht vorhanden und kann deshalb nicht geöffnet werden.");
