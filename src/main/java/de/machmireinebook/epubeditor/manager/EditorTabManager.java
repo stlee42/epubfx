@@ -1007,6 +1007,7 @@ public class EditorTabManager
                 try
                 {
                     editor.setCode(new String(resource.getData(), "UTF-8"));
+                    editor.scrollTo(0);
                 }
                 catch (IOException e)
                 {
@@ -1027,8 +1028,8 @@ public class EditorTabManager
                 CodeEditor editor = (CodeEditor)tab.getContent();
                 try
                 {
-
                     editor.setCode(new String(resourceToUpdate.getData(), "UTF-8"));
+                    editor.setAbsoluteCursorPosition(0);;
                 }
                 catch (IOException e)
                 {

@@ -275,8 +275,8 @@ public class EpubEditorMainController implements Initializable
             if (newValue != null)
             {
                 saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
-                createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
-                createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
+                createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
+                createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
                 stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
                         + " - EPUB " + newValue.getVersion().getVersion() + " - EpubFX");
             }
