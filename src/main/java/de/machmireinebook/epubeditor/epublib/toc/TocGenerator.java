@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.toc;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -74,13 +75,19 @@ public class TocGenerator
 
     // bookProperty
     private final ObjectProperty<Book> bookProperty = new SimpleObjectProperty<>(this, "book");
-    public final ObjectProperty<Book> bookProperty() {
-       return bookProperty;
+
+    public final ObjectProperty<Book> bookProperty()
+    {
+        return bookProperty;
     }
-    public final Book getBook() {
-       return bookProperty.get();
+
+    public final Book getBook()
+    {
+        return bookProperty.get();
     }
-    public final void setBook(Book value) {
+
+    public final void setBook(Book value)
+    {
         bookProperty.set(value);
     }
 
@@ -92,7 +99,8 @@ public class TocGenerator
         @Override
         public Element filter(Object content)
         {
-            if (content instanceof Element) {
+            if (content instanceof Element)
+            {
                 Element el = (Element) content;
                 if (ELEMENT_NAMES.contains(el.getName()))
                 {
@@ -143,7 +151,7 @@ public class TocGenerator
 
                     if (possibleTocEntryElement.getAttributeValue("class") != null
                             && (possibleTocEntryElement.getAttributeValue("class").contains(CLASS_SIGIL_NOT_IN_TOC) ||
-                                possibleTocEntryElement.getAttributeValue("class").contains(IGNORE_IN_TOC)))
+                            possibleTocEntryElement.getAttributeValue("class").contains(IGNORE_IN_TOC)))
                     {
                         tocEntry.setChoosed(false);
                     }
@@ -175,25 +183,32 @@ public class TocGenerator
         int level = -1;
         switch (tagName)
         {
-            case "h1" : level = 1;
+            case "h1":
+                level = 1;
                 break;
-            case "h2" : level = 2;
+            case "h2":
+                level = 2;
                 break;
-            case "h3" : level = 3;
+            case "h3":
+                level = 3;
                 break;
-            case "h4" : level = 4;
+            case "h4":
+                level = 4;
                 break;
-            case "h5" : level = 5;
+            case "h5":
+                level = 5;
                 break;
-            case "h6" : level = 6;
+            case "h6":
+                level = 6;
                 break;
-            case "p" : level = 7;
+            case "p":
+                level = 7;
                 break;
         }
         return level;
     }
 
-    public TocGeneratorResult generateNav(List<TocEntry<? extends TocEntry>> tocEntries)
+    public TocGeneratorResult generateNav(List<TocEntry<? extends TocEntry>> tocEntries) throws IOException, JDOMException
     {
         //first add entries to books toc
         Book book = getBook();
@@ -203,99 +218,86 @@ public class TocGenerator
 
         Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
-        try
+        Document navDoc;
+        if (navResource == null)
         {
-            Document navDoc;
-            if(navResource == null)
+            navDoc = templateManager.getNavTemplate();
+            navResource = new XHTMLResource(navDoc, "Text/nav.xhtml");
+            if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
             {
-                navDoc = templateManager.getNavTemplate();
+                int index = book.getSpine().getResourceIndex(book.getCoverPage());
+                book.addSpineResource(navResource, index);
             }
-            else
+            else //if no cover or other setting put new toc at the end
             {
-                navDoc = (Document) navResource.asNativeFormat();
+                //add to spine and set as toc resource beacuse its xhtml too
+                book.addSpineResource(navResource);
+                book.getSpine().setTocResource(navResource);
             }
+        }
+        else
+        {
+            navDoc = (Document) navResource.asNativeFormat();
+        }
+        TocGeneratorResult result = new TocGeneratorResult(navResource, resourcesToRewrite);
+        //for now we presume that nav template is in most parts how we expect it
+        Element root = navDoc.getRootElement();
 
-            //for now we presume that nav template is in most parts how we expect it
-            Element root = navDoc.getRootElement();
+        Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
+        if (langAttribute == null)
+        {
+            root.setAttribute("lang", book.getMetadata().getLanguage(), Namespace.XML_NAMESPACE);
+        }
+        else
+        {
+            langAttribute.setValue(book.getMetadata().getLanguage());
+        }
+        Element headElement = root.getChild("head", NAMESPACE_XHTML);
+        if (headElement != null)
+        {
+            Element titleElement = headElement.getChild("title", NAMESPACE_XHTML);
+            if (titleElement == null)
+            {
+                titleElement = new Element("title", NAMESPACE_XHTML);
+                headElement.addContent(titleElement);
+            }
+            titleElement.setText(book.getTitle());
+        }
 
-            Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
+        Element bodyElement = root.getChild("body", NAMESPACE_XHTML);
+        if (bodyElement != null)
+        {
+            //language attribute
+            langAttribute = bodyElement.getAttribute("lang", Namespace.XML_NAMESPACE);
             if (langAttribute == null)
             {
-                root.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+                bodyElement.setAttribute("lang", book.getMetadata().getLanguage(), Namespace.XML_NAMESPACE);
             }
             else
             {
                 langAttribute.setValue(book.getMetadata().getLanguage());
             }
-            Element headElement = root.getChild("head", NAMESPACE_XHTML);
-            if (headElement != null)
-            {
-                Element titleElement = headElement.getChild("title", NAMESPACE_XHTML);
-                if (titleElement == null)
-                {
-                    titleElement = new Element("title", NAMESPACE_XHTML);
-                    headElement.addContent(titleElement);
-                }
-                titleElement.setText(book.getTitle());
-            }
 
-            Element bodyElement = root.getChild("body", NAMESPACE_XHTML);
-            if (bodyElement != null)
+            //the different navs
+            List<Element> navElements = bodyElement.getChildren("nav", NAMESPACE_XHTML);
+            for (Element navElement : navElements)
             {
-                //language attribute
-                langAttribute = bodyElement.getAttribute("lang", Namespace.XML_NAMESPACE);
-                if (langAttribute == null)
+                navElement.getChildren().clear();
+                if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.toc.getSepcificationName()))
                 {
-                    bodyElement.setAttribute("lang", book.getMetadata().getLanguage(),  Namespace.XML_NAMESPACE);
+                    generateToc(tocEntries, navElement, result);
                 }
-                else
+                else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSepcificationName()))
                 {
-                    langAttribute.setValue(book.getMetadata().getLanguage());
+                    generateLandmarks(tocEntries, navElement);
                 }
-
-                //the different navs
-                List<Element> navElements = bodyElement.getChildren("nav", NAMESPACE_XHTML);
-                for (Element navElement : navElements)
-                {
-                    navElement.getChildren().clear();
-                    if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.toc.getSepcificationName()))
-                    {
-                        generateToc(tocEntries, navElement, resourcesToRewrite);
-                    }
-                    else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSepcificationName()))
-                    {
-                        generateLandmarks(tocEntries, navElement);
-                    }
-                }
-            }
-            if (navResource == null)
-            {
-                XHTMLResource resource = new XHTMLResource(navDoc, "../Text/nav.xhtml");
-                if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
-                {
-                    int index = book.getSpine().getResourceIndex(book.getCoverPage());
-                    book.addSpineResource(resource, index);
-                }
-                else //if no cover or other setting put new toc at the end
-                {
-                    //add to spine and set as toc resource beacuse its xhtml too
-                    book.addSpineResource(resource);
-                    book.getSpine().setTocResource(resource);
-                }
-            }
-            else
-            {
-                navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc));
             }
         }
-        catch (IOException | JDOMException e)
-        {
-            logger.error("can't generate nav", e);
-        }
-        return new TocGeneratorResult(navResource, resourcesToRewrite);
+        navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc));
+        return result;
     }
 
-    private void generateToc(List<TocEntry<? extends TocEntry>> tocEntries, Element navElement,Map<Resource, Document> resourcesToRewrite)
+    private void generateToc(List<TocEntry<? extends TocEntry>> tocEntries, Element navElement, TocGeneratorResult tocGeneratorResult)
     {
         Element h1Element = navElement.getChild("h1", NAMESPACE_XHTML);
         if (h1Element == null)
@@ -306,10 +308,10 @@ public class TocGenerator
         String tocHeadline = preferencesManager.getHeadlineToc();
         h1Element.setText(tocHeadline);
 
-        generateNavOrderedList(tocEntries, navElement, resourcesToRewrite);
+        generateNavOrderedList(tocEntries, navElement, tocGeneratorResult);
     }
 
-    private void generateNavOrderedList(List<TocEntry<? extends TocEntry>> tocEntries, Element parentElement, Map<Resource, Document> resourcesToRewrite)
+    private void generateNavOrderedList(List<TocEntry<? extends TocEntry>> tocEntries, Element parentElement, TocGeneratorResult tocGeneratorResult)
     {
         Element olElement = new Element("ol", NAMESPACE_XHTML);
         parentElement.addContent(olElement);
@@ -318,19 +320,23 @@ public class TocGenerator
             Element liElement = new Element("li", NAMESPACE_XHTML);
             olElement.addContent(liElement);
 
+
+            Path navPath = tocGeneratorResult.getTocResource().getHrefAsPath();
+            Path relativePath = navPath.relativize(tocEntry.getCompleteHrefAsPath());
+
             Element anchorElement = new Element("a", NAMESPACE_XHTML);
-            anchorElement.setAttribute("href", tocEntry.getCompleteRelativeHref("../Text/nav.xhtml"));
+            anchorElement.setAttribute("href", relativePath.toString());
             anchorElement.setText(tocEntry.getTitle());
             liElement.addContent(anchorElement);
 
             if (!tocEntry.getChildren().isEmpty())
             {
-                generateNavOrderedList(tocEntry.getChildren(), liElement, resourcesToRewrite);
+                generateNavOrderedList(tocEntry.getChildren(), liElement, tocGeneratorResult);
             }
 
             if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && tocEntry instanceof ChoosableTocEntry)
             {
-                resourcesToRewrite.put(tocEntry.getResource(), ((ChoosableTocEntry)tocEntry).getDocument());
+                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((ChoosableTocEntry) tocEntry).getDocument());
             }
         }
     }

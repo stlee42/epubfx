@@ -1,10 +1,12 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
-
-import de.machmireinebook.epubeditor.epublib.Constants;
+import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 
 public class TitledResourceReference extends ResourceReference implements Serializable {
 
@@ -59,12 +61,20 @@ public class TitledResourceReference extends ResourceReference implements Serial
 		}
 	}
 
-	public String getCompleteRelativeHref(String baseHref) {
+	public Path getCompleteHrefAsPath() {
+		String href;
 		if (StringUtils.isBlank(fragmentId)) {
-			return Resources.resolveHref(resource.getHref(), baseHref);
+			href = resource.getHref();
 		} else {
-			return Resources.resolveHref(resource.getHref(), baseHref) + Constants.FRAGMENT_SEPARATOR_CHAR + fragmentId;
+			href = resource.getHref() + Constants.FRAGMENT_SEPARATOR_CHAR + fragmentId;
 		}
+/*		int index = StringUtils.lastIndexOf(href, "/");
+		if (index > -1)
+		{
+			href = href.substring(0, index);
+		}*/
+		return EpubFileSystem.INSTANCE.getPath("/" + href);
+
 	}
 
 	public void setResource(Resource resource, String fragmentId) {

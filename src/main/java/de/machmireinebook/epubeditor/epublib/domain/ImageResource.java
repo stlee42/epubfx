@@ -1,18 +1,15 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-
-import de.machmireinebook.epubeditor.util.ImageInfo;
-import de.machmireinebook.epubeditor.util.NumberUtils;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.util.ImageInfo;
+import de.machmireinebook.epubeditor.util.NumberUtils;
 
 /**
  * User: mjungierek
@@ -53,29 +50,16 @@ public class ImageResource extends Resource<Image>
         calculateImageInfo();
     }
 
-    public ImageResource(Reader in, String href) throws IOException
-    {
-        super(in, href);
-    }
-
-    public ImageResource(InputStream in, String href) throws IOException
-    {
-        super(in, href);
-    }
-
     public ImageResource(String id, byte[] data, String href, MediaType mediaType)
     {
         super(id, data, href, mediaType);
-    }
-
-    public ImageResource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding)
-    {
-        super(id, data, href, mediaType, inputEncoding);
+        calculateImageInfo();
     }
 
     public ImageResource(byte[] data, String href, MediaType mediaType)
     {
         super(data, href, mediaType);
+        calculateImageInfo();
     }
 
     @Override
@@ -93,7 +77,7 @@ public class ImageResource extends Resource<Image>
         height = image.getHeight();
 
         imageInfo = new ImageInfo();
-        imageInfo.setInput(getInputStream()); // in can be InputStream or RandomAccessFile
+        imageInfo.setInput(getInputStream()); // it can be InputStream or RandomAccessFile
         if (!imageInfo.check())
         {
             logger.error("Not a supported image file format.");

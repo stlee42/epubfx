@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
  * An item in the Table of Contents.
  */
-public class TocEntry<T extends TocEntry> extends TitledResourceReference implements Serializable {
+public class TocEntry<T extends TocEntry> extends TitledResourceReference implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -76,5 +78,20 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 	public void setLevel(String level)
 	{
 		this.level = level;
+	}
+
+	@Override
+	public TocEntry clone() {
+		TocEntry newTocEntry = null;
+		try
+		{
+			newTocEntry = (TocEntry) super.clone();
+			newTocEntry.setChildren(ObjectUtils.clone(getChildren()));
+		}
+		catch (CloneNotSupportedException e)
+		{
+			//
+		}
+		return newTocEntry;
 	}
 }
