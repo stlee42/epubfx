@@ -129,3 +129,7 @@
     -fx-padding: 0 1 0 1;
     -fx-background-color: transparent;
 }
+
+.text-field-tree-table-cell.toc-level-cell, .check-box-tree-table-cell.toc-choosed-cell {
+    -fx-alignment: CENTER;
+}

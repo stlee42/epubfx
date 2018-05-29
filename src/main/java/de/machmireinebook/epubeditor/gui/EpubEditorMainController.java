@@ -1011,7 +1011,7 @@ public class EpubEditorMainController implements Initializable
 
     public void createTocAction(ActionEvent actionEvent)
     {
-        createAndOpenStandardController("/create_toc.fxml", CreateTocController.class);
+        createAndOpenStandardController("/create_toc.fxml", GenerateTocController.class);
     }
 
     public void increaseIndentButtonAction(ActionEvent actionEvent)

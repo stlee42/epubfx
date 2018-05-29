@@ -20,11 +20,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.CheckBoxTreeTableCell;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DefaultStringConverter;
 
@@ -38,7 +39,6 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.ChoosableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
-import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -46,12 +46,12 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
  */
-public class CreateTocController implements StandardController
+public class GenerateTocController implements StandardController
 {
-    private static final Logger logger = Logger.getLogger(CreateTocController.class);
+    private static final Logger logger = Logger.getLogger(GenerateTocController.class);
 
     @FXML
-    private TableView<ChoosableTocEntry> tableView;
+    private TreeTableView<ChoosableTocEntry> treeTableView;
     @FXML
     private Button renameButton;
     @FXML
@@ -74,9 +74,9 @@ public class CreateTocController implements StandardController
     private Stage stage;
     private ObservableList<ChoosableTocEntry> allTocEntries = FXCollections.observableArrayList();
 
-    private static CreateTocController instance;
+    private static GenerateTocController instance;
 
-    public static CreateTocController getInstance()
+    public static GenerateTocController getInstance()
     {
         return instance;
     }
@@ -87,54 +87,44 @@ public class CreateTocController implements StandardController
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        tableView.setEditable(true);
+        treeTableView.setEditable(true);
+        treeTableView.setShowRoot(false);
 
-        TableColumn<ChoosableTocEntry, String> tc = (TableColumn<ChoosableTocEntry, String>) tableView.getColumns().get(0);
+        TreeTableColumn<ChoosableTocEntry, String> tc = (TreeTableColumn<ChoosableTocEntry, String>) treeTableView.getColumns().get(0);
         tc.setEditable(true);
-        tc.setCellValueFactory(new PropertyValueFactory<>("displayTitle"));
-        tc.setCellFactory(param -> {
-            TextFieldTableCell cell = new TextFieldTableCell<>(new DefaultStringConverter());
-            cell.editingProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue){
-                    logger.info("editing started with value " + cell.getItem());
-                    ChoosableTocEntry tocEntry = tableView.getSelectionModel().getSelectedItem();
-                    cell.setItem(tocEntry.getTitle());
-                }
-                else
-                {
-                    ChoosableTocEntry tocEntry = tableView.getSelectionModel().getSelectedItem();
-                    tocEntry.setTitle(cell.getItem().toString());
-                    cell.setItem(tocEntry.getDisplayTitle());
-                }
-            });
+        tc.setCellValueFactory(new TreeItemPropertyValueFactory<>("title"));
+        tc.setCellFactory(param -> new TextFieldTreeTableCell<>(new DefaultStringConverter()));
+        tc.setSortable(false);
+        tc.setOnEditCommit(event -> {
+            String newValue = event.getNewValue();
+            ChoosableTocEntry tocEntry = event.getRowValue().getValue();
+            tocEntry.setTitle(newValue);
+        });
+
+        TreeTableColumn<ChoosableTocEntry, String> tc2 = (TreeTableColumn<ChoosableTocEntry, String>) treeTableView.getColumns().get(1);
+        tc2.setCellValueFactory(new TreeItemPropertyValueFactory<>("level"));
+        tc2.setCellFactory(column -> {
+            TextFieldTreeTableCell<ChoosableTocEntry, String> cell = new TextFieldTreeTableCell<>(new DefaultStringConverter());
+            cell.getStyleClass().add("toc-level-cell");
             return cell;
         });
-//        tc.setOnEditStart(event -> logger.info("setOnEditStart " + event.getSource().getText()));
-        tc.setOnEditCommit(event -> {
-            String value = event.getNewValue();
-            ChoosableTocEntry tocEntry = event.getRowValue();
-            tocEntry.setTitle(value);
-            /*TextFieldTableCell cell = event.getTableColumn();
-            cell.setItem(tocEntry.getDisplayTitle());*/
-        });
-        tc.setSortable(false);
-
-        TableColumn<ChoosableTocEntry, String> tc2 = (TableColumn<ChoosableTocEntry, String>) tableView.getColumns().get(1);
-        tc2.setCellValueFactory(new PropertyValueFactory<>("level"));
-        tc2.setCellFactory(new WrappableTextCellFactory<>());
         tc2.setSortable(false);
 
-        TableColumn<ChoosableTocEntry, Boolean> tc3 = (TableColumn<ChoosableTocEntry, Boolean>) tableView.getColumns().get(2);
+        TreeTableColumn<ChoosableTocEntry, Boolean> tc3 = (TreeTableColumn<ChoosableTocEntry, Boolean>) treeTableView.getColumns().get(2);
         tc3.setEditable(true);
         tc3.setCellValueFactory(c -> {
-            BooleanProperty property = new SimpleBooleanProperty(c.getValue().getChoosed());
+            BooleanProperty property = new SimpleBooleanProperty(c.getValue().getValue().getChoosed());
             property.addListener((observable, oldValue, newValue) -> {
-                c.getValue().setChoosed(newValue);
+                c.getValue().getValue().setChoosed(newValue);
                 setTableViewItems();
             });
             return property;
         });
-        tc3.setCellFactory(cell -> new CheckBoxTableCell<>());
+        tc3.setCellFactory(column -> {
+            CheckBoxTreeTableCell<ChoosableTocEntry, Boolean> cell = new CheckBoxTreeTableCell<>();
+            cell.getStyleClass().add("toc-choosed-cell");
+            return cell;
+        });
         tc3.setSortable(false);
 
         showTocItemsCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> setTableViewItems());
@@ -158,26 +148,34 @@ public class CreateTocController implements StandardController
 
     private void setTableViewItems()
     {
-        ObservableList<ChoosableTocEntry> tableViewItems = tableView.getItems();
-        tableViewItems.clear();
+        TreeItem<ChoosableTocEntry> tableViewRoot = treeTableView.getRoot();
+        if (tableViewRoot == null)
+        {
+            tableViewRoot = new TreeItem<>();
+            treeTableView.setRoot(tableViewRoot);
+        }
+        tableViewRoot.getChildren().clear();
         for (ChoosableTocEntry tocEntry : allTocEntries)
         {
-            addTocEntryToTableView(tocEntry, tableViewItems, 0);
+            addTocEntryToTableView(tocEntry, tableViewRoot, 0);
         }
     }
 
-    private void addTocEntryToTableView(ChoosableTocEntry tocEntry, ObservableList<ChoosableTocEntry> tableViewItems, int level)
+    private void addTocEntryToTableView(ChoosableTocEntry tocEntry, TreeItem<ChoosableTocEntry> treeItem, int level)
     {
         int levelIncrement = 0;
+        TreeItem<ChoosableTocEntry> newParent = treeItem;
         if (!showTocItemsCheckBox.isSelected() || tocEntry.getChoosed())
         {
             tocEntry.setDisplayLevel(level);
-            tableViewItems.add(tocEntry);
+            newParent = new TreeItem<>(tocEntry);
+            newParent.setExpanded(true);
+            treeItem.getChildren().add(newParent);
             levelIncrement = 1;
         }
         for (TocEntry childEntry : tocEntry.getChildren())
         {
-            addTocEntryToTableView((ChoosableTocEntry)childEntry, tableViewItems, level + levelIncrement);
+            addTocEntryToTableView((ChoosableTocEntry)childEntry, newParent, level + levelIncrement);
         }
     }
 
