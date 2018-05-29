@@ -9,8 +9,6 @@ import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -18,6 +16,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventTarget;
+
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 /**
  * User: mjungierek
@@ -104,7 +104,14 @@ public class PreviewManager
                                         }
                                     }
                                     currentElement = parent;
-                                    parent = (Element)currentElement.getParentNode();
+                                    if (currentElement.getParentNode() instanceof Element)
+                                    {
+                                        parent = (Element) currentElement.getParentNode();
+                                    }
+                                    else
+                                    {
+                                        parent = null;
+                                    }
                                 }
                                 editorManager.scrollTo(positions);
                             }

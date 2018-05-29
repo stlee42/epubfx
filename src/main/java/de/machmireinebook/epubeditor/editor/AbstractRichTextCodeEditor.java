@@ -234,7 +234,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         {
             line = pos.getLine() - 1;
         }
-        codeArea.showParagraphInViewport(line);
+        codeArea.showParagraphAtTop(line);
     }
 
     public void addStyleSheet(String styleSheet)
