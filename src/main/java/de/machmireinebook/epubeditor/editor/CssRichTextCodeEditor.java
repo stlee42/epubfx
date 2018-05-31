@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.StyleSpans;
@@ -165,6 +166,9 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         int lastIndex = wb.first();
         int lastKwEnd = 0;
         boolean insideBrackets = false;
+        boolean startComment = false;
+        boolean startEndComment = false;
+        boolean insideComment = false;
         boolean propertyValue = false;
         boolean string = false;
         while (lastIndex != BreakIterator.DONE)
@@ -173,34 +177,57 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
             lastIndex = wb.next();
             if (lastIndex != BreakIterator.DONE)
             {
-                if ('{' == text.charAt(firstIndex))
+                if (!insideComment)
                 {
-                    insideBrackets = true;
-                }
-                else if ('{' == text.charAt(firstIndex))
-                {
-                    insideBrackets = false;
-                    propertyValue = false;
-                }
-                else if (':' == text.charAt(firstIndex) && insideBrackets)
-                {
-                    propertyValue = true;
-                    spansBuilder.add(Collections.emptyList(), 1);
-                    lastKwEnd = lastIndex;
-                    continue;
-                }
-                else if (';' == text.charAt(firstIndex) && insideBrackets)
-                {
-                    propertyValue = false;
-                }
-                else if ('"' == text.charAt(firstIndex))
-                {
-                    if (string)
+                    if ('{' == text.charAt(firstIndex))
                     {
-                        spansBuilder.add(Collections.singleton("css-textvalue"), 1);
-                        lastKwEnd = lastIndex;
+                        insideBrackets = true;
                     }
-                    string = !string;
+                    else if ('}' == text.charAt(firstIndex))
+                    {
+                        insideBrackets = false;
+                        propertyValue = false;
+                    }
+                    else if ('/' == text.charAt(firstIndex))
+                    {
+                        startComment = true;
+                    }
+                    else if (':' == text.charAt(firstIndex) && insideBrackets)
+                    {
+                        propertyValue = true;
+                        spansBuilder.add(Collections.emptyList(), 1);
+                        lastKwEnd = lastIndex;
+                        continue;
+                    }
+                    else if (';' == text.charAt(firstIndex) && insideBrackets)
+                    {
+                        propertyValue = false;
+                    }
+                    else if ('"' == text.charAt(firstIndex))
+                    {
+                        if (string)
+                        {
+                            spansBuilder.add(Collections.singleton("css-textvalue"), 1);
+                            lastKwEnd = lastIndex;
+                        }
+                        string = !string;
+                    }
+                    else if (startComment && '*' == text.charAt(firstIndex))
+                    {
+                        insideComment = true;
+                    }
+                }
+                else if ('*' == text.charAt(firstIndex))  //inside comments remenber every *, if the next char is a /
+                {
+                    startEndComment = true;
+                }
+                else if (startEndComment)  //the char before was a *
+                {
+                    startEndComment = false;
+                    if ('/' == text.charAt(firstIndex)) //and thsi on is a /, end the comment
+                    {
+                        insideComment = false;
+                    }
                 }
 
                 String word = text.substring(firstIndex, lastIndex).toLowerCase();
@@ -243,7 +270,26 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                         }
                     }
                 }
-                else if (!SELECTOR_DELIMITER.contains(word))
+                else if (insideComment)
+                {
+                    int spanLength = firstIndex - lastKwEnd;
+                    if (spanLength >= 0)
+                    {
+                        if (startComment)
+                        {
+                            
+                            startComment = false;
+                        }
+                        else
+                        {
+                            spansBuilder.add(Collections.emptyList(), spanLength);
+                        }
+
+                        spansBuilder.add(Collections.singleton("css-comment"), lastIndex - firstIndex);
+                        lastKwEnd = lastIndex;
+                    }
+                }
+                else if (!SELECTOR_DELIMITER.contains(word) && StringUtils.isNotBlank(word))
                 {
                     int spanLength = firstIndex - lastKwEnd;
                     if (spanLength >= 0)

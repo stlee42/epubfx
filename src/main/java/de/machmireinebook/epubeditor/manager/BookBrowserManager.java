@@ -47,11 +47,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import com.google.common.io.Files;
-
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
@@ -69,6 +64,11 @@ import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import com.google.common.io.Files;
 
 /**
  * User: mjungierek
@@ -279,6 +279,10 @@ public class BookBrowserManager
                 {
                     createImageItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
+                else if (item.equals(textItem))
+                {
+                    createXHTMLRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
             }
         });
         treeView.setOnEditCommit(event -> {
@@ -321,6 +325,34 @@ public class BookBrowserManager
         fontsItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         fontsItem.expandedProperty().addListener(new FolderSymbolListener(fontsItem));
         rootItem.getChildren().add(fontsItem);
+    }
+
+    private ContextMenu createXHTMLRootContextMenu(TreeItem<Resource> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Add existing Files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        item = new MenuItem("Add empty File");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> addEmptyXHTMLFile(treeItem));
+        menu.getItems().add(item);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Select all");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> selectAll(textItem));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
+        menu.getItems().add(item);
+
+        return menu;
     }
 
     private ContextMenu createXHTMLItemContextMenu(TreeItem<Resource> treeItem)
@@ -656,17 +688,21 @@ public class BookBrowserManager
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
-            if (MediaType.TTF.equals(fontResource.getMediaType()))
+            if (fontResource.getMediaType().isTTFFont())
             {
                 item.setGraphic(FXUtils.getIcon("/icons/icons8_TTF_48px.png", 24));
             }
-            else if (MediaType.OPENTYPE_UNTIL_3.equals(fontResource.getMediaType()) || MediaType.OPENTYPE_SINCE_3_1.equals(fontResource.getMediaType()))
+            else if (fontResource.getMediaType().isOpenTypeFont())
             {
                 item.setGraphic(FXUtils.getIcon("/icons/icons8_OTF_48px.png", 24));
             }
-            else if (MediaType.WOFF.equals(fontResource.getMediaType()) || MediaType.WOFF2.equals(fontResource.getMediaType()))
+            else if (fontResource.getMediaType().isWoffFont())
             {
                 item.setGraphic(FXUtils.getIcon("/icons/icons8_WOFF_48px.png", 24));
+            }
+            else //default file icon
+            {
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_File_48px.png", 24));
             }
             fontsItem.getChildren().add(item);
         }
