@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,6 +19,17 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
@@ -25,14 +37,6 @@ import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.util.IteratorIterable;
 
 
 /**
@@ -348,21 +352,14 @@ public class Book implements Serializable
     {
         Book book = new Book();
 
-        try
-        {
-            Resource ncxResource = NCXDocument.createNCXResource(book);
-            book.setNcxResource(ncxResource);
-            book.getSpine().setTocResource(ncxResource);
-            book.addResource(ncxResource, false);
-            book.setVersion(EpubVersion.VERSION_2);
+        Resource ncxResource = NCXDocument.createNCXResource(book);
+        book.setNcxResource(ncxResource);
+        book.getSpine().setTocResource(ncxResource);
+        book.addResource(ncxResource, false);
+        book.setVersion(EpubVersion.VERSION_2);
 
-            Resource opfResource = PackageDocumentWriter.createOPFResource(book);
-            book.setOpfResource(opfResource);
-        }
-        catch (IOException e)
-        {
-            logger.error("", e);
-        }
+        Resource opfResource = PackageDocumentWriter.createOPFResource(book);
+        book.setOpfResource(opfResource);
 
         Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
         book.addSection("Start", textRes);
@@ -405,7 +402,7 @@ public class Book implements Serializable
         return res;
     }
 
-    public Resource addSpineResourceFromFile(File file, String href, MediaType mediaType) throws IOException
+    public Resource addSpineResourceFromFile(File file, String href, MediaType mediaType)
     {
         Resource res = createResourceFromFile(file, href, mediaType);
         res = XHTMLUtils.fromHtml(res);
@@ -572,6 +569,30 @@ public class Book implements Serializable
         opfResource.get().setData(PackageDocumentWriter.createOPFContent(this));
     }
 
+    /**
+     * Refreshes NCX if a ncx resource exists in book, otherwise do nothing.
+     */
+    public void refreshNcxResource()
+    {
+        if (ncxResource != null)
+        {
+            Document ncxDocument = NCXDocument.write(this);
+            XMLOutputter outputter = new XMLOutputter();
+            Format xmlFormat = Format.getPrettyFormat();
+            outputter.setFormat(xmlFormat);
+            String text = outputter.outputString(ncxDocument);
+
+            try
+            {
+                ncxResource.setData(text.getBytes(Constants.CHARACTER_ENCODING));
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                //never happens
+            }
+        }
+    }
+
     public String getNextStandardFileName(MediaType mediaType)
     {
         int lastNumber = 0;
@@ -684,7 +705,6 @@ public class Book implements Serializable
         this.spine = spine;
     }
 
-
     /**
      * The Table of Contents of the book.
      *
@@ -694,7 +714,6 @@ public class Book implements Serializable
     {
         return tableOfContents;
     }
-
 
     public void setTableOfContents(TableOfContents tableOfContents)
     {
@@ -711,7 +730,6 @@ public class Book implements Serializable
     {
         return guide.getCoverPage();
     }
-
 
     public void setCoverPage(Resource coverPage)
     {
@@ -735,7 +753,6 @@ public class Book implements Serializable
     {
         return getMetadata().getFirstTitle();
     }
-
 
     /**
      * The book's cover image.
@@ -1007,8 +1024,8 @@ public class Book implements Serializable
 
     public void renameResource(Resource resource, String oldValue, String newValue)
     {
-        resources.remove(oldValue); //unter altem namen löschen
-        resources.add(resource); //unter neuem wieder hinzufügen
+        Resource oldResource = resources.remove(oldValue); //unter altem namen löschen
+        Resource newResource = resources.add(resource); //unter neuem wieder hinzufügen
 
         if (MediaType.CSS.equals(resource.getMediaType()))
         {
@@ -1049,7 +1066,12 @@ public class Book implements Serializable
         }
         else if(MediaType.XHTML.equals(resource.getMediaType()))
         {
-            //nach href
+            //nach href suchen
+            //rename in toc
+            getTableOfContents().replaceResourceInTocReference(oldResource, newResource);
+
+            //refresh ncx
+            refreshNcxResource();
         }
         else if(resource.getMediaType().isBitmapImage())
         {

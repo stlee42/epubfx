@@ -2,9 +2,8 @@ package de.machmireinebook.epubeditor.epublib.toc;
 
 import javafx.util.StringConverter;
 
-import org.apache.commons.lang3.StringUtils;
-
 import org.jdom2.Document;
+import org.jdom2.Element;
 
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 
@@ -14,7 +13,9 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cloneable
 {
     private boolean choosed;
+    private boolean titleChanged = false;
     private Document document;
+    private Element correspondingElement;
     private int displayLevel;
 
     public boolean getChoosed()
@@ -52,11 +53,6 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
         }
     }
 
-    public String getDisplayTitle()
-    {
-        return StringUtils.leftPad(getTitle(), getTitle().length() + displayLevel * 4, " ");
-    }
-
     @Override
     public ChoosableTocEntry clone()
     {
@@ -73,5 +69,25 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
     public void setDisplayLevel(int displayLevel)
     {
         this.displayLevel = displayLevel;
+    }
+
+    public boolean isTitleChanged()
+    {
+        return titleChanged;
+    }
+
+    public void setTitleChanged(boolean titleChanged)
+    {
+        this.titleChanged = titleChanged;
+    }
+
+    public Element getCorrespondingElement()
+    {
+        return correspondingElement;
+    }
+
+    public void setCorrespondingElement(Element correspondingElement)
+    {
+        this.correspondingElement = correspondingElement;
     }
 }

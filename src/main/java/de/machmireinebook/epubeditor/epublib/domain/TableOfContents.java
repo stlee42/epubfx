@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -164,7 +165,7 @@ public class TableOfContents implements Serializable {
 		for (int i = currentTocReferences.size(); i <= pathElements[pathPos]; i++) {
 			String sectionTitle = createSectionTitle(pathElements, pathPos, i, sectionPrefix,
 					sectionNumberSeparator);
-			currentTocReferences.add(new TocEntry(sectionTitle, null));
+			currentTocReferences.add(new TocEntry<>(sectionTitle, null));
 		}
 	}
 
@@ -191,6 +192,29 @@ public class TableOfContents implements Serializable {
 		tocReferences.add(tocReference);
 		return tocReference;
 	}
+
+	public Optional<TocEntry> replaceResourceInTocReference(Resource oldResource, Resource newResource)
+	{
+		return replaceResourceInTocReference(tocReferences, oldResource, newResource);
+	}
+
+	private Optional<TocEntry> replaceResourceInTocReference(List<TocEntry<?>> tocEntries, Resource oldResource, Resource newResource)
+	{
+		for (TocEntry<?> tocReference : tocEntries)
+		{
+			if(tocReference.getResource().equals(oldResource))
+			{
+				tocReference.setResource(newResource);
+				return Optional.of(tocReference);
+			}
+
+			if (tocReference.hasChildren())
+			{
+				return replaceResourceInTocReference(oldResource, newResource);
+			}
+		}
+		return Optional.empty();
+	}
 	
 	/**
 	 * All unique references (unique by href) in the order in which they are referenced to in the table of contents.
@@ -206,7 +230,7 @@ public class TableOfContents implements Serializable {
 	
 	
 	private static void getAllUniqueResources(Set<String> uniqueHrefs, List<Resource> result, List<TocEntry<? extends TocEntry>> tocReferences) {
-		for (TocEntry tocReference: tocReferences) {
+		for (TocEntry<? extends TocEntry> tocReference: tocReferences) {
 			Resource resource = tocReference.getResource();
 			if (resource != null && ! uniqueHrefs.contains(resource.getHref())) {
 				uniqueHrefs.add(resource.getHref());

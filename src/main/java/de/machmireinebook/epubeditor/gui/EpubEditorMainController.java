@@ -43,6 +43,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebView;
@@ -50,6 +52,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -69,8 +73,6 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-
-import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -483,6 +485,9 @@ public class EpubEditorMainController implements Initializable
                 searchReplaceButtonAction();
             }
         });
+
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN), this::openEpubAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN), this::saveEpubAction);
     }
 
     public Book getCurrentBook()
@@ -507,8 +512,7 @@ public class EpubEditorMainController implements Initializable
         windowStage.show();
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public void openEpubAction(ActionEvent actionEvent)
+    public void openEpubAction()
     {
         checkBeforeCloseBook();
         FileChooser fileChooser = new FileChooser();
@@ -534,7 +538,7 @@ public class EpubEditorMainController implements Initializable
             catch (IOException e)
             {
                 logger.error("", e);
-                ExceptionDialog.showAndWait(e, stage, "E-Book öffnen", "Kann E-Book-Datei " + file.getName()  + " nicht öffnen.");
+                ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName());
             }
             finally
             {
@@ -594,15 +598,7 @@ public class EpubEditorMainController implements Initializable
                 Book book = currentBookProperty.getValue();
                 if (addToSpine)
                 {
-                    try
-                    {
-                        book.addSpineResourceFromFile(file, href, mediaType);
-                    }
-                    catch (IOException e)
-                    {
-                        logger.error("", e);
-                        ExceptionDialog.showAndWait(e, stage, "Datei hinzugefügen", "Kann Datei " + file.getName()  + "  nicht hinzufügen." );
-                    }
+                    book.addSpineResourceFromFile(file, href, mediaType);
                 }
                 else
                 {
@@ -635,8 +631,7 @@ public class EpubEditorMainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public void saveEpubAction(ActionEvent actionEvent)
+    public void saveEpubAction()
     {
         Book book = currentBookProperty.get();
         if (book.getPhysicalFileName() == null)
@@ -1158,6 +1153,7 @@ public class EpubEditorMainController implements Initializable
         Book book = currentBookProperty.getValue();
         book.getMetadata().generateNewUuid();
         bookBrowserManager.refreshOpf();
+        bookBrowserManager.refreshNcx();
         currentBookProperty.get().setBookIsChanged(true);
     }
 

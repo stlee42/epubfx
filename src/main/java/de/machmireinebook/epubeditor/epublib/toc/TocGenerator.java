@@ -26,11 +26,13 @@ import org.jdom2.filter.AbstractFilter;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
+import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
@@ -126,15 +128,23 @@ public class TocGenerator
                 int tocEntriesinResource = 0;
                 XHTMLResource xhtmlResource = (XHTMLResource) resource;
                 Document document = xhtmlResource.asNativeFormat();
-                IteratorIterable<Element> possibleTocEntrieElements = document.getDescendants(new PossibleTocEntryFilter());
-                for (Element possibleTocEntryElement : possibleTocEntrieElements)
+                IteratorIterable<Element> possibleTocEntryElements = document.getDescendants(new PossibleTocEntryFilter());
+                for (Element possibleTocEntryElement : possibleTocEntryElements)
                 {
                     ChoosableTocEntry tocEntry = new ChoosableTocEntry();
                     tocEntry.setLevel(possibleTocEntryElement.getName());
                     tocEntry.setReference(xhtmlResource.getHref());
-                    tocEntry.setTitle(possibleTocEntryElement.getValue());
+                    if (StringUtils.isNotEmpty(possibleTocEntryElement.getAttributeValue("title")))
+                    {
+                        tocEntry.setTitle(possibleTocEntryElement.getAttributeValue("title"));
+                    }
+                    else
+                    {
+                        tocEntry.setTitle(possibleTocEntryElement.getValue());
+                    }
                     tocEntry.setResource(xhtmlResource);
                     tocEntry.setDocument(document);
+                    tocEntry.setCorrespondingElement(possibleTocEntryElement);
 
                     if (possibleTocEntryElement.getAttribute("id") != null)
                     {
@@ -329,12 +339,15 @@ public class TocGenerator
             anchorElement.setText(tocEntry.getTitle());
             liElement.addContent(anchorElement);
 
-            if (!tocEntry.getChildren().isEmpty())
+            if (tocEntry.hasChildren())
             {
                 generateNavOrderedList(tocEntry.getChildren(), liElement, tocGeneratorResult);
             }
 
-            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && tocEntry instanceof ChoosableTocEntry)
+            //toc entry has a fragment id, then the resource has to rewrite that this id is available in resource
+            //or the title was changed in process of toc generation
+            if (tocEntry instanceof ChoosableTocEntry
+                    && (StringUtils.isNotEmpty(tocEntry.getFragmentId()) || ((ChoosableTocEntry) tocEntry).isTitleChanged()))
             {
                 tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((ChoosableTocEntry) tocEntry).getDocument());
             }
@@ -346,10 +359,35 @@ public class TocGenerator
 
     }
 
-    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry>> tocEntries)
+    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry>> tocEntries) throws IOException
     {
-        return null;
+        Book book = getBook();
+        book.setBookIsChanged(true);
+        book.getTableOfContents().setTocReferences(tocEntries);
+
+        Map<Resource, Document> resourcesToRewrite = new HashMap<>();
+
+        Resource ncxResource = NCXDocument.createNCXResource(((Epub2Metadata)book.getMetadata()).getIdentifiers(), book.getTitle(), book.getTableOfContents());
+        book.setNcxResource(ncxResource);
+
+        TocGeneratorResult result = new TocGeneratorResult(ncxResource, resourcesToRewrite);
+        generateNcxResourcesToRewrite(tocEntries, result);
+        return result;
     }
 
+    private void generateNcxResourcesToRewrite(List<TocEntry<? extends TocEntry>> tocEntries, TocGeneratorResult tocGeneratorResult)
+    {
+        for (TocEntry<? extends TocEntry> tocEntry : tocEntries)
+        {
+            if (tocEntry.hasChildren())
+            {
+                generateNcxResourcesToRewrite(tocEntry.getChildren(), tocGeneratorResult);
+            }
 
+            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && tocEntry instanceof ChoosableTocEntry)
+            {
+                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((ChoosableTocEntry) tocEntry).getDocument());
+            }
+        }
+    }
 }

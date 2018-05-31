@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -31,6 +32,7 @@ import javafx.util.converter.DefaultStringConverter;
 
 import org.apache.log4j.Logger;
 
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -42,6 +44,8 @@ import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
+import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
 
 /**
  * Created by Michail Jungierek, Acando GmbH on 17.05.2018
@@ -70,9 +74,11 @@ public class GenerateTocController implements StandardController
     @Inject
     private EditorTabManager editorTabManager;
 
+
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
     private ObservableList<ChoosableTocEntry> allTocEntries = FXCollections.observableArrayList();
+    private Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
     private static GenerateTocController instance;
 
@@ -99,6 +105,8 @@ public class GenerateTocController implements StandardController
             String newValue = event.getNewValue();
             ChoosableTocEntry tocEntry = event.getRowValue().getValue();
             tocEntry.setTitle(newValue);
+            tocEntry.setTitleChanged(true);
+            tocEntry.getCorrespondingElement().setText(newValue);
         });
 
         TreeTableColumn<ChoosableTocEntry, String> tc2 = (TreeTableColumn<ChoosableTocEntry, String>) treeTableView.getColumns().get(1);
@@ -113,9 +121,32 @@ public class GenerateTocController implements StandardController
         TreeTableColumn<ChoosableTocEntry, Boolean> tc3 = (TreeTableColumn<ChoosableTocEntry, Boolean>) treeTableView.getColumns().get(2);
         tc3.setEditable(true);
         tc3.setCellValueFactory(c -> {
-            BooleanProperty property = new SimpleBooleanProperty(c.getValue().getValue().getChoosed());
+            ChoosableTocEntry tocEntry = c.getValue().getValue();
+            BooleanProperty property = new SimpleBooleanProperty(tocEntry.getChoosed());
             property.addListener((observable, oldValue, newValue) -> {
-                c.getValue().getValue().setChoosed(newValue);
+                tocEntry.setChoosed(newValue);
+                Attribute att = tocEntry.getCorrespondingElement().getAttribute("class");
+                if (!newValue)
+                {
+                    if (att != null)
+                    {
+                        att.setValue(att.getValue() + " " + IGNORE_IN_TOC);
+                    }
+                    else
+                    {
+                        tocEntry.getCorrespondingElement().setAttribute("class", IGNORE_IN_TOC);
+                    }
+                    resourcesToRewrite.put(tocEntry.getResource(), tocEntry.getDocument());
+                }
+                else
+                {
+                    if (att != null)
+                    {
+                        att.setValue(att.getValue().replace(IGNORE_IN_TOC, "").trim());
+                    }
+                    resourcesToRewrite.remove(tocEntry.getResource());
+                }
+
                 setTableViewItems();
             });
             return property;
@@ -140,6 +171,7 @@ public class GenerateTocController implements StandardController
     {
         this.stage = stage;
         stage.setOnShowing(event -> {
+            resourcesToRewrite.clear();
             allTocEntries.clear();
             allTocEntries.addAll(tocGenerator.generateTocEntriesFromText());
             setTableViewItems();
@@ -242,10 +274,12 @@ public class GenerateTocController implements StandardController
                 result = tocGenerator.generateNcx(tocEntriesToUseInToc);
             }
 
-            Map<Resource, Document> resourcesToRewrite = result.getResourcesToRewrite();
-            for (Resource resource : resourcesToRewrite.keySet())
+            Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
+            allResourcesToRewrite.putAll(resourcesToRewrite);
+
+            for (Resource resource : allResourcesToRewrite.keySet())
             {
-                resource.setData(XHTMLUtils.outputXHTMLDocument(resourcesToRewrite.get(resource)));
+                resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource)));
                 editorTabManager.refreshEditorCode(resource);
             }
 

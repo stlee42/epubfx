@@ -837,6 +837,12 @@ public class BookBrowserManager
         editorManager.refreshEditorCode(book.getOpfResource());
     }
 
+    public void refreshNcx()
+    {
+        book.refreshNcxResource();
+        editorManager.refreshEditorCode(book.getOpfResource());
+    }
+
     private void sortSelectedItems()
     {
 

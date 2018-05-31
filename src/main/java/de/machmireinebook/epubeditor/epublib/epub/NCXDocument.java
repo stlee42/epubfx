@@ -19,7 +19,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
@@ -45,7 +44,7 @@ public class NCXDocument
 
     private static final Logger log = Logger.getLogger(NCXDocument.class);
 
-    private interface NCXTags
+    public interface NCXTags
     {
         String ncx = "ncx";
         String meta = "meta";
@@ -59,7 +58,7 @@ public class NCXDocument
         String head = "head";
     }
 
-    private interface NCXAttributes
+    public interface NCXAttributes
     {
         String src = "src";
         String name = "name";
@@ -72,10 +71,8 @@ public class NCXDocument
 
     private interface NCXAttributeValues
     {
-
         String chapter = "chapter";
         String version = "2005-1";
-
     }
 
     public static Resource read(Book book)
@@ -187,33 +184,41 @@ public class NCXDocument
      * @throws IllegalStateException
      * @throws IllegalArgumentException
      */
-    public static Document write(Book book) throws IllegalArgumentException, IllegalStateException, IOException
+    public static Document write(Book book) throws IllegalArgumentException, IllegalStateException
     {
         Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
-        return write(metadata.getIdentifiers(), book.getTitle(), metadata.getAuthors(), book.getTableOfContents());
+        return write(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource createNCXResource(Book book) throws IllegalArgumentException, IllegalStateException, IOException
+    public static Resource createNCXResource(Book book)
     {
         Epub2Metadata metadata = new Epub2Metadata();
         book.setMetadata(metadata);
-        return createNCXResource(metadata.getIdentifiers(), book.getTitle(), metadata.getAuthors(), book.getTableOfContents());
+        return createNCXResource(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource createNCXResource(List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException
+    public static Resource createNCXResource(List<Identifier> identifiers, String title, TableOfContents tableOfContents)
     {
-        Document ncxDocument = write(identifiers, title, authors, tableOfContents);
+        Document ncxDocument = write(identifiers, title, tableOfContents);
 
         XMLOutputter outputter = new XMLOutputter();
         Format xmlFormat = Format.getPrettyFormat();
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(ncxDocument);
 
-        Resource resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);
+        Resource resource = null;
+        try
+        {
+            resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            //never happens
+        }
         return resource;
     }
 
-    public static Document write(List<Identifier> identifiers, String title, List<Author> authors, TableOfContents tableOfContents) throws IllegalArgumentException, IllegalStateException, IOException
+    public static Document write(List<Identifier> identifiers, String title, TableOfContents tableOfContents)
     {
         /*
         <?xml version="1.0" encoding="utf-8"?>
@@ -236,7 +241,10 @@ public class NCXDocument
 
         for (Identifier identifier : identifiers)
         {
-            writeMetaElement(identifier.getScheme(), identifier.getValue(), headElement);
+            if (identifier.isBookId())
+            {
+                writeMetaElement("uid", identifier.getValue(), headElement);
+            }
         }
 
         writeMetaElement("generator", Constants.EPUBLIB_GENERATOR_NAME, headElement);
@@ -259,7 +267,7 @@ public class NCXDocument
     }
 
 
-    private static void writeMetaElement(String dtbName, String content, Element headElement) throws IllegalArgumentException, IllegalStateException, IOException
+    private static void writeMetaElement(String dtbName, String content, Element headElement)
     {
         Element metaElement = new Element(NCXTags.meta, NAMESPACE_NCX);
         metaElement.setAttribute(NCXAttributes.name, PREFIX_DTB + ":" + dtbName);
@@ -268,33 +276,32 @@ public class NCXDocument
     }
 
     private static int writeNavPoints(List<TocEntry<? extends TocEntry>> tocReferences, int playOrder,
-                                      Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
+                                      Element parentElement) throws IllegalArgumentException, IllegalStateException
     {
         for (TocEntry<? extends TocEntry> tocReference : tocReferences)
         {
             if (tocReference.getResource() == null)
             {
-                playOrder = writeNavPoints(tocReference.getChildren(), playOrder, navMapElement);
+                playOrder = writeNavPoints(tocReference.getChildren(), playOrder, parentElement);
                 continue;
             }
-            writeNavPointStart(tocReference, playOrder, navMapElement);
+            Element currentElement = writeNavPointStart(tocReference, playOrder, parentElement);
             playOrder++;
             if (!tocReference.getChildren().isEmpty())
             {
-                playOrder = writeNavPoints(tocReference.getChildren(), playOrder, navMapElement);
+                playOrder = writeNavPoints(tocReference.getChildren(), playOrder, currentElement);
             }
         }
         return playOrder;
     }
 
-
-    private static void writeNavPointStart(TocEntry tocReference, int playOrder, Element navMapElement) throws IllegalArgumentException, IllegalStateException, IOException
+    private static Element writeNavPointStart(TocEntry tocReference, int playOrder, Element parentElement)
     {
         Element navPointElement = new Element(NCXTags.navPoint, NAMESPACE_NCX);
         navPointElement.setAttribute(NCXAttributes.id, "navPoint-" + playOrder);
         navPointElement.setAttribute(NCXAttributes.playOrder, String.valueOf(playOrder));
         navPointElement.setAttribute(NCXAttributes.clazz, NCXAttributeValues.chapter);
-        navMapElement.addContent(navPointElement);
+        parentElement.addContent(navPointElement);
 
         Element navLabelElement = new Element(NCXTags.navLabel, NAMESPACE_NCX);
         navPointElement.addContent(navLabelElement);
@@ -305,5 +312,7 @@ public class NCXDocument
         Element contentElement = new Element(NCXTags.content, NAMESPACE_NCX);
         contentElement.setAttribute(NCXAttributes.src, tocReference.getCompleteHref());
         navPointElement.addContent(contentElement);
+
+        return navPointElement;
     }
 }
