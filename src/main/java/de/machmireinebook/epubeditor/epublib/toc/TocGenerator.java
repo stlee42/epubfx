@@ -29,6 +29,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
@@ -186,6 +187,41 @@ public class TocGenerator
             }
         }
         return tocEntries;
+    }
+
+    public List<ChoosableTocEntry> generateTocEntriesFromToc()
+    {
+        List<ChoosableTocEntry> tocEntries = new ArrayList<>();
+        Book book = bookProperty.get();
+
+        TableOfContents toc = book.getTableOfContents();
+        for (TocEntry<? extends TocEntry> tocEntry : toc.getTocReferences())
+        {
+            if (tocEntry instanceof ChoosableTocEntry)
+            {
+                tocEntries.add((ChoosableTocEntry) tocEntry);
+            }
+            else
+            {
+                ChoosableTocEntry choosableTocEntry = new ChoosableTocEntry(tocEntry);
+                //fill the needed information for editing the toc entries in form: document, xml element
+                setEditingValues(choosableTocEntry);
+                tocEntries.add(choosableTocEntry);
+            }
+        }
+
+        return tocEntries;
+    }
+
+    private void setEditingValues(ChoosableTocEntry choosableTocEntry)
+    {
+        choosableTocEntry.setChoosed(true);
+
+        //set needed values for all children too
+        for (TocEntry<? extends TocEntry> child : choosableTocEntry.getChildren())
+        {
+            setEditingValues((ChoosableTocEntry)child);
+        }
     }
 
     private int getLevel(String tagName)

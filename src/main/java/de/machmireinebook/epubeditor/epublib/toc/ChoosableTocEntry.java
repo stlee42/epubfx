@@ -16,7 +16,26 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
     private boolean titleChanged = false;
     private Document document;
     private Element correspondingElement;
-    private int displayLevel;
+
+    public ChoosableTocEntry()
+    {
+    }
+
+    public ChoosableTocEntry(TocEntry<? extends TocEntry> tocEntry)
+    {
+        this.setTitle(tocEntry.getTitle());
+        this.setFragmentId(tocEntry.getFragmentId());
+        for (TocEntry<? extends TocEntry> child : tocEntry.getChildren())
+        {
+            ChoosableTocEntry choosableChild = new ChoosableTocEntry(child);
+            this.getChildren().add(choosableChild);
+        }
+        this.setReference(tocEntry.getReference());
+        this.setResource(tocEntry.getResource());
+        this.setLevel(tocEntry.getLevel());
+    }
+
+
 
     public boolean getChoosed()
     {
@@ -59,16 +78,6 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
         ChoosableTocEntry newTocEntry = (ChoosableTocEntry) super.clone();
         newTocEntry.setDocument(document.clone());
         return newTocEntry;
-    }
-
-    public int getDisplayLevel()
-    {
-        return displayLevel;
-    }
-
-    public void setDisplayLevel(int displayLevel)
-    {
-        this.displayLevel = displayLevel;
     }
 
     public boolean isTitleChanged()

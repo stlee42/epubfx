@@ -47,6 +47,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import com.google.common.io.Files;
+
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
@@ -64,11 +69,6 @@ import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import com.google.common.io.Files;
 
 /**
  * User: mjungierek
@@ -283,6 +283,14 @@ public class BookBrowserManager
                 {
                     createXHTMLRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
+                else if (item.equals(cssItem))
+                {
+                    createCssRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
+                else if (item.equals(imagesItem))
+                {
+                    createImagesRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
             }
         });
         treeView.setOnEditCommit(event -> {
@@ -327,6 +335,47 @@ public class BookBrowserManager
         rootItem.getChildren().add(fontsItem);
     }
 
+    private ContextMenu createImagesRootContextMenu(TreeItem<Resource> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
+    private ContextMenu createCssRootContextMenu(TreeItem<Resource> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Add empty CSS File");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> addEmptyCssFile());
+        menu.getItems().add(item);
+
+        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Alles auswählen");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> selectAll(cssItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
     private ContextMenu createXHTMLRootContextMenu(TreeItem<Resource> treeItem)
     {
         ContextMenu menu = new ContextMenu();
@@ -348,7 +397,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Select all");
         item.setUserData(treeItem);
-        item.setOnAction(event -> selectAll(textItem));
+        item.setOnAction(event -> selectAll(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
         menu.getItems().add(item);
 

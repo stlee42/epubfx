@@ -262,12 +262,12 @@ public class EpubEditorMainController implements Initializable
 
         tocViewManager.setTreeView(tocTreeView);
         tocViewManager.setEditorManager(editorManager);
+        tocViewManager.bookProperty().bind(currentBookProperty);
 
         currentBookProperty.addListener((observable, oldValue, newValue) -> {
             epubFilesTabPane.getTabs().clear();
 
             bookBrowserManager.setBook(newValue);
-            tocViewManager.setBook(newValue);
             editorManager.reset();
             editorManager.setBook(newValue);
             previewManager.reset();
@@ -1004,10 +1004,19 @@ public class EpubEditorMainController implements Initializable
     {
     }
 
-    public void createTocAction(ActionEvent actionEvent)
+    public void createTocAction()
     {
         createAndOpenStandardController("/create_toc.fxml", GenerateTocController.class);
     }
+
+    public void editTocAction()
+    {
+        Stage stage = createStandardController("/create_toc.fxml", GenerateTocController.class);
+        GenerateTocController controller = GenerateTocController.getInstance();
+        controller.setEditMode(true);
+        stage.show();
+    }
+
 
     public void increaseIndentButtonAction(ActionEvent actionEvent)
     {
@@ -1175,11 +1184,6 @@ public class EpubEditorMainController implements Initializable
 
     public void findNextAction(ActionEvent actionEvent)
     {
-    }
-
-    public void editTocAction(ActionEvent actionEvent)
-    {
-
     }
 
     public void createNcxAction(ActionEvent actionEvent)

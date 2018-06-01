@@ -21,12 +21,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.converter.DefaultStringConverter;
 
@@ -53,7 +55,18 @@ import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
 public class GenerateTocController implements StandardController
 {
     private static final Logger logger = Logger.getLogger(GenerateTocController.class);
-
+    @FXML
+    private Label headingLevelLabel;
+    @FXML
+    private Label showTocItemsLabel;
+    @FXML
+    private Button addAboveButton;
+    @FXML
+    private Button addBelowButton;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button selectTargetButton;
     @FXML
     private TreeTableView<ChoosableTocEntry> treeTableView;
     @FXML
@@ -79,6 +92,8 @@ public class GenerateTocController implements StandardController
     private Stage stage;
     private ObservableList<ChoosableTocEntry> allTocEntries = FXCollections.observableArrayList();
     private Map<Resource, Document> resourcesToRewrite = new HashMap<>();
+    // editModeProperty
+    private final BooleanProperty editModeProperty = new SimpleBooleanProperty(this, "editMode");
 
     private static GenerateTocController instance;
 
@@ -87,14 +102,14 @@ public class GenerateTocController implements StandardController
         return instance;
     }
 
-
-
     @SuppressWarnings("unchecked")
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         treeTableView.setEditable(true);
         treeTableView.setShowRoot(false);
+
+        setEditMode(false);
 
         TreeTableColumn<ChoosableTocEntry, String> tc = (TreeTableColumn<ChoosableTocEntry, String>) treeTableView.getColumns().get(0);
         tc.setEditable(true);
@@ -160,8 +175,24 @@ public class GenerateTocController implements StandardController
 
         showTocItemsCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> setTableViewItems());
         showTocItemsCheckBox.setSelected(true);
+        showTocItemsCheckBox.visibleProperty().bind(editModeProperty.not());
+        showTocItemsLabel.visibleProperty().bind(editModeProperty.not());
+
+        headingLevelComboBox.visibleProperty().bind(editModeProperty.not());
+        headingLevelLabel.visibleProperty().bind(editModeProperty.not());
 
         tocGenerator.bookProperty().bind(currentBook);
+
+        editModeProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+            {
+                AnchorPane.setBottomAnchor(treeTableView, 62.0);
+            }
+            else
+            {
+                AnchorPane.setBottomAnchor(treeTableView, 125.0);
+            }
+        });
 
         instance = this;
     }
@@ -173,7 +204,14 @@ public class GenerateTocController implements StandardController
         stage.setOnShowing(event -> {
             resourcesToRewrite.clear();
             allTocEntries.clear();
-            allTocEntries.addAll(tocGenerator.generateTocEntriesFromText());
+            if (isEditMode())
+            {
+                allTocEntries.addAll(tocGenerator.generateTocEntriesFromToc());
+            }
+            else
+            {
+                allTocEntries.addAll(tocGenerator.generateTocEntriesFromText());
+            }
             setTableViewItems();
         });
     }
@@ -199,7 +237,6 @@ public class GenerateTocController implements StandardController
         TreeItem<ChoosableTocEntry> newParent = treeItem;
         if (!showTocItemsCheckBox.isSelected() || tocEntry.getChoosed())
         {
-            tocEntry.setDisplayLevel(level);
             newParent = new TreeItem<>(tocEntry);
             newParent.setExpanded(true);
             treeItem.getChildren().add(newParent);
@@ -226,6 +263,16 @@ public class GenerateTocController implements StandardController
     }
     public void setCurrentBook(Book value) {
         currentBook.set(value);
+    }
+
+    public final BooleanProperty editModeProperty() {
+        return editModeProperty;
+    }
+    public final boolean isEditMode() {
+        return editModeProperty.get();
+    }
+    public final void setEditMode(boolean value) {
+        editModeProperty.set(value);
     }
 
     public void renameButtonAction(ActionEvent actionEvent)
@@ -324,5 +371,25 @@ public class GenerateTocController implements StandardController
     public void onCancelAction(ActionEvent actionEvent)
     {
         stage.close();
+    }
+
+    public void addAboveButtonAction(ActionEvent actionEvent)
+    {
+
+    }
+
+    public void addBelowButtonAction(ActionEvent actionEvent)
+    {
+
+    }
+
+    public void deleteButtonAction(ActionEvent actionEvent)
+    {
+
+    }
+
+    public void selectTargetButtonAction(ActionEvent actionEvent)
+    {
+
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -32,6 +34,15 @@ public class TOCViewManager
     private Book book;
     private EditorTabManager editorManager;
     private TreeItem<TocEntry> rootItem;
+
+    // bookProperty
+    private final ObjectProperty<Book> bookProperty = new SimpleObjectProperty<>(this, "book");
+    public final ObjectProperty<Book> bookProperty() {
+       return bookProperty;
+    }
+    public final Book getBook() {
+       return bookProperty.get();
+    }
 
     public void setTreeView(TreeView<TocEntry> treeView)
     {
@@ -65,23 +76,28 @@ public class TOCViewManager
             }
         });
 
+        bookProperty.addListener((observable, oldValue, newValue) -> {
+                bookChanged();
+        });
+
     }
 
-    public void setBook(Book book)
+    private void bookChanged()
     {
-        this.book = book;
         rootItem.getChildren().clear();
-
-        TableOfContents toc = book.getTableOfContents();
-
-        List<TocEntry<? extends TocEntry>> references = toc.getTocReferences();
-        for (TocEntry reference : references)
+        if (book != null)
         {
-            TreeItem<TocEntry> tocItem = new TreeItem<>(reference);
-            rootItem.getChildren().add(tocItem);
-            if (reference.hasChildren())
+            TableOfContents toc = book.getTableOfContents();
+
+            List<TocEntry<? extends TocEntry>> references = toc.getTocReferences();
+            for (TocEntry reference : references)
             {
-                addChildren(tocItem);
+                TreeItem<TocEntry> tocItem = new TreeItem<>(reference);
+                rootItem.getChildren().add(tocItem);
+                if (reference.hasChildren())
+                {
+                    addChildren(tocItem);
+                }
             }
         }
     }
