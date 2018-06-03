@@ -53,8 +53,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -73,6 +71,8 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+
+import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -1006,7 +1006,10 @@ public class EpubEditorMainController implements Initializable
 
     public void createTocAction()
     {
-        createAndOpenStandardController("/create_toc.fxml", GenerateTocController.class);
+        Stage stage = createStandardController("/create_toc.fxml", GenerateTocController.class);
+        GenerateTocController controller = GenerateTocController.getInstance();
+        controller.setEditMode(false);
+        stage.show();
     }
 
     public void editTocAction()
@@ -1222,7 +1225,13 @@ public class EpubEditorMainController implements Initializable
         preferencesManager.showPreferencesDialog();
     }
 
-    public void openRecentBookAction(ActionEvent actionEvent)
+    public void epubCheckButton(ActionEvent actionEvent)
+    {
+
+
+    }
+
+    public void checkLinksButton(ActionEvent actionEvent)
     {
 
 

@@ -5,29 +5,31 @@ package de.machmireinebook.epubeditor.epublib;
  */
 public enum EpubVersion
 {
-    UNKNOWN(-1),
-    VERSION_2(2.0),
-    VERSION_3(3.0),
-    VERSION_3_1(3.1);
+    UNKNOWN("-1"),
+    VERSION_2("2.0"),
+    VERSION_3("3.0"),
+    VERSION_3_0_1("3.0.1"),
+    VERSION_3_1("3.1"),
+    VERSION_3_2("3.2"),
+    ;
 
-    private double version;
+    private String version;
 
-    EpubVersion(double version)
+    EpubVersion(String version)
     {
         this.version = version;
     }
 
-    public double getVersion()
+    public String getVersion()
     {
         return version;
     }
 
     public static EpubVersion getByString(String versionString)
     {
-        double version = Double.parseDouble(versionString);
         for (EpubVersion currentVersion : EpubVersion.values())
         {
-            if (currentVersion.version == version)
+            if (currentVersion.version.equals(versionString))
             {
                 return currentVersion;
             }

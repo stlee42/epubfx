@@ -63,7 +63,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         {
             XHTMLResource navResource = Epub3NavigationDocumentReader.read(root, resources);
             book.setEpub3NavResource(navResource);
-            Epub3NavigationDocumentReader.readLandmarks(navResource, book, resources);
+            Epub3NavigationDocumentReader.readNavElements(navResource, book, resources);
         }
         else
         {
@@ -100,7 +100,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         {
             XHTMLResource resource = Epub3NavigationDocumentReader.read(root, book.getResources());
             book.setEpub3NavResource(resource);
-            Epub3NavigationDocumentReader.readLandmarks(resource, book, book.getResources());
+            Epub3NavigationDocumentReader.readNavElements(resource, book, book.getResources());
         }
         else
         {

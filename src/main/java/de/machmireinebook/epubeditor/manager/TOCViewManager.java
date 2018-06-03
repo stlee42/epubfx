@@ -12,13 +12,13 @@ import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+
+import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek
@@ -31,7 +31,6 @@ public class TOCViewManager
     private static final Logger logger = Logger.getLogger(TOCViewManager.class);
 
     private TreeView<TocEntry> treeView;
-    private Book book;
     private EditorTabManager editorManager;
     private TreeItem<TocEntry> rootItem;
 
@@ -85,9 +84,9 @@ public class TOCViewManager
     private void bookChanged()
     {
         rootItem.getChildren().clear();
-        if (book != null)
+        if (bookProperty.get() != null)
         {
-            TableOfContents toc = book.getTableOfContents();
+            TableOfContents toc = bookProperty.get().getTableOfContents();
 
             List<TocEntry<? extends TocEntry>> references = toc.getTocReferences();
             for (TocEntry reference : references)

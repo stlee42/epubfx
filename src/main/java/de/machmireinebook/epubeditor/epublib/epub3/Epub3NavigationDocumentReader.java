@@ -2,22 +2,27 @@ package de.machmireinebook.epubeditor.epublib.epub3;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
+import java.util.Optional;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -70,7 +75,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
         return resource;
     }
 
-    public static void readLandmarks(XHTMLResource navResource, Book book, Resources resources)
+    public static void readNavElements(XHTMLResource navResource, Book book, Resources resources)
     {
         Document doc = navResource.asNativeFormat();
         Element root = doc.getRootElement();
@@ -130,8 +135,82 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
 
     private static void readToc(Book book, Element navElement, Resources resources)
     {
-
-
+        TableOfContents tableOfContents = new TableOfContents();
+        Element h1Element = navElement.getChild("h1", NAMESPACE_XHTML);
+        if (h1Element != null)
+        {
+            tableOfContents.setTocTitle(h1Element.getText());
+        }
+        Element olElement = navElement.getChild("ol", NAMESPACE_XHTML);
+        if (olElement != null)
+        {
+            tableOfContents.setTocReferences(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML), book, resources));
+        }
+        book.setTableOfContents(tableOfContents);
     }
 
+    private static List<TocEntry<? extends TocEntry>> readNavReferences(List<Element> liElements, Book book, Resources resources)
+    {
+        if (liElements == null)
+        {
+            return new ArrayList<>();
+        }
+        List<TocEntry<?>> result = new ArrayList<>(liElements.size());
+        for (Element liElement : liElements)
+        {
+            Optional<TocEntry<? extends TocEntry>> tocReferenceOptional = readTOCReference(liElement, book, resources);
+            tocReferenceOptional.ifPresent(result::add);
+        }
+        return result;
+    }
+
+    private static Optional<TocEntry<? extends TocEntry>> readTOCReference(Element liElement, Book book, Resources resources)
+    {
+        Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
+        String label = "";
+        String href = "";
+        if (anchorElement != null)
+        {
+            label = anchorElement.getValue();
+            href = anchorElement.getAttributeValue("href");
+            try
+            {
+                href = URLDecoder.decode(href, Constants.CHARACTER_ENCODING);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                //never happens
+            }
+        }
+        String fragmentId = StringUtils.substringAfter(href, Constants.FRAGMENT_SEPARATOR_CHAR);
+        Resource resource = resources.getByResolvedHref(book.getEpub3NavResource(), href);
+        if (resource == null)
+        {
+            logger.error("Resource with href " + href + " in nav document not found");
+            return Optional.empty();
+        }
+        TocEntry<? extends TocEntry> result = new TocEntry<>(label, resource, fragmentId);
+        result.setReference(resource.getHref());
+        Element olElement = liElement.getChild("ol", NAMESPACE_XHTML);
+        if (olElement != null)
+        {
+            result.setChildren(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML), book, resources));
+        }
+        return Optional.of(result);
+    }
+
+    private static String readNavReference(Element liElement)
+    {
+        Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
+        String result = anchorElement.getAttributeValue("href");
+        try
+        {
+            result = URLDecoder.decode(result, Constants.CHARACTER_ENCODING);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            //never happens
+        }
+        return result;
+    }
 }

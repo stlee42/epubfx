@@ -1171,6 +1171,34 @@
                                 </Button>
                             </nodes>
                         </RibbonGroup>
+                        <RibbonGroup title="Check">
+                            <nodes>
+                                <Button fx:id="epubCheckButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#epubCheckButton" text="Epub Check" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Check book with official IDPF EPUB Check" />
+                                    </tooltip>
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Checked_96px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="checkLinksButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#checkLinksButton" text="Check External Links" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Checks external links for rechability" />
+                                    </tooltip>
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="icons/icons8_Link_96px.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                            </nodes>
+                        </RibbonGroup>
 
                     </ribbonGroups>
                 </RibbonTab>
