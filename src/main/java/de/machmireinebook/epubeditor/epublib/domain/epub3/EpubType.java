@@ -1,7 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 25.05.2018
+ * Created by Michail Jungierek
  *
  * See https://idpf.github.io/epub-vocabs/structure/
  *

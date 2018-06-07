@@ -14,14 +14,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * Represents a resource that is part of the epub.
@@ -102,8 +102,6 @@ public class Resource<T> implements Externalizable, ToStringConvertible
 	 * Creates a resource with the data from the given InputStream at the specified href.
 	 * The MediaType will be determined based on the href extension.
 	 *
-	 * @see nl.siegmann.epublib.service.MediatypeService#determineMediaType(String)
-	 * 
 	 * Assumes that if the data is of a text type (html/css/etc) then the encoding will be UTF-8
 	 * 
 	 * It is recommended to us the {@link #Resource(java.io.Reader, String)} method for creating textual

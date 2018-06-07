@@ -3,7 +3,7 @@ package de.machmireinebook.epubeditor.preferences;
 import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 24.05.2018
+ * Created by Michail Jungierek
  */
 public class SettingEnumObjectProperty<T> extends SimpleObjectProperty<T>
 {

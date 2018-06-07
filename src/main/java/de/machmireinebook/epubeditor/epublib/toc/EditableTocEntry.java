@@ -2,36 +2,37 @@ package de.machmireinebook.epubeditor.epublib.toc;
 
 import javafx.util.StringConverter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 23.05.2018
+ * Created by Michail Jungierek
  */
-public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cloneable
+public class EditableTocEntry extends TocEntry<EditableTocEntry, Document> implements Cloneable
 {
     private boolean choosed;
     private boolean titleChanged = false;
     private Document document;
     private Element correspondingElement;
 
-    public ChoosableTocEntry()
+    public EditableTocEntry()
     {
     }
 
-    public ChoosableTocEntry(TocEntry<? extends TocEntry> tocEntry)
+    public EditableTocEntry(TocEntry<? extends TocEntry, ?> tocEntry)
     {
         this.setTitle(tocEntry.getTitle());
-        this.setFragmentId(tocEntry.getFragmentId());
-        for (TocEntry<? extends TocEntry> child : tocEntry.getChildren())
+        for (TocEntry<? extends TocEntry, ?> child : tocEntry.getChildren())
         {
-            ChoosableTocEntry choosableChild = new ChoosableTocEntry(child);
+            EditableTocEntry choosableChild = new EditableTocEntry(child);
             this.getChildren().add(choosableChild);
         }
         this.setReference(tocEntry.getReference());
-        this.setResource(tocEntry.getResource());
+        this.setResource(tocEntry.getResource(), tocEntry.getFragmentId());
         this.setLevel(tocEntry.getLevel());
     }
 
@@ -57,26 +58,29 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
         this.document = document;
     }
 
-    public static class ChoosableTocEntryStringConverter extends StringConverter<ChoosableTocEntry>
+    public static class ChoosableTocEntryStringConverter extends StringConverter<EditableTocEntry>
     {
         @Override
-        public String toString(ChoosableTocEntry object)
+        public String toString(EditableTocEntry object)
         {
             return object.getTitle();
         }
 
         @Override
-        public ChoosableTocEntry fromString(String string)
+        public EditableTocEntry fromString(String string)
         {
             return null;
         }
     }
 
     @Override
-    public ChoosableTocEntry clone()
+    public EditableTocEntry clone()
     {
-        ChoosableTocEntry newTocEntry = (ChoosableTocEntry) super.clone();
-        newTocEntry.setDocument(document.clone());
+        EditableTocEntry newTocEntry = (EditableTocEntry) super.clone();
+        if (document != null)
+        {
+            newTocEntry.setDocument(document.clone());
+        }
         return newTocEntry;
     }
 
@@ -98,5 +102,15 @@ public class ChoosableTocEntry extends TocEntry<ChoosableTocEntry> implements Cl
     public void setCorrespondingElement(Element correspondingElement)
     {
         this.correspondingElement = correspondingElement;
+    }
+
+    public void setCompleteHref(String fullReference)
+    {
+        String[] splitted = StringUtils.split(fullReference);
+        setReference(splitted[0]);
+        if (splitted.length > 1)
+        {
+            setFragmentId(splitted[1]);
+        }
     }
 }

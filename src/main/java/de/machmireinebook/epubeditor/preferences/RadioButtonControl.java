@@ -11,7 +11,7 @@ import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 17.05.2018
+ * Created by Michail Jungierek
  */
 public class RadioButtonControl<V> extends SimpleControl<SingleSelectionField<V>, HBox>
 {

@@ -20,22 +20,21 @@ import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**
- * Writes the ncx document as defined by namespace http://www.daisy.org/z3986/2005/ncx/
+ * Writes and reads the ncx document as defined by namespace http://www.daisy.org/z3986/2005/ncx/
  *
  * @author paul
  */
 public class NCXDocument
 {
-
     public static final Namespace NAMESPACE_NCX_WITH_PREFIX = Namespace.getNamespace("ncx", "http://www.daisy.org/z3986/2005/ncx/");
     public static final Namespace NAMESPACE_NCX = Namespace.getNamespace("http://www.daisy.org/z3986/2005/ncx/");
     public static final String NCX_ITEM_ID = "ncx";
@@ -99,22 +98,22 @@ public class NCXDocument
         return ncxResource;
     }
 
-    private static List<TocEntry<? extends TocEntry>> readTOCReferences(List<Element> navpoints, Book book)
+    private static List<TocEntry<? extends TocEntry, Document>> readTOCReferences(List<Element> navpoints, Book book)
     {
         if (navpoints == null)
         {
             return new ArrayList<>();
         }
-        List<TocEntry<?>> result = new ArrayList<>(navpoints.size());
+        List<TocEntry<?, Document>> result = new ArrayList<>(navpoints.size());
         for (Element navpoint : navpoints)
         {
-            TocEntry<? extends TocEntry> tocReference = readTOCReference(navpoint, book);
+            TocEntry<? extends TocEntry, Document> tocReference = readTOCReference(navpoint, book);
             result.add(tocReference);
         }
         return result;
     }
 
-    private static TocEntry<? extends TocEntry> readTOCReference(Element navpointElement, Book book)
+    private static TocEntry<? extends TocEntry, Document> readTOCReference(Element navpointElement, Book book)
     {
         String label = readNavLabel(navpointElement);
         String tocResourceRoot = StringUtils.substringBeforeLast(book.getSpine().getTocResource().getHref(), "/");
@@ -134,7 +133,7 @@ public class NCXDocument
         {
             log.error("Resource with href " + href + " in NCX document not found");
         }
-        TocEntry<? extends TocEntry> result = new TocEntry<>(label, resource, fragmentId);
+        TocEntry<? extends TocEntry, Document> result = new TocEntry<>(label, resource, fragmentId);
         result.setReference(reference);
         result.setChildren(readTOCReferences(navpointElement.getChildren("navPoint", NAMESPACE_NCX), book));
         return result;
@@ -177,23 +176,17 @@ public class NCXDocument
     /**
      * Generates a resource containing an xml document containing the table of contents of the book in ncx format.
      *
-     * @param xmlSerializer the serializer used
      * @param book          the book to serialize
-     * @throws javax.xml.stream.FactoryConfigurationError
-     * @throws java.io.IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
-    public static Document write(Book book) throws IllegalArgumentException, IllegalStateException
+    public static Document write(Book book)
     {
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
-        return write(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
+       Metadata metadata = book.getMetadata();
+       return write(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
     public static Resource createNCXResource(Book book)
     {
-        Epub2Metadata metadata = new Epub2Metadata();
-        book.setMetadata(metadata);
+        Metadata metadata = book.getMetadata();
         return createNCXResource(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
@@ -275,10 +268,10 @@ public class NCXDocument
         headElement.addContent(metaElement);
     }
 
-    private static int writeNavPoints(List<TocEntry<? extends TocEntry>> tocReferences, int playOrder,
+    private static int writeNavPoints(List<TocEntry<? extends TocEntry, Document>> tocReferences, int playOrder,
                                       Element parentElement) throws IllegalArgumentException, IllegalStateException
     {
-        for (TocEntry<? extends TocEntry> tocReference : tocReferences)
+        for (TocEntry<? extends TocEntry, Document> tocReference : tocReferences)
         {
             if (tocReference.getResource() == null)
             {

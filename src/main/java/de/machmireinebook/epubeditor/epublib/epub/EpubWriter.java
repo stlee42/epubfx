@@ -9,17 +9,18 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -28,8 +29,7 @@ import org.jdom2.output.XMLOutputter;
  */
 public class EpubWriter
 {
-
-    private final static Logger log = Logger.getLogger(EpubWriter.class);
+    private final static Logger logger = Logger.getLogger(EpubWriter.class);
 
     private BookProcessor bookProcessor = new HtmlCleanerBookProcessor();
 
@@ -82,12 +82,12 @@ public class EpubWriter
         }
         catch (Exception e)
         {
-            log.error("Error writing table of contents: " + e.getClass().getName() + ": " + e.getMessage());
+            logger.error("Error writing table of contents: " + e.getClass().getName() + ": " + e.getMessage());
         }
     }
 
 
-    private void writeResources(Book book, ZipOutputStream resultStream) throws IOException
+    private void writeResources(Book book, ZipOutputStream resultStream)
     {
         for (Resource resource : book.getResources().getAll())
         {
@@ -103,7 +103,6 @@ public class EpubWriter
      * @throws java.io.IOException
      */
     private void writeResource(Resource resource, ZipOutputStream resultStream)
-            throws IOException
     {
         if (resource == null)
         {
@@ -118,7 +117,7 @@ public class EpubWriter
         }
         catch (Exception e)
         {
-            log.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -177,30 +176,4 @@ public class EpubWriter
         crc.update(data);
         return crc.getValue();
     }
-
-    static String getNcxId()
-    {
-        return "ncx";
-    }
-
-    static String getNcxHref()
-    {
-        return "toc.ncx";
-    }
-
-    static String getNcxMediaType()
-    {
-        return "application/x-dtbncx+xml";
-    }
-
-    public BookProcessor getBookProcessor()
-    {
-        return bookProcessor;
-    }
-
-    public void setBookProcessor(BookProcessor bookProcessor)
-    {
-        this.bookProcessor = bookProcessor;
-    }
-
 }

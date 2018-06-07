@@ -1,7 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 24.05.2018
+ * Created by Michail Jungierek
  */
 public enum PredefinedPrefix
 {

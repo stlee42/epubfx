@@ -348,15 +348,22 @@ public class Book implements Serializable
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
     private Path physicalFileName;
 
+    public Book()
+    {
+        setVersion(EpubVersion.VERSION_2);
+    }
+
     public static Book createMinimalBook()
     {
         Book book = new Book();
+        book.setVersion(EpubVersion.VERSION_2);
+
+        book.setMetadata(new Epub2Metadata());
 
         Resource ncxResource = NCXDocument.createNCXResource(book);
         book.setNcxResource(ncxResource);
         book.getSpine().setTocResource(ncxResource);
         book.addResource(ncxResource, false);
-        book.setVersion(EpubVersion.VERSION_2);
 
         Resource opfResource = PackageDocumentWriter.createOPFResource(book);
         book.setOpfResource(opfResource);

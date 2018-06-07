@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -17,12 +23,6 @@ import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -149,22 +149,22 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
         book.setTableOfContents(tableOfContents);
     }
 
-    private static List<TocEntry<? extends TocEntry>> readNavReferences(List<Element> liElements, Book book, Resources resources)
+    private static List<TocEntry<? extends TocEntry, Document>> readNavReferences(List<Element> liElements, Book book, Resources resources)
     {
         if (liElements == null)
         {
             return new ArrayList<>();
         }
-        List<TocEntry<?>> result = new ArrayList<>(liElements.size());
+        List<TocEntry<?, Document>> result = new ArrayList<>(liElements.size());
         for (Element liElement : liElements)
         {
-            Optional<TocEntry<? extends TocEntry>> tocReferenceOptional = readTOCReference(liElement, book, resources);
+            Optional<TocEntry<? extends TocEntry, Document>> tocReferenceOptional = readTOCReference(liElement, book, resources);
             tocReferenceOptional.ifPresent(result::add);
         }
         return result;
     }
 
-    private static Optional<TocEntry<? extends TocEntry>> readTOCReference(Element liElement, Book book, Resources resources)
+    private static Optional<TocEntry<? extends TocEntry, Document>> readTOCReference(Element liElement, Book book, Resources resources)
     {
         Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
         String label = "";
@@ -189,7 +189,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
             logger.error("Resource with href " + href + " in nav document not found");
             return Optional.empty();
         }
-        TocEntry<? extends TocEntry> result = new TocEntry<>(label, resource, fragmentId);
+        TocEntry<? extends TocEntry, Document> result = new TocEntry<>(label, resource, fragmentId);
         result.setReference(resource.getHref());
         Element olElement = liElement.getChild("ol", NAMESPACE_XHTML);
         if (olElement != null)

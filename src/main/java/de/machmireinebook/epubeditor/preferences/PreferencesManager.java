@@ -56,7 +56,7 @@ public class PreferencesManager
     private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
 
     private DoubleProperty version = new SimpleDoubleProperty(2.0);
-    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1), 0).render(
+    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1, 3.2), 0).render(
             new RadioButtonControl<>());
 
     private ObjectProperty<ReferenceType> referenceType = new SimpleObjectProperty<>(ReferenceType.FOOTNOTE);
@@ -69,7 +69,6 @@ public class PreferencesManager
 
     private BooleanProperty generateNCX = new SimpleBooleanProperty(true);
     private BooleanProperty generateHtmlToc = new SimpleBooleanProperty(true);
-
 
     public PreferencesManager()
     {

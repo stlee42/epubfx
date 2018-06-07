@@ -12,7 +12,7 @@ import org.jdom2.JDOMException;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 23.05.2018
+ * Created by Michail Jungierek
  */
 @Named
 public class TemplateManager

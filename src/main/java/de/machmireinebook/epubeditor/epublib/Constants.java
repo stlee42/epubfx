@@ -13,6 +13,9 @@ public interface Constants {
 	String FRAGMENT_SEPARATOR_CHAR = "#";
 	String DEFAULT_TOC_ID = "toc";
 
+	String DEFAULT_NCX_ID = "ncx";
+	String DEFAULT_NCX_HREF = "toc.ncx";
+
 	String BOOK_ID_ID = "BookId";
 	Namespace NAMESPACE_OPF = Namespace.getNamespace("http://www.idpf.org/2007/opf");
 	Namespace NAMESPACE_OPF_WITH_PREFIX = Namespace.getNamespace("opf", "http://www.idpf.org/2007/opf");

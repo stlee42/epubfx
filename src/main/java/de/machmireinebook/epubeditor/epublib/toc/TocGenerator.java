@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Attribute;
+import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -34,6 +35,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
+import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
@@ -42,7 +44,7 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
 /**
- * Created by Michail Jungierek, Acando GmbH on 18.05.2018
+ * Created by Michail Jungierek
  */
 @Named
 public class TocGenerator
@@ -114,12 +116,12 @@ public class TocGenerator
         }
     }
 
-    public List<ChoosableTocEntry> generateTocEntriesFromText()
+    public List<EditableTocEntry> generateTocEntriesFromText()
     {
-        List<ChoosableTocEntry> tocEntries = new ArrayList<>();
+        List<EditableTocEntry> tocEntries = new ArrayList<>();
         Book book = bookProperty.get();
         List<Resource> contentResources = book.getReadableContents();
-        ChoosableTocEntry currentHighestEntry = null;
+        EditableTocEntry currentHighestEntry = null;
         int currentHighestLevel = 999;
 
         for (Resource resource : contentResources)
@@ -132,7 +134,7 @@ public class TocGenerator
                 IteratorIterable<Element> possibleTocEntryElements = document.getDescendants(new PossibleTocEntryFilter());
                 for (Element possibleTocEntryElement : possibleTocEntryElements)
                 {
-                    ChoosableTocEntry tocEntry = new ChoosableTocEntry();
+                    EditableTocEntry tocEntry = new EditableTocEntry();
                     tocEntry.setLevel(possibleTocEntryElement.getName());
                     tocEntry.setReference(xhtmlResource.getHref());
                     if (StringUtils.isNotEmpty(possibleTocEntryElement.getAttributeValue("title")))
@@ -150,6 +152,10 @@ public class TocGenerator
                     if (possibleTocEntryElement.getAttribute("id") != null)
                     {
                         tocEntry.setFragmentId(possibleTocEntryElement.getAttribute("id").getValue());
+                    }
+                    if (possibleTocEntryElement.getAttribute("name") != null)
+                    {
+                        tocEntry.setFragmentId(possibleTocEntryElement.getAttribute("name").getValue());
                     }
                     else if (tocEntriesinResource > 0) //more then one toc entry in this resource without id, write a new id on this element
                     {
@@ -189,38 +195,54 @@ public class TocGenerator
         return tocEntries;
     }
 
-    public List<ChoosableTocEntry> generateTocEntriesFromToc()
+    public List<EditableTocEntry> generateTocEntriesFromToc()
     {
-        List<ChoosableTocEntry> tocEntries = new ArrayList<>();
+        List<EditableTocEntry> tocEntries = new ArrayList<>();
         Book book = bookProperty.get();
 
         TableOfContents toc = book.getTableOfContents();
-        for (TocEntry<? extends TocEntry> tocEntry : toc.getTocReferences())
+        for (TocEntry<? extends TocEntry, ?> tocEntry : toc.getTocReferences())
         {
-            if (tocEntry instanceof ChoosableTocEntry)
+            if (tocEntry instanceof EditableTocEntry)
             {
-                tocEntries.add((ChoosableTocEntry) tocEntry);
+                tocEntries.add((EditableTocEntry) tocEntry);
             }
             else
             {
-                ChoosableTocEntry choosableTocEntry = new ChoosableTocEntry(tocEntry);
-                //fill the needed information for editing the toc entries in form: document, xml element
-                setEditingValues(choosableTocEntry);
-                tocEntries.add(choosableTocEntry);
+                EditableTocEntry editableTocEntry = new EditableTocEntry(tocEntry);
+                setEditingValues(editableTocEntry);
+                tocEntries.add(editableTocEntry);
             }
         }
 
         return tocEntries;
     }
 
-    private void setEditingValues(ChoosableTocEntry choosableTocEntry)
+    private void setEditingValues(EditableTocEntry editableTocEntry)
     {
-        choosableTocEntry.setChoosed(true);
+        editableTocEntry.setChoosed(true);
+        Document document = editableTocEntry.getResource().asNativeFormat();
+        editableTocEntry.setDocument(document);
+        //fill the needed information for editing the toc entries
+        //it's not possible to map a toc entry to an element in document in all cases, because the toc could be edited manually
+        //and a toc entry must not map to an xml element in resource
+        // but if the toc entry has an fragment id then a xhtml element with this id or name should be in code
+        if (editableTocEntry.hasFragmentId())
+        {
+            String fragmentId = editableTocEntry.getFragmentId();
+            AtrributeElementFilter idFilter = new AtrributeElementFilter("id", fragmentId);
+            AtrributeElementFilter nameFilter = new AtrributeElementFilter("name", fragmentId);
+            IteratorIterable<? extends Content> elementsWithFragment = document.getDescendants(idFilter.or(nameFilter));
+            if (elementsWithFragment.hasNext())
+            {
+                editableTocEntry.setCorrespondingElement((Element)elementsWithFragment.next());
+            }
+        }
 
         //set needed values for all children too
-        for (TocEntry<? extends TocEntry> child : choosableTocEntry.getChildren())
+        for (TocEntry<? extends TocEntry, Document> child : editableTocEntry.getChildren())
         {
-            setEditingValues((ChoosableTocEntry)child);
+            setEditingValues((EditableTocEntry)child);
         }
     }
 
@@ -254,7 +276,7 @@ public class TocGenerator
         return level;
     }
 
-    public TocGeneratorResult generateNav(List<TocEntry<? extends TocEntry>> tocEntries) throws IOException, JDOMException
+    public TocGeneratorResult generateNav(List<TocEntry<? extends TocEntry, Document>> tocEntries) throws IOException, JDOMException
     {
         //first add entries to books toc
         Book book = getBook();
@@ -343,7 +365,7 @@ public class TocGenerator
         return result;
     }
 
-    private void generateToc(List<TocEntry<? extends TocEntry>> tocEntries, Element navElement, TocGeneratorResult tocGeneratorResult)
+    private void generateToc(List<TocEntry<? extends TocEntry, Document>> tocEntries, Element navElement, TocGeneratorResult tocGeneratorResult)
     {
         Element h1Element = navElement.getChild("h1", NAMESPACE_XHTML);
         if (h1Element == null)
@@ -357,11 +379,11 @@ public class TocGenerator
         generateNavOrderedList(tocEntries, navElement, tocGeneratorResult);
     }
 
-    private void generateNavOrderedList(List<TocEntry<? extends TocEntry>> tocEntries, Element parentElement, TocGeneratorResult tocGeneratorResult)
+    private void generateNavOrderedList(List<TocEntry<? extends TocEntry, Document>> tocEntries, Element parentElement, TocGeneratorResult tocGeneratorResult)
     {
         Element olElement = new Element("ol", NAMESPACE_XHTML);
         parentElement.addContent(olElement);
-        for (TocEntry<? extends TocEntry> tocEntry : tocEntries)
+        for (TocEntry<? extends TocEntry, Document> tocEntry : tocEntries)
         {
             Element liElement = new Element("li", NAMESPACE_XHTML);
             olElement.addContent(liElement);
@@ -382,20 +404,20 @@ public class TocGenerator
 
             //toc entry has a fragment id, then the resource has to rewrite that this id is available in resource
             //or the title was changed in process of toc generation
-            if (tocEntry instanceof ChoosableTocEntry
-                    && (StringUtils.isNotEmpty(tocEntry.getFragmentId()) || ((ChoosableTocEntry) tocEntry).isTitleChanged()))
+            if (tocEntry instanceof EditableTocEntry
+                    && (StringUtils.isNotEmpty(tocEntry.getFragmentId()) || ((EditableTocEntry) tocEntry).isTitleChanged()))
             {
-                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((ChoosableTocEntry) tocEntry).getDocument());
+                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((EditableTocEntry) tocEntry).getDocument());
             }
         }
     }
 
-    private void generateLandmarks(List<TocEntry<? extends TocEntry>> tocEntries, Element navElement)
+    private void generateLandmarks(List<TocEntry<? extends TocEntry, Document>> tocEntries, Element navElement)
     {
 
     }
 
-    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry>> tocEntries) throws IOException
+    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry, Document>> tocEntries) throws IOException
     {
         Book book = getBook();
         book.setBookIsChanged(true);
@@ -411,18 +433,18 @@ public class TocGenerator
         return result;
     }
 
-    private void generateNcxResourcesToRewrite(List<TocEntry<? extends TocEntry>> tocEntries, TocGeneratorResult tocGeneratorResult)
+    private void generateNcxResourcesToRewrite(List<TocEntry<? extends TocEntry, Document>> tocEntries, TocGeneratorResult tocGeneratorResult)
     {
-        for (TocEntry<? extends TocEntry> tocEntry : tocEntries)
+        for (TocEntry<? extends TocEntry, Document> tocEntry : tocEntries)
         {
             if (tocEntry.hasChildren())
             {
                 generateNcxResourcesToRewrite(tocEntry.getChildren(), tocGeneratorResult);
             }
 
-            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && tocEntry instanceof ChoosableTocEntry)
+            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && tocEntry instanceof EditableTocEntry)
             {
-                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((ChoosableTocEntry) tocEntry).getDocument());
+                tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((EditableTocEntry) tocEntry).getDocument());
             }
         }
     }

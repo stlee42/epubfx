@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 
-public class TitledResourceReference extends ResourceReference implements Serializable {
+public class TitledResourceReference<T> extends ResourceReference<T> implements Serializable {
 
 	/**
 	 * 
@@ -37,6 +37,11 @@ public class TitledResourceReference extends ResourceReference implements Serial
 
 	public void setFragmentId(String fragmentId) {
 		this.fragmentId = fragmentId;
+	}
+
+	public boolean hasFragmentId()
+	{
+		return StringUtils.isNotEmpty(fragmentId);
 	}
 
 	public String getTitle() {

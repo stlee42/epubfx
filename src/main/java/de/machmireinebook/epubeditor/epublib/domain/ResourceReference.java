@@ -2,20 +2,20 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
 
-public class ResourceReference implements Serializable {
+public class ResourceReference<T> implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2596967243557743048L;
-	protected Resource resource;
+	protected Resource<T> resource;
 
 	public ResourceReference(Resource resource) {
 		this.resource = resource;
 	}
 
 
-	public Resource getResource() {
+	public Resource<T> getResource() {
 		return resource;
 	}
 
@@ -24,7 +24,7 @@ public class ResourceReference implements Serializable {
 	 * 
 	 * @param resource
 	 */
-	public void setResource(Resource resource) {
+	public void setResource(Resource<T> resource) {
 		this.resource = resource;
 	}
 

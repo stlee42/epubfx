@@ -53,6 +53,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.log4j.Logger;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -71,8 +73,6 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-
-import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -279,8 +279,16 @@ public class EpubEditorMainController implements Initializable
                 saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
                 createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
                 createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
-                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - EPUB " + newValue.getVersion().getVersion() + " - EpubFX");
+                if (newValue.getVersion() != null)
+                {
+                    stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                            + " - EPUB " + newValue.getVersion().getVersion() + " - EpubFX");
+                }
+                else
+                {
+                    stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                            + " - EpubFX");
+                }
             }
 
         });

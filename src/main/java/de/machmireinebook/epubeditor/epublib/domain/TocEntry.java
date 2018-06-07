@@ -10,13 +10,13 @@ import org.apache.commons.lang3.ObjectUtils;
 /**
  * An item in the Table of Contents.
  */
-public class TocEntry<T extends TocEntry> extends TitledResourceReference implements Serializable, Cloneable {
+public class TocEntry<S extends TocEntry, T> extends TitledResourceReference<T> implements Serializable, Cloneable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5787958246077042456L;
-	private List<TocEntry<? extends TocEntry>> children;
+	private List<TocEntry<? extends TocEntry, T>> children;
     private String reference;
 	private String level;
 	private static final Comparator<? super TocEntry> COMPARATOR_BY_TITLE_IGNORE_CASE = (tocReference1, tocReference2) -> String.CASE_INSENSITIVE_ORDER.compare(tocReference1.getTitle(), tocReference2.getTitle());
@@ -33,7 +33,7 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 		this(name, resource, fragmentId, new ArrayList<>());
 	}
 	
-	public TocEntry(String title, Resource resource, String fragmentId, List<TocEntry<? extends TocEntry>> children) {
+	public TocEntry(String title, Resource resource, String fragmentId, List<TocEntry<? extends TocEntry, T>> children) {
 		super(resource, title, fragmentId);
 		this.children = children;
 	}
@@ -42,16 +42,16 @@ public class TocEntry<T extends TocEntry> extends TitledResourceReference implem
 		return COMPARATOR_BY_TITLE_IGNORE_CASE;
 	}
 	
-	public List<TocEntry<? extends TocEntry>> getChildren() {
+	public List<TocEntry<? extends TocEntry, T>> getChildren() {
 		return children;
 	}
 
-	public TocEntry<? extends TocEntry> addChildSection(TocEntry<? extends TocEntry> childSection) {
+	public TocEntry<? extends TocEntry, T> addChildSection(TocEntry<? extends TocEntry, T> childSection) {
 		this.children.add(childSection);
 		return childSection;
 	}
 	
-	public void setChildren(List<TocEntry<? extends TocEntry>> children) {
+	public void setChildren(List<TocEntry<? extends TocEntry, T>> children) {
 		this.children = children;
 	}
 

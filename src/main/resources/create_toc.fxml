@@ -16,6 +16,7 @@
             <TreeTableColumn prefWidth="290" text="Title" />
             <TreeTableColumn prefWidth="35" resizable="false" text="Level" />
             <TreeTableColumn prefWidth="70" resizable="false" text="Include" />
+            <TreeTableColumn prefWidth="290" text="Target" />
          </columns>
       </TreeTableView>
       <Button fx:id="renameButton" layoutX="449.0" layoutY="20.0" mnemonicParsing="false" onAction="#renameButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Rename" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="20.0" />
@@ -31,9 +32,9 @@
             <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
          </children>
       </HBox>
-      <Button fx:id="addAboveButton" layoutX="449.0" layoutY="55.0" mnemonicParsing="false" onAction="#addAboveButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Add Above" />
-      <Button fx:id="addBelowButton" layoutX="449.0" layoutY="90.0" mnemonicParsing="false" onAction="#addBelowButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Add Below" />
-      <Button fx:id="deleteButton" layoutX="449.0" layoutY="125.0" mnemonicParsing="false" onAction="#deleteButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Delete" />
-      <Button fx:id="selectTargetButton" layoutX="449.0" layoutY="161.0" mnemonicParsing="false" onAction="#selectTargetButtonAction" styleClass="flat" text="Select Target" />
+      <Button fx:id="addAboveButton" layoutX="449.0" layoutY="55.0" mnemonicParsing="false" onAction="#addAboveButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Add Above" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="55.0" />
+      <Button fx:id="addBelowButton" layoutX="449.0" layoutY="90.0" mnemonicParsing="false" onAction="#addBelowButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Add Below" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="90.0" />
+      <Button fx:id="deleteButton" layoutX="449.0" layoutY="125.0" mnemonicParsing="false" onAction="#deleteButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Delete" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="125.0" />
+      <Button fx:id="selectTargetButton" layoutX="449.0" layoutY="161.0" mnemonicParsing="false" onAction="#selectTargetButtonAction" styleClass="flat" text="Select Target" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="161.0" />
    </children>
 </AnchorPane>
