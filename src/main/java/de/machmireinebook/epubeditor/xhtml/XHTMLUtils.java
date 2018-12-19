@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.xhtml;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
@@ -158,7 +159,7 @@ public class XHTMLUtils
     {
         //DTD ersetzen, da die originale nicht erreichbar bzw. nur sehr langsam ist,
         xhtml = xhtml.replace("http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd", "http://localhost:8777/dtd/www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
-        ByteArrayInputStream bais = new ByteArrayInputStream(xhtml.getBytes("UTF-8"));
+        ByteArrayInputStream bais = new ByteArrayInputStream(xhtml.getBytes(StandardCharsets.UTF_8));
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
         builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
