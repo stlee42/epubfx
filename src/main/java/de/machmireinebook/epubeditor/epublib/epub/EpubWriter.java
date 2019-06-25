@@ -31,7 +31,7 @@ public class EpubWriter
 {
     private final static Logger logger = Logger.getLogger(EpubWriter.class);
 
-    private BookProcessor bookProcessor = new HtmlCleanerBookProcessor();
+    private BookProcessor bookProcessor;
 
     public EpubWriter()
     {
