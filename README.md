@@ -1,8 +1,8 @@
-EPUB-Editor written with JavaFX 8
+EPUB-Editor written with JavaFX
 
 This project is in early stage but it's already a little bit functional. 
 
-It needs Java 8u40 or higher. 
+It needs Java 11 or higher. 
 
 
   
