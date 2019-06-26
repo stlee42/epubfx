@@ -6,6 +6,7 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.skin.TreeCellSkin;
 import javafx.scene.input.KeyCode;
 
 import org.apache.log4j.Logger;
@@ -110,7 +111,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
     {
         textField = new TextField(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphic().getLayoutBounds().getWidth() - this.getGraphicTextGap());
-        logger.debug("widthes " +  this.getWidth() + ", min " +  this.getMinWidth() + ", max " +  this.getMaxWidth() + ", pref " +  this.getPrefWidth());
+        logger.debug("width " +  this.getWidth() + ", min " +  this.getMinWidth() + ", max " +  this.getMaxWidth() + ", pref " +  this.getPrefWidth());
         textField.focusedProperty().addListener((value, bool1, bool2) -> {
             if (!bool2)
             {

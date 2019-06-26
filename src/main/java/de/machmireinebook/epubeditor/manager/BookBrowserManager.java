@@ -41,7 +41,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -196,7 +195,6 @@ public class BookBrowserManager
                     // get the y coordinate within the control
                     double y = event.getSceneY() - (sceneCoordinates.getY());
 
-
                     // set the dnd effect for the required action
                     if (y > (height * .75d))
                     {
@@ -227,9 +225,9 @@ public class BookBrowserManager
         }
     }
 
-    public void setTreeView(TreeView<Resource> treeView)
+    public void setTreeView(TreeView<Resource> initTreeView)
     {
-        this.treeView = treeView;
+        this.treeView = initTreeView;
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         rootItem = new TreeItem<>();
         rootItem.setExpanded(true);
@@ -239,7 +237,7 @@ public class BookBrowserManager
 
         treeView.setCellFactory(new BookBrowserTreeCellFactory());
 
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        treeView.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY))
             {
                 if (event.getClickCount() == 2)
