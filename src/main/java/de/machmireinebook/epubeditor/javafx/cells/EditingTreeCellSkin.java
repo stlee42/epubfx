@@ -7,22 +7,20 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.WritableValue;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.css.StyleableDoubleProperty;
 import javafx.css.StyleableProperty;
+import javafx.css.converter.SizeConverter;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.skin.CellSkinBase;
 
-import com.sun.javafx.css.converters.SizeConverter;
-import com.sun.javafx.scene.control.skin.CellSkinBase;
-
-public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTreeCellBehavior<T>>
+public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>>
 {
 
     /*
@@ -75,7 +73,7 @@ public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTre
     private boolean fixedCellSizeEnabled;
 
     public EditingTreeCellSkin(TreeCell<T> control) {
-        super(control, new EditingTreeCellBehavior<>(control));
+        super(control);
 
         this.fixedCellSize = control.getTreeView().getFixedCellSize();
         this.fixedCellSizeEnabled = fixedCellSize > 0;
@@ -206,7 +204,7 @@ public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTre
 
         // RT-30212: TreeCell does not honor minSize of cells.
         // snapSize for RT-36460
-        return snapSize(Math.max(cell.getMinHeight(), prefHeight));
+        return snapSizeY(Math.max(cell.getMinHeight(), prefHeight));
     }
 
     @Override protected double computeMaxHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
@@ -249,22 +247,25 @@ public class EditingTreeCellSkin<T> extends CellSkinBase<TreeCell<T>, EditingTre
      *                         Stylesheet Handling                             *
      *                                                                         *
      **************************************************************************/
-
-    /** @treatAsPrivate */
     private static class StyleableProperties {
 
         private static final CssMetaData<TreeCell<?>,Number> INDENT =
-                new CssMetaData<TreeCell<?>,Number>("-fx-indent",
-                        SizeConverter.getInstance(), 10.0) {
+                new CssMetaData<>("-fx-indent",
+                        SizeConverter.getInstance(), 10.0)
+                {
 
-                    @Override public boolean isSettable(TreeCell<?> n) {
+                    @Override
+                    public boolean isSettable(TreeCell<?> n)
+                    {
                         DoubleProperty p = ((EditingTreeCellSkin<?>) n.getSkin()).indentProperty();
                         return p == null || !p.isBound();
                     }
 
-                    @Override public StyleableProperty<Number> getStyleableProperty(TreeCell<?> n) {
+                    @Override
+                    public StyleableProperty<Number> getStyleableProperty(TreeCell<?> n)
+                    {
                         final EditingTreeCellSkin<?> skin = (EditingTreeCellSkin<?>) n.getSkin();
-                        return (StyleableProperty<Number>)(WritableValue<Number>)skin.indentProperty();
+                        return (StyleableProperty<Number>) skin.indentProperty();
                     }
                 };
 

@@ -89,11 +89,16 @@ public class PreferencesManager
                         )
                 ),
                 Category.of("Language specific Settings",
-                        Setting.of("UI Language", languageItems, languageSelection),
-                        Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
-                        Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
-                        Setting.of("Headline of Table of Contents", headlineToc),
-                        Setting.of("Headline of Landmarks", landmarksToc)
+                        Group.of("UI",
+                            Setting.of("UI Language", languageItems, languageSelection)
+                        ),
+                        Group.of("Content",
+                            Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
+                            Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
+                            Setting.of("Headline of Table of Contents", headlineToc),
+                            Setting.of("Headline of Landmarks", landmarksToc)
+                        )
+
                 ));
     }
 

@@ -1,8 +1,5 @@
 package de.machmireinebook.epubeditor.javafx.cells;
 
-import java.util.Collections;
-
-import com.sun.javafx.scene.control.behavior.CellBehaviorBase;
 import javafx.scene.Node;
 import javafx.scene.control.FocusModel;
 import javafx.scene.control.MultipleSelectionModel;
@@ -10,11 +7,16 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseButton;
+
 import org.apache.log4j.Logger;
+
+import com.sun.javafx.scene.control.behavior.CellBehaviorBase;
 
 public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
 {
     private static final Logger logger = Logger.getLogger(EditingTreeCellBehavior.class);
+
+    private TreeView<T> cellContainer;
 
     /***************************************************************************
      *                                                                         *
@@ -23,7 +25,8 @@ public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
      **************************************************************************/
 
     public EditingTreeCellBehavior(final TreeCell<T> control) {
-        super(control, Collections.emptyList());
+        super(control);
+        cellContainer = control.getTreeView();
     }
 
 
@@ -46,7 +49,7 @@ public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
 
     @Override
     protected TreeView<T> getCellContainer() {
-        return getControl().getTreeView();
+        return cellContainer;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
     @Override
     protected void handleClicks(MouseButton button, int clickCount, boolean isAlreadySelected) {
         // handle editing, which only occurs with the primary mouse button
-        TreeItem<T> treeItem = getControl().getTreeItem();
+        TreeItem<T> treeItem = getNode().getTreeItem();
         if (button == MouseButton.PRIMARY) {
             if (clickCount == 1 && isAlreadySelected) {
                 edit(null);
@@ -78,7 +81,7 @@ public class EditingTreeCellBehavior<T> extends CellBehaviorBase<TreeCell<T>>
 
     @Override
     protected boolean handleDisclosureNode(double x, double y) {
-        TreeCell<T> treeCell = getControl();
+        TreeCell<T> treeCell = getNode();
         Node disclosureNode = treeCell.getDisclosureNode();
         if (disclosureNode != null) {
             if (disclosureNode.getBoundsInParent().contains(x, y)) {

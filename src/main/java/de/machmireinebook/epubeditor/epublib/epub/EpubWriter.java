@@ -100,7 +100,6 @@ public class EpubWriter
      *
      * @param resource
      * @param resultStream
-     * @throws java.io.IOException
      */
     private void writeResource(Resource resource, ZipOutputStream resultStream)
     {
