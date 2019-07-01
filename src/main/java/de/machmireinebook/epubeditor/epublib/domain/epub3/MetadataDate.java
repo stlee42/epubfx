@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  *
  */
-public class MetadataDate extends Epub3DublinCoreMetadataElement implements Serializable
+public class MetadataDate extends DublinCoreMetadataElement implements Serializable
 {
 	/**
 	 *

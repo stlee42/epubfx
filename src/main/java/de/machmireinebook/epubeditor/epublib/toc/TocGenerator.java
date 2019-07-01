@@ -14,20 +14,7 @@ import javax.inject.Named;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Attribute;
-import org.jdom2.Content;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.AbstractFilter;
-import org.jdom2.util.IteratorIterable;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
@@ -40,6 +27,18 @@ import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Attribute;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.AbstractFilter;
+import org.jdom2.util.IteratorIterable;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -417,7 +416,7 @@ public class TocGenerator
 
     }
 
-    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry, Document>> tocEntries) throws IOException
+    public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry, Document>> tocEntries)
     {
         Book book = getBook();
         book.setBookIsChanged(true);
@@ -425,7 +424,7 @@ public class TocGenerator
 
         Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
-        Resource ncxResource = NCXDocument.createNCXResource(((Epub2Metadata)book.getMetadata()).getIdentifiers(), book.getTitle(), book.getTableOfContents());
+        Resource ncxResource = NCXDocument.createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getTableOfContents());
         book.setNcxResource(ncxResource);
 
         TocGeneratorResult result = new TocGeneratorResult(ncxResource, resourcesToRewrite);

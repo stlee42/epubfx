@@ -11,7 +11,7 @@ import java.util.UUID;
  * @author paul
  *
  */
-public class Epub3Identifier extends Epub3DublinCoreMetadataElement implements Serializable {
+public class Identifier extends DublinCoreMetadataElement implements Serializable {
 	
 	/**
 	 * 
@@ -45,7 +45,7 @@ public class Epub3Identifier extends Epub3DublinCoreMetadataElement implements S
 		}
 	}
 
-	public Epub3Identifier(String id, String scheme, String value)
+	public Identifier(String id, String scheme, String value)
 	{
 		super(id, scheme, value, null);
 	}
@@ -53,7 +53,7 @@ public class Epub3Identifier extends Epub3DublinCoreMetadataElement implements S
 	/**
 	 * Creates an Identifier with as value a random UUID and scheme "UUID"
 	 */
-	public Epub3Identifier() {
+	public Identifier() {
 		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString(), null);
 	}
 

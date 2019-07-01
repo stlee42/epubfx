@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author paul
  *
  */
-public class Author extends Epub3DublinCoreMetadataElement implements Serializable
+public class Author extends DublinCoreMetadataElement implements Serializable
 {
 	
 	private static final long serialVersionUID = 6663408501416574200L;

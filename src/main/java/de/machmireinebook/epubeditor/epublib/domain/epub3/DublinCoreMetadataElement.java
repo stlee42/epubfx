@@ -8,7 +8,7 @@ import java.util.List;
  * Date: 28.09.2017
  * Time: 20:43
  */
-public class Epub3DublinCoreMetadataElement
+public class DublinCoreMetadataElement
 {
     private String id;
     private String scheme;
@@ -16,12 +16,12 @@ public class Epub3DublinCoreMetadataElement
     private String language;
     private List<MetadataPropertyValue> refinements = new ArrayList<>();
 
-    public Epub3DublinCoreMetadataElement(String value)
+    public DublinCoreMetadataElement(String value)
     {
         this(null, null, value, null);
     }
 
-    public Epub3DublinCoreMetadataElement(String id, String scheme, String value, String language)
+    public DublinCoreMetadataElement(String id, String scheme, String value, String language)
     {
         this.id = id;
         this.scheme = scheme;

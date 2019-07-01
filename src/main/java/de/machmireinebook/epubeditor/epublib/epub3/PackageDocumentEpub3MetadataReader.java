@@ -5,20 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
-import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -28,7 +28,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
  * Date: 26.07.2014
  * Time: 19:00
  */
-public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
+public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
 {
     private static final Logger logger = Logger.getLogger(PackageDocumentEpub3MetadataReader.class);
 
@@ -67,16 +67,16 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
      * @param metadataElement
      * @return
      */
-    private static List<Epub3MetadataProperty> readEpub3MetaProperties(Element metadataElement)
+    private static List<MetadataProperty> readEpub3MetaProperties(Element metadataElement)
     {
-        List<Epub3MetadataProperty> result = new ArrayList<>();
+        List<MetadataProperty> result = new ArrayList<>();
 
         List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
-            Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
+            MetadataProperty otherMetadataElement = new MetadataProperty();
             String property = metaTag.getAttributeValue(OPFAttributes.property);
-            if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata, ignore it
+            if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata, read it later
             {
                 otherMetadataElement.setProperty(property);
                 String value = metaTag.getText();
