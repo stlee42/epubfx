@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -19,9 +20,15 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 	private String name;
     private String fileAs;
 	private Relator relator = Relator.AUTHOR;
-	
-	public Author(String id, String scheme, String name) {
-	    super(id, scheme, name);
+
+	public Author(String id, String scheme, String name, String language) {
+	    super(id, scheme, name, language);
+	    if (StringUtils.isEmpty(id)) {
+			setId(Normalizer.normalize(name, Normalizer.Form.NFD)
+					.replaceAll("[^\\p{ASCII}]", "")
+					.replaceAll(" ", "_")
+					.toLowerCase());
+		}
 		this.name = name;
 	}
 	

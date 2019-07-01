@@ -6,14 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.epubeditor.epublib.domain.Author;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.domain.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.Relator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,9 +19,20 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Relator;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
+
+import jidefx.scene.control.searchable.TableViewSearchable;
 
 import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
 
@@ -95,16 +98,6 @@ public class Epub3EditMetadataController implements Initializable
             this.value = value;
         }
 
-        public String getSubtype()
-        {
-            return subtype;
-        }
-
-        public void setSubtype(String subtype)
-        {
-            this.subtype = subtype;
-        }
-
         public String getRefines()
         {
             return refines;
@@ -124,6 +117,16 @@ public class Epub3EditMetadataController implements Initializable
         {
             this.scheme = scheme;
         }
+
+        public String getSubtype()
+        {
+            return subtype;
+        }
+
+        public void setSubtype(String subtype)
+        {
+            this.subtype = subtype;
+        }
     }
 
     public enum MetadataTemplate
@@ -131,7 +134,7 @@ public class Epub3EditMetadataController implements Initializable
         COVERAGE(DCTag.coverage, "coverage", null),
         CUSTOM_DATE(DCTag.date, "Date (custom)", "customidentifier"),
         CREATION_DATE(DCTag.date, "Date: Creation", "creation"),
-        MODIFICATION_DATE(DCTag.date, "Date: Modification", "modificatin"),
+        MODIFICATION_DATE(DCTag.date, "Date: Modification", "modification"),
         PUBLICATION_DATE(DCTag.date, "Date: Publication", "publication"),
         DESCRIPTION(DCTag.description, "Description", null),
         CUSTOM_IDENTIFIER(DCTag.description, "Identifier (custom)", "customidentifier"),
@@ -214,7 +217,7 @@ public class Epub3EditMetadataController implements Initializable
         });
 
         TableColumn<MetadataElement, String> tc6 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(2);
-        tc6.setCellValueFactory(new PropertyValueFactory<>("subtype"));
+        tc6.setCellValueFactory(new PropertyValueFactory<>("scheme"));
 
         instance = this;
     }
@@ -233,7 +236,7 @@ public class Epub3EditMetadataController implements Initializable
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
         chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
             Relator relator = tableView.getSelectionModel().getSelectedItem();
-            Author contributor = new Author(null, null,"");
+            Author contributor = new Author(null, null,"", null);
             contributor.setRelator(relator);
             otherContributorsTableView.getItems().add(contributor);
             chooserWindowController.getChooserWindow().close();
@@ -244,7 +247,7 @@ public class Epub3EditMetadataController implements Initializable
             if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
-                Author contributor = new Author(null, null, "");
+                Author contributor = new Author(null, null, "", null);
                 contributor.setRelator(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
@@ -306,7 +309,7 @@ public class Epub3EditMetadataController implements Initializable
         tableView.getColumns().add(tc);
         tc.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        chooserWindowController.getChooserWindowLabel().setText("Metadateneigenschaft ausw�hlen");
+        chooserWindowController.getChooserWindowLabel().setText("Metadateneigenschaft auswählen");
 
         tableView.setItems(FXCollections.observableArrayList(MetadataTemplate.values()));
 
@@ -321,7 +324,7 @@ public class Epub3EditMetadataController implements Initializable
     {
         Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
         //auhtor
-        Author firstAuthor = new Author(null, null, authorTextField.getText());
+        Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
         metadata.getAuthors().clear();
         metadata.getContributors().clear();
@@ -341,7 +344,7 @@ public class Epub3EditMetadataController implements Initializable
         }
         //title
         metadata.getTitles().clear();
-        metadata.addTitle(new DublinCoreMetadataElement(null, null, titleTextField.getText()));
+        metadata.addTitle(titleTextField.getText());
 
         //metadata
         metadata.getDates().clear();
@@ -412,7 +415,11 @@ public class Epub3EditMetadataController implements Initializable
         List<Identifier> identifiers = metadata.getIdentifiers();
         for (Identifier identifier : identifiers)
         {
-            MetadataElement element = new MetadataElement("identifier", identifier.getValue(), identifier.getScheme());
+            MetadataElement element = new MetadataElement("identifier", identifier.getValue(), "");
+            if (StringUtils.isNotEmpty(identifier.getScheme()))
+            {
+                element.setScheme(identifier.getScheme());
+            }
             elements.add(element);
         }
 
@@ -447,7 +454,7 @@ public class Epub3EditMetadataController implements Initializable
         List<Epub3MetadataProperty> others = metadata.getEpub3MetaProperties();
         for (Epub3MetadataProperty other : others)
         {
-            MetadataElement element = new MetadataElement(other.getQName().getLocalPart(), other.getValue(), "");
+            MetadataElement element = new MetadataElement(other.getProperty(), other.getValue(), "");
             if (StringUtils.isNotEmpty(other.getScheme()))
             {
                 element.setScheme(other.getScheme());

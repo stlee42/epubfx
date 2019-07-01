@@ -6,12 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.epubeditor.epublib.domain.Author;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.Relator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,8 +19,17 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.Relator;
+
+import jidefx.scene.control.searchable.TableViewSearchable;
 
 import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
 
@@ -230,7 +233,7 @@ public class EditMetadataController implements Initializable
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
         chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
             Relator relator = tableView.getSelectionModel().getSelectedItem();
-            Author contributor = new Author(null, null,"");
+            Author contributor = new Author(null, null,"", null);
             contributor.setRelator(relator);
             otherContributorsTableView.getItems().add(contributor);
             chooserWindowController.getChooserWindow().close();
@@ -241,7 +244,7 @@ public class EditMetadataController implements Initializable
             if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
-                Author contributor = new Author(null, null, "");
+                Author contributor = new Author(null, null, "", null);
                 contributor.setRelator(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
@@ -318,7 +321,7 @@ public class EditMetadataController implements Initializable
     {
         Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
         //auhtor
-        Author firstAuthor = new Author(null, null, authorTextField.getText());
+        Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
         metadata.getAuthors().clear();
         metadata.getContributors().clear();

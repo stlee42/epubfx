@@ -18,11 +18,6 @@ public class Identifier extends DublinCoreMetadataElement implements Serializabl
 	 */
 	private static final long serialVersionUID = 955949951416391810L;
 
-	public Identifier(String id, String scheme, String value)
-	{
-		super(id, scheme, value);
-	}
-
 	public enum Scheme {
 		UUID("uuid", false),
 		ISBN("isbn", false),
@@ -49,16 +44,22 @@ public class Identifier extends DublinCoreMetadataElement implements Serializabl
 			return isObsolete;
 		}
 	}
-	
-	private boolean bookId = false;
+
+	public Identifier(String id, String scheme, String value)
+	{
+		super(id, scheme, value, null);
+	}
 
 	/**
 	 * Creates an Identifier with as value a random UUID and scheme "UUID"
 	 */
 	public Identifier() {
-		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString());
+		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString(), null);
 	}
-	
+
+
+	private boolean bookId = false;
+
 	public void setBookId(boolean bookId) {
 		this.bookId = bookId;
 	}

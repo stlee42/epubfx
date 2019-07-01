@@ -1,5 +1,9 @@
 package de.machmireinebook.epubeditor.epublib.domain;
 
+import java.util.UUID;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * User: mjungierek
  * Date: 28.09.2017
@@ -10,12 +14,23 @@ public class DublinCoreMetadataElement
     private String id;
     private String scheme;
     private String value;
+    private String language;
 
-    public DublinCoreMetadataElement(String id, String scheme, String value)
+    public DublinCoreMetadataElement(String value)
     {
-        this.id = id;
+        this(null, null, value, null);
+    }
+
+    public DublinCoreMetadataElement(String id, String scheme, String value, String language)
+    {
+        if (StringUtils.isEmpty(id) ) {
+            this.id = UUID.randomUUID().toString();
+        } else {
+            this.id = id;
+        }
         this.scheme = scheme;
         this.value = value;
+        this.language = language;
     }
 
     public String getId()
@@ -46,5 +61,15 @@ public class DublinCoreMetadataElement
     public void setValue(String value)
     {
         this.value = value;
+    }
+
+    public String getLanguage()
+    {
+        return language;
+    }
+
+    public void setLanguage(String language)
+    {
+        this.language = language;
     }
 }

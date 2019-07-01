@@ -45,13 +45,13 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 	private Event event;
 
     public MetadataDate(String dateString, Event event) {
-        super(null, null, dateString);
+        super(null, null, dateString, null);
         this.event = event;
     }
 
     public MetadataDate(String id, String scheme, String value)
     {
-        super(id, scheme, value);
+        super(id, scheme, value, null);
         this.event = Event.PUBLICATION;
     }
 

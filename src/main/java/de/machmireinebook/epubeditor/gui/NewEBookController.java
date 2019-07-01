@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.namespace.QName;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -163,8 +161,8 @@ public class NewEBookController implements StandardController
                     boolean found = false;
                     for (Epub3MetadataProperty otherMetadataProperty : otherProperties)
                     {
-                        QName qName = otherMetadataProperty.getQName();
-                        if (RenditionLayout.qName.equals(qName.getPrefix() + ":" + qName.getLocalPart()))
+                        String property = otherMetadataProperty.getProperty();
+                        if (RenditionLayout.qName.equals(property))
                         {
                             found = true;
                             if (RenditionLayout.PRE_PAGINATED.getValue().equals(otherMetadataProperty.getValue()))

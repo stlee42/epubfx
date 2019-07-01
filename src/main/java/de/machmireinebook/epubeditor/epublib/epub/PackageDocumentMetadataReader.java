@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -81,16 +79,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             String name = metaTag.getAttributeValue(OPFAttributes.property);
             if (StringUtils.isNotEmpty(name)) //epub 3 metadata, read in, but ignore in epub 2 context
             {
-                String[] qNameParts = org.apache.commons.lang3.StringUtils.split(name, ":");
-                if (qNameParts.length == 1)
-                {
-                    otherMetadataElement.setQName(new QName(name));
-                }
-                else if (qNameParts.length == 2)
-                {
-                    //TODO: search ns uri in prefix attributes or n predefined prefixes
-                    otherMetadataElement.setQName(new QName(null, qNameParts[1], qNameParts[0]));
-                }
+                otherMetadataElement.setProperty(name);
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
                 String refines = metaTag.getAttributeValue(OPFAttributes.refines);
@@ -188,7 +177,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             return null;
         }
         Author result;
-        result = new Author(null, null, authorString);
+        result = new Author(null, null, authorString, null);
         result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
         return result;
     }

@@ -98,7 +98,6 @@
             <groupId>com.pixelduke</groupId>
             <artifactId>fxribbon</artifactId>
             <version>1.2.1</version>
-            <systemPath>${basedir}/lib/fxribbon-1.2.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.jidesoft</groupId>

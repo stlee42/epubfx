@@ -67,19 +67,20 @@ public class PackageDocumentBase
         String content = "content";
         String type = "type";
         String href = "href";
-        String linear = "linear";
         String event = "event";
-        String role = "role";
         String file_as = "file-as";
         String id = "id";
+        String lang = "lang";
+        String linear = "linear";
         String media_type = "media-type";
-        String title = "title";
-        String toc = "toc";
-        String version = "version";
-        String scheme = "scheme";
         String property = "property";
         String properties = "properties";
         String refines = "refines";
+        String role = "role";
+        String scheme = "scheme";
+        String title = "title";
+        String toc = "toc";
+        String version = "version";
     }
 
     protected interface OPFValues

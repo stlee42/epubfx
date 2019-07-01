@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
@@ -78,18 +77,9 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
         {
             Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
             String property = metaTag.getAttributeValue(OPFAttributes.property);
-            if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata
+            if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata, ignore it
             {
-                String[] qNameParts = StringUtils.split(property, ":");
-                if (qNameParts.length == 1)
-                {
-                    otherMetadataElement.setQName(new QName(property));
-                }
-                else if (qNameParts.length == 2)
-                {
-                    //TODO: search ns uri in prefix attributes or n predefined prefixes
-                    otherMetadataElement.setQName(new QName(null, qNameParts[1], qNameParts[0]));
-                }
+                otherMetadataElement.setProperty(property);
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
                 String refines = metaTag.getAttributeValue(OPFAttributes.refines);
@@ -190,7 +180,8 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
                 continue;
             }
             String idName = authorElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
-            Author author = new Author(idName, schemeName, authorValue);
+            String language = authorElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
+            Author author = new Author(idName, schemeName, authorValue, language);
             result.add(author);
         }
         return result;
@@ -219,7 +210,8 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
                 continue;
             }
             String idName = dcElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
-            DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, schemeName, titleValue);
+            String language = dcElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
+            DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, schemeName, titleValue, language);
             result.add(dublinCoreMetadataElement);
         }
         return result;
@@ -246,19 +238,6 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
             MetadataDate dublinCoreMetadataElement = new MetadataDate(idName, schemeName, titleValue);
             result.add(dublinCoreMetadataElement);
         }
-        return result;
-    }
-
-    private static Author createAuthor(Element authorElement)
-    {
-        String authorString = authorElement.getText();
-        if (StringUtils.isBlank(authorString))
-        {
-            return null;
-        }
-        Author result;
-        result = new Author(null, null, authorString);
-        result.setRole(authorElement.getAttributeValue(OPFAttributes.role, NAMESPACE_OPF));
         return result;
     }
 }

@@ -662,7 +662,10 @@ public class Book implements Serializable
 
     public boolean isEpub3()
     {
-        return (versionProperty.get() == EpubVersion.VERSION_3 || versionProperty.get() == EpubVersion.VERSION_3_1);
+        return (versionProperty.get() == EpubVersion.VERSION_3
+                || versionProperty.get() == EpubVersion.VERSION_3_0_1
+                || versionProperty.get() == EpubVersion.VERSION_3_1
+                || versionProperty.get() == EpubVersion.VERSION_3_2);
     }
 
     public void setFixedLayout(boolean isFixedLayout)

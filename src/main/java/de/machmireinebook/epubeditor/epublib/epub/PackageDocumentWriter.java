@@ -92,7 +92,7 @@ public class PackageDocumentWriter extends PackageDocumentBase
 
         if (book.isEpub3())
         {
-            PackageDocumentEpub3MetadataWriter.writeMetaData(book, root);
+            new PackageDocumentEpub3MetadataWriter(book, root).writeMetaData();
         }
         else
         {

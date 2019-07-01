@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.machmireinebook.epubeditor.epublib.domain.Author;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * A Book's collection of Metadata.
@@ -215,10 +215,9 @@ public class Epub3Metadata implements Serializable, Metadata
     }
 
 
-    public DublinCoreMetadataElement addTitle(DublinCoreMetadataElement title)
+    public void addTitle(String title)
     {
-        this.titles.add(title);
-        return title;
+        titles.add(new DublinCoreMetadataElement(title));
     }
 
     public void setTitles(List<DublinCoreMetadataElement> titles)

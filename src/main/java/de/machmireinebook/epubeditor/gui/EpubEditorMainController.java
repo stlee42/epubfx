@@ -797,25 +797,29 @@ public class EpubEditorMainController implements Initializable
         Stage editMetadataStage = new Stage(StageStyle.UTILITY);
         try
         {
-            FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/metadata_editor.fxml"), null, new JavaFXBuilderFactory(),
-                    type -> BeanFactory.getInstance().getBean(type));
-            Pane root = loader.load();
 
-            Scene scene = new Scene(root);
-
+            Pane root;
             if (currentBookProperty.getValue().isEpub3())
             {
+                FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/metadata_editor_epub3.fxml"), null, new JavaFXBuilderFactory(),
+                        type -> BeanFactory.getInstance().getBean(type));
+                root = loader.load();
+
                 Epub3EditMetadataController controller = Epub3EditMetadataController.getInstance();
                 controller.setBook(currentBookProperty.getValue());
                 controller.setStage(editMetadataStage);
             }
             else
             {
+                FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/metadata_editor.fxml"), null, new JavaFXBuilderFactory(),
+                        type -> BeanFactory.getInstance().getBean(type));
+                root = loader.load();
+
                 EditMetadataController controller = EditMetadataController.getInstance();
                 controller.setBook(currentBookProperty.getValue());
                 controller.setStage(editMetadataStage);
             }
-
+            Scene scene = new Scene(root);
             editMetadataStage.setScene(scene);
             editMetadataStage.initOwner(stage);
             editMetadataStage.initModality(Modality.APPLICATION_MODAL);
