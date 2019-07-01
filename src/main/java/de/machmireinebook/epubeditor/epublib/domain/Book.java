@@ -31,6 +31,7 @@ import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;

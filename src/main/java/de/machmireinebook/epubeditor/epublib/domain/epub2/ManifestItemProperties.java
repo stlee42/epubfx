@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.domain.epub2;
 
 public enum ManifestItemProperties implements ManifestProperties {
 	COVER_IMAGE("cover-image"),

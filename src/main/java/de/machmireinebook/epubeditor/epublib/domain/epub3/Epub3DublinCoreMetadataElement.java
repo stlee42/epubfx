@@ -14,7 +14,7 @@ public class Epub3DublinCoreMetadataElement
     private String scheme;
     private String value;
     private String language;
-    private List<MetadataProperty> refinements = new ArrayList<>();
+    private List<MetadataPropertyValue> refinements = new ArrayList<>();
 
     public Epub3DublinCoreMetadataElement(String value)
     {
@@ -69,7 +69,7 @@ public class Epub3DublinCoreMetadataElement
         this.language = language;
     }
 
-    public List<MetadataProperty> getRefinements()
+    public List<MetadataPropertyValue> getRefinements()
     {
         return refinements;
     }

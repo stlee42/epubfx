@@ -1,33 +1,60 @@
 package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 /**
- * @author Michail Jungierek, CGI
+ * User: mjungierek
+ * Date: 28.09.2017
+ * Time: 00:07
  */
-public enum MetadataProperty
+public class MetadataProperty
 {
-    alternate_script("alternate-script"),
-    display_seq("display-seq"),
-    file_as("file-as"),
-    group_position("group-position"),
-    identifier_type("identifier-type"),
-    meta_auth("meta-auth"),
-    role
-    ;
+    /*
+    <meta property="dcterms:modified">2013-10-26T17:27:34Z</meta>
+    <meta refines="#creator1" scheme="marc:relators" property="role">aut</meta>
+   <meta refines="#creator1" property="file-as">Kisselbach, Hans-Günter</meta>      */
 
-    private String sepcificationName;
-    MetadataProperty()
+    private String property;
+    private String refines;
+    private String scheme;
+
+    private String value;
+
+    public String getProperty()
     {
-        this.sepcificationName = this.name();
+        return property;
     }
 
-    MetadataProperty(String name)
+    public void setProperty(String qName)
     {
-        this.sepcificationName = name;
+        this.property = qName;
     }
 
-    public String getSepcificationName()
+    public String getValue()
     {
-        return sepcificationName;
+        return value;
     }
 
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
+
+    public String getRefines()
+    {
+        return refines;
+    }
+
+    public void setRefines(String refines)
+    {
+        this.refines = refines;
+    }
+
+    public String getScheme()
+    {
+        return scheme;
+    }
+
+    public void setScheme(String scheme)
+    {
+        this.scheme = scheme;
+    }
 }

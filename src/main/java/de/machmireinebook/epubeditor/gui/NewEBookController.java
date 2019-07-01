@@ -28,9 +28,9 @@ import org.apache.log4j.Logger;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
-import de.machmireinebook.epubeditor.epublib.domain.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.RenditionLayout;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.RenditionLayout;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
@@ -149,7 +149,7 @@ public class NewEBookController implements StandardController
                     {
                         cover = book.getCoverImage().asNativeFormat();
                     }
-                    Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
+                    Metadata metadata = (Metadata) book.getMetadata();
                     List<String> descriptions = metadata.getDescriptions();
                     String description = "";
                     if (descriptions.size() > 0)

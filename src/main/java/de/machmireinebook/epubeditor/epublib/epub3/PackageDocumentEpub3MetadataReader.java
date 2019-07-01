@@ -11,12 +11,11 @@ import org.apache.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 
-import de.machmireinebook.epubeditor.epublib.domain.Author;
-import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
@@ -33,9 +32,9 @@ public class PackageDocumentEpub3MetadataReader  extends PackageDocumentBase
 {
     private static final Logger logger = Logger.getLogger(PackageDocumentEpub3MetadataReader.class);
 
-    public static Metadata readMetadata(Element root)
+    public static de.machmireinebook.epubeditor.epublib.domain.Metadata readMetadata(Element root)
     {
-        Epub3Metadata result = new Epub3Metadata();
+        Metadata result = new Metadata();
         Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {

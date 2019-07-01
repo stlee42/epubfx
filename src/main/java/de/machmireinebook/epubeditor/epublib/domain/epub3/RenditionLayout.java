@@ -1,28 +1,27 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 /**
  * User: mjungierek
  * Date: 22.08.2014
  * Time: 19:10
  */
-public enum RenditionSpread
+public enum RenditionLayout
 {
-    LANDSCAPE("landscape"),
-    PORTRAIT("portrait"),
-    AUTO("auto");
+    REFLOWABLE("reflowable"),
+    PRE_PAGINATED("pre-paginated");
 
-    public static final String qName = "rendition:orientation";
+    public static final String qName = "rendition:layout";
     private String value;
 
-    RenditionSpread(String value)
+    RenditionLayout(String value)
     {
         this.value = value;
     }
 
-    public static RenditionSpread getByValue(String value)
+    public static RenditionLayout getByValue(String value)
     {
-        RenditionSpread result = null;
-        for (RenditionSpread fixedLayoutOrientation : values())
+        RenditionLayout result = null;
+        for (RenditionLayout fixedLayoutOrientation : values())
         {
             if (fixedLayoutOrientation.value.equals(value))
             {

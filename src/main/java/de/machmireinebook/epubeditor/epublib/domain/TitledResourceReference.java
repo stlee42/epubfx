@@ -3,10 +3,12 @@ package de.machmireinebook.epubeditor.epublib.domain;
 import java.io.Serializable;
 import java.nio.file.Path;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.ResourceReference;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class TitledResourceReference<T> extends ResourceReference<T> implements Serializable {
 

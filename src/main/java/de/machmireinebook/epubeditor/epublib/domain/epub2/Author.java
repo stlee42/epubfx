@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.epublib.domain.epub3;
+package de.machmireinebook.epubeditor.epublib.domain.epub2;
 
 import java.io.Serializable;
 import java.text.Normalizer;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @author paul
  *
  */
-public class Epub3Author extends Epub3DublinCoreMetadataElement implements Serializable
+public class Author extends DublinCoreMetadataElement implements Serializable
 {
 	
 	private static final long serialVersionUID = 6663408501416574200L;
@@ -23,8 +23,8 @@ public class Epub3Author extends Epub3DublinCoreMetadataElement implements Seria
     private String fileAs;
 	private Relator relator = Relator.AUTHOR;
 
-	public Epub3Author(String id, String scheme, String name, String language) {
-	    super(id, scheme, name, language);
+	public Author(String id, String scheme, String name, String language) {
+	    super(id, scheme, name);
 	    if (StringUtils.isEmpty(id)) {
 			setId(Normalizer.normalize(name, Normalizer.Form.NFD)
 					.replaceAll("[^\\p{ASCII}]", "")
@@ -51,10 +51,10 @@ public class Epub3Author extends Epub3DublinCoreMetadataElement implements Seria
 	}
 	
 	public boolean equals(Object authorObject) {
-		if(! (authorObject instanceof Epub3Author)) {
+		if(! (authorObject instanceof Author)) {
 			return false;
 		}
-		Epub3Author other = (Epub3Author) authorObject;
+		Author other = (Author) authorObject;
 		return StringUtils.equals(name, other.name) && StringUtils.equals(fileAs, other.fileAs);
 	}
 

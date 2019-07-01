@@ -14,7 +14,8 @@ import org.apache.log4j.Logger;
  * This way larger books can fit into memory and can be opened faster.
  * 
  */
-public class LazyResource extends Resource {
+public class LazyResource extends Resource
+{
 	
 		
 	/**

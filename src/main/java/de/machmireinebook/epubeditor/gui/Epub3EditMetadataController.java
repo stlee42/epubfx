@@ -23,13 +23,13 @@ import javafx.stage.Stage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.domain.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
 
 import jidefx.scene.control.searchable.TableViewSearchable;
@@ -322,7 +322,7 @@ public class Epub3EditMetadataController implements Initializable
 
     public void okButtonAction(ActionEvent actionEvent)
     {
-        Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
+        Metadata metadata = (Metadata) book.getMetadata();
         //auhtor
         Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
@@ -372,7 +372,7 @@ public class Epub3EditMetadataController implements Initializable
     public void setBook(Book book)
     {
         this.book = book;
-        Epub3Metadata metadata = (Epub3Metadata) book.getMetadata();
+        Metadata metadata = (Metadata) book.getMetadata();
         Author firstAuthor = metadata.getFirstAuthor();
         if (firstAuthor != null)
         {
