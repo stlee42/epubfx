@@ -22,7 +22,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 	private Relator relator = Relator.AUTHOR;
 
 	public Author(String id, String scheme, String name, String language) {
-	    super(id, scheme, name, language);
+	    super(id, scheme, name);
 	    if (StringUtils.isEmpty(id)) {
 			setId(Normalizer.normalize(name, Normalizer.Form.NFD)
 					.replaceAll("[^\\p{ASCII}]", "")
