@@ -5,11 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
@@ -20,6 +15,11 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -63,6 +63,14 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
                     writeMetaElement(refinement);
                     alreadyWrittenMetaProperty.add(refinement);
                 }
+            }
+            if (author.getFileAs() != null) {
+                writeMetaElement(author.getFileAs());
+                alreadyWrittenMetaProperty.add(author.getFileAs());
+            }
+            if (author.getRole() != null) {
+                writeMetaElement(author.getRole());
+                alreadyWrittenMetaProperty.add(author.getRole());
             }
         }
 
@@ -144,7 +152,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         if (alreadyWrittenMetaProperty.contains(value)) {
             return;
         }
-        Element metaElement = new Element("meta");
+        Element metaElement = new Element("meta", NAMESPACE_OPF);
         metaElement.setText(value.getValue());
         if (value.getProperty() != null)
         {
@@ -193,7 +201,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             {
                 dcElement.setAttribute(OPFAttributes.lang, value.getLanguage(), Namespace.XML_NAMESPACE);
             }
-
             metadataElement.addContent(dcElement);
         }
     }
@@ -212,6 +219,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         {
             dcElement.setAttribute(OPFAttributes.lang, dcMetadata.getLanguage(), Namespace.XML_NAMESPACE);
         }
+        metadataElement.addContent(dcElement);
     }
 
     /**
@@ -224,10 +232,9 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         Identifier bookIdIdentifier = metadata.getBookIdIdentifier();
         if (bookIdIdentifier == null)
         {
-            return;
+            bookIdIdentifier = new Identifier();
+            metadata.getIdentifiers().add(bookIdIdentifier);
         }
-
-        List<Identifier> identifiers = metadata.getEpub3Identifiers();
 
         Element identifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);
@@ -242,7 +249,8 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             }
         }
 
-        for (Identifier identifier : identifiers.subList(1, identifiers.size()))
+        List<Identifier> identifiers = metadata.getEpub3Identifiers();
+        for (Identifier identifier : identifiers)
         {
             if (identifier == bookIdIdentifier)
             {

@@ -11,19 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
@@ -34,6 +28,13 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigationDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -180,7 +181,9 @@ public class PackageDocumentReader extends PackageDocumentBase
             {
                 resource.setMediaType(mediaType);
             }
-            
+            String properties = itemElement.getAttributeValue(OPFAttributes.properties);
+            resource.setProperties(properties);
+
             result.add(resource);
             if (resource.getMediaType() == MediaType.CSS)
             {
@@ -516,7 +519,7 @@ public class PackageDocumentReader extends PackageDocumentBase
             List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
             for (Element itemElement : itemElements)
             {
-                if (Epub3ManifestPropertiesValues.cover_image.equals(itemElement.getAttributeValue(OPFAttributes.properties)))
+                if (ManifestItemProperties.cover_image.getName().equals(itemElement.getAttributeValue(OPFAttributes.properties)))
                 {
                     String coverHref = itemElement.getAttributeValue(OPFAttributes.href);
                     Resource resource = book.getResources().getByHref(coverHref);

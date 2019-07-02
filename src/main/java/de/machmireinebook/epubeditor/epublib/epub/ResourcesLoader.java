@@ -21,11 +21,6 @@ public class ResourcesLoader {
 	 * 
 	 * Loads the contents of all ZipEntries into memory.
 	 * Is fast, but may lead to memory problems when reading large books on devices with small amounts of memory.
-	 * 
-	 * @param in
-	 * @param defaultHtmlEncoding
-	 * @return
-	 * @throws java.io.IOException
 	 */
 	public static Resources loadResources(ZipInputStream in, String defaultHtmlEncoding) throws IOException {
 		Resources result = new Resources();

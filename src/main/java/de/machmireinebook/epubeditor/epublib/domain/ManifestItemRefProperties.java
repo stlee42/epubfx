@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.epublib.domain.epub2;
+package de.machmireinebook.epubeditor.epublib.domain;
 
 public enum ManifestItemRefProperties implements ManifestProperties {
 	PAGE_SPREAD_LEFT("page-spread-left"),
@@ -6,7 +6,7 @@ public enum ManifestItemRefProperties implements ManifestProperties {
 	
 	private String name;
 	
-	private ManifestItemRefProperties(String name) {
+	ManifestItemRefProperties(String name) {
 		this.name = name;
 	}
 	

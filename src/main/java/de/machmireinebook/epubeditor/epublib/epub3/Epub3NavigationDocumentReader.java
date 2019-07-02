@@ -6,12 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -20,9 +14,16 @@ import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -43,7 +44,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
 
         for (Element element : manifestElements)
         {
-            if (EPUB3_NAV_DOCUMENT_TAG_VALUE.equals(element.getAttributeValue("properties")))
+            if (ManifestItemProperties.nav.getName().equals(element.getAttributeValue("properties")))
             {
                 String href = element.getAttributeValue("href");
                 String id = element.getAttributeValue("id");
@@ -65,6 +66,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
                     continue;
                 }
                 resource.setId(id);
+                resource.setProperties(ManifestItemProperties.nav.getName());
                 MediaType mediaType = MediaType.getByName(mediaTypeName);
                 if (mediaType != null)
                 {

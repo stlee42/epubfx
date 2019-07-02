@@ -64,7 +64,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 			getRefinements().remove(role);
 		}
 		MetadataProperty roleMetadataProperty = new MetadataProperty();
-		roleMetadataProperty.setProperty(MetadataPropertyValue.role.getSpecificationName());
+		roleMetadataProperty.setProperty(MetadataPropertyValue.role.getName());
 		roleMetadataProperty.setScheme("marc:relators");
 		roleMetadataProperty.setRefines("#" + getId());
 		roleMetadataProperty.setValue(relator.getCode());
@@ -98,7 +98,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 			getRefinements().remove(this.fileAs);
 		}
 		MetadataProperty fileAsMetadataProperty = new MetadataProperty();
-		fileAsMetadataProperty.setProperty(MetadataPropertyValue.file_as.getSpecificationName());
+		fileAsMetadataProperty.setProperty(MetadataPropertyValue.file_as.getName());
 		fileAsMetadataProperty.setRefines("#" + getId());
 		fileAsMetadataProperty.setValue(fileAs);
 		getRefinements().add(fileAsMetadataProperty);

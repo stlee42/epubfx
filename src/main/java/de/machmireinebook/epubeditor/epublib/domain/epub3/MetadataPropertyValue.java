@@ -15,20 +15,20 @@ public enum MetadataPropertyValue
     dcterms_modified("dcterms:modified"),
     ;
 
-    private String sepcificationName;
+    private String name;
     MetadataPropertyValue()
     {
-        this.sepcificationName = this.name();
+        this.name = this.name();
     }
 
     MetadataPropertyValue(String name)
     {
-        this.sepcificationName = name;
+        this.name = name;
     }
 
-    public String getSpecificationName()
+    public String getName()
     {
-        return sepcificationName;
+        return name;
     }
 
 }

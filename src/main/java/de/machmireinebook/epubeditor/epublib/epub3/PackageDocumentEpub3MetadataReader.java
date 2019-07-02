@@ -5,12 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Element;
-import org.jdom2.Namespace;
-
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
@@ -21,6 +15,12 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Element;
+import org.jdom2.Namespace;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -64,7 +64,15 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
         result.setPublicationDate(readPublicationDate());
         result.setLanguages(readLanguages());
 
-        result.setEpub3MetaProperties(readEpub3MetaProperties());
+        List<MetadataProperty> metadataProperties = readEpub3MetaProperties();
+        //searching for modification date
+        metadataProperties.stream()
+                .filter(metadataProperty -> MetadataPropertyValue.dcterms_modified.getName().equals(metadataProperty.getProperty()))
+                .findFirst()
+                .ifPresent(metadataProperty -> {
+                    result.setModificationDate(metadataProperty);
+                    metadataProperties.remove(metadataProperty);});
+        result.setEpub3MetaProperties(metadataProperties);
         result.setEpub2MetaAttributes(readEpub2MetaProperties());
 
         return result;
@@ -105,11 +113,11 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
                     if (dcElement != null) {
                         if (dcElement instanceof Author) {
                             Author author = (Author) dcElement;
-                            if (property.equals(MetadataPropertyValue.role.getSpecificationName())) {
+                            if (property.equals(MetadataPropertyValue.role.getName())) {
                                 author.setRole(otherMetadataElement);
                                 putInList = false;
                             }
-                            else if (property.equals(MetadataPropertyValue.file_as.getSpecificationName())) {
+                            else if (property.equals(MetadataPropertyValue.file_as.getName())) {
                                 author.setFileAs(otherMetadataElement);
                                 putInList = false;
                             }

@@ -59,22 +59,4 @@ public class PackageDocumentBase
         String no = "no";
         String generator = "generator";
     }
-
-    protected interface Epub3ManifestPropertiesValues
-    {
-        String cover_image = "cover-image";
-        String mathml = "mathml";
-        String scripted = "scripted";
-        String svg = "svg";
-        String remote_resources = "remote-resources";
-        String non_epub_xml = "switch";
-        String nav = "nav";
-    }
-
-    protected interface Epub3NavTypes
-    {
-        String toc = "toc";
-        String page_list = "page-list";
-        String landmarks = "landmarks";
-    }
 }

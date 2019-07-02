@@ -23,8 +23,6 @@ public interface Constants {
 	Namespace NAMESPACE_EPUB = Namespace.getNamespace("epub", "http://www.idpf.org/2007/ops");
 	String dateFormat = "yyyy-MM-dd";
 
-	String EPUB3_NAV_DOCUMENT_TAG_VALUE = "nav";
-
 	String CLASS_SIGIL_NOT_IN_TOC = "sigil_not_in_toc";
 	String IGNORE_IN_TOC = "ignore-in-toc";
 }

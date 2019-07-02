@@ -6,14 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
@@ -24,6 +16,14 @@ import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataWriter;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -108,11 +108,6 @@ public class PackageDocumentWriter extends PackageDocumentBase
 
     /**
      * Writes the package's spine.
-     *
-     * @param book
-     * @param root
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     private static void writeSpine(Book book, Element root)
     {
@@ -159,11 +154,6 @@ public class PackageDocumentWriter extends PackageDocumentBase
 
     /**
      * Writes a resources as an item element
-     *
-     * @param resource
-     * @param serializer
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     private static void writeItem(Book book, Resource resource, Element manifestElement)
     {
@@ -189,18 +179,18 @@ public class PackageDocumentWriter extends PackageDocumentBase
             return;
         }
 
-        Element ncxItemElement = new Element(OPFTags.item, NAMESPACE_OPF.getURI());
-        ncxItemElement.setAttribute(OPFAttributes.id, resource.getId());
-        ncxItemElement.setAttribute(OPFAttributes.href, resource.getHref());
-        ncxItemElement.setAttribute(OPFAttributes.media_type, resource.getMediaType().getName());
-        manifestElement.addContent(ncxItemElement);
+        Element manifestItemElement = new Element(OPFTags.item, NAMESPACE_OPF.getURI());
+        manifestItemElement.setAttribute(OPFAttributes.id, resource.getId());
+        manifestItemElement.setAttribute(OPFAttributes.href, resource.getHref());
+        manifestItemElement.setAttribute(OPFAttributes.media_type, resource.getMediaType().getName());
+        if (StringUtils.isNotEmpty(resource.getProperties())) {
+            manifestItemElement.setAttribute(OPFAttributes.properties, resource.getProperties());
+        }
+        manifestElement.addContent(manifestItemElement);
     }
 
     /**
      * List all spine references
-     *
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     private static void writeSpineItems(Spine spine, Element spineElement)
     {
