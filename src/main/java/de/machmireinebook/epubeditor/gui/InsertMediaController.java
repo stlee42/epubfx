@@ -93,7 +93,7 @@ public class InsertMediaController implements Initializable, StandardController
     @Inject
     private EditorTabManager editorManager;
     @Inject
-    private EpubEditorMainController mainController;
+    private MainController mainController;
 
     private static InsertMediaController instance;
 

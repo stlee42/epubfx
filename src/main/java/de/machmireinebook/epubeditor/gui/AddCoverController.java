@@ -53,7 +53,7 @@ public class AddCoverController implements Initializable
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
-    private EpubEditorMainController mainController;
+    private MainController mainController;
     @Inject
     private EditorTabManager editorTabManager;
 

@@ -146,10 +146,10 @@ public class Epub3EditMetadataController implements Initializable
         MODIFICATION_DATE(DublinCoreTag.date, "Date: Modification", "modification"),
         PUBLICATION_DATE(DublinCoreTag.date, "Date: Publication", "publication"),
         DESCRIPTION(DublinCoreTag.description, "Description", null),
-        CUSTOM_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier (custom)", "customidentifier"),
-        DOI_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: DOI", "DOI"),
-        ISBN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISBN", "ISBN"),
-        ISSN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISSN", "ISSN"),
+        CUSTOM_IDENTIFIER(DublinCoreTag.description, "Identifier (custom)", "customidentifier"),
+        DOI_IDENTIFIER(DublinCoreTag.description, "Identifier: DOI", "DOI"),
+        ISBN_IDENTIFIER(DublinCoreTag.description, "Identifier: ISBN", "ISBN"),
+        ISSN_IDENTIFIER(DublinCoreTag.description, "Identifier: ISSN", "ISSN"),
         LANGUAGE(DublinCoreTag.language, "Language", null),
         PUBLISHER(DublinCoreTag.publisher, "Publisher", null),
         RELATION(DublinCoreTag.relation, "Relation", null),
@@ -191,10 +191,11 @@ public class Epub3EditMetadataController implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        logger.info("initialize");
         new TableViewSearchable<>(otherContributorsTableView);
         otherContributorsTableView.setEditable(true);
         TableColumn<Author, String> tc = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(0);
-        tc.setCellValueFactory(new PropertyValueFactory<>("relator"));
+        tc.setCellValueFactory(new PropertyValueFactory<>("role"));
 
         TableColumn<Author, String> tc2 = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(1);
         tc2.setCellValueFactory(new PropertyValueFactory<>("name"));

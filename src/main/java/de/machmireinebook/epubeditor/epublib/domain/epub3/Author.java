@@ -72,9 +72,19 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 		role = roleMetadataProperty;
 	}
 
+	public void setRole(MetadataProperty role)
+	{
+		this.role = role;
+	}
+
 	public MetadataProperty getRole()
 	{
 		return role;
+	}
+
+	public void setFileAs(MetadataProperty fileAs)
+	{
+		this.fileAs = fileAs;
 	}
 
 	public MetadataProperty getFileAs()

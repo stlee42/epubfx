@@ -82,9 +82,9 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
  * Time: 19:09
  */
 @Singleton
-public class EpubEditorMainController implements Initializable
+public class MainController implements Initializable
 {
-    private static final Logger logger = Logger.getLogger(EpubEditorMainController.class);
+    private static final Logger logger = Logger.getLogger(MainController.class);
     @FXML
     private SplitPane mainDivider;
     @FXML
@@ -771,7 +771,7 @@ public class EpubEditorMainController implements Initializable
         Stage addCoverStage = new Stage(StageStyle.UTILITY);
         try
         {
-            FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/add_cover.fxml"), null, new JavaFXBuilderFactory(),
+            FXMLLoader loader = new FXMLLoader(MainController.class.getResource("/add_cover.fxml"), null, new JavaFXBuilderFactory(),
                     type -> BeanFactory.getInstance().getBean(type));
             Pane root = loader.load();
 
@@ -801,7 +801,7 @@ public class EpubEditorMainController implements Initializable
             Pane root;
             if (currentBookProperty.getValue().isEpub3())
             {
-                FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/metadata_editor_epub3.fxml"), null, new JavaFXBuilderFactory(),
+                FXMLLoader loader = new FXMLLoader(MainController.class.getResource("/metadata_editor_epub3.fxml"), null, new JavaFXBuilderFactory(),
                         type -> BeanFactory.getInstance().getBean(type));
                 root = loader.load();
 
@@ -811,7 +811,7 @@ public class EpubEditorMainController implements Initializable
             }
             else
             {
-                FXMLLoader loader = new FXMLLoader(EpubEditorMainController.class.getResource("/metadata_editor.fxml"), null, new JavaFXBuilderFactory(),
+                FXMLLoader loader = new FXMLLoader(MainController.class.getResource("/metadata_editor.fxml"), null, new JavaFXBuilderFactory(),
                         type -> BeanFactory.getInstance().getBean(type));
                 root = loader.load();
 

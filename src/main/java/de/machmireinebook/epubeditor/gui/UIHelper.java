@@ -2,11 +2,6 @@ package de.machmireinebook.epubeditor.gui;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.BeanFactory;
-
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Scene;
@@ -14,7 +9,11 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 
 /**
  * User: mjungierek
@@ -24,9 +23,6 @@ import org.apache.log4j.Logger;
 public class UIHelper
 {
     private static final Logger logger = Logger.getLogger(UIHelper.class);
-
-    @Inject
-    private EpubEditorConfiguration configuration;
 
     public Stage createChooserWindow()
     {
@@ -42,6 +38,7 @@ public class UIHelper
             chooserWindowController.setChooserWindow(chooserWindowStage);
 
             chooserWindowStage.setScene(scene);
+            EpubEditorConfiguration configuration =  BeanFactory.getInstance().getBean(EpubEditorConfiguration.class);
             chooserWindowStage.initOwner(configuration.getMainWindow());
             chooserWindowStage.initModality(Modality.APPLICATION_MODAL);
             chooserWindowStage.setTitle("Auswahl");

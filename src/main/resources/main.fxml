@@ -26,7 +26,7 @@
 <?import com.pixelduke.control.ribbon.RibbonItem?>
 <?import com.pixelduke.control.ribbon.RibbonTab?>
 <?import de.machmireinebook.epubeditor.javafx.StashableSplitPane?>
-<AnchorPane prefHeight="812.0" prefWidth="1324.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.EpubEditorMainController">
+<AnchorPane prefHeight="812.0" prefWidth="1324.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.MainController">
     <children>
         <!--MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <menus>

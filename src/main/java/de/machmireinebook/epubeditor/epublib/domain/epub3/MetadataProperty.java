@@ -12,9 +12,11 @@ public class MetadataProperty
     <meta refines="#creator1" scheme="marc:relators" property="role">aut</meta>
    <meta refines="#creator1" property="file-as">Kisselbach, Hans-Günter</meta>      */
 
+    private String id;
     private String property;
     private String refines;
     private String scheme;
+    private String language;
 
     private String value;
 
@@ -56,5 +58,25 @@ public class MetadataProperty
     public void setScheme(String scheme)
     {
         this.scheme = scheme;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    public String getLanguage()
+    {
+        return language;
+    }
+
+    public void setLanguage(String language)
+    {
+        this.language = language;
     }
 }

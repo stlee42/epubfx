@@ -38,7 +38,7 @@ import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.preferences.StageSizer;
 import de.machmireinebook.epubeditor.clips.Clip;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.ClipManager;
@@ -106,7 +106,7 @@ public class EpubEditorConfiguration
 
     public void readConfiguration()
     {
-        EpubEditorMainController epubEditorMainController =  BeanFactory.getInstance().getBean(EpubEditorMainController.class);
+        MainController epubEditorMainController =  BeanFactory.getInstance().getBean(MainController.class);
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
         //saved configuration
         InputStream fis = EpubEditorConfiguration.class.getResourceAsStream("/application.xml");
@@ -330,7 +330,7 @@ public class EpubEditorConfiguration
 
     public void saveConfiguration()
     {
-        EpubEditorMainController epubEditorMainController =  BeanFactory.getInstance().getBean(EpubEditorMainController.class);
+        MainController epubEditorMainController =  BeanFactory.getInstance().getBean(MainController.class);
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
 
         double width = stageSizer.getWidth().doubleValue();

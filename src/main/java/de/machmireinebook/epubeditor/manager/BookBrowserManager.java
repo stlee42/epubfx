@@ -65,7 +65,7 @@ import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AddStylesheetController;
-import de.machmireinebook.epubeditor.gui.EpubEditorMainController;
+import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 
@@ -92,7 +92,7 @@ public class BookBrowserManager
     private TreeItem<Resource> opfItem;
 
     @Inject
-    private Provider<EpubEditorMainController> mainControllerProvider;
+    private Provider<MainController> mainControllerProvider;
 
     @Inject
     private EpubEditorConfiguration configuration;
