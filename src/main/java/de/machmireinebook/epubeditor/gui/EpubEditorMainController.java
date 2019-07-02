@@ -282,12 +282,12 @@ public class EpubEditorMainController implements Initializable
                 if (newValue.getVersion() != null)
                 {
                     stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - EPUB " + newValue.getVersion().getVersion() + " - EpubFX");
+                            + " - EPUB " + newValue.getVersion().getVersion() + " - Scripto");
                 }
                 else
                 {
                     stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - EpubFX");
+                            + " - Scripto");
                 }
             }
 

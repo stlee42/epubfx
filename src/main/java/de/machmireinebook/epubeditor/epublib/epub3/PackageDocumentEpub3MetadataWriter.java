@@ -1,5 +1,6 @@
 package de.machmireinebook.epubeditor.epublib.epub3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -8,13 +9,14 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
@@ -24,11 +26,14 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
     private Book book;
     private Element metadataElement;
 
+    private List<MetadataProperty> alreadyWrittenMetaProperty = new ArrayList<>();
+
     public PackageDocumentEpub3MetadataWriter(Book book, Element root) {
         metadataElement = new Element(OPFTags.metadata, NAMESPACE_OPF);
         metadataElement.addNamespaceDeclaration(NAMESPACE_OPF_WITH_PREFIX);
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
         root.addContent(metadataElement);
+        this.book = book;
     }
     /**
      * Writes the book's metadata.
@@ -38,55 +43,58 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         //https://www.oreilly.com/library/view/epub-3-best/9781449329129/ch01.html
         Metadata metadata = (Metadata) book.getMetadata();
         writeIdentifiers(metadata);
-        writeMetaElements(metadata.getEpub3MetaProperties());
-        writeDublinCoreMetadataElements(DCTag.title.getName(), metadata.getTitles());
-        writeSimpleMetadataElements(DCTag.subject.getName(), metadata.getSubjects());
-        writeSimpleMetadataElements(DCTag.description.getName(), metadata.getDescriptions());
-        writeSimpleMetadataElements(DCTag.publisher.getName(), metadata.getPublishers());
-        writeSimpleMetadataElements(DCTag.type.getName(), metadata.getTypes());
-        writeSimpleMetadataElements(DCTag.rights.getName(), metadata.getRights());
-        writeSimpleMetadataElements(DCTag.coverage.getName(), metadata.getCoverages());
+        writeDublinCoreMetadataElements(DublinCoreTag.title.getName(), metadata.getTitles());
+        writeSimpleMetadataElements(DublinCoreTag.subject.getName(), metadata.getSubjects());
+        writeSimpleMetadataElements(DublinCoreTag.description.getName(), metadata.getDescriptions());
+        writeSimpleMetadataElements(DublinCoreTag.publisher.getName(), metadata.getPublishers());
+        writeSimpleMetadataElements(DublinCoreTag.type.getName(), metadata.getTypes());
+        writeSimpleMetadataElements(DublinCoreTag.rights.getName(), metadata.getRights());
+        writeSimpleMetadataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages());
 
         // write authors
         for (Author author : metadata.getAuthors())
         {
-            Element creatorElement = writeDublinCoreMetadataElement(DCTag.creator.getName(), author);
-            creatorElement.setAttribute(OPFAttributes.role, author.getRelator().getCode(), NAMESPACE_OPF_WITH_PREFIX);
-            if (StringUtils.isNotEmpty(author.getFileAs()))
-            {
-                creatorElement.setAttribute(OPFAttributes.id, author.getId());
-                writeMetaElement(MetadataProperty.file_as.getSepcificationName(), "#" + author.getId(), author.getScheme(), author.getFileAs());
-            }
+            Element creatorElement = writeDublinCoreMetadataElement(DublinCoreTag.creator.getName(), author);
             creatorElement.setText(author.getName());
             metadataElement.addContent(creatorElement);
+
+            if(!author.getRefinements().isEmpty()) {
+                for (MetadataProperty refinement : author.getRefinements())
+                {
+                    writeMetaElement(refinement);
+                    alreadyWrittenMetaProperty.add(refinement);
+                }
+            }
         }
 
         // write contributors
         for (Author contributor : metadata.getContributors())
         {
-            Element contributorElement = writeDublinCoreMetadataElement(DCTag.contributor.getName(), contributor);
-            contributorElement.setAttribute(OPFAttributes.role, contributor.getRelator().getCode(), NAMESPACE_OPF_WITH_PREFIX);
-            if (StringUtils.isNotEmpty(contributor.getFileAs()))
-            {
-                contributorElement.setAttribute(OPFAttributes.id, contributor.getId());
-                writeMetaElement(MetadataProperty.file_as.getSepcificationName(), "#" + contributor.getId(), contributor.getScheme(), contributor.getFileAs());
-            }
+            Element contributorElement = writeDublinCoreMetadataElement(DublinCoreTag.contributor.getName(), contributor);
             contributorElement.setText(contributor.getName());
             metadataElement.addContent(contributorElement);
+
+            if(!contributor.getRefinements().isEmpty()) {
+                for (MetadataProperty refinement : contributor.getRefinements())
+                {
+                    writeMetaElement(refinement);
+                    alreadyWrittenMetaProperty.add(refinement);
+                }
+            }
         }
 
         // write dates
-        for (MetadataDate date : metadata.getDates())
-        {
-            Element dateElement = new Element(DCTag.date.getName(), NAMESPACE_DUBLIN_CORE);
-            if (date.getEvent() != null)
-            {
-                dateElement.setAttribute(OPFAttributes.event, date.getEvent().toString(), NAMESPACE_OPF_WITH_PREFIX);
-            }
+        MetadataDate date = metadata.getPublicationDate();
+        Element dateElement = new Element(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
+        dateElement.setText(date.getValue());
+        metadataElement.addContent(dateElement);
 
-            dateElement.setText(date.getValue());
-            metadataElement.addContent(dateElement);
-        }
+        MetadataProperty modificationDate = metadata.getModificationDate();
+        writeMetaElement(modificationDate);
+
+        //source
+        DublinCoreMetadataElement source = metadata.getSource();
+        writeDublinCoreMetadataElement(DublinCoreTag.source.getName(), source);
 
         // write language
         if (StringUtils.isNotBlank(metadata.getLanguage()))
@@ -110,11 +118,14 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         generatorElement.setAttribute(OPFAttributes.name, OPFValues.generator);
         generatorElement.setAttribute(OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
         metadataElement.addContent(generatorElement);
+
+        writeMetaElements(metadata.getEpub3MetaProperties());
+
     }
 
-    private void writeMetaElements(List<Epub3MetadataProperty> values)
+    private void writeMetaElements(List<MetadataProperty> values)
     {
-        for (Epub3MetadataProperty value : values)
+        for (MetadataProperty value : values)
         {
             if (StringUtils.isBlank(value.getValue()))
             {
@@ -124,8 +135,11 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         }
     }
 
-    private void writeMetaElement(Epub3MetadataProperty value)
+    private void writeMetaElement(MetadataProperty value)
     {
+        if (alreadyWrittenMetaProperty.contains(value)) {
+            return;
+        }
         Element metaElement = new Element("meta");
         metaElement.setText(value.getValue());
         if (value.getProperty() != null)
@@ -139,25 +153,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         if (StringUtils.isNotEmpty(value.getRefines()))
         {
             metaElement.setAttribute(OPFAttributes.scheme, value.getScheme());
-        }
-        metadataElement.addContent(metaElement);
-    }
-
-    private void writeMetaElement(String property, String refines, String scheme, String text)
-    {
-        Element metaElement = new Element("meta");
-        metaElement.setText(text);
-        if (property != null)
-        {
-            metaElement.setAttribute(OPFAttributes.property, property);
-        }
-        if (StringUtils.isNotEmpty(refines))
-        {
-            metaElement.setAttribute(OPFAttributes.refines, refines);
-        }
-        if (StringUtils.isNotEmpty(scheme))
-        {
-            metaElement.setAttribute(OPFAttributes.scheme, scheme);
         }
         metadataElement.addContent(metaElement);
     }
@@ -186,10 +181,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             }
             Element dcElement = new Element(tagName, NAMESPACE_DUBLIN_CORE);
             dcElement.setText(value.getValue());
-            if (StringUtils.isNotEmpty(value.getScheme()))
-            {
-                dcElement.setAttribute(OPFAttributes.scheme, value.getScheme());
-            }
             if (StringUtils.isNotEmpty(value.getId()))
             {
                 dcElement.setAttribute(OPFAttributes.id, value.getId());
@@ -206,10 +197,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
     private Element writeDublinCoreMetadataElement(String tagName, DublinCoreMetadataElement dcMetadata) {
         Element dcElement = new Element(tagName, NAMESPACE_DUBLIN_CORE);
         dcElement.setText(dcMetadata.getValue());
-        if (StringUtils.isNotEmpty(dcMetadata.getScheme()))
-        {
-            dcElement.setAttribute(OPFAttributes.scheme, dcMetadata.getScheme());
-        }
         if (StringUtils.isNotEmpty(dcMetadata.getId()))
         {
             dcElement.setAttribute(OPFAttributes.id, dcMetadata.getId());
@@ -235,16 +222,20 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             return;
         }
 
-        List<Identifier> identifiers = metadata.getIdentifiers();
+        List<Identifier> identifiers = metadata.getEpub3Identifiers();
 
-        Element identifierElement = new Element(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
+        Element identifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);
-        if (bookIdIdentifier.getScheme() != null)
-        {
-            identifierElement.setAttribute(OPFAttributes.scheme, bookIdIdentifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
-        }
         identifierElement.setText(bookIdIdentifier.getValue());
         metadataElement.addContent(identifierElement);
+
+        if(!bookIdIdentifier.getRefinements().isEmpty()) {
+            for (MetadataProperty refinement : bookIdIdentifier.getRefinements())
+            {
+                writeMetaElement(refinement);
+                alreadyWrittenMetaProperty.add(refinement);
+            }
+        }
 
         for (Identifier identifier : identifiers.subList(1, identifiers.size()))
         {
@@ -252,10 +243,17 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             {
                 continue;
             }
-            Element otherIdentifierElement = new Element(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
-            otherIdentifierElement.setAttribute(OPFAttributes.scheme, identifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
+            Element otherIdentifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
             otherIdentifierElement.setText(identifier.getValue());
             metadataElement.addContent(otherIdentifierElement);
+
+            if(!identifier.getRefinements().isEmpty()) {
+                for (MetadataProperty refinement : identifier.getRefinements())
+                {
+                    writeMetaElement(refinement);
+                    alreadyWrittenMetaProperty.add(refinement);
+                }
+            }
         }
     }
 }

@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -23,16 +30,10 @@ import de.machmireinebook.epubeditor.epublib.domain.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3NavigationDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.PackageDocumentEpub3MetadataReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -73,7 +74,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         // Books sometimes use non-identifier ids. We map these here to legal ones
         Map<String, String> idMapping = new HashMap<>();
 
-        Resources bookResources = readManifest(root, book, resources, idMapping);
+        Resources bookResources = readManifest(root, resources, idMapping);
         book.setResources(bookResources);
         if (!book.isEpub3())
         {
@@ -83,7 +84,9 @@ public class PackageDocumentReader extends PackageDocumentBase
         else
         {
             readCoverImage(root, book);
-            book.setMetadata(PackageDocumentEpub3MetadataReader.readMetadata(root));
+            PackageDocumentEpub3MetadataReader reader = new PackageDocumentEpub3MetadataReader();
+            Metadata metadata = reader.readMetadata(root);
+            book.setMetadata(metadata);
         }
         book.setSpine(readSpine(root, book, idMapping));
     }
@@ -110,7 +113,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         // Books sometimes use non-identifier ids. We map these here to legal ones
         Map<String, String> idMapping = new HashMap<>();
 
-        Resources resources = readManifest(root, book, book.getResources(), idMapping);
+        Resources resources = readManifest(root, book.getResources(), idMapping);
         book.setResources(resources);
         if (!book.isEpub3())
         {
@@ -120,7 +123,9 @@ public class PackageDocumentReader extends PackageDocumentBase
         else
         {
             readCoverImage(root, book);
-            book.setMetadata(PackageDocumentEpub3MetadataReader.readMetadata(root));
+            PackageDocumentEpub3MetadataReader reader = new PackageDocumentEpub3MetadataReader();
+            Metadata metadata = reader.readMetadata(root);
+            book.setMetadata(metadata);
         }
         book.setSpine(readSpine(root, book, idMapping));
     }
@@ -137,15 +142,10 @@ public class PackageDocumentReader extends PackageDocumentBase
 
     /**
      * Reads the manifest containing the resource ids, hrefs and mediatypes.
-     *
-     * @param packageDocument
-     * @param packageHref
-     * @param epubReader
-     * @param book
-     * @param resourcesByHref
+
      * @return a Map with resources, with their id's as key.
      */
-    private static Resources readManifest(Element root, Book book, Resources resources, Map<String, String> idMapping)
+    private static Resources readManifest(Element root, Resources resources, Map<String, String> idMapping)
     {
         Element manifestElement = root.getChild(OPFTags.manifest, NAMESPACE_OPF);
         Resources result = new Resources();
@@ -203,11 +203,6 @@ public class PackageDocumentReader extends PackageDocumentBase
     /**
      * Reads the book's guide.
      * Here some more attempts are made at finding the cover page.
-     *
-     * @param packageDocument
-     * @param epubReader
-     * @param book
-     * @param resources
      */
     private static void readGuide(Element root, Book book, Resources resources)
     {
@@ -250,12 +245,9 @@ public class PackageDocumentReader extends PackageDocumentBase
      * Example:
      * If the packageHref is "OEBPS/content.opf" then a resource href like "OEBPS/foo/bar.html" will be turned into "foo/bar.html"
      *
-     * @param packageHref
-     * @param resourcesByHref
      * @return The stipped package href
      */
-    private static Resources fixHrefs(String packageHref,
-                                      Resources resourcesByHref)
+    private static Resources fixHrefs(String packageHref, Resources resourcesByHref)
     {
         int lastSlashPos = packageHref.lastIndexOf('/');
         if (lastSlashPos < 0)
@@ -288,10 +280,6 @@ public class PackageDocumentReader extends PackageDocumentBase
     /**
      * Reads the document's spine, containing all sections in reading order.
      *
-     * @param packageDocument
-     * @param epubReader
-     * @param book
-     * @param resourcesById
      * @return the document's spine, containing all sections in reading order.
      */
     private static Spine readSpine(Element root, Book book, Map<String, String> idMapping)
@@ -349,7 +337,6 @@ public class PackageDocumentReader extends PackageDocumentBase
      * Creates a spine out of all resources in the resources.
      * The generated spine consists of all XHTML pages in order of their href.
      *
-     * @param resources
      * @return a spine created out of all resources in the resources.
      */
     private static Spine generateSpineFromResources(Resources resources)
@@ -379,8 +366,6 @@ public class PackageDocumentReader extends PackageDocumentBase
      * Here we try several ways of finding this table of contents resource.
      * We try the given attribute value, some often-used ones and finally look through all resources for the first resource with the table of contents mimetype.
      *
-     * @param spineElement
-     * @param resourcesById
      * @return the Resource containing the table of contents
      */
     private static Resource findTableOfContentsResource(Element spineElement, Resources resources)
@@ -425,11 +410,10 @@ public class PackageDocumentReader extends PackageDocumentBase
      * Find all resources that have something to do with the coverpage and the cover image.
      * Search the meta tags and the guide references
      *
-     * @param packageDocument
      * @return all resources that have something to do with the coverpage and the cover image.
      */
     // package
-    static Set<String> findCoverHrefs(Element root)
+    private static Set<String> findCoverHrefs(Element root)
     {
 
         Set<String> result = new HashSet<>();
@@ -459,7 +443,6 @@ public class PackageDocumentReader extends PackageDocumentBase
                 List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
                 for (Element itemElement : itemElements)
                 {
-                    //noinspection ConstantConditions
                     if (coverResourceId.equals(itemElement.getAttributeValue(OPFAttributes.id)))
                     {
                         coverHref = itemElement.getAttributeValue(OPFAttributes.href);
@@ -484,7 +467,6 @@ public class PackageDocumentReader extends PackageDocumentBase
             List<Element> refElements = guideElement.getChildren(OPFTags.reference, NAMESPACE_OPF);
             for (Element refElement : refElements)
             {
-                //noinspection ConstantConditions
                 if (OPFValues.reference_cover.equals(refElement.getAttributeValue(OPFAttributes.type)))
                 {
                     coverHref = refElement.getAttributeValue(OPFAttributes.href);
@@ -502,8 +484,6 @@ public class PackageDocumentReader extends PackageDocumentBase
     /**
      * Finds the cover resource in the packageDocument and adds it to the book if found.
      * Keeps the cover resource in the resources map
-     *
-     * @param book
      */
     private static void readCover(Element root, Book book)
     {
@@ -536,7 +516,6 @@ public class PackageDocumentReader extends PackageDocumentBase
             List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
             for (Element itemElement : itemElements)
             {
-                //noinspection ConstantConditions
                 if (Epub3ManifestPropertiesValues.cover_image.equals(itemElement.getAttributeValue(OPFAttributes.properties)))
                 {
                     String coverHref = itemElement.getAttributeValue(OPFAttributes.href);

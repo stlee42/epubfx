@@ -2,16 +2,17 @@ package de.machmireinebook.epubeditor.epublib.epub;
 
 import java.util.List;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
-
 import org.apache.commons.lang.StringUtils;
 
 import org.jdom2.Element;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -35,20 +36,20 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
         root.addContent(metadataElement);
 
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Metadata metadata = (Metadata) book.getMetadata();
         writeIdentifiers(metadata, metadataElement);
-        writeSimpleMetdataElements(DCTag.title.getName(), metadata.getTitles(), metadataElement);
-        writeSimpleMetdataElements(DCTag.subject.getName(), metadata.getSubjects(), metadataElement);
-        writeSimpleMetdataElements(DCTag.description.getName(), metadata.getDescriptions(), metadataElement);
-        writeSimpleMetdataElements(DCTag.publisher.getName(), metadata.getPublishers(), metadataElement);
-        writeSimpleMetdataElements(DCTag.type.getName(), metadata.getTypes(), metadataElement);
-        writeSimpleMetdataElements(DCTag.rights.getName(), metadata.getRights(), metadataElement);
-        writeSimpleMetdataElements(DCTag.coverage.getName(), metadata.getCoverages(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.title.getName(), metadata.getTitles(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.subject.getName(), metadata.getSubjects(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.description.getName(), metadata.getDescriptions(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.publisher.getName(), metadata.getPublishers(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.type.getName(), metadata.getTypes(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.rights.getName(), metadata.getRights(), metadataElement);
+        writeSimpleMetdataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages(), metadataElement);
 
         // write authors
         for (Author author : metadata.getAuthors())
         {
-            Element creatorElement = new Element(DCTag.creator.getName(), NAMESPACE_DUBLIN_CORE);
+            Element creatorElement = new Element(DublinCoreTag.creator.getName(), NAMESPACE_DUBLIN_CORE);
             creatorElement.setAttribute(OPFAttributes.role, author.getRelator().getCode(), NAMESPACE_OPF_WITH_PREFIX);
             if (StringUtils.isNotEmpty(author.getFileAs()))
             {
@@ -61,7 +62,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         // write contributors
         for (Author author : metadata.getContributors())
         {
-            Element contributorElement = new Element(DCTag.contributor.getName(), NAMESPACE_DUBLIN_CORE);
+            Element contributorElement = new Element(DublinCoreTag.contributor.getName(), NAMESPACE_DUBLIN_CORE);
             contributorElement.setAttribute(OPFAttributes.role, author.getRelator().getCode(), NAMESPACE_OPF_WITH_PREFIX);
             if (StringUtils.isNotEmpty(author.getFileAs()))
             {
@@ -74,7 +75,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         // write dates
         for (MetadataDate date : metadata.getDates())
         {
-            Element dateElement = new Element(DCTag.date.getName(), NAMESPACE_DUBLIN_CORE);
+            Element dateElement = new Element(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
             if (date.getEvent() != null)
             {
                 dateElement.setAttribute(OPFAttributes.event, date.getEvent().toString(), NAMESPACE_OPF_WITH_PREFIX);
@@ -134,7 +135,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
      * @throws IllegalArgumentException
      * @
      */
-    private static void writeIdentifiers(Epub2Metadata metadata, Element metadataElement)
+    private static void writeIdentifiers(Metadata metadata, Element metadataElement)
     {
         Identifier bookIdIdentifier = metadata.getBookIdIdentifier();
         if (bookIdIdentifier == null)
@@ -142,9 +143,9 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
             return;
         }
 
-        List<Identifier> identifiers = metadata.getIdentifiers();
+        List<Identifier> identifiers = metadata.getEpub2Identifiers();
 
-        Element identifierElement = new Element(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
+        Element identifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);
         if (bookIdIdentifier.getScheme() != null)
         {
@@ -159,7 +160,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
             {
                 continue;
             }
-            Element otherIdentifierElement = new Element(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
+            Element otherIdentifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
             otherIdentifierElement.setAttribute(OPFAttributes.scheme, identifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
             otherIdentifierElement.setText(identifier.getValue());
             metadataElement.addContent(otherIdentifierElement);

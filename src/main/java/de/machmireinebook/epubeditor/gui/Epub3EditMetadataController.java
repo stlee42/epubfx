@@ -23,18 +23,17 @@ import javafx.stage.Stage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 
 import jidefx.scene.control.searchable.TableViewSearchable;
-
-import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
 
 /**
  * User: mjungierek
@@ -50,7 +49,7 @@ public class Epub3EditMetadataController implements Initializable
     @FXML
     private TableView<Author> otherContributorsTableView;
     @FXML
-    private TableView<MetadataElement> metadateTableView;
+    private TableView<MetadataListItem> metadateTableView;
     @FXML
     private ComboBox<Locale> languageComboBox;
     @FXML
@@ -62,20 +61,20 @@ public class Epub3EditMetadataController implements Initializable
     private Stage stage;
     private Book book;
 
-    public class MetadataElement
+    public class MetadataListItem
     {
         private String type;
         private String value;
-        private String subtype;
 
+        private String id;
         private String refines;
         private String scheme;
+        private String language;
 
-        public MetadataElement(String type, String value, String subtype)
+        public MetadataListItem(String type, String value)
         {
             this.type = type;
             this.value = value;
-            this.subtype = subtype;
         }
 
         public String getType()
@@ -118,51 +117,61 @@ public class Epub3EditMetadataController implements Initializable
             this.scheme = scheme;
         }
 
-        public String getSubtype()
+        public String getId()
         {
-            return subtype;
+            return id;
         }
 
-        public void setSubtype(String subtype)
+        public void setId(String id)
         {
-            this.subtype = subtype;
+            this.id = id;
+        }
+
+        public String getLanguage()
+        {
+            return language;
+        }
+
+        public void setLanguage(String language)
+        {
+            this.language = language;
         }
     }
 
     public enum MetadataTemplate
     {
-        COVERAGE(DCTag.coverage, "coverage", null),
-        CUSTOM_DATE(DCTag.date, "Date (custom)", "customidentifier"),
-        CREATION_DATE(DCTag.date, "Date: Creation", "creation"),
-        MODIFICATION_DATE(DCTag.date, "Date: Modification", "modification"),
-        PUBLICATION_DATE(DCTag.date, "Date: Publication", "publication"),
-        DESCRIPTION(DCTag.description, "Description", null),
-        CUSTOM_IDENTIFIER(DCTag.description, "Identifier (custom)", "customidentifier"),
-        DOI_IDENTIFIER(DCTag.description, "Identifier: DOI", "DOI"),
-        ISBN_IDENTIFIER(DCTag.description, "Identifier: ISBN", "ISBN"),
-        ISSN_IDENTIFIER(DCTag.description, "Identifier: ISSN", "ISSN"),
-        LANGUAGE(DCTag.language, "Language", null),
-        PUBLISHER(DCTag.publisher, "Publisher", null),
-        RELATION(DCTag.relation, "Relation", null),
-        RIGHTS(DCTag.rights, "Rights", null),
-        SOURCE(DCTag.source, "Source", null),
-        SUBJECT(DCTag.subject, "Subject", null),
-        TITLE(DCTag.title, "Title", null),
-        TYPE(DCTag.type, "Type", null),
+        COVERAGE(DublinCoreTag.coverage, "coverage", null),
+        CUSTOM_DATE(DublinCoreTag.date, "Date (custom)", "customidentifier"),
+        CREATION_DATE(DublinCoreTag.date, "Date: Creation", "creation"),
+        MODIFICATION_DATE(DublinCoreTag.date, "Date: Modification", "modification"),
+        PUBLICATION_DATE(DublinCoreTag.date, "Date: Publication", "publication"),
+        DESCRIPTION(DublinCoreTag.description, "Description", null),
+        CUSTOM_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier (custom)", "customidentifier"),
+        DOI_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: DOI", "DOI"),
+        ISBN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISBN", "ISBN"),
+        ISSN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISSN", "ISSN"),
+        LANGUAGE(DublinCoreTag.language, "Language", null),
+        PUBLISHER(DublinCoreTag.publisher, "Publisher", null),
+        RELATION(DublinCoreTag.relation, "Relation", null),
+        RIGHTS(DublinCoreTag.rights, "Rights", null),
+        SOURCE(DublinCoreTag.source, "Source", null),
+        SUBJECT(DublinCoreTag.subject, "Subject", null),
+        TITLE(DublinCoreTag.title, "Title", null),
+        TYPE(DublinCoreTag.type, "Type", null),
         ;
 
         private String description;
-        private DCTag dcTag;
+        private DublinCoreTag dcTag;
         private String scheme;
 
-        MetadataTemplate(DCTag dcTag, String description, String scheme)
+        MetadataTemplate(DublinCoreTag dcTag, String description, String scheme)
         {
             this.dcTag = dcTag;
             this.description = description;
             this.scheme = scheme;
         }
 
-        public DCTag getDcTag()
+        public DublinCoreTag getDcTag()
         {
             return dcTag;
         }
@@ -203,21 +212,41 @@ public class Epub3EditMetadataController implements Initializable
         new TableViewSearchable<>(metadateTableView);
         metadateTableView.setEditable(true);
 
-        TableColumn<MetadataElement, String> tc4 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(0);
+        TableColumn<MetadataListItem, String> tc4 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(0);
         tc4.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        TableColumn<MetadataElement, String> tc5 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(1);
+        TableColumn<MetadataListItem, String> tc5 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(1);
         tc5.setCellValueFactory(new PropertyValueFactory<>("value"));
         tc5.setEditable(true);
         tc5.setCellFactory(TextFieldTableCell.forTableColumn());
         tc5.setOnEditCommit(event -> {
             String value = event.getNewValue();
-            MetadataElement element = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            MetadataListItem element = event.getTableView().getItems().get(event.getTablePosition().getRow());
             element.setValue(value);
         });
 
-        TableColumn<MetadataElement, String> tc6 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(2);
-        tc6.setCellValueFactory(new PropertyValueFactory<>("scheme"));
+        TableColumn<MetadataListItem, String> tc6 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(2);
+        tc6.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tc6.setEditable(true);
+        tc6.setCellFactory(TextFieldTableCell.forTableColumn());
+        tc6.setOnEditCommit(event -> {
+            String value = event.getNewValue();
+            MetadataListItem element = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            element.setId(value);
+        });
+
+        TableColumn<MetadataListItem, String> tc7 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(3);
+        tc7.setCellValueFactory(new PropertyValueFactory<>("refines"));
+        tc7.setEditable(true);
+        tc7.setCellFactory(TextFieldTableCell.forTableColumn());
+        tc7.setOnEditCommit(event -> {
+            String value = event.getNewValue();
+            MetadataListItem element = event.getTableView().getItems().get(event.getTablePosition().getRow());
+            element.setRefines(value);
+        });
+
+        TableColumn<MetadataListItem, String> tc8 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(4);
+        tc8.setCellValueFactory(new PropertyValueFactory<>("scheme"));
 
         instance = this;
     }
@@ -236,8 +265,8 @@ public class Epub3EditMetadataController implements Initializable
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
         chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
             Relator relator = tableView.getSelectionModel().getSelectedItem();
-            Author contributor = new Author(null, null,"", null);
-            contributor.setRelator(relator);
+            Author contributor = new Author(null, null,null);
+            contributor.setRole(relator);
             otherContributorsTableView.getItems().add(contributor);
             chooserWindowController.getChooserWindow().close();
         });
@@ -247,8 +276,8 @@ public class Epub3EditMetadataController implements Initializable
             if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
-                Author contributor = new Author(null, null, "", null);
-                contributor.setRelator(relator);
+                Author contributor = new Author(null, null, null);
+                contributor.setRole(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
             }
@@ -286,7 +315,8 @@ public class Epub3EditMetadataController implements Initializable
         TableView<MetadataTemplate> tableView = chooserWindowController.getChosserWindowTableView();
         chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
             MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
-            MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+            MetadataListItem metadataElement = new MetadataListItem(template.getDcTag().getName(), "");
+            metadataElement.setScheme(template.getScheme());
             metadateTableView.getItems().add(metadataElement);
             chooserWindowController.getChooserWindow().close();
         });
@@ -296,7 +326,8 @@ public class Epub3EditMetadataController implements Initializable
             if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 MetadataTemplate template = tableView.getSelectionModel().getSelectedItem();
-                MetadataElement metadataElement = new MetadataElement(template.getDcTag().getName(), "", template.getScheme());
+                MetadataListItem metadataElement = new MetadataListItem(template.getDcTag().getName(), "");
+                metadataElement.setScheme(template.getScheme());
                 metadateTableView.getItems().add(metadataElement);
                 chooserWindowController.getChooserWindow().close();
             }
@@ -324,7 +355,7 @@ public class Epub3EditMetadataController implements Initializable
     {
         Metadata metadata = (Metadata) book.getMetadata();
         //auhtor
-        Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
+        Author firstAuthor = new Author(null, authorTextField.getText(), null);
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
         metadata.getAuthors().clear();
         metadata.getContributors().clear();
@@ -333,7 +364,7 @@ public class Epub3EditMetadataController implements Initializable
         for (Author otherContributor : otherContributors)
         {
             logger.info("other contributor " + otherContributor);
-            if (otherContributor.getRelator().equals(Relator.AUTHOR))
+            if (otherContributor.getRole().getValue().equals(Relator.AUTHOR.getCode()))
             {
                 metadata.getAuthors().add(otherContributor);
             }
@@ -347,7 +378,6 @@ public class Epub3EditMetadataController implements Initializable
         metadata.addTitle(titleTextField.getText());
 
         //metadata
-        metadata.getDates().clear();
         metadata.getRights().clear();
         metadata.getTitles().clear();
         metadata.getIdentifiers().clear();
@@ -355,10 +385,35 @@ public class Epub3EditMetadataController implements Initializable
         metadata.getTypes().clear();
         metadata.getDescriptions().clear();
         metadata.getPublishers().clear();
-        List<MetadataElement> metadataElements = metadateTableView.getItems();
-        for (MetadataElement metadataElement : metadataElements)
+        List<MetadataListItem> metadataElements = metadateTableView.getItems();
+        for (MetadataListItem metadataElement : metadataElements)
         {
-
+            if (metadataElement.getType().equals("publication-date")) {
+                metadata.getPublicationDate().setValue(metadataElement.getValue());
+            }
+            if (metadataElement.getType().equals("right")) {
+                metadata.getRights().add(metadataElement.getValue());
+            }
+            if (metadataElement.getType().equals("title")) {
+                DublinCoreMetadataElement titleDCElement = new DublinCoreMetadataElement(metadataElement.getValue());
+                titleDCElement.setId(metadataElement.getId());
+                titleDCElement.setLanguage(metadataElement.getLanguage());
+                metadata.getTitles().add(titleDCElement);
+            }
+            if (metadataElement.getType().equals("identifier")) {
+                Identifier idDCElement = new Identifier();
+                idDCElement.setValue(metadataElement.getValue());
+                metadata.getIdentifiers().add(idDCElement);
+            }
+            if (metadataElement.getType().equals("subject")) {
+                metadata.getSubjects().add(metadataElement.getValue());
+            }
+            if (metadataElement.getType().equals("type")) {
+                metadata.getTypes().add(metadataElement.getValue());
+            }
+            if (metadataElement.getType().equals("description")) {
+                metadata.getDescriptions().add(metadataElement.getValue());
+            }
         }
 
         stage.close();
@@ -377,7 +432,7 @@ public class Epub3EditMetadataController implements Initializable
         if (firstAuthor != null)
         {
             authorTextField.setText(firstAuthor.getName());
-            saveAsAuthorTextField.setText(firstAuthor.getFileAs());
+            saveAsAuthorTextField.setText(firstAuthor.getFileAs() != null ? firstAuthor.getFileAs().getValue() : null);
         }
         titleTextField.setText(metadata.getFirstTitle());
 
@@ -386,19 +441,19 @@ public class Epub3EditMetadataController implements Initializable
         authorsAndContributors.addAll(metadata.getContributors());
         otherContributorsTableView.setItems(FXCollections.observableList(authorsAndContributors));
 
-        ObservableList<MetadataElement> elements = FXCollections.observableList(new ArrayList<>());
-        List<MetadataDate> dates = metadata.getDates();
-        for (MetadataDate date : dates)
+        ObservableList<MetadataListItem> elements = FXCollections.observableList(new ArrayList<>());
+        MetadataDate pubDate = metadata.getPublicationDate();
+        if (pubDate != null)
         {
-            MetadataElement element = new MetadataElement("date", date.getValue(), date.getEvent().toString());
-            elements.add(element);
+            MetadataListItem pubDateElement = new MetadataListItem("publication-date", pubDate.getValue());
+            elements.add(pubDateElement);
         }
 
         List<String> rights = metadata.getRights();
         for (String right : rights)
         {
-            MetadataElement element = new MetadataElement("right", right, "");
-            elements.add(element);
+            MetadataListItem rightElement = new MetadataListItem("right", right);
+            elements.add(rightElement);
         }
 
         List<DublinCoreMetadataElement> titles = metadata.getTitles();
@@ -407,63 +462,61 @@ public class Epub3EditMetadataController implements Initializable
             titles = titles.subList(1, titles.size());
             for (DublinCoreMetadataElement title : titles)
             {
-                MetadataElement element = new MetadataElement("title", title.getValue(), "");
-                elements.add(element);
+                MetadataListItem titleElement = new MetadataListItem("title", title.getValue());
+                titleElement.setId(title.getId());
+                titleElement.setLanguage(title.getLanguage());
+                elements.add(titleElement);
             }
         }
 
-        List<Identifier> identifiers = metadata.getIdentifiers();
+        List<Identifier> identifiers = metadata.getEpub3Identifiers();
         for (Identifier identifier : identifiers)
         {
-            MetadataElement element = new MetadataElement("identifier", identifier.getValue(), "");
-            if (StringUtils.isNotEmpty(identifier.getScheme()))
-            {
-                element.setScheme(identifier.getScheme());
-            }
-            elements.add(element);
+            MetadataListItem idElement = new MetadataListItem("identifier", identifier.getValue());
+            elements.add(idElement);
         }
 
         List<String> subjects = metadata.getSubjects();
         for (String subject : subjects)
         {
-            MetadataElement element = new MetadataElement("subject", subject, "");
-            elements.add(element);
+            MetadataListItem subjectElement = new MetadataListItem("subject", subject);
+            elements.add(subjectElement);
         }
 
         List<String> types = metadata.getTypes();
         for (String type : types)
         {
-            MetadataElement element = new MetadataElement("type", type, "");
-            elements.add(element);
+            MetadataListItem typeElement = new MetadataListItem("type", type);
+            elements.add(typeElement);
         }
 
         List<String> descriptions = metadata.getDescriptions();
         for (String description : descriptions)
         {
-            MetadataElement element = new MetadataElement("description", description, "");
-            elements.add(element);
+            MetadataListItem descElement = new MetadataListItem("description", description);
+            elements.add(descElement);
         }
 
         List<String> publishers = metadata.getPublishers();
         for (String publisher : publishers)
         {
-            MetadataElement element = new MetadataElement("publisher", publisher, "");
-            elements.add(element);
+            MetadataListItem publisherElement = new MetadataListItem("publisher", publisher);
+            elements.add(publisherElement);
         }
 
-        List<Epub3MetadataProperty> others = metadata.getEpub3MetaProperties();
-        for (Epub3MetadataProperty other : others)
+        List<MetadataProperty> others = metadata.getEpub3MetaProperties();
+        for (MetadataProperty other : others)
         {
-            MetadataElement element = new MetadataElement(other.getProperty(), other.getValue(), "");
+            MetadataListItem otherElement = new MetadataListItem(other.getProperty(), other.getValue());
             if (StringUtils.isNotEmpty(other.getScheme()))
             {
-                element.setScheme(other.getScheme());
+                otherElement.setScheme(other.getScheme());
             }
             if (StringUtils.isNotEmpty(other.getRefines()))
             {
-                element.setRefines(other.getRefines());
+                otherElement.setRefines(other.getRefines());
             }
-            elements.add(element);
+            elements.add(otherElement);
         }
 
         metadateTableView.setItems(elements);

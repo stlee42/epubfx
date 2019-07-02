@@ -22,16 +22,15 @@ import javafx.stage.Stage;
 
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
 
 import jidefx.scene.control.searchable.TableViewSearchable;
-
-import static de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase.DCTag;
 
 /**
  * User: mjungierek
@@ -128,38 +127,38 @@ public class EditMetadataController implements Initializable
 
     public enum MetadataTemplate
     {
-        COVERAGE(DCTag.coverage, "coverage", null),
-        CUSTOM_DATE(DCTag.date, "Date (custom)", "customidentifier"),
-        CREATION_DATE(DCTag.date, "Date: Creation", "creation"),
-        MODIFICATION_DATE(DCTag.date, "Date: Modification", "modificatin"),
-        PUBLICATION_DATE(DCTag.date, "Date: Publication", "publication"),
-        DESCRIPTION(DCTag.description, "Description", null),
-        CUSTOM_IDENTIFIER(DCTag.description, "Identifier (custom)", "customidentifier"),
-        DOI_IDENTIFIER(DCTag.description, "Identifier: DOI", "DOI"),
-        ISBN_IDENTIFIER(DCTag.description, "Identifier: ISBN", "ISBN"),
-        ISSN_IDENTIFIER(DCTag.description, "Identifier: ISSN", "ISSN"),
-        LANGUAGE(DCTag.language, "Language", null),
-        PUBLISHER(DCTag.publisher, "Publisher", null),
-        RELATION(DCTag.relation, "Relation", null),
-        RIGHTS(DCTag.rights, "Rights", null),
-        SOURCE(DCTag.source, "Source", null),
-        SUBJECT(DCTag.subject, "Subject", null),
-        TITLE(DCTag.title, "Title", null),
-        TYPE(DCTag.type, "Type", null),
+        COVERAGE(DublinCoreTag.coverage, "coverage", null),
+        CUSTOM_DATE(DublinCoreTag.date, "Date (custom)", "customidentifier"),
+        CREATION_DATE(DublinCoreTag.date, "Date: Creation", "creation"),
+        MODIFICATION_DATE(DublinCoreTag.date, "Date: Modification", "modificatin"),
+        PUBLICATION_DATE(DublinCoreTag.date, "Date: Publication", "publication"),
+        DESCRIPTION(DublinCoreTag.description, "Description", null),
+        CUSTOM_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier (custom)", "customidentifier"),
+        DOI_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: DOI", "DOI"),
+        ISBN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISBN", "ISBN"),
+        ISSN_IDENTIFIER(DublinCoreTag.description, "EpubIdentifier: ISSN", "ISSN"),
+        LANGUAGE(DublinCoreTag.language, "Language", null),
+        PUBLISHER(DublinCoreTag.publisher, "Publisher", null),
+        RELATION(DublinCoreTag.relation, "Relation", null),
+        RIGHTS(DublinCoreTag.rights, "Rights", null),
+        SOURCE(DublinCoreTag.source, "Source", null),
+        SUBJECT(DublinCoreTag.subject, "Subject", null),
+        TITLE(DublinCoreTag.title, "Title", null),
+        TYPE(DublinCoreTag.type, "Type", null),
         ;
 
         private String description;
-        private DCTag dcTag;
+        private DublinCoreTag dcTag;
         private String scheme;
 
-        MetadataTemplate(DCTag dcTag, String description, String scheme)
+        MetadataTemplate(DublinCoreTag dcTag, String description, String scheme)
         {
             this.dcTag = dcTag;
             this.description = description;
             this.scheme = scheme;
         }
 
-        public DCTag getDcTag()
+        public DublinCoreTag getDcTag()
         {
             return dcTag;
         }
@@ -319,7 +318,7 @@ public class EditMetadataController implements Initializable
 
     public void okButtonAction(ActionEvent actionEvent)
     {
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Metadata metadata = (Metadata) book.getMetadata();
         //auhtor
         Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
@@ -369,7 +368,7 @@ public class EditMetadataController implements Initializable
     public void setBook(Book book)
     {
         this.book = book;
-        Epub2Metadata metadata = (Epub2Metadata) book.getMetadata();
+        Metadata metadata = (Metadata) book.getMetadata();
         Author firstAuthor = metadata.getFirstAuthor();
         if (firstAuthor != null)
         {
@@ -409,7 +408,7 @@ public class EditMetadataController implements Initializable
             }
         }
 
-        List<Identifier> identifiers = metadata.getIdentifiers();
+        List<Identifier> identifiers = metadata.getEpub2Identifiers();
         for (Identifier identifier : identifiers)
         {
             MetadataElement element = new MetadataElement("identifier", identifier.getValue(), identifier.getScheme());

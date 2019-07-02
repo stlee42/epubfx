@@ -2,16 +2,16 @@ package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
-
 import org.apache.commons.lang.StringUtils;
+
+import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
+import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * A Book's collection of Metadata.
@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author paul
  */
-public class Metadata implements Serializable, de.machmireinebook.epubeditor.epublib.domain.Metadata
+public class Metadata implements Serializable, EpubMetadata
 {
 
     /**
@@ -33,11 +33,11 @@ public class Metadata implements Serializable, de.machmireinebook.epubeditor.epu
     private List<Author> authors = new ArrayList<>();
     private List<Author> contributors = new ArrayList<>();
     private MetadataDate publicationDate;
-    private Epub3MetadataProperty modificationDate;
+    private MetadataProperty modificationDate;
     private List<DublinCoreMetadataElement> languages = new ArrayList<>();
-    private List<Epub3MetadataProperty> epub3MetaProperties = new ArrayList<>();
+    private List<MetadataProperty> epub3MetaProperties = new ArrayList<>();
     private List<String> rights = new ArrayList<>();
-    private List<String> sources = new ArrayList<>();
+    private DublinCoreMetadataElement source;
     private List<DublinCoreMetadataElement> titles = new ArrayList<>();
     private List<Identifier> identifiers = new ArrayList<>();
     private List<String> subjects = new ArrayList<>();
@@ -64,12 +64,12 @@ public class Metadata implements Serializable, de.machmireinebook.epubeditor.epu
      *
      * @return Metadata properties not hard-coded like the author, title, etc.
      */
-    public List<Epub3MetadataProperty> getEpub3MetaProperties()
+    public List<MetadataProperty> getEpub3MetaProperties()
     {
         return epub3MetaProperties;
     }
 
-    public void setEpub3MetaProperties(List<Epub3MetadataProperty> epub3MetaProperties)
+    public void setEpub3MetaProperties(List<MetadataProperty> epub3MetaProperties)
     {
         this.epub3MetaProperties = epub3MetaProperties;
     }
@@ -84,12 +84,12 @@ public class Metadata implements Serializable, de.machmireinebook.epubeditor.epu
         this.publicationDate = publicationDate;
     }
 
-    public Epub3MetadataProperty getModificationDate()
+    public MetadataProperty getModificationDate()
     {
         return modificationDate;
     }
 
-    public void setModificationDate(Epub3MetadataProperty modificationDate)
+    public void setModificationDate(MetadataProperty modificationDate)
     {
         this.modificationDate = modificationDate;
     }
@@ -336,11 +336,16 @@ public class Metadata implements Serializable, de.machmireinebook.epubeditor.epu
     {
         Identifier uuid = new Identifier();
         Identifier bookId = getBookIdIdentifier();
-        bookId.setScheme("UUID");
+        //TODO add refinement
         bookId.setValue(uuid.getValue());
     }
 
-    public List<Identifier> getIdentifiers()
+    public List<EpubIdentifier> getIdentifiers()
+    {
+        return Collections.unmodifiableList(identifiers);
+    }
+
+    public List<Identifier> getEpub3Identifiers()
     {
         return identifiers;
     }
@@ -397,13 +402,13 @@ public class Metadata implements Serializable, de.machmireinebook.epubeditor.epu
         this.epub2MetaAttributes = metaAttributes;
     }
 
-    public List<String> getSources()
+    public DublinCoreMetadataElement getSource()
     {
-        return sources;
+        return source;
     }
 
-    public void setSources(List<String> sources)
+    public void setSource(DublinCoreMetadataElement source)
     {
-        this.sources = sources;
+        this.source = source;
     }
 }

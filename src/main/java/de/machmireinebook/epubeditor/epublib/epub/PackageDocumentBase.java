@@ -9,37 +9,6 @@ package de.machmireinebook.epubeditor.epublib.epub;
  */
 public class PackageDocumentBase
 {
-    public enum DCTag
-    {
-        title("title"),
-        creator("creator"),
-        subject("subject"),
-        description("description"),
-        publisher("publisher"),
-        contributor("contributor"),
-        date("date"),
-        type("type"),
-        format("format"),
-        identifier("identifier"),
-        source("source"),
-        language("language"),
-        relation("relation"),
-        coverage("coverage"),
-        rights("rights");
-        
-        private String name;
-
-        DCTag(java.lang.String name)
-        {
-            this.name = name;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-    }
-
     protected interface DCAttributes
     {
         String scheme = "scheme";

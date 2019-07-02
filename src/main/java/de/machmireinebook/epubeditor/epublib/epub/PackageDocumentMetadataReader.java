@@ -10,12 +10,12 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
 
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
-import de.machmireinebook.epubeditor.epublib.domain.Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.Epub3MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
@@ -36,7 +36,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     public static Metadata readMetadata(Element root)
     {
-        Epub2Metadata result = new Epub2Metadata();
+        Metadata result = new Metadata();
         Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
@@ -44,19 +44,19 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             return result;
         }
 
-        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.title.getName()));
-        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.publisher.getName()));
-        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.description.getName()));
-        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.rights.getName()));
-        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.type.getName()));
-        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.subject.getName()));
-        result.setCoverages(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DCTag.coverage.getName()));
+        result.setTitles(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.title.getName()));
+        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.publisher.getName()));
+        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.description.getName()));
+        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.rights.getName()));
+        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.type.getName()));
+        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.subject.getName()));
+        result.setCoverages(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.coverage.getName()));
         result.setIdentifiers(readIdentifiers(metadataElement));
         result.setAuthors(readCreators(metadataElement));
         result.setContributors(readContributors(metadataElement));
         result.setDates(readDates(metadataElement));
         result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
-        result.setLanguage(metadataElement.getChildText(DCTag.language.getName(), NAMESPACE_DUBLIN_CORE));
+        result.setLanguage(metadataElement.getChildText(DublinCoreTag.language.getName(), NAMESPACE_DUBLIN_CORE));
 
         return result;
     }
@@ -68,14 +68,14 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
      * @param metadataElement
      * @return
      */
-    private static List<Epub3MetadataProperty> readOtherProperties(Element metadataElement)
+    private static List<MetadataProperty> readOtherProperties(Element metadataElement)
     {
-        List<Epub3MetadataProperty> result = new ArrayList<>();
+        List<MetadataProperty> result = new ArrayList<>();
 
         List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
-            Epub3MetadataProperty otherMetadataElement = new Epub3MetadataProperty();
+            MetadataProperty otherMetadataElement = new MetadataProperty();
             String name = metaTag.getAttributeValue(OPFAttributes.property);
             if (StringUtils.isNotEmpty(name)) //epub 3 metadata, read in, but ignore in epub 2 context
             {
@@ -124,12 +124,12 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<Author> readCreators(Element metadataElement)
     {
-        return readAuthors(DCTag.creator.getName(), metadataElement);
+        return readAuthors(DublinCoreTag.creator.getName(), metadataElement);
     }
 
     private static List<Author> readContributors(Element metadataElement)
     {
-        return readAuthors(DCTag.contributor.getName(), metadataElement);
+        return readAuthors(DublinCoreTag.contributor.getName(), metadataElement);
     }
 
     private static List<Author> readAuthors(String authorTag, Element metadataElement)
@@ -150,7 +150,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<MetadataDate> readDates(Element metadataElement)
     {
-        List<Element> elements = metadataElement.getChildren(DCTag.date.getName(), NAMESPACE_DUBLIN_CORE);
+        List<Element> elements = metadataElement.getChildren(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
         List<MetadataDate> result = new ArrayList<>(elements.size());
         for (Element dateElement : elements)
         {
@@ -185,10 +185,10 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     private static List<Identifier> readIdentifiers(Element metadataElement)
     {
-        List<Element> identifierElements = metadataElement.getChildren(DCTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
+        List<Element> identifierElements = metadataElement.getChildren(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         if (identifierElements.isEmpty())
         {
-            logger.error("Package does not contain element " + DCTag.identifier.getName());
+            logger.error("Package does not contain element " + DublinCoreTag.identifier.getName());
             return new ArrayList<>();
         }
         String bookIdId = getBookIdId(metadataElement.getParentElement());

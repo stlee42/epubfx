@@ -11,7 +11,8 @@ public enum MetadataPropertyValue
     group_position("group-position"),
     identifier_type("identifier-type"),
     meta_auth("meta-auth"),
-    role
+    role,
+    dcterms_modified("dcterms:modified"),
     ;
 
     private String sepcificationName;
@@ -25,7 +26,7 @@ public enum MetadataPropertyValue
         this.sepcificationName = name;
     }
 
-    public String getSepcificationName()
+    public String getSpecificationName()
     {
         return sepcificationName;
     }

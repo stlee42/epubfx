@@ -11,20 +11,23 @@ import java.util.List;
 public class DublinCoreMetadataElement
 {
     private String id;
-    private String scheme;
     private String value;
     private String language;
-    private List<MetadataPropertyValue> refinements = new ArrayList<>();
+    private List<MetadataProperty> refinements = new ArrayList<>();
 
     public DublinCoreMetadataElement(String value)
     {
-        this(null, null, value, null);
+        this(null, value, null);
     }
 
-    public DublinCoreMetadataElement(String id, String scheme, String value, String language)
+    public DublinCoreMetadataElement(String id, String value)
+    {
+        this(id, value, null);
+    }
+
+    public DublinCoreMetadataElement(String id, String value, String language)
     {
         this.id = id;
-        this.scheme = scheme;
         this.value = value;
         this.language = language;
     }
@@ -37,16 +40,6 @@ public class DublinCoreMetadataElement
     public void setId(String id)
     {
         this.id = id;
-    }
-
-    public String getScheme()
-    {
-        return scheme;
-    }
-
-    public void setScheme(String scheme)
-    {
-        this.scheme = scheme;
     }
 
     public String getValue()
@@ -69,7 +62,7 @@ public class DublinCoreMetadataElement
         this.language = language;
     }
 
-    public List<MetadataPropertyValue> getRefinements()
+    public List<MetadataProperty> getRefinements()
     {
         return refinements;
     }

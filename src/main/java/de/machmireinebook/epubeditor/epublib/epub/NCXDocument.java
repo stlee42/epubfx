@@ -20,12 +20,13 @@ import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
+import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
+import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**
@@ -180,17 +181,17 @@ public class NCXDocument
      */
     public static Document write(Book book)
     {
-       Metadata metadata = book.getMetadata();
+       EpubMetadata metadata = book.getMetadata();
        return write(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
     public static Resource createNCXResource(Book book)
     {
-        Metadata metadata = book.getMetadata();
+        EpubMetadata metadata = book.getMetadata();
         return createNCXResource(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource createNCXResource(List<Identifier> identifiers, String title, TableOfContents tableOfContents)
+    public static Resource createNCXResource(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
     {
         Document ncxDocument = write(identifiers, title, tableOfContents);
 
@@ -211,7 +212,7 @@ public class NCXDocument
         return resource;
     }
 
-    public static Document write(List<Identifier> identifiers, String title, TableOfContents tableOfContents)
+    public static Document write(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
     {
         /*
         <?xml version="1.0" encoding="utf-8"?>
@@ -232,7 +233,7 @@ public class NCXDocument
         Element headElement = new Element(NCXTags.head, NAMESPACE_NCX);
         root.addContent(headElement);
 
-        for (Identifier identifier : identifiers)
+        for (EpubIdentifier identifier : identifiers)
         {
             if (identifier.isBookId())
             {

@@ -31,7 +31,7 @@ import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Epub2Metadata;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
@@ -50,7 +50,7 @@ public class Book implements Serializable
     private static final long serialVersionUID = 2068355170895770100L;
 
     private Resources resources = new Resources();
-    private Metadata metadata;
+    private EpubMetadata metadata;
     private Spine spine = new Spine();
     private TableOfContents tableOfContents = new TableOfContents();
     private Guide guide = new Guide();
@@ -80,7 +80,7 @@ public class Book implements Serializable
         Book book = new Book();
         book.setVersion(EpubVersion.VERSION_2);
 
-        book.setMetadata(new Epub2Metadata());
+        book.setMetadata(new Metadata());
 
         Resource ncxResource = NCXDocument.createNCXResource(book);
         book.setNcxResource(ncxResource);
@@ -352,12 +352,12 @@ public class Book implements Serializable
      *
      * @return The Book's metadata (titles, authors, etc)
      */
-    public Metadata getMetadata()
+    public EpubMetadata getMetadata()
     {
         return metadata;
     }
 
-    public void setMetadata(Metadata metadata)
+    public void setMetadata(EpubMetadata metadata)
     {
         this.metadata = metadata;
     }

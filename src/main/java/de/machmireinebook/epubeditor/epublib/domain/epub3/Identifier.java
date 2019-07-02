@@ -3,6 +3,8 @@ package de.machmireinebook.epubeditor.epublib.domain.epub3;
 import java.io.Serializable;
 import java.util.UUID;
 
+import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
+
 /**
  * A Book's identifier.
  * 
@@ -11,7 +13,7 @@ import java.util.UUID;
  * @author paul
  *
  */
-public class Identifier extends DublinCoreMetadataElement implements Serializable {
+public class Identifier extends DublinCoreMetadataElement implements EpubIdentifier, Serializable {
 	
 	/**
 	 * 
@@ -45,16 +47,16 @@ public class Identifier extends DublinCoreMetadataElement implements Serializabl
 		}
 	}
 
-	public Identifier(String id, String scheme, String value)
+	public Identifier(String id, String value)
 	{
-		super(id, scheme, value, null);
+		super(id, value, null);
 	}
 
 	/**
-	 * Creates an Identifier with as value a random UUID and scheme "UUID"
+	 * Creates an EpubIdentifier with as value a random UUID and scheme "UUID"
 	 */
 	public Identifier() {
-		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString(), null);
+		super(null, UUID.randomUUID().toString(), null);
 	}
 
 
