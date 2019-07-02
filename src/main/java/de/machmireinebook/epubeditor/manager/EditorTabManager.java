@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.manager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -544,7 +545,7 @@ public class EditorTabManager
             editor.cursorPositionProperty().addListener((observable, oldValue, newValue) -> {
                 EditorPosition cursorPosition = editor.getCursorPosition();
                 String textIformation = editor.getTextInformation();
-                cursorPosLabelProperty.set("Absolute: " + String.valueOf(newValue) + ", Relative: " + (cursorPosition.getLine() + 1) + ":" + (cursorPosition.getColumn() + 1)
+                cursorPosLabelProperty.set("Absolute: " + newValue + ", Relative: " + (cursorPosition.getLine() + 1) + ":" + (cursorPosition.getColumn() + 1)
                         + " | Text Information: " + textIformation);
             });
 
@@ -553,33 +554,19 @@ public class EditorTabManager
                 {
                     return;
                 }
-                 if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+                if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
                 {
-                    try
-                    {
-                        currentXHTMLResource.get().setData(newValue.getBytes("UTF-8"));
-                    }
-                    catch (UnsupportedEncodingException e)
-                    {
-                        //never happens
-                    }
+                    currentXHTMLResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
                 }
                 else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
                 {
-                    try
-                    {
-                        currentCssResource.get().setData(newValue.getBytes("UTF-8"));
-                    }
-                    catch (UnsupportedEncodingException e)
-                    {
-                        //never happens
-                    }
+                    currentCssResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
                 }
                 else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
                 {
                     try
                     {
-                        currentXMLResource.get().setData(newValue.getBytes("UTF-8"));
+                        currentXMLResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
                         if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
                         {
                             PackageDocumentReader.read(resource, book);
@@ -990,7 +977,7 @@ public class EditorTabManager
         return result;
     }
 
-    public String repairXHTML(String xhtml) throws IOException, JDOMException
+    public String repairXHTML(String xhtml)
     {
         return XHTMLUtils.repair(xhtml);
     }
@@ -1004,21 +991,15 @@ public class EditorTabManager
             if (tab.getContent() instanceof  CodeEditor)
             {
                 CodeEditor editor = (CodeEditor) tab.getContent();
-                try
-                {
-                    editor.setCode(new String(resource.getData(), "UTF-8"));
-                    editor.scrollTo(0);
-                }
-                catch (IOException e)
-                {
-                    logger.error("", e);
-                }
+                editor.setCode(new String(resource.getData(), StandardCharsets.UTF_8));
+                editor.scrollTo(0);
             }
         }
     }
 
     public void refreshEditorCode(Resource resourceToUpdate)
     {
+        openingEditorTab = true;
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs)
         {
@@ -1026,17 +1007,11 @@ public class EditorTabManager
             if(resourceToUpdate.equals(resource))
             {
                 CodeEditor editor = (CodeEditor)tab.getContent();
-                try
-                {
-                    editor.setCode(new String(resourceToUpdate.getData(), "UTF-8"));
-                    editor.setAbsoluteCursorPosition(0);;
-                }
-                catch (IOException e)
-                {
-                    logger.error("", e);
-                }
+                editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
+                editor.setAbsoluteCursorPosition(0);;
             }
         }
+        openingEditorTab = true;
     }
 
     public void refreshImageViewer(Resource resourceToUpdate)

@@ -48,13 +48,13 @@ public class EpubWriter
     public void write(Book book, OutputStream out) throws IOException
     {
         book = processBook(book);
-        ZipOutputStream resultStream = new ZipOutputStream(out);
-        writeMimeType(resultStream);
-        writeContainer(resultStream);
-        initTOCResource(book);
-        writeResources(book, resultStream);
-        writePackageDocument(book, resultStream);
-        resultStream.close();
+        try (ZipOutputStream resultStream = new ZipOutputStream(out)) {
+            writeMimeType(resultStream);
+            writeContainer(resultStream);
+            initTOCResource(book);
+            writeResources(book, resultStream);
+            writePackageDocument(book, resultStream);
+        }
     }
 
     private Book processBook(Book book)

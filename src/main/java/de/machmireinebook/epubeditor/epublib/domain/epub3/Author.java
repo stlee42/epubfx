@@ -25,7 +25,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 
 	public Author(String id, String name, String language) {
 	    super(id, name, language);
-	    if (StringUtils.isEmpty(id)) {
+	    if (StringUtils.isEmpty(id) && StringUtils.isNotEmpty(name)) {
 			setId(Normalizer.normalize(name, Normalizer.Form.NFD)
 					.replaceAll("[^\\p{ASCII}]", "")
 					.replaceAll(" ", "_")

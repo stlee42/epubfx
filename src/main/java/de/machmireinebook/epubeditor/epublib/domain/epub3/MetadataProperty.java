@@ -25,9 +25,9 @@ public class MetadataProperty
         return property;
     }
 
-    public void setProperty(String qName)
+    public void setProperty(String property)
     {
-        this.property = qName;
+        this.property = property;
     }
 
     public String getValue()
@@ -78,5 +78,9 @@ public class MetadataProperty
     public void setLanguage(String language)
     {
         this.language = language;
+    }
+
+    public String toString() {
+        return getValue();
     }
 }

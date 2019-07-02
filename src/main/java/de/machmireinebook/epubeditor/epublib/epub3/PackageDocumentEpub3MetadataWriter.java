@@ -1,5 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.epub3;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,10 +56,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         // write authors
         for (Author author : metadata.getAuthors())
         {
-            Element creatorElement = writeDublinCoreMetadataElement(DublinCoreTag.creator.getName(), author);
-            creatorElement.setText(author.getName());
-            metadataElement.addContent(creatorElement);
-
+            writeDublinCoreMetadataElement(DublinCoreTag.creator.getName(), author);
             if(!author.getRefinements().isEmpty()) {
                 for (MetadataProperty refinement : author.getRefinements())
                 {
@@ -70,10 +69,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         // write contributors
         for (Author contributor : metadata.getContributors())
         {
-            Element contributorElement = writeDublinCoreMetadataElement(DublinCoreTag.contributor.getName(), contributor);
-            contributorElement.setText(contributor.getName());
-            metadataElement.addContent(contributorElement);
-
+            writeDublinCoreMetadataElement(DublinCoreTag.contributor.getName(), contributor);
             if(!contributor.getRefinements().isEmpty()) {
                 for (MetadataProperty refinement : contributor.getRefinements())
                 {
@@ -85,11 +81,19 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
 
         // write dates
         MetadataDate date = metadata.getPublicationDate();
-        Element dateElement = new Element(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
-        dateElement.setText(date.getValue());
-        metadataElement.addContent(dateElement);
+        if (date != null)
+        {
+            Element dateElement = new Element(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
+            dateElement.setText(date.getValue());
+            metadataElement.addContent(dateElement);
+        }
 
         MetadataProperty modificationDate = metadata.getModificationDate();
+        if (modificationDate == null) {
+            modificationDate = new MetadataProperty();
+            metadata.setModificationDate(modificationDate);
+        }
+        modificationDate.setValue(DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now()));
         writeMetaElement(modificationDate);
 
         //source
@@ -194,7 +198,10 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         }
     }
 
-    private Element writeDublinCoreMetadataElement(String tagName, DublinCoreMetadataElement dcMetadata) {
+    private void writeDublinCoreMetadataElement(String tagName, DublinCoreMetadataElement dcMetadata) {
+        if (dcMetadata == null) {
+            return;
+        }
         Element dcElement = new Element(tagName, NAMESPACE_DUBLIN_CORE);
         dcElement.setText(dcMetadata.getValue());
         if (StringUtils.isNotEmpty(dcMetadata.getId()))
@@ -205,8 +212,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         {
             dcElement.setAttribute(OPFAttributes.lang, dcMetadata.getLanguage(), Namespace.XML_NAMESPACE);
         }
-
-        return metadataElement.addContent(dcElement);
     }
 
     /**

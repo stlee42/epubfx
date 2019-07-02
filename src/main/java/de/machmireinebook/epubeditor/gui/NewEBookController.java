@@ -150,7 +150,7 @@ public class NewEBookController implements StandardController
                     }
                     de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata metadata = (de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata) book.getMetadata();
                     List<String> descriptions = metadata.getDescriptions();
-                    String description = "";
+                    String description = "[No description available]";
                     if (descriptions.size() > 0)
                     {
                         description = descriptions.get(0);

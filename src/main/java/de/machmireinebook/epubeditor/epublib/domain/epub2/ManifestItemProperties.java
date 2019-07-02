@@ -11,7 +11,7 @@ public enum ManifestItemProperties implements ManifestProperties {
 	
 	private String name;
 	
-	private ManifestItemProperties(String name) {
+	ManifestItemProperties(String name) {
 		this.name = name;
 	}
 	

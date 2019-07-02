@@ -730,7 +730,7 @@
                         <RibbonGroup title="Settings">
                             <nodes>
                                 <Column>
-                                <Button fx:id="settingsButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#settingsButtonAction" prefHeight="80" prefWidth="80" text="View" wrapText="true">
+                                <Button fx:id="settingsButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#settingsButtonAction" prefHeight="80" prefWidth="80" text="Edit Settings" wrapText="true">
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>

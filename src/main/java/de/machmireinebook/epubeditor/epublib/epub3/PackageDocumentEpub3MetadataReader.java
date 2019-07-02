@@ -168,7 +168,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
                 {
                     continue;
                 }
-                String idName = identifierElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+                String idName = identifierElement.getAttributeValue(DCAttributes.id);
                 Identifier identifier = new Identifier(idName, identifierValue);
                 if (bookIdId.equals(idName))
                 {
@@ -215,7 +215,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = authorElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            String idName = authorElement.getAttributeValue(DCAttributes.id);
             String language = authorElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
             Author author = new Author(idName, authorValue, language);
             if (StringUtils.isNotEmpty(idName)) {
@@ -247,7 +247,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = dcElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            String idName = dcElement.getAttributeValue(DCAttributes.id);
             String language = dcElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
             DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, titleValue, language);
             if (StringUtils.isNotEmpty(idName)) {
@@ -267,7 +267,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             return null;
         }
         String value = dcDateElement.getText();
-        String idName = dcDateElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+        String idName = dcDateElement.getAttributeValue(DCAttributes.id);
         return new MetadataDate(idName, value);
     }
 
@@ -287,7 +287,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = langElement.getAttributeValue(DCAttributes.id, NAMESPACE_OPF);
+            String idName = langElement.getAttributeValue(DCAttributes.id);
             DublinCoreMetadataElement language = new DublinCoreMetadataElement(idName, langValue);
             result.add(language);
         }

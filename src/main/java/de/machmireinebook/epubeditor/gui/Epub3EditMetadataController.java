@@ -365,7 +365,8 @@ public class Epub3EditMetadataController implements Initializable
         for (Author otherContributor : otherContributors)
         {
             logger.info("other contributor " + otherContributor);
-            if (otherContributor.getRole().getValue().equals(Relator.AUTHOR.getCode()))
+            if (otherContributor.getRole() != null && otherContributor.getRole().getValue() != null
+                    && otherContributor.getRole().getValue().equals(Relator.AUTHOR.getCode()))
             {
                 metadata.getAuthors().add(otherContributor);
             }
@@ -381,7 +382,7 @@ public class Epub3EditMetadataController implements Initializable
         //metadata
         metadata.getRights().clear();
         metadata.getTitles().clear();
-        metadata.getIdentifiers().clear();
+        metadata.getEpub3Identifiers().clear();
         metadata.getSubjects().clear();
         metadata.getTypes().clear();
         metadata.getDescriptions().clear();

@@ -463,6 +463,11 @@ public class MainController implements Initializable
                     File file = recentFile.toFile();
                     Book currentBook = reader.readEpub(file);
                     currentBookProperty.set(currentBook);
+                    if (!currentBook.getSpine().isEmpty())
+                    {
+                        Resource firstResource = currentBook.getSpine().getResource(0);
+                        editorManager.openFileInEditor(firstResource, firstResource.getMediaType());
+                    }
                 }
                 catch (IOException e)
                 {
@@ -739,22 +744,22 @@ public class MainController implements Initializable
             alert.setTitle("epub4mmee beenden");
             alert.getDialogPane().setHeader(null);
             alert.getDialogPane().setHeaderText(null);
-            alert.setContentText("Das E-Book wurde geändert. " +
-                    "Sollen die Änderungen gespeichert werden?");
+            alert.setContentText("The ebook was changed, save the changes before closing?");
             alert.getDialogPane().getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
             Optional<ButtonType> choosedButton = alert.showAndWait();
-            if (choosedButton.isPresent() && choosedButton.get().equals(ButtonType.YES))
-            {
-                Book book = currentBookProperty.get();
-                if (book.getPhysicalFileName() == null)
-                {
-                    saveEpubAs();
+            choosedButton.ifPresent(buttonType -> {
+                if (buttonType.equals(ButtonType.YES)) {
+                    Book book = currentBookProperty.get();
+                    if (book.getPhysicalFileName() == null)
+                    {
+                        saveEpubAs();
+                    }
+                    else
+                    {
+                        saveEpub(book);
+                    }
                 }
-                else
-                {
-                    saveEpub(book);
-                }
-            }
+            });
         }
     }
 
@@ -787,7 +792,7 @@ public class MainController implements Initializable
         }
         catch (IOException e)
         {
-            logger.error("cannot open edit window", e);
+            logger.error("can't open edit window", e);
         }
         addCoverStage.show();
     }
@@ -826,7 +831,7 @@ public class MainController implements Initializable
         }
         catch (IOException e)
         {
-            logger.error("cannot open edit window", e);
+            logger.error("can't open edit window", e);
         }
         editMetadataStage.show();
     }

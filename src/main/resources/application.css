@@ -60,7 +60,7 @@
 }
 
 .ribbon-group .toggle-button:hover, .ribbon-group .split-menu-button .arrow-button:hover, .ribbon-group .split-menu-button .label:hover {
-    -fx-background-color: RIBBON_BUTTON_HIGHLIGHT_COLOR;
+    -fx-background-color: RIBBON_BUTTON_SELECTED_COLOR;
 }
 
 .ribbon-group .title {
@@ -109,7 +109,7 @@
 .ribbon-group .toggle-button:pressed, .ribbon-group .toggle-button:default:hover:pressed, .ribbon-group .toggle-button:selected,
 .ribbon-group .split-menu-button .arrow-button:pressed, .ribbon-group .split-menu-button .arrow-button:default:hover:pressed
 {
-    -fx-background-color: CONTROLS_ACCENT_COLOR;
+    -fx-background-color: RIBBON_BUTTON_SELECTED_COLOR;
     -fx-text-fill: white;
 }
 

@@ -25,17 +25,17 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import de.machmireinebook.epubeditor.BeanFactory;
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.MainStage;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
-
 import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
 import com.sun.net.httpserver.HttpServer;
+
+import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.MainStage;
+import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
+import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 
 public class EpubEditorApplication extends Application
 {
@@ -69,25 +69,24 @@ public class EpubEditorApplication extends Application
         applicationIcon = new Image(getClass().getResourceAsStream("/rocket.png"));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void start(Stage initStage)
     {
-        final Task<Boolean> initTask = new Task<Boolean>()
+        final Task<Boolean> initTask = new Task<>()
         {
             @Override
             protected Boolean call() throws Exception
             {
                 updateProgress(0, 3);
-                updateMessage("Initialisierung");
+                updateMessage("Initialization");
                 EpubEditorConfiguration.initLogger();
 
                 updateProgress(1, 3);
-                updateMessage("Starte Basiskomponenten");
+                updateMessage("Starting base components");
                 lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
 
                 updateProgress(2, 3);
-                updateMessage("Interner Server wird gestarte");
+                updateMessage("Starting internal web server");
                 server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8777), 1000);
                 epubHttpHandler = new EpubHttpHandler();
                 server.createContext("/", epubHttpHandler);
@@ -101,7 +100,7 @@ public class EpubEditorApplication extends Application
                 server.start();
 
                 updateProgress(3, 3);
-                updateMessage("epub4mmee wird gestartet");
+                updateMessage("Scripto is starting");
 
                 return true;
             }
@@ -129,7 +128,7 @@ public class EpubEditorApplication extends Application
             mainStage.setOnShown(event ->
             {
                 configuration.readConfiguration();
-                EpubEditorMainController controller =  BeanFactory.getInstance().getBean(EpubEditorMainController.class);
+                MainController controller =  BeanFactory.getInstance().getBean(MainController.class);
                 controller.setStage(mainStage);
                 controller.newMinimalEpubAction();
                 controller.setEpubHttpHandler(epubHttpHandler);
@@ -168,7 +167,7 @@ public class EpubEditorApplication extends Application
                 initStage.hide();
                 Throwable t = task.getException();
                 logger.error("", t);
-                ExceptionDialog.showAndWait(t, mainStage,  "Kann Applikation nicht laden", "Kann Applikation nicht laden, bitte Fehlermeldung weitergeben");
+                ExceptionDialog.showAndWait(t, mainStage,  "Can't load application", "Kann Applikation nicht laden, bitte Fehlermeldung weitergeben");
             }
         });
 
@@ -176,10 +175,10 @@ public class EpubEditorApplication extends Application
         initStage.initStyle(StageStyle.UNDECORATED);
         final Rectangle2D bounds = Screen.getPrimary().getBounds();
         initStage.setScene(splashScene);
-        initStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - SPLASH_WIDTH / 2);
-        initStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - SPLASH_HEIGHT / 2);
+        initStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - SPLASH_WIDTH / 2.0);
+        initStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - SPLASH_HEIGHT / 2.0);
         initStage.getIcons().add(applicationIcon);
-        initStage.setTitle("epub4mmee");
+        initStage.setTitle("Scripto");
         initStage.show();
     }
 
