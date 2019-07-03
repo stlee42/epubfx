@@ -21,10 +21,8 @@ public class EditingTreeCellBehavior<T> extends TreeCellBehavior<T>
         // handle editing, which only occurs with the primary mouse button
         TreeItem<T> treeItem = getNode().getTreeItem();
         if (button == MouseButton.PRIMARY) {
-            if (clickCount == 1 && isAlreadySelected) {
-                edit(null);
-            } else if (clickCount == 1) {
-                // cancel editing
+            if (clickCount == 1) {
+                // dont edit or cancel edit
                 edit(null);
             } else if (clickCount == 2 && treeItem.isLeaf()) {
                 // don't edit on double click, but open the file
@@ -32,8 +30,26 @@ public class EditingTreeCellBehavior<T> extends TreeCellBehavior<T>
                 edit(null);
             } else if (clickCount % 2 == 0) {
                 // try to expand/collapse branch tree item
-                treeItem.setExpanded(! treeItem.isExpanded());
+                treeItem.setExpanded(!treeItem.isExpanded());
             }
         }
     }
+
+    @Override
+    protected boolean handleDisclosureNode(double x, double y) {
+/*        TreeCell<T> treeCell = getNode();
+        Node disclosureNode = treeCell.getDisclosureNode();
+        if (disclosureNode != null) {
+            if (disclosureNode.getBoundsInParent().contains(x, y)) {
+                if (treeCell.getTreeItem() != null) {
+                    logger.info("treeItem " + treeCell.getTreeItem() +", was expanded: " + treeCell.getTreeItem().isExpanded());
+                    treeCell.getTreeItem().setExpanded(! treeCell.getTreeItem().isExpanded());
+                    logger.info("treeItem is now expanded: " + treeCell.getTreeItem().isExpanded());
+                }
+                return true;
+            }
+        }               */
+        return false;
+    }
+
 }

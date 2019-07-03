@@ -6,12 +6,11 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.skin.TreeCellSkin;
 import javafx.scene.input.KeyCode;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
+
+import org.apache.log4j.Logger;
 
 /**
  * User: mjungierek

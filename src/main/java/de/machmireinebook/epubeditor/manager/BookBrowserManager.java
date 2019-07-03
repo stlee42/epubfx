@@ -142,7 +142,7 @@ public class BookBrowserManager
             });
 
             treeCell.setOnDragDetected(mouseEvent -> {
-                TreeCell<Resource> cell = (TreeCell<Resource>) mouseEvent.getSource();
+                TreeCell<Resource> cell = (EditingTreeCell<Resource>) mouseEvent.getSource();
                 logger.info("dnd detected on item " + cell);
                 Resource res = cell.getItem();
                 if (MediaType.XHTML.equals(res.getMediaType()))
@@ -795,7 +795,7 @@ public class BookBrowserManager
             rootItem.getChildren().add(ncxItem);
         }
 
-        textItem.expandedProperty().setValue(true);
+        textItem.setExpanded(true);
         treeView.getSelectionModel().clearSelection();
         if (textItem.getChildren().size() > 0)
         {
@@ -813,7 +813,7 @@ public class BookBrowserManager
         {
             return;
         }
-        textItem.expandedProperty().setValue(true);
+        textItem.setExpanded(true);
         List<TreeItem<Resource>> textItems = textItem.getChildren();
         for (TreeItem<Resource> item : textItems)
         {
