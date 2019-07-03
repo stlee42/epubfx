@@ -15,6 +15,8 @@ public class BookTemplate
 {
     public static final BookTemplate MINIMAL_EPUB_2_BOOK = new BookTemplate("Minimales Buch", "Ein minimales Buch im EPUB 2 Flowable Layout",
             2.0, FXUtils.getImage("/images/book_128px.png"));
+    public static final BookTemplate MINIMAL_EPUB_3_BOOK = new BookTemplate("Minimales Buch", "Ein minimales Buch im EPUB 3 Flowable Layout",
+            3.0, FXUtils.getImage("/images/book_128px.png"));
     private String name;
     private Path path;
     private String description;

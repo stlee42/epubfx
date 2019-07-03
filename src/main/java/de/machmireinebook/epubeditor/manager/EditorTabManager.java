@@ -84,6 +84,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -569,7 +570,11 @@ public class EditorTabManager
                         currentXMLResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
                         if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
                         {
-                            PackageDocumentReader.read(resource, book);
+                            if (book.isEpub3()) {
+                                Epub3PackageDocumentReader.read(resource, book);
+                            } else {
+                                PackageDocumentReader.read(resource, book);
+                            }
                         }
                     }
                     catch (JDOMException | IOException e)

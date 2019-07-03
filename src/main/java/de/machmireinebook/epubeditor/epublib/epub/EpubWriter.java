@@ -21,6 +21,7 @@ import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProces
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -124,7 +125,13 @@ public class EpubWriter
     private void writePackageDocument(Book book, ZipOutputStream resultStream) throws IOException
     {
         resultStream.putNextEntry(new ZipEntry("OEBPS/content.opf"));
-        Document opfDocument = PackageDocumentWriter.write(book);
+        Document opfDocument;
+        if (book.isEpub3()) {
+            opfDocument = Epub3PackageDocumentWriter.write(book);
+        } else {
+            opfDocument = PackageDocumentWriter.write(book);
+        }
+
         XMLOutputter outputter = new XMLOutputter();
         Format xmlFormat = Format.getPrettyFormat();
         outputter.setFormat(xmlFormat);
@@ -135,9 +142,6 @@ public class EpubWriter
 
     /**
      * Writes the META-INF/container.xml file.
-     *
-     * @param resultStream
-     * @throws java.io.IOException
      */
     private void writeContainer(ZipOutputStream resultStream) throws IOException
     {

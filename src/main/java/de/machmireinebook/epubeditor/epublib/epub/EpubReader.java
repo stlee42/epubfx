@@ -6,17 +6,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.Namespace;
 
 /**
  * Reads an epub file.
@@ -104,7 +108,15 @@ public class EpubReader
         Resource packageResource = resources.remove(packageResourceHref);
         try
         {
-            PackageDocumentReader.read(packageResource, book, resources);
+            Document packageDocument = ResourceUtil.getAsDocument(packageResource);
+            Element root = packageDocument.getRootElement();
+            EpubVersion version = EpubVersion.getByString(root.getAttributeValue("version"));
+            book.setVersion(version);
+            if (version.isEpub3()) {
+                Epub3PackageDocumentReader.read(packageResource, packageDocument, book, resources);
+            } else {
+                PackageDocumentReader.read(packageResource, packageDocument, book, resources);
+            }
         }
         catch (Exception e)
         {

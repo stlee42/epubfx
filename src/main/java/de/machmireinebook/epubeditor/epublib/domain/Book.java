@@ -36,6 +36,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
 import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
@@ -90,19 +91,53 @@ public class Book implements Serializable
         Resource opfResource = PackageDocumentWriter.createOPFResource(book);
         book.setOpfResource(opfResource);
 
-        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml");
+        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
-        book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css");
+        book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
 
         return book;
     }
 
-    public Resource addResourceFromTemplate(String templateFileName, String href)
+    public static Book createMinimalEpub3Book()
+    {
+        Book book = new Book();
+        book.setVersion(EpubVersion.VERSION_3_2);
+
+        book.setMetadata(new de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata());
+
+        Resource navResource = book.addResourceFromTemplate("/epub/nav.xhtml", "Text/nav.xhtml", false);
+        navResource.setProperties(ManifestItemProperties.nav.getName());
+        book.setEpub3NavResource(navResource);
+        book.getSpine().setTocResource(navResource);
+        book.getSpine().addResource(navResource);
+        book.addResource(navResource, false);
+
+        //for compatibility create a toc ncx too
+        Resource ncxResource = NCXDocument.createNCXResource(book);
+        book.setNcxResource(ncxResource);
+        book.addResource(ncxResource, false);
+
+        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
+        book.addSection("Start", textRes);
+
+        book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
+
+        Resource opfResource = Epub3PackageDocumentWriter.createOPFResource(book);
+        book.setOpfResource(opfResource);
+
+        return book;
+    }
+
+    public Resource addResourceFromTemplate(String templateFileName, String href) {
+        return addResourceFromTemplate(templateFileName, href, true);
+    }
+
+    public Resource addResourceFromTemplate(String templateFileName, String href, boolean refreshOpf)
     {
         File file = new File(Book.class.getResource(templateFileName).getFile());
         Resource res = createResourceFromFile(file, href, MediaType.getByFileName(href));
-        addResource(res);
+        addResource(res, refreshOpf);
         if (MediaType.XHTML.equals(res.getMediaType()))
         {
             try
@@ -295,7 +330,11 @@ public class Book implements Serializable
 
     public void refreshOpfResource()
     {
-        opfResource.get().setData(PackageDocumentWriter.createOPFContent(this));
+        if (isEpub3()) {
+            opfResource.get().setData(Epub3PackageDocumentWriter.createOPFContent(this));
+        } else {
+            opfResource.get().setData(PackageDocumentWriter.createOPFContent(this));
+        }
     }
 
     /**
@@ -658,15 +697,12 @@ public class Book implements Serializable
 
     public boolean isFixedLayout()
     {
-        return (versionProperty.get() == EpubVersion.VERSION_3 || versionProperty.get() == EpubVersion.VERSION_3_1) && isFixedLayout;
+        return isEpub3() && isFixedLayout;
     }
 
     public boolean isEpub3()
     {
-        return (versionProperty.get() == EpubVersion.VERSION_3
-                || versionProperty.get() == EpubVersion.VERSION_3_0_1
-                || versionProperty.get() == EpubVersion.VERSION_3_1
-                || versionProperty.get() == EpubVersion.VERSION_3_2);
+        return versionProperty.get().isEpub3();
     }
 
     public void setFixedLayout(boolean isFixedLayout)

@@ -13,6 +13,7 @@ public enum MetadataPropertyValue
     meta_auth("meta-auth"),
     role,
     dcterms_modified("dcterms:modified"),
+    title_type("title-type")
     ;
 
     private String name;

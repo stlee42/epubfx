@@ -655,7 +655,6 @@ public class MainController implements Initializable
         {
             saveEpub(book);
         }
-        currentBookProperty.get().setBookIsChanged(false);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -677,7 +676,6 @@ public class MainController implements Initializable
             book.setPhysicalFileName(file.toPath());
             saveEpub(book);
         }
-        currentBookProperty.get().setBookIsChanged(false);
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -714,6 +712,9 @@ public class MainController implements Initializable
         {
             logger.error("", e);
         }
+        bookBrowserManager.refreshOpf();
+        bookBrowserManager.refreshNcx();
+        currentBookProperty.get().setBookIsChanged(false);
     }
 
 

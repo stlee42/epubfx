@@ -38,6 +38,7 @@ import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 import jidefx.scene.control.searchable.TableViewSearchable;
 
 import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_EPUB_2_BOOK;
+import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_EPUB_3_BOOK;
 
 /**
  * User: mjungierek
@@ -116,6 +117,7 @@ public class NewEBookController implements StandardController
         epub2Books.clear();
         epub2Books.add(MINIMAL_EPUB_2_BOOK);
         epub3ReflowableBooks.clear();
+        epub3ReflowableBooks.add(MINIMAL_EPUB_3_BOOK);
         epub3PrepaginatedBooks.clear();
         try
         {
@@ -212,6 +214,12 @@ public class NewEBookController implements StandardController
         if (tableView.getSelectionModel().getSelectedItem().equals(MINIMAL_EPUB_2_BOOK))
         {
             Book minimalBook = Book.createMinimalBook();
+            currentBookProperty.set(minimalBook);
+            currentBookProperty.get().setBookIsChanged(true);
+        }
+        else if (tableView.getSelectionModel().getSelectedItem().equals(MINIMAL_EPUB_3_BOOK))
+        {
+            Book minimalBook = Book.createMinimalEpub3Book();
             currentBookProperty.set(minimalBook);
             currentBookProperty.get().setBookIsChanged(true);
         }
