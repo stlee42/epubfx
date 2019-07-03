@@ -18,6 +18,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import de.machmireinebook.epubeditor.EpubEditorStarter;
+
 import org.apache.log4j.Logger;
 
 import com.dlsc.formsfx.model.structure.Field;
@@ -26,8 +28,6 @@ import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
-
-import de.machmireinebook.epubeditor.EpubEditorStarter;
 
 /**
  * Created by Michail Jungierek
@@ -56,7 +56,7 @@ public class PreferencesManager
     private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
 
     private DoubleProperty version = new SimpleDoubleProperty(2.0);
-    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.0, 3.1, 3.2), 0).render(
+    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
             new RadioButtonControl<>());
 
     private ObjectProperty<ReferenceType> referenceType = new SimpleObjectProperty<>(ReferenceType.FOOTNOTE);

@@ -14,6 +14,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 
 import org.apache.commons.lang.StringUtils;
@@ -99,6 +100,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         MetadataProperty modificationDate = metadata.getModificationDate();
         if (modificationDate == null) {
             modificationDate = new MetadataProperty();
+            modificationDate.setProperty(MetadataPropertyValue.dcterms_modified.getName());
             metadata.setModificationDate(modificationDate);
         }
         modificationDate.setValue(DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now()));

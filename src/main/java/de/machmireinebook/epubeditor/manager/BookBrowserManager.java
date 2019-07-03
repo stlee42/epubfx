@@ -46,11 +46,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import com.google.common.io.Files;
-
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
@@ -68,6 +63,11 @@ import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import com.google.common.io.Files;
 
 /**
  * User: mjungierek
@@ -788,7 +788,7 @@ public class BookBrowserManager
         rootItem.getChildren().add(opfItem);
 
         Resource ncxResource = book.getNcxResource();
-        if (ncxResource != null) //in case of epub it could be null
+        if (ncxResource != null) //in case of epub 3 it could be null
         {
             ncxItem = new TreeItem<>(ncxResource);
             ncxItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));

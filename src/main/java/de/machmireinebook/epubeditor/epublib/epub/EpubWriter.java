@@ -9,19 +9,19 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -52,7 +52,9 @@ public class EpubWriter
         try (ZipOutputStream resultStream = new ZipOutputStream(out)) {
             writeMimeType(resultStream);
             writeContainer(resultStream);
-            initTOCResource(book);
+            if (!book.isEpub3()) {
+                initTOCResource(book);
+            }
             writeResources(book, resultStream);
             writePackageDocument(book, resultStream);
         }
@@ -98,9 +100,6 @@ public class EpubWriter
 
     /**
      * Writes the resource to the resultStream.
-     *
-     * @param resource
-     * @param resultStream
      */
     private void writeResource(Resource resource, ZipOutputStream resultStream)
     {
@@ -158,9 +157,6 @@ public class EpubWriter
 
     /**
      * Stores the mimetype as an uncompressed file in the ZipOutputStream.
-     *
-     * @param resultStream
-     * @throws java.io.IOException
      */
     private void writeMimeType(ZipOutputStream resultStream) throws IOException
     {

@@ -8,13 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
@@ -28,6 +21,13 @@ import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -202,10 +202,16 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
         if (spineElement == null)
         {
             log.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
-            return generateSpineFromResources(resources);
+            return generateSpineFromResources(book);
         }
         Spine result = new Spine();
         result.setTocResource(book.getEpub3NavResource());
+        //for compatibility it's possible that a ncx toc is included in epub, read it into
+        String epub2TocId = spineElement.getAttributeValue(OPFAttributes.toc);
+        if (StringUtils.isNotEmpty(epub2TocId)) {
+            Resource ncxResource = resources.getByIdOrHref(epub2TocId);
+            book.setNcxResource(ncxResource);
+        }
         List<Element> spineItems = spineElement.getChildren(OPFTags.itemref, NAMESPACE_OPF);
         List<SpineReference> spineReferences = new ArrayList<>(spineItems.size());
         for (Element spineItem : spineItems)
@@ -245,8 +251,9 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
      *
      * @return a spine created out of all resources in the resources.
      */
-    private static Spine generateSpineFromResources(Resources resources)
+    private static Spine generateSpineFromResources(Book book)
     {
+        Resources resources = book.getResources();
         Spine result = new Spine();
         List<String> resourceHrefs = new ArrayList<>(resources.getAllHrefs());
         resourceHrefs.sort(String.CASE_INSENSITIVE_ORDER);
@@ -255,7 +262,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             Resource resource = resources.getByHref(resourceHref);
             if (resource.getMediaType() == MediaType.NCX)
             {
-                result.setTocResource(resource);
+                book.setNcxResource(resource);
             }
             else if (resource.getMediaType() == MediaType.XHTML)
             {
