@@ -163,7 +163,7 @@ public class NewEBookController implements StandardController
                     for (MetadataProperty otherMetadataProperty : otherProperties)
                     {
                         String property = otherMetadataProperty.getProperty();
-                        if (RenditionLayout.qName.equals(property))
+                        if (RenditionLayout.propertyName.equals(property))
                         {
                             found = true;
                             if (RenditionLayout.PRE_PAGINATED.getValue().equals(otherMetadataProperty.getValue()))

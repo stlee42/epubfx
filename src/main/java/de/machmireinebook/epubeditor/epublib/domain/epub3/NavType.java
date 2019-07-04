@@ -12,10 +12,6 @@ public enum NavType
     landmarks("landmarks");
 
     private String name;
-    NavType()
-    {
-        this.name = this.name();
-    }
 
     NavType(String name)
     {

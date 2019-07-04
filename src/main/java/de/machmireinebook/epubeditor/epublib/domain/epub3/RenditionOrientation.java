@@ -11,7 +11,7 @@ public enum RenditionOrientation
     PORTRAIT("portrait"),
     AUTO("auto");
 
-    public static final String qName = "rendition:orientation";
+    public static final String propertyName = "rendition:orientation";
     private String value;
 
     RenditionOrientation(String value)

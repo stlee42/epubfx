@@ -7,11 +7,13 @@ package de.machmireinebook.epubeditor.epublib.domain.epub3;
  */
 public enum RenditionSpread
 {
-    LANDSCAPE("landscape"),
-    PORTRAIT("portrait"),
+    none("none"),
+    landscape("landscape"),
+    portrait("portrait"), //deprecated
+    both("both"),
     AUTO("auto");
 
-    public static final String qName = "rendition:orientation";
+    public static final String propertyName = "rendition:spread";
     private String value;
 
     RenditionSpread(String value)

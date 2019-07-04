@@ -10,7 +10,7 @@ public enum RenditionLayout
     REFLOWABLE("reflowable"),
     PRE_PAGINATED("pre-paginated");
 
-    public static final String qName = "rendition:layout";
+    public static final String propertyName = "rendition:layout";
     private String value;
 
     RenditionLayout(String value)
