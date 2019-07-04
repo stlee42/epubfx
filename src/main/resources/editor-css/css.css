@@ -1,3 +1,10 @@
+.code-area .css-default {
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-fill: black;
+}
+
+
 .code-area .comment
 {
     -fx-fill: #008000;
@@ -17,6 +24,7 @@
 
 .code-area .text.css-comment
 {
-    -fx-fill: #008080;
+    -fx-fill: #008000;
+    -fx-font-style: italic;
 }
 

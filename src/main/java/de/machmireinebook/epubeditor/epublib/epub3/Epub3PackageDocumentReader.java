@@ -8,7 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
@@ -22,13 +30,6 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
 
@@ -39,7 +40,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
  */
 public class Epub3PackageDocumentReader extends PackageDocumentBase
 {
-    private static final Logger log = Logger.getLogger(Epub3PackageDocumentReader.class);
+    private static final Logger logger = Logger.getLogger(Epub3PackageDocumentReader.class);
 
 
     public static void read(Resource packageResource, Document packageDocument, Book book, Resources resources)
@@ -51,6 +52,10 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
 
         //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
         XHTMLResource navResource = Epub3NavigationDocumentReader.read(root, resources);
+        if (navResource == null) {
+            logger.error("no nav in epub");
+            throw new NavNotFoundException("epub contains no nav resource");
+        }
         book.setEpub3NavResource(navResource);
         Epub3NavigationDocumentReader.readNavElements(navResource, book, resources);
 
@@ -102,7 +107,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
         Resources result = new Resources();
         if (manifestElement == null)
         {
-            log.error("Package document does not contain element " + OPFTags.manifest);
+            logger.error("Package document does not contain element " + OPFTags.manifest);
             return result;
         }
         List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
@@ -116,13 +121,13 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             }
             catch (UnsupportedEncodingException e)
             {
-                log.error(e.getMessage());
+                logger.error(e.getMessage());
             }
             String mediaTypeName = itemElement.getAttributeValue(OPFAttributes.media_type);
             Resource resource = resources.remove(href);
             if (resource == null)
             {
-                log.error("resource with href '" + href + "' not found");
+                logger.error("resource with href '" + href + "' not found");
                 continue;
             }
             resource.setId(id);
@@ -201,7 +206,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
         Element spineElement =  root.getChild(OPFTags.spine, NAMESPACE_OPF);
         if (spineElement == null)
         {
-            log.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
+            logger.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
             return generateSpineFromResources(book);
         }
         Spine result = new Spine();
@@ -219,7 +224,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             String itemref = spineItem.getAttributeValue(OPFAttributes.idref);
             if (StringUtils.isBlank(itemref))
             {
-                log.error("itemref with missing or empty idref"); // XXX
+                logger.error("itemref with missing or empty idref"); // XXX
                 continue;
             }
             String id = idMapping.get(itemref);
@@ -230,7 +235,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             Resource resource = resources.getByIdOrHref(id);
             if (resource == null)
             {
-                log.error("resource with id \'" + id + "\' not found");
+                logger.error("resource with id \'" + id + "\' not found");
                 continue;
             }
 
@@ -286,7 +291,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
                     Resource resource = book.getResources().getByHref(coverHref);
                     if (resource == null)
                     {
-                        log.error("Cover image resource " + coverHref + " not found");
+                        logger.error("Cover image resource " + coverHref + " not found");
                         continue;
                     }
                     if (resource.getMediaType().isBitmapImage())
@@ -296,7 +301,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
                     }
                     else
                     {
-                        log.error("Cover image resource " + coverHref + " is not an image");
+                        logger.error("Cover image resource " + coverHref + " is not an image");
                     }
                 }
             }

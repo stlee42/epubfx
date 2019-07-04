@@ -9,18 +9,19 @@ import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.xml.sax.InputSource;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.DefaultResourceFactory;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.xml.sax.InputSource;
 
 /**
  * Various resource utility methods
@@ -54,8 +55,6 @@ public class ResourceUtil
 	/**
 	 * Creates a resource with as contents a html page with the given title.
 	 * 
-	 * @param title
-	 * @param href
 	 * @return a resource with as contents a html page with the given title.
 	 */
 	public static Resource createResource(String title, String href) {
@@ -65,11 +64,8 @@ public class ResourceUtil
 
 	/**
 	 * Creates a resource out of the given zipEntry and zipInputStream.
-	 * 
-	 * @param zipEntry
-	 * @param zipInputStream
+	 *
 	 * @return a resource created out of the given zipEntry and zipInputStream.
-	 * @throws java.io.IOException
 	 */
 	public static Resource createResource(ZipEntry zipEntry, ZipInputStream zipInputStream) throws IOException {
         MediaType mediaType = MediaType.getByFileName(zipEntry.getName());
@@ -93,12 +89,6 @@ public class ResourceUtil
 
 	/**
 	 * Converts a given string from given input character encoding to the requested output character encoding.
-	 * 
-	 * @param inputEncoding
-	 * @param outputEncoding
-	 * @param input
-	 * @return the string from given input character encoding converted to the requested output character encoding.
-	 * @throws java.io.UnsupportedEncodingException
 	 */
 	public static byte[] recode(String inputEncoding, String outputEncoding, byte[] input) throws UnsupportedEncodingException {
 		return new String(input, inputEncoding).getBytes(outputEncoding);
@@ -106,7 +96,6 @@ public class ResourceUtil
 	
 	/**
 	 * Gets the contents of the Resource as an InputSource in a null-safe manner.
-	 * 
 	 */
 	public static InputSource getInputSource(Resource resource) throws IOException {
 		if (resource == null) {
@@ -120,7 +109,6 @@ public class ResourceUtil
 		return inputSource;
 	}
 	
-	
 	/**
 	 * Reads parses the xml therein and returns the result as a Document
 	 */
@@ -129,17 +117,8 @@ public class ResourceUtil
 		return getAsDocument(resource, new SAXBuilder());
 	}
 	
-	
 	/**
 	 * Reads the given resources inputstream, parses the xml therein and returns the result as a Document
-	 * 
-	 * @param resource
-	 * @param documentBuilder
-	 * @return the document created from the given resource
-	 * @throws java.io.UnsupportedEncodingException
-	 * @throws org.xml.sax.SAXException
-	 * @throws java.io.IOException
-	 * @throws javax.xml.parsers.ParserConfigurationException
 	 */
 	public static Document getAsDocument(Resource resource, SAXBuilder documentBuilder) throws IOException, JDOMException
     {

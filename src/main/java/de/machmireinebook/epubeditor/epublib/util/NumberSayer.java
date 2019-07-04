@@ -17,7 +17,7 @@ public class NumberSayer {
 		if(number < 100) {
 			return DECIMALS[number / 10] + NUMBER_BELOW_20[number % 10];
 		}
-		if(number >= 100 && number < 200) {
+		if(number < 200) {
 			return ORDER_NUMBERS[0] + getNumberName(number - 100);
 		}
 		if(number < 1000) {

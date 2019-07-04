@@ -62,7 +62,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setParagraphGraphicFactory(factory);
 
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            codeArea.setStyleSpans(0, computeHighlighting(newText));
+            //codeArea.setStyleSpans(0, computeHighlighting(newText));
+            computeAlternativeHighlighting(newText);
         });
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
@@ -88,6 +89,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
 
     protected abstract StyleSpans<? extends Collection<String>> computeHighlighting(String newText);
+
+    protected abstract void computeAlternativeHighlighting(String newText);
 
     @Override
     public ObjectProperty<Worker.State> stateProperty()

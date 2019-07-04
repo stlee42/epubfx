@@ -38,6 +38,8 @@ public enum MediaType implements Serializable
     TTF ("application/x-font-ttf", ".ttf", FontResourceFactory.getInstance()),
     TTF_1 ("application/x-font-truetype", ".ttf", FontResourceFactory.getInstance()),
     TTF_2 ("application/x-truetype-font", ".ttf", FontResourceFactory.getInstance()),
+    TTF_SINCE_3_2 ("font/ttf", ".ttf", FontResourceFactory.getInstance(), 3.2F),
+    TTF_2_SINCE_3_2 ("application/font-sfnt", ".ttf", FontResourceFactory.getInstance(), 3.2F),
     TTF_RFC_8081 ("font/ttf", ".ttf", FontResourceFactory.getInstance()),
     OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
@@ -69,14 +71,12 @@ public enum MediaType implements Serializable
 
     public boolean isFont()
     {
-        return this.equals(TTF) || this.equals(TTF_1) ||  this.equals(TTF_2) || this.equals(TTF_RFC_8081)
-                || this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(OPENTYPE_RFC_8081)
-                || this.equals(WOFF) || this.equals(WOFF_RFC_8081) || this.equals(WOFF2);
+        return isTTFFont() || isOpenTypeFont() ||  isWoffFont();
     }
 
     public boolean isTTFFont()
     {
-        return this.equals(TTF) || this.equals(TTF_1) ||  this.equals(TTF_2) || this.equals(TTF_RFC_8081);
+        return this.equals(TTF) || this.equals(TTF_1) ||  this.equals(TTF_2) || this.equals(TTF_RFC_8081) || this.equals(TTF_SINCE_3_2) || this.equals(TTF_2_SINCE_3_2);
     }
 
     public boolean isOpenTypeFont()
@@ -93,6 +93,7 @@ public enum MediaType implements Serializable
     {
         return this.equals(JPG) || this.equals(PNG) || this.equals(GIF) || this.equals(SVG);
     }
+
     /**
      * Gets the MediaType based on the file extension.
      * Null of no matching extension found.

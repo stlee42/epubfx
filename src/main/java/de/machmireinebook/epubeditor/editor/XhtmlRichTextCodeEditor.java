@@ -22,7 +22,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  */
 public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 {
-    private static final Logger logger = Logger.getLogger(XHTMLCodeEditor.class);
+    private static final Logger logger = Logger.getLogger(XhtmlRichTextCodeEditor.class);
 
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))"
             + "|(?<COMMENT><!--[^<>]+-->)");
@@ -109,6 +109,11 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
+    }
+
+    @Override
+    protected void computeAlternativeHighlighting(String text)
+    {
     }
 
     @Override

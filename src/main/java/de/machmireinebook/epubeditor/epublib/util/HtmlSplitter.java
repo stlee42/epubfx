@@ -51,7 +51,7 @@ public class HtmlSplitter {
 		this.footerElements = getFooterElements();
 		footerCloseTagLength = calculateTotalTagStringLength(footerElements);
 		this.maxLength = (int) ((float) maxLength * 0.9);
-		currentXmlEvents = new ArrayList<XMLEvent>();
+		currentXmlEvents = new ArrayList<>();
 		currentXmlEvents.addAll(headerElements);
 		currentXmlEvents.addAll(elementStack);
 		out = xmlOutputFactory.createXMLEventWriter(currentDoc);
@@ -68,7 +68,7 @@ public class HtmlSplitter {
 	}
 	
 	
-	private void closeCurrentDocument() throws XMLStreamException {
+	private void closeCurrentDocument() {
 		closeAllTags(currentXmlEvents);
 		currentXmlEvents.addAll(footerElements);
 		result.add(currentXmlEvents);
@@ -84,7 +84,7 @@ public class HtmlSplitter {
 			out.add(stackXmlEvent);
 		}
 		
-		currentXmlEvents = new ArrayList<XMLEvent>();
+		currentXmlEvents = new ArrayList<>();
 		currentXmlEvents.addAll(headerElements);
 		currentXmlEvents.addAll(elementStack);
 	}
@@ -101,7 +101,7 @@ public class HtmlSplitter {
 		currentXmlEvents.add(xmlEvent);
 	}
 
-	private void closeAllTags(List<XMLEvent> xmlEvents) throws XMLStreamException {
+	private void closeAllTags(List<XMLEvent> xmlEvents) {
 		for(int i = elementStack.size() - 1; i>= 0; i--) {
 			XMLEvent xmlEvent = elementStack.get(i);
 			XMLEvent xmlEndElementEvent = xmlEventFactory.createEndElement(xmlEvent.asStartElement().getName(), null);

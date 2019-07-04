@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * User: mjungierek
@@ -157,7 +157,6 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         } */
     protected StyleSpans<Collection<String>> computeHighlighting(String text)
     {
-
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
 
         BreakIterator wb = BreakIterator.getWordInstance();
@@ -171,6 +170,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         boolean insideComment = false;
         boolean propertyValue = false;
         boolean string = false;
+
         while (lastIndex != BreakIterator.DONE)
         {
             int firstIndex = lastIndex;
@@ -224,7 +224,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                 else if (startEndComment)  //the char before was a *
                 {
                     startEndComment = false;
-                    if ('/' == text.charAt(firstIndex)) //and thsi on is a /, end the comment
+                    if ('/' == text.charAt(firstIndex)) //and this on is a /, end the comment
                     {
                         insideComment = false;
                     }
@@ -234,6 +234,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                 logger.info("current word " + word);
                 if (insideBrackets)
                 {
+                    logger.info("inside brackets ");
                     if (CSS_PROPERTIES.contains(word))
                     {
                         spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
@@ -277,7 +278,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                     {
                         if (startComment)
                         {
-                            
+
                             startComment = false;
                         }
                         else
@@ -305,4 +306,134 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 
         return spansBuilder.create();
     }
+
+    @Override
+    protected void computeAlternativeHighlighting(String text)
+    {
+        getCodeArea().setStyleClass(0, text.length(), "css-default");
+        BreakIterator wb = BreakIterator.getWordInstance();
+        wb.setText(text);
+
+        int lastIndex = wb.first();
+
+        int stringStartIndex = 0;
+        int singleQuoteStringStartIndex = 0;
+        int commentStartIndex = 0;
+
+        boolean insideBrackets = false;
+        boolean closingBracket = false;
+
+        boolean startComment = false;
+        boolean startEndComment = false;
+        boolean insideComment = false;
+        boolean propertyValue = false;
+        boolean string = false;
+        while (lastIndex != BreakIterator.DONE)
+        {
+            int firstIndex = lastIndex;
+            lastIndex = wb.next();
+            closingBracket = false;
+
+            if (lastIndex != BreakIterator.DONE)
+            {
+                if (!insideComment)
+                {
+                    if ('{' == text.charAt(firstIndex))
+                    {
+                        insideBrackets = true;
+                    }
+                    else if ('}' == text.charAt(firstIndex))
+                    {
+                        closingBracket = true;
+                        insideBrackets = false;
+                        propertyValue = false;
+                    }
+                    else if ('/' == text.charAt(firstIndex))
+                    {
+                        startComment = true;
+                        commentStartIndex = firstIndex;
+                    }
+                    else if (':' == text.charAt(firstIndex) && insideBrackets)
+                    {
+                        propertyValue = true;
+                        continue;
+                    }
+                    else if (';' == text.charAt(firstIndex) && insideBrackets)
+                    {
+                        propertyValue = false;
+                    }
+                    else if ('"' == text.charAt(firstIndex))
+                    {
+                        if (string) {
+                            getCodeArea().setStyleClass(stringStartIndex, lastIndex, "css-textvalue");
+                        } else {
+                            stringStartIndex = firstIndex;
+                        }
+                        string = !string;
+                    }
+                    else if ('\'' == text.charAt(firstIndex))
+                    {
+                        if (string) {
+                            getCodeArea().setStyleClass(singleQuoteStringStartIndex, lastIndex, "css-textvalue");
+                        } else {
+                            singleQuoteStringStartIndex = firstIndex;
+                        }
+                        string = !string;
+                    }
+                    else if (startComment && '*' == text.charAt(firstIndex))
+                    {
+                        insideComment = true;
+                    }
+                }
+                else if ('*' == text.charAt(firstIndex))  //inside comments remenber every *, if the next char is a /
+                {
+                    startEndComment = true;
+                }
+                else if (startEndComment)  //the char before was a *
+                {
+                    startEndComment = false;
+                    if ('/' == text.charAt(firstIndex)) //and this on is a /, end the comment
+                    {
+                        insideComment = false;
+                        getCodeArea().setStyleClass(commentStartIndex, lastIndex, "css-comment");
+                    }
+                }
+
+                String word = text.substring(firstIndex, lastIndex).toLowerCase();
+                logger.info("current word " + word);
+                if (insideBrackets)
+                {
+                    logger.info("inside brackets ");
+                    if (CSS_PROPERTIES.contains(word))
+                    {
+                        getCodeArea().setStyleClass(firstIndex, lastIndex, "css-property");
+                    }
+                    else if (propertyValue)
+                    {
+                        if (string)
+                        {
+                            getCodeArea().setStyleClass(firstIndex, lastIndex, "css-textvalue");
+                        }
+                        else if (CSS_PROPERTIES_VALUES.contains(word))
+                        {
+                            getCodeArea().setStyleClass(firstIndex, lastIndex, "css-textvalue");
+                        }
+                        else
+                        {
+                            getCodeArea().setStyleClass(firstIndex, lastIndex, "css-property-value");
+                        }
+                    }
+                }
+                else if (!SELECTOR_DELIMITER.contains(word) && !closingBracket && StringUtils.isNotBlank(word))
+                {
+                    getCodeArea().setStyleClass(firstIndex, lastIndex, "css-selector");
+                }
+            }
+        }
+        //if we at the end and a block comment is not closed, all text after opening comment is a comment
+        if (insideComment) {
+            getCodeArea().setStyleClass(commentStartIndex, text.length(), "css-comment");
+        }
+    }
+
 }
