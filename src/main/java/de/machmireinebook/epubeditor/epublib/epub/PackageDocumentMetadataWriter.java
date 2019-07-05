@@ -2,7 +2,7 @@ package de.machmireinebook.epubeditor.epublib.epub;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jdom2.Element;
 
@@ -22,12 +22,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
 
     /**
      * Writes the book's metadata.
-     *
-     * @param book
-     * @param serializer
-     * @throws java.io.IOException
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      */
     public static void writeMetaData(Book book, Element root)
     {
@@ -128,11 +122,6 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
      * Writes out the complete list of Identifiers to the package document.
      * The first identifier for which the bookId is true is made the bookId identifier.
      * If no identifier has bookId == true then the first bookId identifier is written as the primary.
-     *
-     * @param identifiers
-     * @param serializer
-     * @throws IllegalStateException
-     * @throws IllegalArgumentException
      * @
      */
     private static void writeIdentifiers(Metadata metadata, Element metadataElement)

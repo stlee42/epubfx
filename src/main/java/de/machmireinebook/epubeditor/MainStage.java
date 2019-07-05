@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import de.machmireinebook.epubeditor.gui.UIHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Rectangle2D;
@@ -15,7 +14,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.apache.commons.lang.BooleanUtils;
+
+import org.apache.commons.lang3.BooleanUtils;
+
+import de.machmireinebook.epubeditor.gui.UIHelper;
 
 /**
  * User: mjungierek

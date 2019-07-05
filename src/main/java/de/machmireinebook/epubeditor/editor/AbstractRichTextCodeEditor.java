@@ -26,7 +26,6 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
-import org.fxmisc.richtext.model.StyleSpans;
 
 /**
  * User: mjungierek
@@ -62,8 +61,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setParagraphGraphicFactory(factory);
 
         codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            //codeArea.setStyleSpans(0, computeHighlighting(newText));
-            computeAlternativeHighlighting(newText);
+            computeHighlighting(newText);
         });
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
@@ -88,9 +86,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
 
-    protected abstract StyleSpans<? extends Collection<String>> computeHighlighting(String newText);
-
-    protected abstract void computeAlternativeHighlighting(String newText);
+    protected abstract void computeHighlighting(String newText);
 
     @Override
     public ObjectProperty<Worker.State> stateProperty()

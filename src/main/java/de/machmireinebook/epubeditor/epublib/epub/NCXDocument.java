@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.DocType;
@@ -26,7 +26,6 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**
@@ -36,7 +35,6 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
  */
 public class NCXDocument
 {
-    public static final Namespace NAMESPACE_NCX_WITH_PREFIX = Namespace.getNamespace("ncx", "http://www.daisy.org/z3986/2005/ncx/");
     public static final Namespace NAMESPACE_NCX = Namespace.getNamespace("http://www.daisy.org/z3986/2005/ncx/");
     public static final String NCX_ITEM_ID = "ncx";
     public static final String DEFAULT_NCX_HREF = "toc.ncx";

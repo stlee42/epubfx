@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
 import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * A Book's collection of Metadata.

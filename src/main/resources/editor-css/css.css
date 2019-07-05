@@ -4,7 +4,6 @@
     -fx-fill: black;
 }
 
-
 .code-area .comment
 {
     -fx-fill: #008000;
@@ -20,6 +19,12 @@
 {
     -fx-fill: #008000;
     -fx-font-weight: bold;
+}
+
+.code-area .text.css-number
+{
+    -fx-fill: #0000FF;
+    -fx-font-weight: normal;
 }
 
 .code-area .text.css-comment

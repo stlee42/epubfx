@@ -9,7 +9,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.w3c.dom.Document;
@@ -42,12 +42,8 @@ public class PreviewManager
     {
         this.webview = webview;
 
-        webview.getEngine().setOnError(event -> {
-            logger.error(event.getMessage(), event.getException());
-        });
-        webview.getEngine().setOnAlert(event -> {
-            logger.info(event.getData());
-        });
+        webview.getEngine().setOnError(event -> logger.error(event.getMessage(), event.getException()));
+        webview.getEngine().setOnAlert(event -> logger.info(event.getData()));
     }
 
     public void setEditorManager(EditorTabManager editorManager)

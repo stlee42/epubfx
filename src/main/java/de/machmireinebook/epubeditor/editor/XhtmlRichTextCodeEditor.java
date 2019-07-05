@@ -63,7 +63,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    protected StyleSpans<? extends Collection<String>> computeHighlighting(String text)
+    protected void computeHighlighting(String text)
     {
         Matcher matcher = XML_TAG.matcher(text);
         int lastKwEnd = 0;
@@ -108,13 +108,9 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
+        getCodeArea().setStyleSpans(0, spansBuilder.create());
     }
 
-    @Override
-    protected void computeAlternativeHighlighting(String text)
-    {
-    }
 
     @Override
     public MediaType getMediaType()
@@ -131,7 +127,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     {
         XMLTagPair pair = null;
         int paragraphIndex = getCurrentParagraphIndex();
-        int startParagraphIndex = paragraphIndex;
         Paragraph<Collection<String>, String, Collection<String>> paragraph = getCurrentParagraph();
         boolean foundOpenOpen = false;
         boolean foundOpenClose = false;

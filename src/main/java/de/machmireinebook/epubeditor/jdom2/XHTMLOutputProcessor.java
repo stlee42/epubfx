@@ -5,7 +5,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.CDATA;

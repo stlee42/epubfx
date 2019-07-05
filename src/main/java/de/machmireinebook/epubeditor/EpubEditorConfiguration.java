@@ -19,7 +19,7 @@ import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
 import org.apache.commons.collections4.list.SetUniqueList;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Layout;

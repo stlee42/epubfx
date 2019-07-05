@@ -2,15 +2,11 @@ package de.machmireinebook.epubeditor.editor;
 
 import java.text.BreakIterator;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
@@ -25,8 +21,26 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     private static final List<String> SELECTOR_DELIMITER = Arrays.asList(".", ",");
 
-    private static final List<String> CSS_PROPERTIES_VALUES = Arrays.asList("bold", "italic", "firebrick", "black", "transparent",
-            "true", "px", "em", "monospace", "initial");
+    private static final List<String> CSS_PROPERTIES_VALUES = Arrays.asList("normal", "bold", "bolder", "italic",
+            "black", "grey", "gray", "firebrick",
+            "transparent",
+            "cover", "no-repeat",
+            "true", "false",
+            "px", "em", "rem", "pt",
+            "monospace", "sans-serif", "serif",
+            "initial", "center", "solid", "auto", "right", "left", "justify", "inherit",
+            "table-cell", "table-row", "table-row-group", "button",
+            "middle", "bottom", "baseline", "separate",
+            "content-box", "border-box",
+            "collapse", "separate",
+            "visible", "none", "block", "inline-block", "flex",
+            "underline", "dotted",
+            "help", "pointer",
+            "uppercase", "lowercase",
+            "break-word", "wrap",
+            "scroll", "hidden",
+            "relative", "absolute", "fixed");
+
 
     private static final List<String> CSS_PROPERTIES = Arrays.asList("align-content", "align-items", "align-self", "alignment-adjust",
             "alignment-baseline", "anchor-point", "animation", "animation-delay",
@@ -155,160 +169,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
             StyleSpans<Collection<String>> spans = spansBuilder.create();
             return spans;
         } */
-    protected StyleSpans<Collection<String>> computeHighlighting(String text)
-    {
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-
-        BreakIterator wb = BreakIterator.getWordInstance();
-        wb.setText(text);
-
-        int lastIndex = wb.first();
-        int lastKwEnd = 0;
-        boolean insideBrackets = false;
-        boolean startComment = false;
-        boolean startEndComment = false;
-        boolean insideComment = false;
-        boolean propertyValue = false;
-        boolean string = false;
-
-        while (lastIndex != BreakIterator.DONE)
-        {
-            int firstIndex = lastIndex;
-            lastIndex = wb.next();
-            if (lastIndex != BreakIterator.DONE)
-            {
-                if (!insideComment)
-                {
-                    if ('{' == text.charAt(firstIndex))
-                    {
-                        insideBrackets = true;
-                    }
-                    else if ('}' == text.charAt(firstIndex))
-                    {
-                        insideBrackets = false;
-                        propertyValue = false;
-                    }
-                    else if ('/' == text.charAt(firstIndex))
-                    {
-                        startComment = true;
-                    }
-                    else if (':' == text.charAt(firstIndex) && insideBrackets)
-                    {
-                        propertyValue = true;
-                        spansBuilder.add(Collections.emptyList(), 1);
-                        lastKwEnd = lastIndex;
-                        continue;
-                    }
-                    else if (';' == text.charAt(firstIndex) && insideBrackets)
-                    {
-                        propertyValue = false;
-                    }
-                    else if ('"' == text.charAt(firstIndex))
-                    {
-                        if (string)
-                        {
-                            spansBuilder.add(Collections.singleton("css-textvalue"), 1);
-                            lastKwEnd = lastIndex;
-                        }
-                        string = !string;
-                    }
-                    else if (startComment && '*' == text.charAt(firstIndex))
-                    {
-                        insideComment = true;
-                    }
-                }
-                else if ('*' == text.charAt(firstIndex))  //inside comments remenber every *, if the next char is a /
-                {
-                    startEndComment = true;
-                }
-                else if (startEndComment)  //the char before was a *
-                {
-                    startEndComment = false;
-                    if ('/' == text.charAt(firstIndex)) //and this on is a /, end the comment
-                    {
-                        insideComment = false;
-                    }
-                }
-
-                String word = text.substring(firstIndex, lastIndex).toLowerCase();
-                logger.info("current word " + word);
-                if (insideBrackets)
-                {
-                    logger.info("inside brackets ");
-                    if (CSS_PROPERTIES.contains(word))
-                    {
-                        spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
-                        spansBuilder.add(Collections.singleton("css-property"), lastIndex - firstIndex);
-                        lastKwEnd = lastIndex;
-                    }
-                    else if (propertyValue)
-                    {
-                        if (string)
-                        {
-                            int spanLength = firstIndex - lastKwEnd;
-                            if (spanLength >= 0)
-                            {
-                                spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
-                                spansBuilder.add(Collections.singleton("css-textvalue"), lastIndex - firstIndex);
-                                lastKwEnd = lastIndex;
-                            }
-                        }
-                        else if (CSS_PROPERTIES_VALUES.contains(word))
-                        {
-                            spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
-                            spansBuilder.add(Collections.singleton("css-textvalue"), lastIndex - firstIndex);
-                            lastKwEnd = lastIndex;
-                        }
-                        else
-                        {
-                            int spanLength = firstIndex - lastKwEnd;
-                            if (spanLength >= 0)
-                            {
-                                spansBuilder.add(Collections.emptyList(), spanLength);
-                                spansBuilder.add(Collections.singleton("css-property-value"), lastIndex - firstIndex);
-                                lastKwEnd = lastIndex;
-                            }
-                        }
-                    }
-                }
-                else if (insideComment)
-                {
-                    int spanLength = firstIndex - lastKwEnd;
-                    if (spanLength >= 0)
-                    {
-                        if (startComment)
-                        {
-
-                            startComment = false;
-                        }
-                        else
-                        {
-                            spansBuilder.add(Collections.emptyList(), spanLength);
-                        }
-
-                        spansBuilder.add(Collections.singleton("css-comment"), lastIndex - firstIndex);
-                        lastKwEnd = lastIndex;
-                    }
-                }
-                else if (!SELECTOR_DELIMITER.contains(word) && StringUtils.isNotBlank(word))
-                {
-                    int spanLength = firstIndex - lastKwEnd;
-                    if (spanLength >= 0)
-                    {
-                        spansBuilder.add(Collections.emptyList(), firstIndex - lastKwEnd);
-                        spansBuilder.add(Collections.singleton("css-selector"), lastIndex - firstIndex);
-                        lastKwEnd = lastIndex;
-                    }
-                }
-            }
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-
-        return spansBuilder.create();
-    }
-
-    @Override
-    protected void computeAlternativeHighlighting(String text)
+    protected void computeHighlighting(String text)
     {
         getCodeArea().setStyleClass(0, text.length(), "css-default");
         BreakIterator wb = BreakIterator.getWordInstance();
@@ -321,7 +182,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         int commentStartIndex = 0;
 
         boolean insideBrackets = false;
-        boolean closingBracket = false;
+        boolean closingBracket;
 
         boolean startComment = false;
         boolean startEndComment = false;
@@ -414,6 +275,9 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                         {
                             getCodeArea().setStyleClass(firstIndex, lastIndex, "css-textvalue");
                         }
+                        else if (NumberUtils.isDigits(word)) {
+                            getCodeArea().setStyleClass(firstIndex, lastIndex, "css-number");
+                        }
                         else if (CSS_PROPERTIES_VALUES.contains(word))
                         {
                             getCodeArea().setStyleClass(firstIndex, lastIndex, "css-textvalue");
@@ -430,6 +294,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
                 }
             }
         }
+
         //if we at the end and a block comment is not closed, all text after opening comment is a comment
         if (insideComment) {
             getCodeArea().setStyleClass(commentStartIndex, text.length(), "css-comment");
