@@ -9,6 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 import org.apache.log4j.Logger;
 
+import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 /**
@@ -40,7 +41,7 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     {
     }
 
-    protected void computeHighlighting(String text)
+    protected StyleSpans<Collection<String>> computeHighlighting(String text)
     {
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
         cssRegexLexer.setContent(text);
@@ -55,6 +56,6 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        getCodeArea().setStyleSpans(0, spansBuilder.create());
+        return spansBuilder.create();
     }
 }

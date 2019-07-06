@@ -63,7 +63,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    protected void computeHighlighting(String text)
+    protected StyleSpans<Collection<String>> computeHighlighting(String text)
     {
         Matcher matcher = XML_TAG.matcher(text);
         int lastKwEnd = 0;
@@ -86,7 +86,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                             spansBuilder.add(Collections.emptyList(), amatcher.start() - lastKwEnd);
                             spansBuilder.add(Collections.singleton("attribute"), amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
                             spansBuilder.add(Collections.singleton("tagmark-equal"), amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("spell-check-error"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
+                            spansBuilder.add(Collections.singleton("attribute-value"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
                             lastKwEnd = amatcher.end();
                         }
 
@@ -108,7 +108,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        getCodeArea().setStyleSpans(0, spansBuilder.create());
+        return spansBuilder.create();
     }
 
 
