@@ -27,6 +27,7 @@ public class SettingEnumObjectProperty<T> extends SimpleObjectProperty<T>
      * It's a little bit tricky because to runtime T will be infered to Object, so that passing a String is correct.
      * Here the false T will be converted to a correct enum value.
      */
+    @SuppressWarnings("unchecked")
     public void setValue(T value) {
         Object rawValue = value;
         if (rawValue instanceof String)

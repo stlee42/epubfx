@@ -16,12 +16,18 @@
     -fx-fill: black;
 }
 
-.avalue {
+.attribute-value {
     -fx-fill: #008000;
     -fx-font-weight: bold;
 }
 
 .comment {
     -fx-fill: #008000;
+}
+
+.spell-check-error {
+    -rtfx-underline-color: indianred;
+    -rtfx-underline-width: 1px;
+    -rtfx-underline-dash-array: 5px;
 }
 

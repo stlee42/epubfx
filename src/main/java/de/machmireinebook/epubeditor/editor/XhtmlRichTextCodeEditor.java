@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
 
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek
@@ -86,7 +86,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                             spansBuilder.add(Collections.emptyList(), amatcher.start() - lastKwEnd);
                             spansBuilder.add(Collections.singleton("attribute"), amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
                             spansBuilder.add(Collections.singleton("tagmark-equal"), amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("avalue"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
+                            spansBuilder.add(Collections.singleton("spell-check-error"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
                             lastKwEnd = amatcher.end();
                         }
 

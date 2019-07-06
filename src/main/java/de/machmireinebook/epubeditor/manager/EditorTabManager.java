@@ -52,22 +52,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Content;
-import org.jdom2.DocType;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.Filter;
-import org.jdom2.filter.Filters;
-import org.jdom2.located.LocatedElement;
-import org.jdom2.located.LocatedJDOMFactory;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.util.IteratorIterable;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -88,6 +72,22 @@ import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Content;
+import org.jdom2.DocType;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filter;
+import org.jdom2.filter.Filters;
+import org.jdom2.located.LocatedElement;
+import org.jdom2.located.LocatedJDOMFactory;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.util.IteratorIterable;
 
 /**
  * User: mjungierek

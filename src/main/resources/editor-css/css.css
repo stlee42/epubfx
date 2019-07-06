@@ -4,32 +4,42 @@
     -fx-fill: black;
 }
 
-.code-area .comment
-{
-    -fx-fill: #008000;
-}
-
-.code-area .text.css-selector, .code-area .text.css-property-value
+.code-area .text.selector, .code-area .text.color
 {
     -fx-fill: #000080;
     -fx-font-weight: bold;
 }
 
-.code-area .text.css-textvalue
+.code-area .text.string
 {
     -fx-fill: #008000;
     -fx-font-weight: bold;
 }
 
-.code-area .text.css-number
+.code-area .text.value
+{
+    -fx-fill: #008000;
+    -fx-font-weight: bold;
+}
+
+.code-area .text.number
 {
     -fx-fill: #0000FF;
     -fx-font-weight: normal;
 }
 
-.code-area .text.css-comment
+.code-area .text.comment
 {
     -fx-fill: #008000;
     -fx-font-style: italic;
 }
 
+.code-area .text.semicolon {
+    -fx-font-weight: bold;
+}
+
+.code-area .text.control {
+    -fx-fill: #6A8088;
+    -fx-background-color: #6b8189;
+    -fx-font-weight: bold;
+}
