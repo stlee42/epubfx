@@ -53,8 +53,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -73,6 +71,8 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+
+import org.apache.log4j.Logger;
 
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
@@ -1052,8 +1052,19 @@ public class MainController implements Initializable
 
     public void insertTableButtonAction(ActionEvent actionEvent)
     {
-
-
+        if (editorManager.isInsertablePosition())
+        {
+            createAndOpenStandardController("/insert-table.fxml", InsertTableController.class);
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Einfügen nicht möglich");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("Can't insert tabel on this position. This is only available within the bodyof the document.");
+            alert.showAndWait();
+        }
     }
 
     private void createAndOpenStandardController(String fxmlFile, Class<? extends StandardController> controllerClass)
