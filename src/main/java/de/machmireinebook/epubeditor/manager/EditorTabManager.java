@@ -732,6 +732,17 @@ public class EditorTabManager
         }
     }
 
+    public void surroundSelection(String start, String end)
+    {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
+        {
+            String selection = currentEditor.get().getSelection();
+            currentEditor.get().replaceSelection(start + selection + end);
+            refreshPreview();
+            currentEditor.get();
+        }
+    }
+
     public void increaseIndent()
     {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))

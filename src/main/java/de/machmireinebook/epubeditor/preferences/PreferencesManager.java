@@ -7,11 +7,9 @@ import javax.inject.Singleton;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -37,7 +35,6 @@ public class PreferencesManager
 {
     private static final Logger logger = Logger.getLogger(PreferencesManager.class);
     private PreferencesFx preferencesFx;
-    private IntegerProperty integerProperty = new SimpleIntegerProperty(1);
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
@@ -47,19 +44,20 @@ public class PreferencesManager
     private ObjectProperty<String> languageSelection = new SimpleObjectProperty<>("English");
 
     private ObservableList<String> languageSpellItems = FXCollections.observableArrayList(Arrays.asList(
-            "English", "Deutsch", "Francais", "Italiano"));
+            "English", "Deutsch", "Français", "Italiano"));
     private ObjectProperty<String> languageSpellSelection = new SimpleObjectProperty<>("English");
 
     private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
-            "“ ” (English)", "„“ (Deutsch)", "»« (Deutsch)", "«» (Français)")
+            QuotationMark.ENGLISH.getDescription(), QuotationMark.GERMAN.getDescription(), QuotationMark.GERMAN_GUILLEMETS.getDescription(),
+            QuotationMark.FRENCH.getDescription())
     );
-    private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>("„“ (Deutsch)");
+    private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>(QuotationMark.GERMAN.getDescription());
 
     private DoubleProperty version = new SimpleDoubleProperty(2.0);
-    private SingleSelectionField versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
+    private SingleSelectionField<Double> versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
             new RadioButtonControl<>());
 
-    private ObjectProperty<ReferenceType> referenceType = new SimpleObjectProperty<>(ReferenceType.FOOTNOTE);
+    private ObjectProperty<ReferenceType> referenceType = new SettingEnumObjectProperty<>(ReferenceType.FOOTNOTE, ReferenceType.class);
     private SingleSelectionField<ReferenceType> referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList(ReferenceType.values()), 0).render(
             new RadioButtonControl<>());
 

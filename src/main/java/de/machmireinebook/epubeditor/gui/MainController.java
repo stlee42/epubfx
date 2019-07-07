@@ -71,9 +71,11 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
 import org.apache.log4j.Logger;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -85,6 +87,8 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Ribbon ribbon;
     @FXML
     private SplitPane mainDivider;
     @FXML
@@ -147,6 +151,8 @@ public class MainController implements Initializable
     private Button h6Button;
     @FXML
     private Button paragraphButton;
+    @FXML
+    private Button quotationMarksButton;
     @FXML
     private Button undoButton;
     @FXML
@@ -310,6 +316,7 @@ public class MainController implements Initializable
         h5Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h6Button.disableProperty().bind(isNoXhtmlEditorBinding);
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
         kursivButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -879,6 +886,20 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
+    public void quotationMarksButtonAction(ActionEvent actionEvent)
+    {
+        String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
+        logger.info("select quotation mark " + selectedQuotationMark);
+        QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
+        editorManager.surroundSelection(quotationMark.getLeft(), quotationMark.getRight());
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void singleQuotationMarksButtonAction(ActionEvent actionEvent)
+    {
+    }
+
+
     public void boldButtonAction(ActionEvent actionEvent)
     {
         editorManager.surroundSelectionWithTag("b");
@@ -1243,12 +1264,6 @@ public class MainController implements Initializable
 
     }
 
-    public void quotationMarksButtonAction(ActionEvent actionEvent)
-    {
-
-
-    }
-
     public void settingsButtonAction(ActionEvent actionEvent)
     {
         preferencesManager.showPreferencesDialog();
@@ -1265,4 +1280,5 @@ public class MainController implements Initializable
 
 
     }
+
 }

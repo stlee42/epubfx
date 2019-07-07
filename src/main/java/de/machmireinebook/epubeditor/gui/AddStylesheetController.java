@@ -9,14 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,7 +23,18 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
+
 import org.apache.log4j.Logger;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -183,20 +186,15 @@ public class AddStylesheetController implements StandardController
                     stylesheetResources.add(stylesheetResource);
                 }
 
-                newValue.getResources().getResourcesMap().addListener(new MapChangeListener<String, Resource>()
-                {
-                    @Override
-                    public void onChanged(Change<? extends String, ? extends Resource> change)
+                newValue.getResources().getResourcesMap().addListener((MapChangeListener<String, Resource>) change -> {
+                    stylesheetResources.clear();
+                    List<Resource> cssResources1 = currentBookProperty.get().getResources().getResourcesByMediaType(MediaType.CSS);
+                    for (Resource cssResource : cssResources1)
                     {
-                        stylesheetResources.clear();
-                        List<Resource> cssResources = currentBookProperty.get().getResources().getResourcesByMediaType(MediaType.CSS);
-                        for (Resource cssResource : cssResources)
-                        {
-                            StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
-                            stylesheetResources.add(stylesheetResource);
-                        }
-                        tableView.setItems(stylesheetResources);
+                        StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
+                        stylesheetResources.add(stylesheetResource);
                     }
+                    tableView.setItems(stylesheetResources);
                 });
             }
             tableView.setItems(stylesheetResources);
