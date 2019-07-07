@@ -88,6 +88,8 @@ public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
     @FXML
+    private Button singleQuotationMarksButton;
+    @FXML
     private Ribbon ribbon;
     @FXML
     private SplitPane mainDivider;
@@ -317,6 +319,7 @@ public class MainController implements Initializable
         h6Button.disableProperty().bind(isNoXhtmlEditorBinding);
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
         quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        singleQuotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
         kursivButton.disableProperty().bind(isNoXhtmlEditorBinding);
