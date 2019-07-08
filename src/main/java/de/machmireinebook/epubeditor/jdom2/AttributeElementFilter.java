@@ -9,27 +9,27 @@ import org.jdom2.filter.ElementFilter;
  * Date: 29.10.2014
  * Time: 20:08
  */
-public class AtrributeElementFilter extends ElementFilter
+public class AttributeElementFilter extends ElementFilter
 {
     private String attributeName;
     private Namespace attributeNamespace = Namespace.NO_NAMESPACE;
     private String attributeValue;
 
-    public AtrributeElementFilter(String elementName, String attributeName, String attributeValue)
+    public AttributeElementFilter(String elementName, String attributeName, String attributeValue)
     {
         super(elementName);
         this.attributeName = attributeName;
         this.attributeValue = attributeValue;
     }
 
-    public AtrributeElementFilter(String attributeName, String attributeValue)
+    public AttributeElementFilter(String attributeName, String attributeValue)
     {
         super();
         this.attributeName = attributeName;
         this.attributeValue = attributeValue;
     }
 
-    public AtrributeElementFilter(String attributeName, Namespace attributeNamespace, String attributeValue)
+    public AttributeElementFilter(String attributeName, Namespace attributeNamespace, String attributeValue)
     {
         super();
         this.attributeName = attributeName;

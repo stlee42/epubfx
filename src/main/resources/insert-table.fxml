@@ -20,15 +20,15 @@
    <CheckBox fx:id="headerCheckBox" layoutX="119.0" layoutY="130.0" mnemonicParsing="false" selected="true" />
    <Label layoutX="14.0" layoutY="197.0" text="Border collapsing" />
    <Label layoutX="14.0" layoutY="164.0" text="Border" />
-   <Label layoutX="14.0" layoutY="230.0" text="Styles" />
-   <Label layoutX="13.0" layoutY="263.0" text="Style Class" />
-   <TextField fx:id="styleClassTextField" layoutX="119.0" layoutY="259.0" prefHeight="25.0" prefWidth="272.0" />
-   <TextField fx:id="styleTextField" layoutX="119.0" layoutY="226.0" prefHeight="25.0" prefWidth="272.0" />
+   <Label layoutX="14.0" layoutY="296.0" text="Table Styles" />
+   <Label layoutX="13.0" layoutY="329.0" text="Table Style Class" />
+   <TextField fx:id="styleClassTextField" layoutX="119.0" layoutY="325.0" prefHeight="25.0" prefWidth="272.0" />
+   <TextField fx:id="styleTextField" layoutX="119.0" layoutY="292.0" prefHeight="25.0" prefWidth="272.0" />
    <ComboBox fx:id="borderCollapsingComboBox" layoutX="119.0" layoutY="193.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="177.0" />
    <TextField fx:id="borderWidthTextField" layoutX="119.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
    <Label layoutX="161.0" layoutY="164.0" text="px" />
-   <ColorPicker fx:id="borderColorPicker" layoutX="186.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="110.0" />
-   <ComboBox fx:id="borderStyleComboBox" layoutX="303.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="86.0" />
+   <ColorPicker fx:id="borderColorPicker" layoutX="278.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="110.0" />
+   <ComboBox fx:id="borderStyleComboBox" layoutX="183.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="86.0" />
    <HBox alignment="CENTER" layoutY="396.0" prefHeight="50.0" spacing="20.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
       <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
@@ -37,5 +37,11 @@
    <ColorPicker fx:id="backgroundColorPicker" layoutX="278.0" layoutY="126.0" prefHeight="25.0" prefWidth="110.0" />
    <Label layoutX="174.0" layoutY="130.0" text="Background Color" />
    <Label layoutX="14.0" layoutY="86.0" text="Caption" />
-   <TextField layoutX="119.0" layoutY="82.0" prefHeight="25.0" prefWidth="272.0" />
+   <TextField fx:id="captionTextField" layoutX="119.0" layoutY="82.0" prefHeight="25.0" prefWidth="272.0" />
+   <Label layoutX="14.0" layoutY="229.0" text="Cell Padding" />
+   <TextField fx:id="borderWidthTextField1" layoutX="119.0" layoutY="225.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
+   <TextField fx:id="borderWidthTextField11" layoutX="165.0" layoutY="225.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
+   <TextField fx:id="borderWidthTextField111" layoutX="208.0" layoutY="225.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
+   <TextField fx:id="borderWidthTextField1111" layoutX="252.0" layoutY="225.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
+   <Button layoutX="296.0" layoutY="225.0" mnemonicParsing="false" styleClass="flat" text="Button" />
 </AnchorPane>

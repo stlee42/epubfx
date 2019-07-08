@@ -37,7 +37,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
-import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
+import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 
@@ -818,7 +818,7 @@ public class Book implements Serializable
             {
                 Document document = ((XHTMLResource)xhtmlResource).asNativeFormat();
                 Path relativePath = xhtmlResource.getHrefAsPath().relativize(resourcePath);
-                AtrributeElementFilter hrefFilter = new AtrributeElementFilter("href", relativePath + "/" + oldFileName);
+                AttributeElementFilter hrefFilter = new AttributeElementFilter("href", relativePath + "/" + oldFileName);
                 IteratorIterable<Element> descendants = document.getDescendants(hrefFilter);
                 for (Element descendant : descendants)
                 {

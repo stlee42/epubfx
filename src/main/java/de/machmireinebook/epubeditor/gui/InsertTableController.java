@@ -21,14 +21,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.helger.css.propertyvalue.CCSSValue;
+
+import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 /**
  * User: Michail Jungierek
@@ -38,6 +39,8 @@ import com.helger.css.propertyvalue.CCSSValue;
 public class InsertTableController implements Initializable, StandardController
 {
     private static final Logger logger = Logger.getLogger(InsertTableController.class);
+    @FXML
+    private TextField captionTextField;
     @FXML
     private TextField styleClassTextField;
     @FXML
@@ -73,6 +76,7 @@ public class InsertTableController implements Initializable, StandardController
         numberRowsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 2));
         headerCheckBox.setSelected(true);
         backgroundColorPicker.disableProperty().bind(headerCheckBox.selectedProperty().not());
+        backgroundColorPicker.setValue(Color.LIGHTGRAY);
 
         borderWidthTextField.setText("1");
         borderStyleComboBox.setItems(FXCollections.observableArrayList(CCSSValue.NONE,
@@ -85,8 +89,12 @@ public class InsertTableController implements Initializable, StandardController
                 CCSSValue.RIDGE,
                 CCSSValue.INSET,
                 CCSSValue.OUTSET));
+        borderStyleComboBox.getSelectionModel().select(CCSSValue.SOLID);
+        borderColorPicker.setValue(Color.BLACK);
         borderCollapsingComboBox.setItems(FXCollections.observableArrayList(CCSSValue.SEPARATE,
                 CCSSValue.COLLAPSE));
+        borderCollapsingComboBox.getSelectionModel().select(CCSSValue.COLLAPSE);
+        setStandardStyle();
 
         instance = this;
     }
@@ -95,7 +103,6 @@ public class InsertTableController implements Initializable, StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(event -> refresh());
     }
 
     @Override
@@ -110,14 +117,9 @@ public class InsertTableController implements Initializable, StandardController
         return currentBookProperty;
     }
 
-
     public static InsertTableController getInstance()
     {
         return instance;
-    }
-
-    public void refresh()
-    {
     }
 
     public void onOkAction(ActionEvent actionEvent)
@@ -157,6 +159,12 @@ public class InsertTableController implements Initializable, StandardController
             tableSnippet = tableSnippet.replace("${style}", "style=\"" + styleTextField.getText() + "\"");
             tableSnippet = tableSnippet.replace("${style-class}", "class=\"" + styleClassTextField.getText() + "\"");
 
+            if (StringUtils.isNotEmpty(captionTextField.getText())) {
+                tableSnippet = tableSnippet.replace("${caption}", "class=\"" + captionTextField.getText() + "\"");
+            } else {
+                tableSnippet = tableSnippet.replaceAll("<caption>(.*)</caption>", "");
+            }
+
             CodeEditor editor = editorManager.getCurrentEditor();
             Integer cursorPosition = editor.getAbsoluteCursorPosition();
             editor.insertAt(cursorPosition, tableSnippet);
@@ -172,6 +180,14 @@ public class InsertTableController implements Initializable, StandardController
     public void onCancelAction(ActionEvent actionEvent)
     {
         stage.close();
+    }
+
+    private void setStandardStyle() {
+        String style = "border-width: " + borderWidthTextField.getText() + "px;";
+        style += "border-color: " + toHexString(borderColorPicker.getValue()) + ";";
+        style += "border-style: " + borderStyleComboBox.getValue() + ";";
+        style += "border-collapse: " + borderCollapsingComboBox.getValue() + ";";
+        styleTextField.setText(style);
     }
 
     public void changeStyle(ActionEvent actionEvent)
@@ -197,6 +213,14 @@ public class InsertTableController implements Initializable, StandardController
             String style = "border-style: " + borderStyleComboBox.getValue() + ";";
             if (currentStyle.contains("border-style")) {
                 currentStyle = currentStyle.replaceAll("border-style(\\w*):(.*);", style);
+            } else {
+                currentStyle += style;
+            }
+        }
+        if (actionEvent.getSource() == borderCollapsingComboBox) {
+            String style = "border-collapse: " + borderCollapsingComboBox.getValue() + ";";
+            if (currentStyle.contains("border-collapse")) {
+                currentStyle = currentStyle.replaceAll("border-collapse(\\w*):(.*);", style);
             } else {
                 currentStyle += style;
             }

@@ -52,6 +52,24 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Content;
+import org.jdom2.DocType;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filter;
+import org.jdom2.filter.Filters;
+import org.jdom2.located.LocatedElement;
+import org.jdom2.located.LocatedJDOMFactory;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.util.IteratorIterable;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -72,22 +90,6 @@ import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Content;
-import org.jdom2.DocType;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.Filter;
-import org.jdom2.filter.Filters;
-import org.jdom2.located.LocatedElement;
-import org.jdom2.located.LocatedJDOMFactory;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.util.IteratorIterable;
 
 /**
  * User: mjungierek
@@ -728,7 +730,7 @@ public class EditorTabManager
             String selection = currentEditor.get().getSelection();
             currentEditor.get().replaceSelection("<" + tagName + ">" + selection + "</" + tagName + ">");
             refreshPreview();
-            currentEditor.get();
+            ((XhtmlRichTextCodeEditor) currentEditor.get()).requestFocus();
         }
     }
 
@@ -739,7 +741,7 @@ public class EditorTabManager
             String selection = currentEditor.get().getSelection();
             currentEditor.get().replaceSelection(start + selection + end);
             refreshPreview();
-            currentEditor.get();
+            ((XhtmlRichTextCodeEditor) currentEditor.get()).requestFocus();
         }
     }
 
@@ -772,9 +774,10 @@ public class EditorTabManager
                 }
                 else
                 {
-                    insertStyle("margin-left", "1em");
+                    insertStyle("margin-left", "5%");
                 }
             });
+            xhtmlCodeEditor.requestFocus();
         }
     }
 
@@ -808,9 +811,10 @@ public class EditorTabManager
                 }
                 else
                 {
-                    insertStyle("margin-left", "-1em");
+                    insertStyle("margin-left", "-5%");
                 }
             });
+            xhtmlCodeEditor.requestFocus();
         }
     }
 
@@ -827,10 +831,10 @@ public class EditorTabManager
                 if ("head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()))
                 {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Teilung nicht möglich");
+                    alert.setTitle("Split not possible");
                     alert.getDialogPane().setHeader(null);
                     alert.getDialogPane().setHeaderText(null);
-                    alert.setContentText("Kann Datei nicht an dieser Position teilen. Eine Teilung ist nur innerhalb des XHTML-Bodys möglich.");
+                    alert.setContentText("Can't split file at current cursor position. Split is available only within xhtml body.");
                     alert.showAndWait();
 
                     return false;
@@ -868,7 +872,7 @@ public class EditorTabManager
                 catch (IOException | JDOMException | ResourceDataException e)
                 {
                     logger.error("", e);
-                    ExceptionDialog.showAndWait(e, null, "Teilung nicht möglich", "Kann Datei nicht teilen. Bitte Fehlermeldung an den Hersteller übermitteln.");
+                    ExceptionDialog.showAndWait(e, null, "Split not possible", "Can't split file because unknown error.");
                 }
 
                 result = true;

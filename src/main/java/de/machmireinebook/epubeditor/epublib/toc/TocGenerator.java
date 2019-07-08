@@ -34,7 +34,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
-import de.machmireinebook.epubeditor.jdom2.AtrributeElementFilter;
+import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
@@ -229,8 +229,8 @@ public class TocGenerator
         if (editableTocEntry.hasFragmentId())
         {
             String fragmentId = editableTocEntry.getFragmentId();
-            AtrributeElementFilter idFilter = new AtrributeElementFilter("id", fragmentId);
-            AtrributeElementFilter nameFilter = new AtrributeElementFilter("name", fragmentId);
+            AttributeElementFilter idFilter = new AttributeElementFilter("id", fragmentId);
+            AttributeElementFilter nameFilter = new AttributeElementFilter("name", fragmentId);
             IteratorIterable<? extends Content> elementsWithFragment = document.getDescendants(idFilter.or(nameFilter));
             if (elementsWithFragment.hasNext())
             {

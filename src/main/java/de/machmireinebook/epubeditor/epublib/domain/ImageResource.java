@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.util.ImageInfo;
-import de.machmireinebook.epubeditor.util.NumberUtils;
+import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
 
 /**
  * User: mjungierek
@@ -122,7 +122,7 @@ public class ImageResource extends Resource<Image>
 
     public String getImageDescription()
     {
-        String sizeInKB = NumberUtils.formatDouble(Math.round(getSize() / 1024.0 * 100) / 100.0);
+        String sizeInKB = EpubFxNumberUtils.formatDouble(Math.round(getSize() / 1024.0 * 100) / 100.0);
         return ((Double) image.getWidth()).intValue() + "×" + ((Double) image.getHeight()).intValue() + " px | "
                 + sizeInKB + " KB | " + imageInfo.getBitsPerPixel() + " bpp";
     }

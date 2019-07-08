@@ -18,14 +18,13 @@ import javafx.collections.ObservableList;
 
 import org.apache.log4j.Logger;
 
+import org.jdom2.Element;
+
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
-import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
-
-import de.machmireinebook.epubeditor.EpubEditorStarter;
 
 /**
  * Created by Michail Jungierek
@@ -34,7 +33,9 @@ import de.machmireinebook.epubeditor.EpubEditorStarter;
 public class PreferencesManager
 {
     private static final Logger logger = Logger.getLogger(PreferencesManager.class);
-    private PreferencesFx preferencesFx;
+
+    private EpubFxPreferencesStorageHandler storageHandler;
+    private EpubFxPreferences preferencesFx;
 
     private ObjectProperty<StartupType> startupType = new SimpleObjectProperty<>(StartupType.MINIMAL_EBOOK);
     private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(
@@ -72,9 +73,10 @@ public class PreferencesManager
     private BooleanProperty generateNCX = new SimpleBooleanProperty(true);
     private BooleanProperty generateHtmlToc = new SimpleBooleanProperty(true);
 
-    public PreferencesManager()
+    public void init(Element preferencesRootElement)
     {
-        preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
+        storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
+        preferencesFx = EpubFxPreferences.of(storageHandler,
                 Category.of("Application",
                         Group.of("Startup",
                                 Setting.of("Open application with ", startupTypeControl, startupType),
@@ -103,13 +105,12 @@ public class PreferencesManager
                             Setting.of("Headline of Table of Contents", headlineToc),
                             Setting.of("Headline of Landmarks", landmarksToc)
                         )
-
                 ));
     }
 
     public void showPreferencesDialog()
     {
-        preferencesFx.show();
+        preferencesFx.show(true);
     }
 
     public String getHeadlineToc()
@@ -231,4 +232,10 @@ public class PreferencesManager
     {
         return landmarksToc;
     }
+
+    public Element getPreferencesElement()
+    {
+        return storageHandler.getPreferencesElement();
+    }
+
 }

@@ -36,6 +36,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.StageSizer;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.gui.MainController;
@@ -67,6 +68,10 @@ public class EpubEditorConfiguration
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 
     public static final int RECENT_FILE_NUMBER = 3;
+
+    //tag names in xml for main sections
+    public static final String PREFERENCES_ELEMENT_NAME = "preferences";
+    public static final String CLIPS_ELEMENT_NAME = "clips";
 
     public static class OpenWithApplication
     {
@@ -108,6 +113,7 @@ public class EpubEditorConfiguration
     {
         MainController epubEditorMainController =  BeanFactory.getInstance().getBean(MainController.class);
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
+        PreferencesManager preferencesManager =  BeanFactory.getInstance().getBean(PreferencesManager.class);
         //saved configuration
         InputStream fis = EpubEditorConfiguration.class.getResourceAsStream("/application.xml");
         try
@@ -245,10 +251,15 @@ public class EpubEditorConfiguration
 
                     }
 
-                    Element clipsElement = root.getChild("clips");
+                    Element clipsElement = root.getChild(CLIPS_ELEMENT_NAME);
                     List<Element> children = clipsElement.getChildren();
                     TreeItem<Clip> clipsRoot =  clipManager.getClipsRoot();
                     readChildren(children, clipsRoot);
+
+                    Element preferencesElement = root.getChild(PREFERENCES_ELEMENT_NAME);
+                    if (preferencesElement != null) {
+                        preferencesManager.init(preferencesElement);
+                    }
                 }
             }
         }
@@ -341,184 +352,192 @@ public class EpubEditorConfiguration
         if (configurationDocument != null)
         {
             Element root = configurationDocument.getRootElement();
-            if (root != null)
-            {
-                //applikationen für open with speichern
-                Element openWithElement = root.getChild("open-with");
-                if (openWithElement == null)
-                {
-                    openWithElement = new Element("open-with");
-                    root.addContent(openWithElement);
-                }
-                Element xhtmlElement = openWithElement.getChild("xhtml");
-                if (xhtmlElement == null)
-                {
-                    xhtmlElement = new Element("xhtml");
-                    openWithElement.addContent(xhtmlElement);
-                }
-                saveApplications(xhtmlElement, xhtmlOpenWithApplications);
-
-                Element imagesElement = openWithElement.getChild("image");
-                if (imagesElement == null)
-                {
-                    imagesElement = new Element("image");
-                    openWithElement.addContent(imagesElement);
-                }
-                saveApplications(imagesElement, imageOpenWithApplications);
-
-                Element cssElement = openWithElement.getChild("css");
-                if (cssElement == null)
-                {
-                    cssElement = new Element("css");
-                    openWithElement.addContent(cssElement);
-                }
-                saveApplications(cssElement, cssOpenWithApplications);
-
-                Element fontElement = openWithElement.getChild("font");
-                if (fontElement == null)
-                {
-                    fontElement = new Element("font");
-                    openWithElement.addContent(fontElement);
-                }
-                saveApplications(fontElement, fontOpenWithApplications);
-
-                //recent files
-                Element recentFilesElement = root.getChild("recent-files");
-                if (recentFilesElement == null)
-                {
-                    recentFilesElement = new Element("recent-files");
-                    root.addContent(recentFilesElement);
-                }
-                for (Path recentFile : recentFiles)
-                {
-                    Element recentFileElement = new Element("path");
-                    recentFileElement.setText(recentFile.toString());
-                    recentFilesElement.addContent(recentFileElement);
-                }
-
-                //layout der oberfläche speichern
-                Element layoutElement = root.getChild("layout");
-                if (layoutElement == null)
-                {
-                    layoutElement = new Element("layout");
-                    root.addContent(layoutElement);
-                }
-                //<main-window x="312.0" height="1040.0" isFullscreen="false"  width="1114.0" y="0.0"/>
-                Element mainWindoElement = layoutElement.getChild("main-window");
-                if (mainWindoElement == null)
-                {
-                    mainWindoElement = new Element("main-window");
-                    layoutElement.addContent(mainWindoElement);
-                }
-                mainWindoElement.setAttribute("x", String.valueOf(x));
-                mainWindoElement.setAttribute("y", String.valueOf(y));
-                mainWindoElement.setAttribute("width", String.valueOf(width));
-                mainWindoElement.setAttribute("height", String.valueOf(height));
-                mainWindoElement.setAttribute("is-fullscreen", BooleanUtils.toStringTrueFalse(isFullscreen));
-
-                //<visibility book-browser="true" toc="true" validation-results="true" clips-list="true" preview="true"/>
-                Element visibilityElement = layoutElement.getChild("visibility");
-                if (visibilityElement == null)
-                {
-                    visibilityElement = new Element("visibility");
-                    layoutElement.addContent(visibilityElement);
-                }
-                visibilityElement.setAttribute("book-browser", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowBookBrowserToggleButton().isSelected()));
-                visibilityElement.setAttribute("toc", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowTocToggleButton().isSelected()));
-                visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowValidationResultsToggleButton().isSelected()));
-                visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowClipsToggleButton().isSelected()));
-                visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowPreviewToggleButton().isSelected()));
-
-                Element dividersElement = layoutElement.getChild("dividers");
-                if (dividersElement == null)
-                {
-                    dividersElement = new Element("dividers");
-                    layoutElement.addContent(dividersElement);
-                }
-
-                Element mainDividerElement = dividersElement.getChild("main-divider");
-                if (mainDividerElement == null)
-                {
-                    mainDividerElement = new Element("main-divider");
-                    dividersElement.addContent(mainDividerElement);
-                }
-                List<SplitPane.Divider> dividers = epubEditorMainController.getMainDivider().getDividers();
-                if (dividers.size() > 0)
-                {
-                    mainDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
-                }
-                else
-                {
-                    mainDividerElement.setAttribute("divider-1", "none");
-                }
-                if (dividers.size() > 1)
-                {
-                    mainDividerElement.setAttribute("divider-2", String.valueOf(dividers.get(1).getPosition()));
-                }
-                else
-                {
-                    mainDividerElement.setAttribute("divider-2", "none");
-                }
-
-                Element leftDividerElement = dividersElement.getChild("left-divider");
-                if (leftDividerElement == null)
-                {
-                    leftDividerElement = new Element("left-divider");
-                    dividersElement.addContent(leftDividerElement);
-                }
-                dividers = epubEditorMainController.getLeftDivider().getDividers();
-                if (dividers.size() > 0)
-                {
-                    leftDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
-                }
-                else
-                {
-                    leftDividerElement.setAttribute("divider-1", "none");
-                }
-
-                Element rightDividerElement = dividersElement.getChild("right-divider");
-                if (rightDividerElement == null)
-                {
-                    rightDividerElement = new Element("right-divider");
-                    dividersElement.addContent(rightDividerElement);
-                }
-                dividers = epubEditorMainController.getRightDivider().getDividers();
-                if (dividers.size() > 0)
-                {
-                    rightDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
-                }
-                else
-                {
-                    rightDividerElement.setAttribute("divider-1", "none");
-                }
-
-                Element centerDividerElement = dividersElement.getChild("center-divider");
-                if (centerDividerElement == null)
-                {
-                    centerDividerElement = new Element("center-divider");
-                    dividersElement.addContent(centerDividerElement);
-                }
-                dividers = epubEditorMainController.getCenterDivider().getDividers();
-                if (dividers.size() > 0)
-                {
-                    centerDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
-                }
-                else
-                {
-                    centerDividerElement.setAttribute("divider-1", "none");
-                }
-
-                Element clipsElement = root.getChild("clips");
-                if (clipsElement == null)
-                {
-                    clipsElement = new Element("clips");
-                    root.addContent(clipsElement);
-                }
-                //neu aus ClipManager aufbauen
-                clipsElement.removeContent();
-                TreeItem<Clip> clipRootItem = clipManager.getClipsRoot();
-                writeChildren(clipRootItem, clipsElement);
+            if (root == null) {
+                root = new Element("configuration");
+                configurationDocument.setRootElement(root);
             }
+            //applikationen für open with speichern
+            Element openWithElement = root.getChild("open-with");
+            if (openWithElement == null)
+            {
+                openWithElement = new Element("open-with");
+                root.addContent(openWithElement);
+            }
+            Element xhtmlElement = openWithElement.getChild("xhtml");
+            if (xhtmlElement == null)
+            {
+                xhtmlElement = new Element("xhtml");
+                openWithElement.addContent(xhtmlElement);
+            }
+            saveApplications(xhtmlElement, xhtmlOpenWithApplications);
+
+            Element imagesElement = openWithElement.getChild("image");
+            if (imagesElement == null)
+            {
+                imagesElement = new Element("image");
+                openWithElement.addContent(imagesElement);
+            }
+            saveApplications(imagesElement, imageOpenWithApplications);
+
+            Element cssElement = openWithElement.getChild("css");
+            if (cssElement == null)
+            {
+                cssElement = new Element("css");
+                openWithElement.addContent(cssElement);
+            }
+            saveApplications(cssElement, cssOpenWithApplications);
+
+            Element fontElement = openWithElement.getChild("font");
+            if (fontElement == null)
+            {
+                fontElement = new Element("font");
+                openWithElement.addContent(fontElement);
+            }
+            saveApplications(fontElement, fontOpenWithApplications);
+
+            //recent files
+            Element recentFilesElement = root.getChild("recent-files");
+            if (recentFilesElement == null)
+            {
+                recentFilesElement = new Element("recent-files");
+                root.addContent(recentFilesElement);
+            }
+            for (Path recentFile : recentFiles)
+            {
+                Element recentFileElement = new Element("path");
+                recentFileElement.setText(recentFile.toString());
+                recentFilesElement.addContent(recentFileElement);
+            }
+
+            //layout der oberfläche speichern
+            Element layoutElement = root.getChild("layout");
+            if (layoutElement == null)
+            {
+                layoutElement = new Element("layout");
+                root.addContent(layoutElement);
+            }
+            //<main-window x="312.0" height="1040.0" isFullscreen="false"  width="1114.0" y="0.0"/>
+            Element mainWindoElement = layoutElement.getChild("main-window");
+            if (mainWindoElement == null)
+            {
+                mainWindoElement = new Element("main-window");
+                layoutElement.addContent(mainWindoElement);
+            }
+            mainWindoElement.setAttribute("x", String.valueOf(x));
+            mainWindoElement.setAttribute("y", String.valueOf(y));
+            mainWindoElement.setAttribute("width", String.valueOf(width));
+            mainWindoElement.setAttribute("height", String.valueOf(height));
+            mainWindoElement.setAttribute("is-fullscreen", BooleanUtils.toStringTrueFalse(isFullscreen));
+
+            //<visibility book-browser="true" toc="true" validation-results="true" clips-list="true" preview="true"/>
+            Element visibilityElement = layoutElement.getChild("visibility");
+            if (visibilityElement == null)
+            {
+                visibilityElement = new Element("visibility");
+                layoutElement.addContent(visibilityElement);
+            }
+            visibilityElement.setAttribute("book-browser", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowBookBrowserToggleButton().isSelected()));
+            visibilityElement.setAttribute("toc", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowTocToggleButton().isSelected()));
+            visibilityElement.setAttribute("validation-results", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowValidationResultsToggleButton().isSelected()));
+            visibilityElement.setAttribute("clips-list", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowClipsToggleButton().isSelected()));
+            visibilityElement.setAttribute("preview", BooleanUtils.toStringTrueFalse(epubEditorMainController.getShowPreviewToggleButton().isSelected()));
+
+            Element dividersElement = layoutElement.getChild("dividers");
+            if (dividersElement == null)
+            {
+                dividersElement = new Element("dividers");
+                layoutElement.addContent(dividersElement);
+            }
+
+            Element mainDividerElement = dividersElement.getChild("main-divider");
+            if (mainDividerElement == null)
+            {
+                mainDividerElement = new Element("main-divider");
+                dividersElement.addContent(mainDividerElement);
+            }
+            List<SplitPane.Divider> dividers = epubEditorMainController.getMainDivider().getDividers();
+            if (dividers.size() > 0)
+            {
+                mainDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
+            }
+            else
+            {
+                mainDividerElement.setAttribute("divider-1", "none");
+            }
+            if (dividers.size() > 1)
+            {
+                mainDividerElement.setAttribute("divider-2", String.valueOf(dividers.get(1).getPosition()));
+            }
+            else
+            {
+                mainDividerElement.setAttribute("divider-2", "none");
+            }
+
+            Element leftDividerElement = dividersElement.getChild("left-divider");
+            if (leftDividerElement == null)
+            {
+                leftDividerElement = new Element("left-divider");
+                dividersElement.addContent(leftDividerElement);
+            }
+            dividers = epubEditorMainController.getLeftDivider().getDividers();
+            if (dividers.size() > 0)
+            {
+                leftDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
+            }
+            else
+            {
+                leftDividerElement.setAttribute("divider-1", "none");
+            }
+
+            Element rightDividerElement = dividersElement.getChild("right-divider");
+            if (rightDividerElement == null)
+            {
+                rightDividerElement = new Element("right-divider");
+                dividersElement.addContent(rightDividerElement);
+            }
+            dividers = epubEditorMainController.getRightDivider().getDividers();
+            if (dividers.size() > 0)
+            {
+                rightDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
+            }
+            else
+            {
+                rightDividerElement.setAttribute("divider-1", "none");
+            }
+
+            Element centerDividerElement = dividersElement.getChild("center-divider");
+            if (centerDividerElement == null)
+            {
+                centerDividerElement = new Element("center-divider");
+                dividersElement.addContent(centerDividerElement);
+            }
+            dividers = epubEditorMainController.getCenterDivider().getDividers();
+            if (dividers.size() > 0)
+            {
+                centerDividerElement.setAttribute("divider-1", String.valueOf(dividers.get(0).getPosition()));
+            }
+            else
+            {
+                centerDividerElement.setAttribute("divider-1", "none");
+            }
+
+            Element clipsElement = root.getChild(CLIPS_ELEMENT_NAME);
+            if (clipsElement == null)
+            {
+                clipsElement = new Element(CLIPS_ELEMENT_NAME);
+                root.addContent(clipsElement);
+            }
+
+            //neu aus ClipManager aufbauen
+            clipsElement.removeContent();
+            TreeItem<Clip> clipRootItem = clipManager.getClipsRoot();
+            writeChildren(clipRootItem, clipsElement);
+
+            //create new from element in preferences manager
+            root.removeChild(PREFERENCES_ELEMENT_NAME);
+            PreferencesManager preferencesManager =  BeanFactory.getInstance().getBean(PreferencesManager.class);
+            Element preferencesElement = preferencesManager.getPreferencesElement();
+            root.addContent(preferencesElement);
         }
         try
         {
