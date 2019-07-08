@@ -53,8 +53,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -73,7 +71,11 @@ import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
+import org.apache.log4j.Logger;
+
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -85,6 +87,10 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Button singleQuotationMarksButton;
+    @FXML
+    private Ribbon ribbon;
     @FXML
     private SplitPane mainDivider;
     @FXML
@@ -147,6 +153,8 @@ public class MainController implements Initializable
     private Button h6Button;
     @FXML
     private Button paragraphButton;
+    @FXML
+    private Button quotationMarksButton;
     @FXML
     private Button undoButton;
     @FXML
@@ -310,6 +318,8 @@ public class MainController implements Initializable
         h5Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h6Button.disableProperty().bind(isNoXhtmlEditorBinding);
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        singleQuotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
         kursivButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -879,6 +889,20 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
+    public void quotationMarksButtonAction(ActionEvent actionEvent)
+    {
+        String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
+        logger.info("select quotation mark " + selectedQuotationMark);
+        QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
+        editorManager.surroundSelection(quotationMark.getLeft(), quotationMark.getRight());
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void singleQuotationMarksButtonAction(ActionEvent actionEvent)
+    {
+    }
+
+
     public void boldButtonAction(ActionEvent actionEvent)
     {
         editorManager.surroundSelectionWithTag("b");
@@ -1052,8 +1076,19 @@ public class MainController implements Initializable
 
     public void insertTableButtonAction(ActionEvent actionEvent)
     {
-
-
+        if (editorManager.isInsertablePosition())
+        {
+            createAndOpenStandardController("/insert-table.fxml", InsertTableController.class);
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Einfügen nicht möglich");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("Can't insert tabel on this position. This is only available within the bodyof the document.");
+            alert.showAndWait();
+        }
     }
 
     private void createAndOpenStandardController(String fxmlFile, Class<? extends StandardController> controllerClass)
@@ -1232,12 +1267,6 @@ public class MainController implements Initializable
 
     }
 
-    public void quotationMarksButtonAction(ActionEvent actionEvent)
-    {
-
-
-    }
-
     public void settingsButtonAction(ActionEvent actionEvent)
     {
         preferencesManager.showPreferencesDialog();
@@ -1254,4 +1283,5 @@ public class MainController implements Initializable
 
 
     }
+
 }

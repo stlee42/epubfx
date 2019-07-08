@@ -1,6 +1,10 @@
 package de.machmireinebook.epubeditor.editor;
 
+import java.time.Duration;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.IntFunction;
 
 import javafx.application.Platform;
@@ -13,18 +17,21 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.StyleSpans;
 
 /**
  * User: mjungierek
@@ -41,6 +48,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
     private boolean isChangingCode = false;
+    private ExecutorService taskExecutor;
 
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
@@ -55,13 +63,26 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         getChildren().add(scrollPane);
 
+        taskExecutor = Executors.newSingleThreadExecutor();
+
         IntFunction<String> format = (digits -> " %" + digits + "d ");
         IntFunction<Node> factory = LineNumberFactory.get(codeArea, format);
         codeArea.setParagraphGraphicFactory(factory);
 
-        codeArea.textProperty().addListener((obs, oldText, newText) -> {
-            computeHighlighting(newText);
-        });
+        codeArea.multiPlainChanges()
+                .successionEnds(Duration.ofMillis(50))
+                .supplyTask(this::computeHighlightingAsync)
+                .awaitLatest(codeArea.multiPlainChanges())
+                .filterMap(tryTask -> {
+                    if (tryTask.isSuccess()) {
+                        return Optional.of(tryTask.get());
+                    } else {
+                        tryTask.getFailure().printStackTrace();
+                        return Optional.empty();
+                    }
+                })
+                .subscribe(this::applyHighlighting);
+
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
         });
@@ -74,8 +95,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
             cursorPosition.set(newValue);
-            /*Collection<String> styles = codeArea.getStyleAtPosition(newValue);
-            textInformation.set("Styles: " + StringUtils.join(styles, ","));*/
+            Collection<String> styles = codeArea.getStyleOfChar(newValue);
+            textInformation.set("Styles: " + StringUtils.join(styles, ","));
         });
     }
 
@@ -84,8 +105,25 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setWrapText(wrapText);
     }
 
+    private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
+        String text = codeArea.getText();
+        Task<StyleSpans<Collection<String>>> task = new Task<>()
+        {
+            @Override
+            protected StyleSpans<Collection<String>> call()
+            {
+                return computeHighlighting(text);
+            }
+        };
+        taskExecutor.execute(task);
+        return task;
+    }
 
-    protected abstract void computeHighlighting(String newText);
+    private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+        codeArea.setStyleSpans(0, highlighting);
+    }
+
+    protected abstract StyleSpans<Collection<String>> computeHighlighting(String text);
 
     @Override
     public ObjectProperty<Worker.State> stateProperty()

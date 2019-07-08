@@ -41,10 +41,10 @@
     -fx-background-radius: 0;
 
     -fx-background: white;
-    -fx-background-color: transparent;
+    -fx-background-color: transparent, transparent, transparent, transparent;
 
     -fx-font-family:"Segoe UI", Helvetica, Arial, sans-serif;
-    -fx-font-size: 1em; /* 12 */
+    -fx-font-size: 1em;
     -fx-text-fill: black;
     -fx-alignment: CENTER;
 }
@@ -52,6 +52,7 @@
 .ribbon-group .button, .ribbon-group .label
 {
     -fx-text-fill: black;
+    -fx-background-color: transparent, transparent, transparent, transparent;
 }
 
 .ribbon-group .split-menu-button .arrow-button, .ribbon-group .split-menu-button .label {
@@ -82,16 +83,19 @@
     -fx-padding: 0 0 0 0;
     -fx-spacing: 6;
 }
-.ribbon-group .button:focused, .ribbon-group .split-menu-button:focused, ribbon-group .toggle-button,
+.ribbon-group .button:hover, .ribbon-group .button:hover:focused:selected, .ribbon-group .button:hover:selected, .ribbon-group .button:hover:focused,
+.ribbon-group .split-menu-button:focused:pressed:focused:armed, ribbon-group .toggle-button,
 .ribbon-group .toggle-button:hover,
 .ribbon-group .toggle-button:focused, .ribbon-group .toggle-button:hover:focused,
 .ribbon-group .toggle-button:focused:selected,
-.ribbon-group .toggle-button:selected, .ribbon-group .toggle-button:hover:selected, .ribbon-group .toggle-button:pressed,
+.ribbon-group .toggle-button:selected, .ribbon-group .toggle-button:hover:selected,
+.ribbon-group .toggle-button:pressed,
 .ribbon-group .toggle-button:hover:pressed:focused:armed, .ribbon-group .toggle-button:hover:pressed:focused:armed:selected, .ribbon-group .toggle-button:armed
 {
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-    -fx-border-insets: 0 0 0 0, 0;
+    -fx-border-color: transparent  !important;;
+    -fx-border-width: 0  !important;;
+    -fx-border-insets: 0 0 0 0, 0  !important;;
+    -fx-border-style: hidden !important;
 }
 
 .ribbon-group .button.left-align
@@ -109,7 +113,7 @@
 .ribbon-group .toggle-button:pressed, .ribbon-group .toggle-button:default:hover:pressed, .ribbon-group .toggle-button:selected,
 .ribbon-group .split-menu-button .arrow-button:pressed, .ribbon-group .split-menu-button .arrow-button:default:hover:pressed
 {
-    -fx-background-color: RIBBON_BUTTON_SELECTED_COLOR;
+    -fx-background-color: #039ED3 !important;
     -fx-text-fill: white;
 }
 

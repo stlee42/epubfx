@@ -15,9 +15,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import de.machmireinebook.epubeditor.gui.UIHelper;
+
+import org.apache.commons.lang3.BooleanUtils;
 
 /**
  * User: mjungierek
@@ -80,9 +80,5 @@ public class MainStage extends Stage
                 setY(y);
             }
         }
-    }
-
-    public void initialize() throws IOException
-    {
     }
 }

@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
 
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek
@@ -63,7 +63,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    protected void computeHighlighting(String text)
+    protected StyleSpans<Collection<String>> computeHighlighting(String text)
     {
         Matcher matcher = XML_TAG.matcher(text);
         int lastKwEnd = 0;
@@ -108,7 +108,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        getCodeArea().setStyleSpans(0, spansBuilder.create());
+        return spansBuilder.create();
     }
 
 

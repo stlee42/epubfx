@@ -22,13 +22,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
 * User: mjungierek
@@ -102,8 +102,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                     int toIndex = searchResult.getEnd();
                     editor.select(fromIndex, toIndex);
                     String selectedText = editor.getSelection();
-                    logger.info("selected Text: " + selectedText);
-                    editor.setAbsoluteCursorPosition(toIndex);
+                    logger.info("search result position: " +fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
                 }
         );
     }
@@ -127,7 +126,6 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 editor.replaceSelection(replaceString);
                 editor.select(fromIndex, fromIndex + replaceString.length());
                 editor.scrollTo(fromIndex);
-                editor.setAbsoluteCursorPosition(fromIndex + replaceString.length());
             }
         );
     }

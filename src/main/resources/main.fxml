@@ -540,7 +540,7 @@
                 <Insets top="-5.0"/>
             </padding>
         </TabPane-->
-        <Ribbon AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <Ribbon AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" fx:id="ribbon">
             <tabs>
                 <RibbonTab text="Start">
                     <ribbonGroups>
@@ -590,10 +590,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Save as..." />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Save_as_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Save_as_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -607,10 +606,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Add existing file to ebook" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Add_Existing_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Add_Existing_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -619,10 +617,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Add empty html file" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_HTML_Filetype_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_HTML_Filetype_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -691,10 +688,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Copy" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Copy_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Copy_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -703,10 +699,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Paste" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Paste_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Paste_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -719,10 +714,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Show Form for Search and Replace" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Search_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Search_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
@@ -794,16 +788,29 @@
                                     <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" styleClass="letter-button" text="h1" />
                                     <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction">
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Get_Quote_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Get_Quote_96px.png"/>
                                             </ImageView>
                                         </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround with double quotation marks" />
+                                        </tooltip>
                                     </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" styleClass="letter-button" text="h2" />
+                                    <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" styleClass="letter-button" text="h2" />
+                                    <Button fx:id="singleQuotationMarksButton" mnemonicParsing="false" onAction="#singleQuotationMarksButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Get_Quote_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround with single quotation marks" />
+                                        </tooltip>
+                                    </Button>
                                 </Column>
                                 <Column>
                                 <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" styleClass="letter-button" text="h3" />
@@ -840,10 +847,9 @@
                                             <Tooltip styleClass="white-tooltip" text="Increase indent" />
                                         </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/indent_increase.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/indent_increase.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>

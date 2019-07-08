@@ -7,7 +7,7 @@
     -fx-font-weight: bold;
 }
 
-.parent {
+.paren {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
 }
@@ -25,7 +25,9 @@
     -fx-fill: #008000;
 }
 
-.error {
-    -fx-fill: indianred;
+.spell-check-error {
+    -rtfx-underline-color: indianred;
+    -rtfx-underline-width: 1px;
+    -rtfx-underline-dash-array: 5px;
 }
 
