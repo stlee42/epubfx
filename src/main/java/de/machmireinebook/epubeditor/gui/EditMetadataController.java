@@ -346,7 +346,7 @@ public class EditMetadataController implements Initializable
         metadata.getDates().clear();
         metadata.getRights().clear();
         metadata.getTitles().clear();
-        metadata.getIdentifiers().clear();
+        metadata.getEpub2Identifiers().clear();
         metadata.getSubjects().clear();
         metadata.getTypes().clear();
         metadata.getDescriptions().clear();

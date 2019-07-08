@@ -58,6 +58,8 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Content;
 import org.jdom2.DocType;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filter;
@@ -119,7 +121,7 @@ public class EditorTabManager
     private ContextMenu contextMenuXML;
     private ContextMenu contextMenuCSS;
 
-    private static final Pattern indentRegex = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-\\.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
+    private static final Pattern indentRegex = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
 
     @Inject
     private ClipManager clipManager;
@@ -203,7 +205,7 @@ public class EditorTabManager
         @Override
         protected Task<Boolean> createTask()
         {
-            return new Task<Boolean>()
+            return new Task<>()
             {
                 protected Boolean call()
                 {
@@ -383,7 +385,7 @@ public class EditorTabManager
                 try
                 {
                     Resource resource = currentXHTMLResource.get();
-                    resource.setData(code.getBytes("UTF-8"));
+                    resource.setData(code.getBytes(StandardCharsets.UTF_8));
                     switch (mode)
                     {
                         case "format": code = formatAsXHTML(code);
@@ -391,7 +393,7 @@ public class EditorTabManager
                         case "repair": code = repairXHTML(code);
                             break;
                     }
-                    resource.setData(code.getBytes("UTF-8"));
+                    resource.setData(code.getBytes(StandardCharsets.UTF_8));
                 }
                 catch (UnsupportedEncodingException e)
                 {
@@ -547,7 +549,7 @@ public class EditorTabManager
                 EditorPosition cursorPosition = editor.getCursorPosition();
                 String textIformation = editor.getTextInformation();
                 cursorPosLabelProperty.set("Absolute: " + newValue + ", Relative: " + (cursorPosition.getLine() + 1) + ":" + (cursorPosition.getColumn() + 1)
-                        + " | Text Information: " + textIformation);
+                        + " | Text Information: " + StringUtils.defaultString(textIformation, ""));
             });
 
             editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
@@ -830,17 +832,17 @@ public class EditorTabManager
                 try
                 {
                     String originalCode = xhtmlCodeEditor.getCode();
-                    org.jdom2.Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
+                    Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
                     List<Content> originalHeadContent = getOriginalHeadContent(originalDocument);
 
-                    byte[] frontPart = originalCode.substring(0, index).getBytes("UTF-8");
+                    byte[] frontPart = originalCode.substring(0, index).getBytes(StandardCharsets.UTF_8);
                     Resource oldResource = currentXHTMLResource.getValue();
                     oldResource.setData(frontPart);
                     HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                     processor.processResource(oldResource);
-                    xhtmlCodeEditor.setCode(new String(oldResource.getData(), "UTF-8"));
+                    xhtmlCodeEditor.setCode(new String(oldResource.getData(), StandardCharsets.UTF_8));
 
-                    byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes("UTF-8");
+                    byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);
                     Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
                     byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent);
@@ -866,13 +868,13 @@ public class EditorTabManager
         return result;
     }
 
-    private List<Content> getOriginalHeadContent(org.jdom2.Document doc)
+    private List<Content> getOriginalHeadContent(Document doc)
     {
-        org.jdom2.Element root = doc.getRootElement();
+        Element root = doc.getRootElement();
         List<Content> contentList = new ArrayList<>();
         if (root != null)
         {
-            org.jdom2.Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
+            Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
             if (headElement != null)
             {
                 List<Content> contents = headElement.getContent();
@@ -892,14 +894,7 @@ public class EditorTabManager
         CodeEditor xhtmlCodeEditor = currentEditor.getValue();
         if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null)
         {
-            try
-            {
-                currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes("UTF-8"));
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                //never happens
-            }
+            currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
             needsRefresh.setValue(true);
             needsRefresh.setValue(false);
         }
@@ -959,9 +954,9 @@ public class EditorTabManager
         DocType doctype = new DocType("html", "-//W3C//DTD XHTML 1.1//EN", "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
         Namespace namespace = Namespace.getNamespace("http://www.w3.org/1999/xhtml");
 
-        org.jdom2.Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
+        Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
 
-        org.jdom2.Element root = document.getRootElement();
+        Element root = document.getRootElement();
         root.setNamespace(namespace);
         root.addNamespaceDeclaration(namespace);
         IteratorIterable<org.jdom2.Element> elements = root.getDescendants(Filters.element());
@@ -1016,7 +1011,7 @@ public class EditorTabManager
                 editor.setAbsoluteCursorPosition(0);;
             }
         }
-        openingEditorTab = true;
+        openingEditorTab = false;
     }
 
     public void refreshImageViewer(Resource resourceToUpdate)
@@ -1048,7 +1043,7 @@ public class EditorTabManager
         {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
-            result = !(!optional.isPresent() || "head".equals(optional.get().getTagName()) || "html".equals(optional.get().getTagName()) || StringUtils.isEmpty(optional.get().getTagName()));
+            result = !(optional.isEmpty() || "head".equals(optional.get().getTagName()) || "html".equals(optional.get().getTagName()) || StringUtils.isEmpty(optional.get().getTagName()));
         }
         return result;
     }

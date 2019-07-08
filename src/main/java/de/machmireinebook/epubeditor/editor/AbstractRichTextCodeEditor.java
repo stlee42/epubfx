@@ -19,7 +19,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.layout.AnchorPane;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -75,8 +74,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
             cursorPosition.set(newValue);
-            Collection<String> styles = codeArea.getStyleAtPosition(newValue);
-            textInformation.set("Styles: " + StringUtils.join(styles, ","));
+            /*Collection<String> styles = codeArea.getStyleAtPosition(newValue);
+            textInformation.set("Styles: " + StringUtils.join(styles, ","));*/
         });
     }
 
@@ -164,7 +163,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void insertAt(Integer pos , String insertion)
+    public void insertAt(Integer pos, String insertion)
     {
         codeArea.insertText(pos, insertion);
     }

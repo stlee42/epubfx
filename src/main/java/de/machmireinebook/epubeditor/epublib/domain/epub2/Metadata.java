@@ -311,7 +311,7 @@ public class Metadata implements Serializable, EpubMetadata
 
     public List<Identifier> getEpub2Identifiers()
     {
-        return Collections.unmodifiableList(identifiers);
+        return identifiers;
     }
 
     public void setFormat(String format)

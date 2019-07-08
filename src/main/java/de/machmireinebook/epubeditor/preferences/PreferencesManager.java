@@ -18,8 +18,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import de.machmireinebook.epubeditor.EpubEditorStarter;
-
 import org.apache.log4j.Logger;
 
 import com.dlsc.formsfx.model.structure.Field;
@@ -28,6 +26,8 @@ import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
+
+import de.machmireinebook.epubeditor.EpubEditorStarter;
 
 /**
  * Created by Michail Jungierek
@@ -38,6 +38,10 @@ public class PreferencesManager
     private static final Logger logger = Logger.getLogger(PreferencesManager.class);
     private PreferencesFx preferencesFx;
     private IntegerProperty integerProperty = new SimpleIntegerProperty(1);
+
+    private ObjectProperty<StartupType> startupType = new SimpleObjectProperty<>(StartupType.MINIMAL_EBOOK);
+    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(
+            new RadioButtonControl<>());
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
@@ -73,10 +77,13 @@ public class PreferencesManager
     public PreferencesManager()
     {
         preferencesFx = PreferencesFx.of(EpubEditorStarter.class,
+                Category.of("Application",
+                        Group.of("Startup",
+                                Setting.of("Open application with ", startupTypeControl, startupType),
+                                Setting.of("Version of new ebook", versionControl, version)
+                        )
+                ),
                 Category.of("Book",
-                        Group.of("EPUB Version",
-                                Setting.of("Version of ebook at Start", versionControl, version) //could be a chooser for template to open at start
-                        ),
                         Group.of("EPUB 2",
                                 Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
                         ),

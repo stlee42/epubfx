@@ -7,7 +7,7 @@
     -fx-font-weight: bold;
 }
 
-.paren {
+.parent {
     -fx-fill: firebrick;
     -fx-font-weight: bold;
 }
@@ -16,12 +16,16 @@
     -fx-fill: black;
 }
 
-.avalue {
+.attribute-value {
     -fx-fill: #008000;
     -fx-font-weight: bold;
 }
 
 .comment {
     -fx-fill: #008000;
+}
+
+.error {
+    -fx-fill: indianred;
 }
 
