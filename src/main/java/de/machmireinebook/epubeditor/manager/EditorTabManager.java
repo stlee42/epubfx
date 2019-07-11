@@ -866,6 +866,7 @@ public class EditorTabManager
                     openFileInEditor(resource, MediaType.XHTML);
 
                     bookBrowserManager.refreshBookBrowser();
+                    currentXHTMLResource.set(resource);
                     needsRefresh.setValue(true);
                     needsRefresh.setValue(false);
                 }
