@@ -164,7 +164,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         {
             metaElement.setAttribute(OPFAttributes.refines, value.getRefines());
         }
-        if (StringUtils.isNotEmpty(value.getRefines()))
+        if (StringUtils.isNotEmpty(value.getScheme()))
         {
             metaElement.setAttribute(OPFAttributes.scheme, value.getScheme());
         }

@@ -19,6 +19,14 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
+import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.gui.MainController;
+import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+import de.machmireinebook.epubeditor.manager.ClipManager;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.preferences.StageSizer;
+
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Appender;
@@ -36,14 +44,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-
-import de.machmireinebook.epubeditor.clips.Clip;
-import de.machmireinebook.epubeditor.gui.MainController;
-import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.manager.ClipManager;
-import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-import de.machmireinebook.epubeditor.preferences.StageSizer;
 
 /**
  * User: mjungierek
@@ -258,9 +258,10 @@ public class EpubEditorConfiguration
                     readChildren(children, clipsRoot);
 
                     Element preferencesElement = root.getChild(PREFERENCES_ELEMENT_NAME);
-                    if (preferencesElement != null) {
-                        preferencesManager.init(preferencesElement);
+                    if (preferencesElement == null) {
+                        preferencesElement = new Element(PREFERENCES_ELEMENT_NAME);
                     }
+                    preferencesManager.init(preferencesElement);
                 }
             }
         }

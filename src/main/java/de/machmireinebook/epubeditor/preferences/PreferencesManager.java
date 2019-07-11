@@ -87,36 +87,36 @@ public class PreferencesManager
         Setting<SingleSelectionField<Language>, ObjectProperty<Language>> spellCheckingLanguageSetting = Setting.of("Language for Spell Checking", languageSpellItems, languageSpellSelection);
 
         preferencesFx = EpubFxPreferences.of(storageHandler,
-        Category.of("Application",
-                Group.of("Startup",
-                        Setting.of("Open application with ", startupTypeControl, startupType),
-                        Setting.of("Version of new ebook", versionControl, version)
-                )
-        ),
-        Category.of("Book",
-                Group.of("EPUB 2",
-                        Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
-                ),
-                Group.of("EPUB 3",
-                        Setting.of("Generate NCX automatically ", generateNCX)
-                ),
-                Group.of("Structure",
-                        Setting.of("Type of References", referenceTypeControl, referenceType),
-                        Setting.of("Position of generated Toc", positionTocControl, tocPosition)
-                )
-        ),
-        Category.of("Language specific Settings",
-                Group.of("UI",
-                    Setting.of("UI Language", languageItems, languageSelection)
-                ),
-                Group.of("Content",
-                    Setting.of("Spell Check", spellcheck),
-                    spellCheckingLanguageSetting,
-                    Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
-                    Setting.of("Headline of Table of Contents", headlineToc),
-                    Setting.of("Headline of Landmarks", landmarksToc)
-                )
-        ));
+            Category.of("Application",
+                    Group.of("Startup",
+                            Setting.of("Open application with ", startupTypeControl, startupType),
+                            Setting.of("Version of new ebook", versionControl, version)
+                    )
+            ),
+            Category.of("Book",
+                    Group.of("EPUB 2",
+                            Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
+                    ),
+                    Group.of("EPUB 3",
+                            Setting.of("Generate NCX automatically ", generateNCX)
+                    ),
+                    Group.of("Structure",
+                            Setting.of("Type of References", referenceTypeControl, referenceType),
+                            Setting.of("Position of generated Toc", positionTocControl, tocPosition)
+                    )
+            ),
+            Category.of("Language specific Settings",
+                    Group.of("UI",
+                        Setting.of("UI Language", languageItems, languageSelection)
+                    ),
+                    Group.of("Content",
+                        Setting.of("Spell Check", spellcheck),
+                        spellCheckingLanguageSetting,
+                        Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
+                        Setting.of("Headline of Table of Contents", headlineToc),
+                        Setting.of("Headline of Landmarks", landmarksToc)
+                    )
+            ));
     }
 
     public void showPreferencesDialog()

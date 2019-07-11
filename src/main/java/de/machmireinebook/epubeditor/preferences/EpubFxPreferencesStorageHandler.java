@@ -9,6 +9,8 @@ import java.util.prefs.Preferences;
 
 import javafx.collections.ObservableList;
 
+import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
+
 import org.apache.commons.lang3.math.NumberUtils;
 
 import org.jdom2.CDATA;
@@ -18,8 +20,6 @@ import org.jdom2.util.IteratorIterable;
 
 import com.dlsc.preferencesfx.util.Constants;
 import com.dlsc.preferencesfx.util.StorageHandler;
-
-import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 
 /**
  * @author Michail Jungierek, CGI

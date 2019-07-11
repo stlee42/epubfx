@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
 
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.Paragraph;
@@ -25,8 +27,6 @@ import org.languagetool.markup.AnnotatedText;
 import org.languagetool.markup.AnnotatedTextBuilder;
 import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.RuleMatch;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek
@@ -73,8 +73,12 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     {
         super();
         this.mediaType = mediaType;
-        String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/xhtml.css").toExternalForm();
-        addStyleSheet(stylesheet);
+        try {
+            String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/xhtml.css").toExternalForm();
+            addStyleSheet(stylesheet);
+        } catch (Exception e) {
+            logger.error("error while loading xhtml.css", e);
+        }
         setWrapText(true);
     }
 
