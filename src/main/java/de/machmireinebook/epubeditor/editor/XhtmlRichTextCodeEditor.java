@@ -7,12 +7,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 import org.apache.log4j.Logger;
 
@@ -21,12 +20,14 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.languagetool.JLanguageTool;
-import org.languagetool.MultiThreadedJLanguageTool;
+import org.languagetool.ResultCache;
 import org.languagetool.language.GermanyGerman;
 import org.languagetool.markup.AnnotatedText;
 import org.languagetool.markup.AnnotatedTextBuilder;
 import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.RuleMatch;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek
@@ -53,6 +54,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     private final MediaType mediaType;
     private JLanguageTool langTool;
+    private ResultCache cache;
 
     @FunctionalInterface
     public interface TagInspector
@@ -142,9 +144,12 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     public List<RuleMatch> spellCheck() {
         String text = getCodeArea().getText();
         AnnotatedText annotatedText = makeAnnotatedText(text);
+        if (cache == null) {
+            cache = new ResultCache(10000, 1, TimeUnit.HOURS);
+        }
 
         if (langTool == null) {
-            langTool = new MultiThreadedJLanguageTool(new GermanyGerman());
+            langTool = new JLanguageTool(new GermanyGerman(), null, cache);
             langTool.disableCategory(CategoryIds.TYPOGRAPHY);
             langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
             langTool.disableCategory(CategoryIds.REDUNDANCY);
@@ -197,18 +202,15 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     @Override
     public void applySpellCheckResults(List<RuleMatch> matches) {
         for (RuleMatch match : matches) {
-            logger.info("type: " + match.getType());
-            logger.info(match.getFromPos() + "-" + match.getToPos() + ": " + match.getMessage());
-            logger.info("Suggested correction(s): " + match.getSuggestedReplacements());
-
             int start = match.getFromPos();
             int end = match.getToPos();
             if (start > -1) {
                 int currentPosition = start;
+                end = Math.min(end, getCodeArea().getLength());
                 StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(start, end);
                 for (StyleSpan<Collection<String>> currentStyle : currentStyles) {
                     List<String> currentStyleNames = new ArrayList<>(currentStyle.getStyle());
-                    String cssClass = "";
+                    String cssClass;
                     switch (match.getType().name()) {
                         case "Other"    : cssClass = SPELLCHECK_OTHER_CLASS_NAME;
                                           break;

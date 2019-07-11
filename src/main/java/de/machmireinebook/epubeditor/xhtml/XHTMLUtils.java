@@ -6,11 +6,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-
 import org.apache.log4j.Logger;
 
 import org.htmlcleaner.CleanerProperties;
@@ -31,6 +26,11 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
+import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
+
 /**
  * User: mjungierek
  * Date: 02.08.2014
@@ -45,10 +45,10 @@ public class XHTMLUtils
         try
         {
             String xhtml = fromHtml(res.getData());
-            res.setData(xhtml.getBytes("UTF-8"));
-            res.setInputEncoding("UTF-8");
+            res.setData(xhtml.getBytes(StandardCharsets.UTF_8));
+            res.setInputEncoding(StandardCharsets.UTF_8.displayName());
         }
-        catch (IOException | IllegalAddException e)
+        catch (IllegalAddException e)
         {
             logger.error("", e);
         }

@@ -33,8 +33,8 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
-    private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
-    private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "div", "blockquote", "table", "tr");
+    private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
+    private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "div", "blockquote", "table", "tr", "hr");
 
 
     protected void printElement(final Writer out, final FormatStack fstack,
@@ -81,7 +81,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                     write(out, " />");
                     if ("br".equals(element.getQualifiedName()))
                     {
-                        write(out, "\n");
+                        write(out, fstack.getLineSeparator());
                     }
                 }
                 // nothing more to do.
@@ -94,8 +94,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
             {
                 fstack.setEscapeOutput(false);
                 // Check for xml:space and adjust format settings
-                final String space = element.getAttributeValue("space",
-                        Namespace.XML_NAMESPACE);
+                final String space = element.getAttributeValue("space", Namespace.XML_NAMESPACE);
 
                 if ("default".equals(space))
                 {
@@ -271,7 +270,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         {
             return;
         }
-        String replaced = str.replaceAll("\\s{2,}", " ");
+        String replaced = str.replaceAll("\\s{2,}", "");
         write(out, replaced);
     }
 
