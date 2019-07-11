@@ -18,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -29,6 +30,7 @@ import com.helger.css.propertyvalue.CCSSValue;
 
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 /**
@@ -39,6 +41,12 @@ import de.machmireinebook.epubeditor.manager.EditorTabManager;
 public class InsertTableController implements Initializable, StandardController
 {
     private static final Logger logger = Logger.getLogger(InsertTableController.class);
+    public TextField cellPaddingTopTextField;
+    public TextField cellPaddingRightTextField;
+    public TextField cellPaddingBottomTextField;
+    public TextField cellPaddingLeftTextField;
+    public ToggleButton linkPaddingValuesButton;
+    public TextField cellStyleTextField;
     @FXML
     private TextField captionTextField;
     @FXML
@@ -94,7 +102,15 @@ public class InsertTableController implements Initializable, StandardController
         borderCollapsingComboBox.setItems(FXCollections.observableArrayList(CCSSValue.SEPARATE,
                 CCSSValue.COLLAPSE));
         borderCollapsingComboBox.getSelectionModel().select(CCSSValue.COLLAPSE);
+
+        cellPaddingRightTextField.disableProperty().bind(linkPaddingValuesButton.selectedProperty());
+        cellPaddingBottomTextField.disableProperty().bind(linkPaddingValuesButton.selectedProperty());
+        cellPaddingLeftTextField.disableProperty().bind(linkPaddingValuesButton.selectedProperty());
+        cellPaddingTopTextField.setText("5");
+        linkPaddingValuesButton.setSelected(true);
+
         setStandardStyle();
+        setStandardCellStyle();
 
         instance = this;
     }
@@ -131,6 +147,7 @@ public class InsertTableController implements Initializable, StandardController
             String columnHeaderSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-header.html"), "UTF-8");
             String tableRowSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-row.html"), "UTF-8");
             String tableColumnDataSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-data.html"), "UTF-8");
+            tableColumnDataSnippet.replace("${cell-style}", cellStyleTextField.getText());
 
             if (headerCheckBox.isSelected()) {
                 StringBuilder columnHeaderInsertsBuilder = new StringBuilder();
@@ -190,14 +207,32 @@ public class InsertTableController implements Initializable, StandardController
         styleTextField.setText(style);
     }
 
+    private void setStandardCellStyle() {
+        String style = "border-width: " + borderWidthTextField.getText() + "px;";
+        style += "border-color: " + toHexString(borderColorPicker.getValue()) + ";";
+        style += "border-style: " + borderStyleComboBox.getValue() + ";";
+        style += "border-collapse: " + borderCollapsingComboBox.getValue() + ";";
+        style += "padding: " + cellPaddingTopTextField.getText() + ";";
+        cellStyleTextField.setText(style);
+    }
+
     public void changeStyle(ActionEvent actionEvent)
     {
         String currentStyle = styleTextField.getText();
+        currentStyle = getBorderStyles(actionEvent, currentStyle);
+        styleTextField.setText(currentStyle);
+        String currentCellStyle = cellStyleTextField.getText();
+        currentCellStyle = getBorderStyles(actionEvent, currentCellStyle);
+        styleTextField.setText(currentCellStyle);
+    }
+
+    private String getBorderStyles(ActionEvent actionEvent, String currentStyle) {
         if (actionEvent.getSource() == borderWidthTextField) {
             String style = "border-width: " + borderWidthTextField.getText() + "px;";
             if (currentStyle.contains("border-width")) {
                 currentStyle = currentStyle.replaceAll("border-width(\\w*):(.*);", style);
-            } else {
+            }
+            else {
                 currentStyle += style;
             }
         }
@@ -205,7 +240,8 @@ public class InsertTableController implements Initializable, StandardController
             String style = "border-color: " + toHexString(borderColorPicker.getValue()) + ";";
             if (currentStyle.contains("border-color")) {
                 currentStyle = currentStyle.replaceAll("border-color(\\w*):(.*);", style);
-            } else {
+            }
+            else {
                 currentStyle += style;
             }
         }
@@ -213,7 +249,8 @@ public class InsertTableController implements Initializable, StandardController
             String style = "border-style: " + borderStyleComboBox.getValue() + ";";
             if (currentStyle.contains("border-style")) {
                 currentStyle = currentStyle.replaceAll("border-style(\\w*):(.*);", style);
-            } else {
+            }
+            else {
                 currentStyle += style;
             }
         }
@@ -221,11 +258,77 @@ public class InsertTableController implements Initializable, StandardController
             String style = "border-collapse: " + borderCollapsingComboBox.getValue() + ";";
             if (currentStyle.contains("border-collapse")) {
                 currentStyle = currentStyle.replaceAll("border-collapse(\\w*):(.*);", style);
-            } else {
+            }
+            else {
                 currentStyle += style;
             }
         }
-        styleTextField.setText(currentStyle);
+        return currentStyle;
+    }
+
+    public void changeCellStyle(ActionEvent actionEvent)
+    {
+        String currentCellStyle = cellStyleTextField.getText();
+        currentCellStyle = getBorderStyles(actionEvent, currentCellStyle);
+
+        if (linkPaddingValuesButton.isSelected() && actionEvent.getSource() == cellPaddingTopTextField) {
+            String paddingStyle = "padding: " + cellPaddingTopTextField.getText() + ";";
+            if (currentCellStyle.contains("padding")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding(\\w*):(.*);", paddingStyle);
+            }
+            else {
+                currentCellStyle += paddingStyle;
+            }
+            //remove single padding styles if exists
+            if (currentCellStyle.contains("padding-top")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-top(\\w*):(.*);", "");
+            }
+            if (currentCellStyle.contains("padding-right")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-right(\\w*):(.*);", "");
+            }
+            if (currentCellStyle.contains("padding-bottom")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-bottom(\\w*):(.*);", "");
+            }
+            if (currentCellStyle.contains("padding-left")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-left(\\w*):(.*);", "");
+            }
+        }
+        else if (!linkPaddingValuesButton.isSelected()) {
+            //remove compact padding style if exists
+            if (currentCellStyle.contains("padding")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding(\\w*):(.*);", "");
+            }
+            String paddingStyle = "padding-top: " + cellPaddingTopTextField.getText() + ";";
+            if (currentCellStyle.contains("padding-top")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-top(\\w*):(.*);", "");
+            }
+            else {
+                currentCellStyle += paddingStyle;
+            }
+            paddingStyle = "padding-right: " + cellPaddingRightTextField.getText() + ";";
+            if (currentCellStyle.contains("padding-top")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-right(\\w*):(.*);", "");
+            }
+            else {
+                currentCellStyle += paddingStyle;
+            }
+            paddingStyle = "padding-bottom: " + cellPaddingBottomTextField.getText() + ";";
+            if (currentCellStyle.contains("padding-top")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-bottom(\\w*):(.*);", "");
+            }
+            else {
+                currentCellStyle += paddingStyle;
+            }
+            paddingStyle = "padding-left: " + cellPaddingLeftTextField.getText() + ";";
+            if (currentCellStyle.contains("padding-top")) {
+                currentCellStyle = currentCellStyle.replaceAll("padding-left(\\w*):(.*);", "");
+            }
+            else {
+                currentCellStyle += paddingStyle;
+            }
+        }
+
+        styleTextField.setText(currentCellStyle);
     }
 
     // Helper method
@@ -234,8 +337,24 @@ public class InsertTableController implements Initializable, StandardController
         return in.length() == 1 ? "0" + in : in;
     }
 
-    public String toHexString(Color value) {
+    private String toHexString(Color value) {
         return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()) + format(value.getOpacity()))
                 .toUpperCase();
+    }
+
+    public void linkPaddingValues(ActionEvent actionEvent) {
+        if (linkPaddingValuesButton.isSelected()) {
+            cellPaddingTopTextField.setPromptText("all");
+            cellPaddingRightTextField.textProperty().bind(cellPaddingTopTextField.textProperty());
+            cellPaddingBottomTextField.textProperty().bind(cellPaddingTopTextField.textProperty());
+            cellPaddingLeftTextField.textProperty().bind(cellPaddingTopTextField.textProperty());
+            linkPaddingValuesButton.setGraphic(FXUtils.getIcon("/icons/icons8_Link_96px.png", 12));
+        } else {
+            cellPaddingTopTextField.setPromptText("top");
+            cellPaddingRightTextField.textProperty().unbind();
+            cellPaddingBottomTextField.textProperty().unbind();
+            cellPaddingLeftTextField.textProperty().unbind();
+            linkPaddingValuesButton.setGraphic(FXUtils.getIcon("/icons/icons8_Broken_Link_96px.png", 12));
+        }
     }
 }

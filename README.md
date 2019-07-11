@@ -35,4 +35,3 @@ Scripto needs Java 11 or higher to run. The application is build by maven. Curre
 I plan to include the maven javafx plugin for easier running the app.   
 
 
-  

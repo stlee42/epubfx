@@ -8,10 +8,12 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+
 <AnchorPane prefHeight="447.0" prefWidth="410.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.InsertTableController">
    <Label layoutX="14.0" layoutY="19.0" text="Number columns" />
    <Label layoutX="14.0" layoutY="52.0" text="Number rows" />
@@ -23,11 +25,11 @@
    <Label layoutX="14.0" layoutY="164.0" text="Border" />
    <Label layoutX="14.0" layoutY="296.0" text="Table Styles" />
    <Label layoutX="13.0" layoutY="329.0" text="Table Style Class" />
-   <TextField fx:id="styleClassTextField" layoutX="119.0" layoutY="325.0" prefHeight="25.0" prefWidth="272.0" />
-   <TextField fx:id="styleTextField" layoutX="119.0" layoutY="292.0" prefHeight="25.0" prefWidth="272.0" />
+   <TextField fx:id="styleClassTextField" layoutX="119.0" layoutY="325.0" prefHeight="25.0" prefWidth="272.0" promptText="CSS class added to table" />
+   <TextField fx:id="styleTextField" layoutX="119.0" layoutY="292.0" prefHeight="25.0" prefWidth="272.0" promptText="Styles added to table" />
    <ComboBox fx:id="borderCollapsingComboBox" layoutX="119.0" layoutY="193.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="177.0" />
-   <TextField fx:id="borderWidthTextField" layoutX="119.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" />
-   <Label layoutX="161.0" layoutY="164.0" text="px" />
+   <TextField fx:id="borderWidthTextField" layoutX="119.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="36.0" promptText="width" />
+   <Label layoutX="159.0" layoutY="164.0" text="px" />
    <ColorPicker fx:id="borderColorPicker" layoutX="278.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="110.0" />
    <ComboBox fx:id="borderStyleComboBox" layoutX="183.0" layoutY="160.0" onAction="#changeStyle" prefHeight="25.0" prefWidth="86.0" />
    <HBox alignment="CENTER" layoutY="396.0" prefHeight="50.0" spacing="20.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -40,14 +42,18 @@
    <Label layoutX="14.0" layoutY="86.0" text="Caption" />
    <TextField fx:id="captionTextField" layoutX="119.0" layoutY="82.0" prefHeight="25.0" prefWidth="272.0" />
    <Label layoutX="14.0" layoutY="229.0" text="Cell Padding" />
-   <TextField fx:id="cellPaddingTopTextField" layoutX="119.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" />
-   <TextField fx:id="cellPaddingRightTextField" layoutX="165.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" />
-   <TextField fx:id="cellPaddingBottomTextField" layoutX="208.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" />
-   <TextField fx:id="cellPaddingLeftTextField" layoutX="252.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" />
-   <Button fx:id="linksPaddingValuesButton" layoutX="296.0" layoutY="225.0" mnemonicParsing="false" styleClass="flat" text="Button" >
+   <TextField fx:id="cellPaddingTopTextField" layoutX="119.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" promptText="top" />
+   <TextField fx:id="cellPaddingRightTextField" layoutX="165.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" promptText="right" />
+   <TextField fx:id="cellPaddingBottomTextField" layoutX="208.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" promptText="bot" />
+   <TextField fx:id="cellPaddingLeftTextField" layoutX="252.0" layoutY="225.0" onAction="#changeCellStyle" prefHeight="25.0" prefWidth="36.0" promptText="left" />
+   <ToggleButton fx:id="linkPaddingValuesButton" layoutX="320.0" layoutY="226.0" mnemonicParsing="false" onAction="#linkPaddingValues" styleClass="flat">
       <graphic>
-         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="icons/icons8_Link_96px.png"/>
+         <ImageView fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="icons/icons8_Link_96px.png" />
          </ImageView>
-      </graphic>   </Button>
+      </graphic>
+   </ToggleButton>
+   <Label layoutX="16.0" layoutY="263.0" text="Cell Styles" />
+   <TextField fx:id="cellStyleTextField" layoutX="119.0" layoutY="259.0" prefHeight="25.0" prefWidth="272.0" promptText="Styles added to all cells" />
+   <Label layoutX="292.0" layoutY="230.0" text="px" />
 </AnchorPane>

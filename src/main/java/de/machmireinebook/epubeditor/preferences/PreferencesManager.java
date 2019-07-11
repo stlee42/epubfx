@@ -2,6 +2,9 @@ package de.machmireinebook.epubeditor.preferences;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import javax.inject.Singleton;
 
@@ -19,6 +22,8 @@ import javafx.collections.ObservableList;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
+import org.languagetool.Language;
+import org.languagetool.Languages;
 
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
@@ -48,9 +53,12 @@ public class PreferencesManager
             "English"));
     private ObjectProperty<String> languageSelection = new SimpleObjectProperty<>("English");
 
-    private ObservableList<String> languageSpellItems = FXCollections.observableArrayList(Arrays.asList(
-            "English", "Deutsch", "Français", "Italiano"));
-    private ObjectProperty<String> languageSpellSelection = new SimpleObjectProperty<>("English");
+    // spellcheckProperty
+    private final BooleanProperty spellcheck = new SimpleBooleanProperty(this, "spellcheck", true);
+
+    private List<Language> languages = Languages.get();
+    private ObservableList<Language> languageSpellItems = FXCollections.observableArrayList(languages);
+    private ObjectProperty<Language> languageSpellSelection = new SimpleObjectProperty<>(Languages.getLanguageForLocale(Locale.ENGLISH));
 
     private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
             QuotationMark.ENGLISH.getDescription(), QuotationMark.GERMAN.getDescription(), QuotationMark.GERMAN_GUILLEMETS.getDescription(),
@@ -70,42 +78,45 @@ public class PreferencesManager
     private SingleSelectionField<TocPosition> positionTocControl = Field.ofSingleSelectionType(Arrays.asList(TocPosition.values()), 0).render(
             new RadioButtonControl<>());
 
-    private BooleanProperty generateNCX = new SimpleBooleanProperty(true);
-    private BooleanProperty generateHtmlToc = new SimpleBooleanProperty(true);
+    private BooleanProperty generateNCX = new SimpleBooleanProperty(this, "generateNcx", true);
+    private BooleanProperty generateHtmlToc = new SimpleBooleanProperty(this, "generateHtmlToc",true);
 
     public void init(Element preferencesRootElement)
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
+        Setting<SingleSelectionField<Language>, ObjectProperty<Language>> spellCheckingLanguageSetting = Setting.of("Language for Spell Checking", languageSpellItems, languageSpellSelection);
+
         preferencesFx = EpubFxPreferences.of(storageHandler,
-                Category.of("Application",
-                        Group.of("Startup",
-                                Setting.of("Open application with ", startupTypeControl, startupType),
-                                Setting.of("Version of new ebook", versionControl, version)
-                        )
+        Category.of("Application",
+                Group.of("Startup",
+                        Setting.of("Open application with ", startupTypeControl, startupType),
+                        Setting.of("Version of new ebook", versionControl, version)
+                )
+        ),
+        Category.of("Book",
+                Group.of("EPUB 2",
+                        Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
                 ),
-                Category.of("Book",
-                        Group.of("EPUB 2",
-                                Setting.of("Generate HTML ToC automatically ", generateHtmlToc)
-                        ),
-                        Group.of("EPUB 3",
-                                Setting.of("Generate NCX automatically ", generateNCX)
-                        ),
-                        Group.of("Structure",
-                                Setting.of("Type of References", referenceTypeControl, referenceType),
-                                Setting.of("Position of generated Toc", positionTocControl, tocPosition)
-                        )
+                Group.of("EPUB 3",
+                        Setting.of("Generate NCX automatically ", generateNCX)
                 ),
-                Category.of("Language specific Settings",
-                        Group.of("UI",
-                            Setting.of("UI Language", languageItems, languageSelection)
-                        ),
-                        Group.of("Content",
-                            Setting.of("Language for Spellchecking", languageSpellItems, languageSpellSelection),
-                            Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
-                            Setting.of("Headline of Table of Contents", headlineToc),
-                            Setting.of("Headline of Landmarks", landmarksToc)
-                        )
-                ));
+                Group.of("Structure",
+                        Setting.of("Type of References", referenceTypeControl, referenceType),
+                        Setting.of("Position of generated Toc", positionTocControl, tocPosition)
+                )
+        ),
+        Category.of("Language specific Settings",
+                Group.of("UI",
+                    Setting.of("UI Language", languageItems, languageSelection)
+                ),
+                Group.of("Content",
+                    Setting.of("Spell Check", spellcheck),
+                    spellCheckingLanguageSetting,
+                    Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
+                    Setting.of("Headline of Table of Contents", headlineToc),
+                    Setting.of("Headline of Landmarks", landmarksToc)
+                )
+        ));
     }
 
     public void showPreferencesDialog()
@@ -158,17 +169,17 @@ public class PreferencesManager
         this.quotationMarkSelection.set(quotationMarkSelection);
     }
 
-    public String getLanguageSpellSelection()
+    public Language getLanguageSpellSelection()
     {
         return languageSpellSelection.get();
     }
 
-    public ObjectProperty<String> languageSpellSelectionProperty()
+    public ObjectProperty<Language> languageSpellSelectionProperty()
     {
         return languageSpellSelection;
     }
 
-    public void setLanguageSpellSelection(String languageSpellSelection)
+    public void setLanguageSpellSelection(Language languageSpellSelection)
     {
         this.languageSpellSelection.set(languageSpellSelection);
     }
@@ -233,9 +244,23 @@ public class PreferencesManager
         return landmarksToc;
     }
 
-    public Element getPreferencesElement()
+    public Optional<Element> getPreferencesElement()
     {
-        return storageHandler.getPreferencesElement();
+        if (storageHandler != null) {
+            return Optional.of(storageHandler.getPreferencesElement());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public final BooleanProperty spellcheckProperty() {
+        return spellcheck;
+    }
+    public final boolean isSpellcheck() {
+        return spellcheck.get();
+    }
+    public final void setSpellcheck(boolean value) {
+        spellcheck.set(value);
     }
 
 }

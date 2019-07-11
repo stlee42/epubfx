@@ -6,6 +6,8 @@ package de.machmireinebook.epubeditor.editor;
  * Time: 21:12
  */
 
+import java.util.List;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -14,6 +16,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
+
+import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
@@ -61,7 +65,8 @@ public interface CodeEditor
 
     void setCodeEditorSize(double width, double height);
 
-    void spellCheck();
+    List<RuleMatch> spellCheck();
+    void applySpellCheckResults(List<RuleMatch> matches);
     void clearUndoHistory();
 
     ReadOnlyStringProperty textInformationProperty();

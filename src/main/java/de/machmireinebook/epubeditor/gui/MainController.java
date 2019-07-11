@@ -53,6 +53,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.log4j.Logger;
+
+import org.languagetool.Language;
+
+import com.pixelduke.control.Ribbon;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -73,9 +79,6 @@ import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
-import org.apache.log4j.Logger;
-
-import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -228,7 +231,7 @@ public class MainController implements Initializable
     @FXML
     private Button lowercaseButton;
     @FXML
-    private ComboBox<String> languageSpellComboBox;
+    private ComboBox<Language> languageSpellComboBox;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
@@ -448,11 +451,13 @@ public class MainController implements Initializable
 
         searchManager.currentBookProperty().bind(currentBookProperty);
 
-        //not bind bidiretional, because selectinModel has only read only properties and preferences can not set values from preferences store if property is bind
+        //not bind bidiretional, because selectionModel has only read only properties and preferences can not set values from preferences store if property is bind
         preferencesManager.languageSpellSelectionProperty().addListener((observable, oldValue, newValue) -> languageSpellComboBox.getSelectionModel().select(newValue));
         //initialize the value in combobox
         languageSpellComboBox.getSelectionModel().select(preferencesManager.languageSpellSelectionProperty().get());
         languageSpellComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> preferencesManager.languageSpellSelectionProperty().set(newValue));
+
+        languageSpellComboBox.disableProperty().bind(preferencesManager.spellcheckProperty().not());
     }
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)

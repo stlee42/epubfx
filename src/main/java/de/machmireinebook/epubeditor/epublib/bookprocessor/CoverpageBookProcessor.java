@@ -3,7 +3,7 @@ package de.machmireinebook.epubeditor.epublib.bookprocessor;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,6 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
  */
 public class CoverpageBookProcessor implements BookProcessor
 {
-
     public static int MAX_COVER_IMAGE_SIZE = 1000;
     private static final Logger log = Logger.getLogger(CoverpageBookProcessor.class);
     public static final String DEFAULT_COVER_PAGE_ID = "cover";

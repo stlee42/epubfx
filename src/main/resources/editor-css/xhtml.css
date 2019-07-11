@@ -27,9 +27,19 @@
 
 .spell-check-error {
     -rtfx-underline-color: indianred;
-    -rtfx-background-color: #f0f0f0;
     -rtfx-underline-dash-array: 2px 2px;
-    -rtfx-underline-width: 1px;
+    -rtfx-underline-width: 2px;
     -rtfx-underline-cap: butt;
+}
+
+.spell-check-other {
+    -rtfx-underline-color: blueviolet;
+    -rtfx-underline-dash-array: 2px 2px;
+    -rtfx-underline-width: 2px;
+    -rtfx-underline-cap: butt;
+}
+
+.spell-check-hint {
+    -rtfx-background-color: #f0f0f0;
 }
 

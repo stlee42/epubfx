@@ -2,11 +2,13 @@ package de.machmireinebook.epubeditor.editor;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.editor.regex.CssRegexLexer;
 import de.machmireinebook.epubeditor.editor.regex.RegexToken;
@@ -37,8 +39,12 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    public void spellCheck()
-    {
+    public List<RuleMatch> spellCheck() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void applySpellCheckResults(List<RuleMatch> matches) {
     }
 
     protected StyleSpans<Collection<String>> computeHighlighting(String text)

@@ -1,15 +1,16 @@
 package de.machmireinebook.epubeditor.editor;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
-
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 import org.apache.log4j.Logger;
 
@@ -17,6 +18,15 @@ import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.languagetool.JLanguageTool;
+import org.languagetool.MultiThreadedJLanguageTool;
+import org.languagetool.language.GermanyGerman;
+import org.languagetool.markup.AnnotatedText;
+import org.languagetool.markup.AnnotatedTextBuilder;
+import org.languagetool.rules.CategoryIds;
+import org.languagetool.rules.RuleMatch;
+
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * Created by Michail Jungierek
@@ -37,7 +47,12 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private static final int GROUP_EQUAL_SYMBOL = 2;
     private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
+    private static final String SPELLCHECK_CLASS_NAME = "spell-check-error";
+    private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
+    private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
+
     private final MediaType mediaType;
+    private JLanguageTool langTool;
 
     @FunctionalInterface
     public interface TagInspector
@@ -120,23 +135,88 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    public void spellCheck() {
-        String mispelledWord = "<p>";
+    public List<RuleMatch> spellCheck() {
         String text = getCodeArea().getText();
-        int index = text.indexOf(mispelledWord);
-        int length = mispelledWord.length();
-        if (index > -1) {
-            StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index + length);
-            currentStyles.overlay(, new BiFunction<Collection<String>, Collection<String>, Collection<String>>()
-            {
-                @Override
-                public Collection<String> apply(Collection<String> strings, Collection<String> strings2)
-                {
-                    return null;
+        AnnotatedText annotatedText = makeAnnotatedText(text);
+
+        if (langTool == null) {
+            langTool = new MultiThreadedJLanguageTool(new GermanyGerman());
+            langTool.disableCategory(CategoryIds.TYPOGRAPHY);
+            langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
+            langTool.disableCategory(CategoryIds.REDUNDANCY);
+            langTool.disableCategory(CategoryIds.STYLE);
+            langTool.disableCategory(CategoryIds.GENDER_NEUTRALITY);
+            langTool.disableCategory(CategoryIds.SEMANTICS);
+            langTool.disableCategory(CategoryIds.COLLOQUIALISMS);
+            langTool.disableCategory(CategoryIds.WIKIPEDIA);
+            langTool.disableCategory(CategoryIds.BARBARISM);
+            langTool.disableCategory(CategoryIds.MISC);
+            /*langTool.enableRuleCategory(Categories.COMPOUNDING.getId());
+            langTool.enableRuleCategory(Categories.CASING.getId());
+            langTool.enableRuleCategory(Categories.GRAMMAR.getId());
+            langTool.enableRuleCategory(Categories.TYPOS.getId());
+            langTool.enableRuleCategory(Categories.PUNCTUATION.getId());*/
+        }
+
+        List<RuleMatch> matches = Collections.emptyList();
+        try {
+            matches = langTool.check(annotatedText);
+        }
+        catch (IOException e) {
+            logger.error("can't spell check text", e);
+        }
+        return matches;
+    }
+
+    private AnnotatedText makeAnnotatedText(String xhtml) {
+        AnnotatedTextBuilder builder = new AnnotatedTextBuilder();
+        StringTokenizer tokenizer = new StringTokenizer(xhtml, "<>", true);
+        boolean inMarkup = false;
+        while (tokenizer.hasMoreTokens()) {
+            String part = tokenizer.nextToken();
+            if (part.startsWith("<")) {
+                builder.addMarkup(part);
+                inMarkup = true;
+            } else if (part.startsWith(">")) {
+                inMarkup = false;
+                builder.addMarkup(part);
+            } else {
+                if (inMarkup) {
+                    builder.addMarkup(part);
+                } else {
+                    builder.addText(part);
                 }
-            });
-            collectionStyleSpan.getStyle().add("spell-check-error");
-            getCodeArea().setStyleSpans(index, currentStyles);
+            }
+        }
+        return builder.build();
+    }
+    @Override
+    public void applySpellCheckResults(List<RuleMatch> matches) {
+        for (RuleMatch match : matches) {
+            logger.info("type: " + match.getType());
+            logger.info(match.getFromPos() + "-" + match.getToPos() + ": " + match.getMessage());
+            logger.info("Suggested correction(s): " + match.getSuggestedReplacements());
+
+            int start = match.getFromPos();
+            int end = match.getToPos();
+            if (start > -1) {
+                int currentPosition = start;
+                StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(start, end);
+                for (StyleSpan<Collection<String>> currentStyle : currentStyles) {
+                    List<String> currentStyleNames = new ArrayList<>(currentStyle.getStyle());
+                    String cssClass = "";
+                    switch (match.getType().name()) {
+                        case "Other"    : cssClass = SPELLCHECK_OTHER_CLASS_NAME;
+                                          break;
+                        case "Hint"     : cssClass = SPELLCHECK_HINT_CLASS_NAME;
+                                          break;
+                        default         : cssClass = SPELLCHECK_CLASS_NAME;
+                    }
+                    Collections.addAll(currentStyleNames, cssClass);
+                    getCodeArea().setStyle(currentPosition, currentPosition + currentStyle.getLength(), currentStyleNames);
+                    currentPosition = currentPosition + currentStyle.getLength();
+                }
+            }
         }
     }
 
@@ -152,10 +232,10 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
         int openTagEnd = -1;
 
-        int openTagNameStartOffset = -1;
-        int openTagNameEndOffset = -1;
-        int closeTagNameStartOffset = -1;
-        int closeTagNameEndOffset = -1;
+        int openTagNameStartOffset;
+        int openTagNameEndOffset;
+        int closeTagNameStartOffset;
+        int closeTagNameEndOffset;
 
         int openTagNameStartPosition = -1;
         int openTagNameEndPosition = -1;

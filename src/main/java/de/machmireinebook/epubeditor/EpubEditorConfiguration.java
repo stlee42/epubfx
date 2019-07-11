@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Singleton;
 
@@ -36,13 +37,13 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-import de.machmireinebook.epubeditor.preferences.StageSizer;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.ClipManager;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.preferences.StageSizer;
 
 /**
  * User: mjungierek
@@ -536,8 +537,8 @@ public class EpubEditorConfiguration
             //create new from element in preferences manager
             root.removeChild(PREFERENCES_ELEMENT_NAME);
             PreferencesManager preferencesManager =  BeanFactory.getInstance().getBean(PreferencesManager.class);
-            Element preferencesElement = preferencesManager.getPreferencesElement();
-            root.addContent(preferencesElement);
+            Optional<Element> preferencesElementOptional = preferencesManager.getPreferencesElement();
+            preferencesElementOptional.ifPresent(root::addContent);
         }
         try
         {
