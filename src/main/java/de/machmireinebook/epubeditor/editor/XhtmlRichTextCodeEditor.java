@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.editor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,8 +120,24 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     }
 
     @Override
-    public void spellCheck()
-    {
+    public void spellCheck() {
+        String mispelledWord = "<p>";
+        String text = getCodeArea().getText();
+        int index = text.indexOf(mispelledWord);
+        int length = mispelledWord.length();
+        if (index > -1) {
+            StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index + length);
+            currentStyles.overlay(, new BiFunction<Collection<String>, Collection<String>, Collection<String>>()
+            {
+                @Override
+                public Collection<String> apply(Collection<String> strings, Collection<String> strings2)
+                {
+                    return null;
+                }
+            });
+            collectionStyleSpan.getStyle().add("spell-check-error");
+            getCodeArea().setStyleSpans(index, currentStyles);
+        }
     }
 
     public Optional<XMLTagPair> findSurroundingTags(TagInspector inspector)

@@ -81,7 +81,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                         return Optional.empty();
                     }
                 })
-                .subscribe(this::applyHighlighting);
+                .subscribe(this::applyHighlighting)
+                .and(this::spellCheck);
 
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
@@ -110,8 +111,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         Task<StyleSpans<Collection<String>>> task = new Task<>()
         {
             @Override
-            protected StyleSpans<Collection<String>> call()
-            {
+            protected StyleSpans<Collection<String>> call() {
                 return computeHighlighting(text);
             }
         };
@@ -121,6 +121,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
     private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
         codeArea.setStyleSpans(0, highlighting);
+        spellCheck();
     }
 
     protected abstract StyleSpans<Collection<String>> computeHighlighting(String text);
