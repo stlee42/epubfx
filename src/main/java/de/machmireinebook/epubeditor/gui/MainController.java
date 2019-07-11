@@ -55,10 +55,6 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
-import org.languagetool.Language;
-
-import com.pixelduke.control.Ribbon;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -76,9 +72,11 @@ import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
+import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -231,7 +229,7 @@ public class MainController implements Initializable
     @FXML
     private Button lowercaseButton;
     @FXML
-    private ComboBox<Language> languageSpellComboBox;
+    private ComboBox<PreferencesLanguageStorable> languageSpellComboBox;
 
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();

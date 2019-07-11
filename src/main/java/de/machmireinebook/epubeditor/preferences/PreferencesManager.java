@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
@@ -56,9 +57,7 @@ public class PreferencesManager
     // spellcheckProperty
     private final BooleanProperty spellcheck = new SimpleBooleanProperty(this, "spellcheck", true);
 
-    private List<Language> languages = Languages.get();
-    private ObservableList<Language> languageSpellItems = FXCollections.observableArrayList(languages);
-    private ObjectProperty<Language> languageSpellSelection = new SimpleObjectProperty<>(Languages.getLanguageForLocale(Locale.ENGLISH));
+    private ObjectProperty<PreferencesLanguageStorable> languageSpellSelection = new SimpleObjectProperty<>(PreferencesLanguageStorable.of(Languages.getLanguageForLocale(Locale.GERMANY)));
 
     private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
             QuotationMark.ENGLISH.getDescription(), QuotationMark.GERMAN.getDescription(), QuotationMark.GERMAN_GUILLEMETS.getDescription(),
@@ -84,7 +83,11 @@ public class PreferencesManager
     public void init(Element preferencesRootElement)
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
-        Setting<SingleSelectionField<Language>, ObjectProperty<Language>> spellCheckingLanguageSetting = Setting.of("Language for Spell Checking", languageSpellItems, languageSpellSelection);
+
+        List<Language> languages = Languages.get();
+        ObservableList<PreferencesLanguageStorable> languageSpellItems = FXCollections.observableArrayList(languages
+            .stream().map(PreferencesLanguageStorable::new)
+            .collect(Collectors.toList()));
 
         preferencesFx = EpubFxPreferences.of(storageHandler,
             Category.of("Application",
@@ -111,12 +114,13 @@ public class PreferencesManager
                     ),
                     Group.of("Content",
                         Setting.of("Spell Check", spellcheck),
-                        spellCheckingLanguageSetting,
+                        Setting.of("Language for Spell Checking", languageSpellItems, languageSpellSelection),
                         Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
                         Setting.of("Headline of Table of Contents", headlineToc),
                         Setting.of("Headline of Landmarks", landmarksToc)
                     )
-            ));
+            )
+        );
     }
 
     public void showPreferencesDialog()
@@ -169,17 +173,17 @@ public class PreferencesManager
         this.quotationMarkSelection.set(quotationMarkSelection);
     }
 
-    public Language getLanguageSpellSelection()
+    public PreferencesLanguageStorable getLanguageSpellSelection()
     {
         return languageSpellSelection.get();
     }
 
-    public ObjectProperty<Language> languageSpellSelectionProperty()
+    public ObjectProperty<PreferencesLanguageStorable> languageSpellSelectionProperty()
     {
         return languageSpellSelection;
     }
 
-    public void setLanguageSpellSelection(Language languageSpellSelection)
+    public void setLanguageSpellSelection(PreferencesLanguageStorable languageSpellSelection)
     {
         this.languageSpellSelection.set(languageSpellSelection);
     }

@@ -9,14 +9,14 @@ import java.util.prefs.Preferences;
 
 import javafx.collections.ObservableList;
 
-import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
-
 import org.apache.commons.lang3.math.NumberUtils;
 
 import org.jdom2.CDATA;
 import org.jdom2.Content;
 import org.jdom2.Element;
 import org.jdom2.util.IteratorIterable;
+
+import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 
 import com.dlsc.preferencesfx.util.Constants;
 import com.dlsc.preferencesfx.util.StorageHandler;
@@ -185,11 +185,18 @@ public class EpubFxPreferencesStorageHandler implements StorageHandler
             preferenceValueElement.setAttribute("breadcrumb", breadcrumb);
             preferenceValuesElement.addContent(preferenceValueElement);
         }
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        java.beans.XMLEncoder xe1 = new java.beans.XMLEncoder(bos);
-        xe1.writeObject(object);
-        xe1.close();
-        preferenceValueElement.setContent(new CDATA(bos.toString(StandardCharsets.UTF_8)));
+        String content;
+        if (object instanceof SelfStorable) {
+            SelfStorable storable = (SelfStorable)object;
+            content = storable.getStorageContent();
+        } else {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            java.beans.XMLEncoder xe1 = new java.beans.XMLEncoder(bos);
+            xe1.writeObject(object);
+            xe1.close();
+            content = bos.toString(StandardCharsets.UTF_8);
+        }
+        preferenceValueElement.setContent(new CDATA(content));
     }
 
     @Override
@@ -210,9 +217,16 @@ public class EpubFxPreferencesStorageHandler implements StorageHandler
                     .map(content -> (CDATA)content)
                     .findFirst()
                     .ifPresent(cdata -> {
-                        ByteArrayInputStream bis = new ByteArrayInputStream(cdata.getText().getBytes(StandardCharsets.UTF_8));
-                        XMLDecoder decoder = new XMLDecoder(bis);
-                        result.set(decoder.readObject());
+                        Object storedObject;
+                        if (defaultObject instanceof SelfStorable) {
+                            storedObject = ((SelfStorable)defaultObject).getNewInstance();
+                            ((SelfStorable)storedObject).readFromStorage(cdata.getText());
+                        } else {
+                            ByteArrayInputStream bis = new ByteArrayInputStream(cdata.getText().getBytes(StandardCharsets.UTF_8));
+                            XMLDecoder decoder = new XMLDecoder(bis);
+                            storedObject = decoder.readObject();
+                        }
+                        result.set(storedObject);
                     });
             return result.get();
         }

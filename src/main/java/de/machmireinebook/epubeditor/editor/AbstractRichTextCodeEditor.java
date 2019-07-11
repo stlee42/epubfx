@@ -54,7 +54,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
     private boolean isChangingCode = false;
     private ExecutorService taskExecutor;
-    private PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
+    PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
 
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
@@ -131,6 +131,9 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
             spellcheckTask.setOnSucceeded(event -> {
                 List<RuleMatch> matches = spellcheckTask.getValue();
                 applySpellCheckResults(matches);
+            });
+            spellcheckTask.setOnFailed(event -> {
+                logger.error("error while executing spell check", spellcheckTask.getException());
             });
         }
     }
