@@ -64,8 +64,8 @@ public class XHTMLUtils
             HtmlCleaner cleaner = createHtmlCleaner();
 
             //wir probieren es erstmal mit UTF-8
-            TagNode rootNode = cleaner.clean(new String(originalHtml, "UTF-8"));
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), true).createJDom(rootNode);
+            TagNode rootNode = cleaner.clean(new String(originalHtml, StandardCharsets.UTF_8));
+            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
 
             // hat die Datei ein anderes Encoding im HTML-Header deklariert?
             Element root = jdomDocument.getRootElement();
@@ -92,7 +92,7 @@ public class XHTMLUtils
                                     {
                                         byte[] recodedHTML = ResourceUtil.recode(charsetContent, "UTF-8", originalHtml);
                                         HtmlCleaner cleaner2 = createHtmlCleaner();
-                                        rootNode = cleaner2.clean(new String(recodedHTML, "UTF-8"));
+                                        rootNode = cleaner2.clean(new String(recodedHTML, StandardCharsets.UTF_8));
                                         jdomDocument = new JDomSerializer(cleaner2.getProperties(), false).createJDom(rootNode);
                                         root = jdomDocument.getRootElement();
                                     }
@@ -136,7 +136,8 @@ public class XHTMLUtils
         cleanerProperties.setOmitXmlDeclaration(true);
         cleanerProperties.setOmitDoctypeDeclaration(false);
         cleanerProperties.setRecognizeUnicodeChars(true);
-        cleanerProperties.setTranslateSpecialEntities(false);
+        cleanerProperties.setTranslateSpecialEntities(true);
+        cleanerProperties.setTransSpecialEntitiesToNCR(true);
         cleanerProperties.setIgnoreQuestAndExclam(true);
         cleanerProperties.setUseEmptyElementTags(false);
         cleanerProperties.setNamespacesAware(true);
