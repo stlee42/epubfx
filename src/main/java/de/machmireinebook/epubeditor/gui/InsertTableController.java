@@ -147,18 +147,23 @@ public class InsertTableController implements Initializable, StandardController
             String columnHeaderSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-header.html"), "UTF-8");
             String tableRowSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-row.html"), "UTF-8");
             String tableColumnDataSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-data.html"), "UTF-8");
-            tableColumnDataSnippet.replace("${cell-style}", cellStyleTextField.getText());
+            tableColumnDataSnippet = tableColumnDataSnippet.replace("${cell-style}", "style=\"" + cellStyleTextField.getText() + "\"");
 
             if (headerCheckBox.isSelected()) {
+                String headerStyle = "background-color: " + toHexString(backgroundColorPicker.getValue()) + ";";;
+                tableSnippet = tableSnippet.replace("${header-style}", "style=\"" + headerStyle + "\"");
+
+                String headerCellStyle = getBorderStyles(actionEvent, "");
                 StringBuilder columnHeaderInsertsBuilder = new StringBuilder();
-                for (int i = 0; i < numberColumnsSpinner.getValue(); i++)
-                {
-                    columnHeaderInsertsBuilder.append(columnHeaderSnippet.replace("${column-name}", "Column " + i));
+                for (int i = 0; i < numberColumnsSpinner.getValue(); i++) {
+                    columnHeaderSnippet = columnHeaderSnippet.replace("${column-name}", "Column " + i);
+                    columnHeaderSnippet = columnHeaderSnippet.replace("${column-header-cell-style}", headerCellStyle);
+                    columnHeaderInsertsBuilder.append(columnHeaderSnippet);
                 }
                 String columnHeaderInserts = columnHeaderInsertsBuilder.toString();
                 tableSnippet = tableSnippet.replace("${column-header}", columnHeaderInserts);
             } else {
-                tableSnippet = tableSnippet.replaceAll("<thead>(.*)</thead>", "");
+                tableSnippet = tableSnippet.replaceAll("(?s)<thead>(.*)</thead>", "");
             }
 
             StringBuilder tableRows = new StringBuilder();
@@ -179,7 +184,7 @@ public class InsertTableController implements Initializable, StandardController
             if (StringUtils.isNotEmpty(captionTextField.getText())) {
                 tableSnippet = tableSnippet.replace("${caption}", "class=\"" + captionTextField.getText() + "\"");
             } else {
-                tableSnippet = tableSnippet.replaceAll("<caption>(.*)</caption>", "");
+                tableSnippet = tableSnippet.replaceAll("(?s)<caption>(.*)</caption>", "");
             }
 
             CodeEditor editor = editorManager.getCurrentEditor();
