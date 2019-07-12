@@ -26,7 +26,7 @@ public class PreferencesLanguageStorable implements SelfStorable {
 
     @Override
     public String getStorageContent() {
-        return language.getLocale().toLanguageTag();
+        return language.getLocaleWithCountryAndVariant().toLanguageTag();
     }
 
     @Override
@@ -47,4 +47,13 @@ public class PreferencesLanguageStorable implements SelfStorable {
     public String toString() {
         return language.toString();
     }
+
+/*    @Override
+    public boolean equals(Object obj) {
+        if (language != null) {
+            return language.equals(obj);
+        } else {
+            return super.equals(obj);
+        }
+    }*/
 }

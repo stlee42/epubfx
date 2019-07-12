@@ -55,6 +55,8 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
+import com.pixelduke.control.Ribbon;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -76,7 +78,6 @@ import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
-import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -449,6 +450,7 @@ public class MainController implements Initializable
 
         searchManager.currentBookProperty().bind(currentBookProperty);
 
+        languageSpellComboBox.setItems(preferencesManager.getLanguageSpellItems());
         //not bind bidiretional, because selectionModel has only read only properties and preferences can not set values from preferences store if property is bind
         preferencesManager.languageSpellSelectionProperty().addListener((observable, oldValue, newValue) -> languageSpellComboBox.getSelectionModel().select(newValue));
         //initialize the value in combobox

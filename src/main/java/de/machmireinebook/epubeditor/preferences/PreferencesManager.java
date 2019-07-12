@@ -57,6 +57,10 @@ public class PreferencesManager
     // spellcheckProperty
     private final BooleanProperty spellcheck = new SimpleBooleanProperty(this, "spellcheck", true);
 
+    private List<Language> languages = Languages.get();
+    private ObservableList<PreferencesLanguageStorable> languageSpellItems = FXCollections.observableArrayList(languages
+            .stream().map(PreferencesLanguageStorable::new)
+            .collect(Collectors.toList()));
     private ObjectProperty<PreferencesLanguageStorable> languageSpellSelection = new SimpleObjectProperty<>(PreferencesLanguageStorable.of(Languages.getLanguageForLocale(Locale.GERMANY)));
 
     private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
@@ -83,11 +87,6 @@ public class PreferencesManager
     public void init(Element preferencesRootElement)
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
-
-        List<Language> languages = Languages.get();
-        ObservableList<PreferencesLanguageStorable> languageSpellItems = FXCollections.observableArrayList(languages
-            .stream().map(PreferencesLanguageStorable::new)
-            .collect(Collectors.toList()));
 
         preferencesFx = EpubFxPreferences.of(storageHandler,
             Category.of("Application",
@@ -120,7 +119,7 @@ public class PreferencesManager
                         Setting.of("Headline of Landmarks", landmarksToc)
                     )
             )
-        );
+        ).saveSettings(true);
     }
 
     public void showPreferencesDialog()
@@ -251,6 +250,7 @@ public class PreferencesManager
     public Optional<Element> getPreferencesElement()
     {
         if (storageHandler != null) {
+            preferencesFx.saveSettings();
             return Optional.of(storageHandler.getPreferencesElement());
         } else {
             return Optional.empty();
@@ -267,4 +267,7 @@ public class PreferencesManager
         spellcheck.set(value);
     }
 
+    public ObservableList<PreferencesLanguageStorable> getLanguageSpellItems() {
+        return languageSpellItems;
+    }
 }
