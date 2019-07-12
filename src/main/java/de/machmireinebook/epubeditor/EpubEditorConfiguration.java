@@ -19,14 +19,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
-import de.machmireinebook.epubeditor.clips.Clip;
-import de.machmireinebook.epubeditor.gui.MainController;
-import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
-import de.machmireinebook.epubeditor.manager.ClipManager;
-import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-import de.machmireinebook.epubeditor.preferences.StageSizer;
-
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Appender;
@@ -44,6 +36,13 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.gui.MainController;
+import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
+import de.machmireinebook.epubeditor.manager.ClipManager;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.preferences.StageSizer;
 
 /**
  * User: mjungierek
@@ -547,7 +546,6 @@ public class EpubEditorConfiguration
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();
             outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
             outputter.output(configurationDocument, os);
         }
         catch (IOException e)

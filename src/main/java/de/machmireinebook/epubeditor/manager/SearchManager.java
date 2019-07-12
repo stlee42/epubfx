@@ -12,13 +12,13 @@ import javax.inject.Singleton;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.eaio.stringsearch.BoyerMooreHorspool;
+
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 /**
  * User: mjungierek
@@ -208,5 +208,4 @@ public class SearchManager
         }
         return result;
     }
-
 }

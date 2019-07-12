@@ -20,7 +20,7 @@ public class EpubJDomSerializer {
     private DefaultJDOMFactory factory;
 
     protected CleanerProperties props;
-    protected boolean escapeXml = true;
+    protected boolean escapeXml;
 
     public EpubJDomSerializer(CleanerProperties props, boolean escapeXml) {
         this.props = props;

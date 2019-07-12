@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.EpubJDomSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.JDomSerializer;
 import org.htmlcleaner.TagNode;
@@ -65,7 +66,7 @@ public class XHTMLUtils
 
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(new String(originalHtml, StandardCharsets.UTF_8));
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
 
             // hat die Datei ein anderes Encoding im HTML-Header deklariert?
             Element root = jdomDocument.getRootElement();
@@ -141,7 +142,8 @@ public class XHTMLUtils
         cleanerProperties.setIgnoreQuestAndExclam(true);
         cleanerProperties.setUseEmptyElementTags(false);
         cleanerProperties.setNamespacesAware(true);
-        cleanerProperties.setUseCdataForScriptAndStyle(false);
+        cleanerProperties.setUseCdataFor("script,");
+        cleanerProperties.setInvalidXmlAttributeNamePrefix("epubfx-");
         return cleaner;
     }
 
