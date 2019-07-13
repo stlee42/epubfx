@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.editor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -12,13 +13,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.control.IndexRange;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
 import org.apache.log4j.Logger;
 
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.languagetool.JLanguageTool;
 import org.languagetool.ResultCache;
 import org.languagetool.markup.AnnotatedText;
@@ -27,6 +33,9 @@ import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputMap.consume;
 
 /**
  * Created by Michail Jungierek
@@ -63,10 +72,11 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     public static class BlockTagInspector implements TagInspector
     {
+        private List<String> blockTags = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center");
+        
         public boolean isTagFound(String tagName)
         {
-            return "h1".equals(tagName) || "h2".equals(tagName) || "h3".equals(tagName) || "h4".equals(tagName)
-                    || "h5".equals(tagName) || "h6".equals(tagName) || "p".equals(tagName) || "div".equals(tagName);
+            return blockTags.contains(tagName);
         }
     }
 
@@ -81,6 +91,24 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
             logger.error("error while loading xhtml.css", e);
         }
         setWrapText(true);
+
+        //setup special keys
+        CodeArea codeArea = getCodeArea();
+        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
+        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
+    }
+
+    private void removeTags(KeyEvent event) {
+        logger.info("remove tags from selection");
+        String selectedText = getSelection();
+        String replacement = selectedText.replaceAll("<(.*)>", "");
+        replacement = replacement.replaceAll("</(.*)>", "");
+        replacement = replacement.replaceAll("<(.*)/>", "");
+        replaceSelection(replacement);
+    }
+
+    private void completeTag(KeyEvent event) {
+        logger.info("insert closing tag for last opened tag");
     }
 
     @Override

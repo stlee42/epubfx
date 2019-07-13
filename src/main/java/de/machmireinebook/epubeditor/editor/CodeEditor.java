@@ -17,6 +17,7 @@ import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 
+import org.fxmisc.richtext.CodeArea;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -49,6 +50,7 @@ public interface CodeEditor
     //methods of the underlying editor component
     void setCode(String newCode);
     String getCode();
+    CodeArea getCodeArea();
 
     EditorPosition getCursorPosition();
 

@@ -127,6 +127,8 @@ public class EditorTabManager
     private ClipManager clipManager;
 
     private boolean openingEditorTab = false;
+    private boolean refreshAll = false;
+
 
     public class ImageViewerPane extends ScrollPane implements Initializable
     {
@@ -552,8 +554,13 @@ public class EditorTabManager
                         + " | Text Information: " + StringUtils.defaultString(textIformation, ""));
             });
 
+            editor.getCodeArea().multiPlainChanges()
+                    .successionEnds(java.time.Duration.ofMillis(500))
+                    .subscribe(plainTextChanges -> logger.info("subscribing eventstream"));
+
             editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
-                if (openingEditorTab || editor.isChangingCode())
+                logger.info("getting event code text changed");
+                if (openingEditorTab || editor.isChangingCode() || refreshAll)
                 {
                     return;
                 }
@@ -905,13 +912,14 @@ public class EditorTabManager
 
     public void refreshPreview()
     {
-        CodeEditor xhtmlCodeEditor = currentEditor.getValue();
-        if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null)
-        {
-            currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
-            needsRefresh.setValue(true);
-            needsRefresh.setValue(false);
+        if (currentEditorIsXHTML.get()) {
+            CodeEditor xhtmlCodeEditor = currentEditor.getValue();
+            if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null) {
+                currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+            }
         }
+        needsRefresh.setValue(true);
+        needsRefresh.setValue(false);
     }
 
     public void reset()
@@ -921,6 +929,10 @@ public class EditorTabManager
     public ObservableBooleanValue currentEditorIsXHTMLProperty()
     {
         return currentEditorIsXHTML;
+    }
+
+    public boolean currentEditorIsXHTML() {
+        return currentEditorIsXHTML.get();
     }
 
     public boolean getCanRedo()
@@ -998,7 +1010,8 @@ public class EditorTabManager
 
     public void refreshAll()
     {
-        CodeEditor previousCurrentEditor = currentEditor.getValue();
+        refreshAll = true;
+        CodeEditor previousCodeEditior = currentEditor.get();
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs)
         {
@@ -1011,7 +1024,8 @@ public class EditorTabManager
                 editor.scrollTo(0);
             }
         }
-        currentEditor.setValue(previousCurrentEditor);
+        currentEditor.set(previousCodeEditior);
+        refreshAll = false;
     }
 
     public void refreshEditorCode(Resource resourceToUpdate)

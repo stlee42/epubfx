@@ -55,8 +55,6 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
-import com.pixelduke.control.Ribbon;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -78,6 +76,7 @@ import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -1088,10 +1087,10 @@ public class MainController implements Initializable
         else
         {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Einfügen nicht möglich");
+            alert.setTitle("Insert not possible");
             alert.getDialogPane().setHeader(null);
             alert.getDialogPane().setHeaderText(null);
-            alert.setContentText("Can't insert tabel on this position. This is only available within the bodyof the document.");
+            alert.setContentText("Can't insert table on this position. This is only available within the body of the document.");
             alert.showAndWait();
         }
     }
@@ -1259,7 +1258,19 @@ public class MainController implements Initializable
 
     public void insertLinkAction(ActionEvent actionEvent)
     {
-
+        if (editorManager.isInsertablePosition())
+        {
+            createAndOpenStandardController("/insert-link.fxml", InsertLinkController.class);
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Insert not possible");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("Can't insert link on this position. This is only available within the body of the document.");
+            alert.showAndWait();
+        }
     }
 
     public void uppercaseButtonAction(ActionEvent actionEvent)

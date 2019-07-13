@@ -26,12 +26,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.helger.css.propertyvalue.CCSSValue;
-
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
+
+import com.helger.css.propertyvalue.CCSSValue;
 
 /**
  * User: Michail Jungierek
@@ -41,12 +41,18 @@ import de.machmireinebook.epubeditor.manager.EditorTabManager;
 public class InsertTableController implements Initializable, StandardController
 {
     private static final Logger logger = Logger.getLogger(InsertTableController.class);
-    public TextField cellPaddingTopTextField;
-    public TextField cellPaddingRightTextField;
-    public TextField cellPaddingBottomTextField;
-    public TextField cellPaddingLeftTextField;
-    public ToggleButton linkPaddingValuesButton;
-    public TextField cellStyleTextField;
+    @FXML
+    private TextField cellPaddingTopTextField;
+    @FXML
+    private TextField cellPaddingRightTextField;
+    @FXML
+    private TextField cellPaddingBottomTextField;
+    @FXML
+    private TextField cellPaddingLeftTextField;
+    @FXML
+    private ToggleButton linkPaddingValuesButton;
+    @FXML
+    private TextField cellStyleTextField;
     @FXML
     private TextField captionTextField;
     @FXML

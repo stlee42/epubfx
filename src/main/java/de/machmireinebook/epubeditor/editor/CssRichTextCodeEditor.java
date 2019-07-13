@@ -4,15 +4,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+
 import org.apache.log4j.Logger;
 
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.editor.regex.CssRegexLexer;
 import de.machmireinebook.epubeditor.editor.regex.RegexToken;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputMap.consume;
 
 /**
  * User: mjungierek
@@ -30,6 +39,14 @@ public class CssRichTextCodeEditor extends AbstractRichTextCodeEditor
         String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/css.css").toExternalForm();
         addStyleSheet(stylesheet);
         setWrapText(true);
+
+        //setup special keys
+        CodeArea codeArea = getCodeArea();
+        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.DIGIT7, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN), this::completeCurlyBracket));
+    }
+
+    private void completeCurlyBracket(KeyEvent event) {
+        insertAt(getAbsoluteCursorPosition(), "}");
     }
 
     @Override

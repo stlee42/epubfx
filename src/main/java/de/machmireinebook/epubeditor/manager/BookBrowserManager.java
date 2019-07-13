@@ -294,6 +294,7 @@ public class BookBrowserManager
         treeView.setOnEditCommit(event -> {
             logger.info("editing end for new value " + event.getNewValue());
             editorManager.refreshAll();
+            editorManager.refreshPreview();
             book.setBookIsChanged(true);
         });
         treeView.setOnKeyPressed(event -> {

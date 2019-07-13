@@ -23,6 +23,8 @@ import javafx.concurrent.Worker;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +35,14 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputMap.consume;
 
 /**
  * User: mjungierek
@@ -104,6 +110,20 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
             Collection<String> styles = codeArea.getStyleOfChar(newValue);
             textInformation.set("Styles: " + StringUtils.join(styles, ","));
         });
+
+        //setup special keys
+        CodeArea codeArea = getCodeArea();
+        Nodes.removeInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
+        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
+    }
+
+    private void insertTab(KeyEvent event) {
+        logger.info("insert tab");
+        if (!preferencesManager.isUseTab()) {
+            insertAt(getAbsoluteCursorPosition(), StringUtils.repeat(' ', preferencesManager.getTabSize()));
+        } else {
+            insertAt(getAbsoluteCursorPosition(), "\t");
+        }
     }
 
     public void setWrapText(boolean wrapText)
@@ -335,7 +355,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         return codeArea.getParagraphs().size();
     }
 
-    protected CodeArea getCodeArea()
+    public CodeArea getCodeArea()
     {
         return codeArea;
     }
