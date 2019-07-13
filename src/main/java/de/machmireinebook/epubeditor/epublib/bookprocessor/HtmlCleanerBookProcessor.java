@@ -1,7 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.bookprocessor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.log4j.Logger;
 
@@ -10,18 +10,11 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.JDomSerializer;
 import org.htmlcleaner.TagNode;
 import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.IllegalAddException;
-import org.jdom2.filter.Filters;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.util.IteratorIterable;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -47,26 +40,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            Element root = jdomDocument.getRootElement();
-            root.setNamespace(Constants.NAMESPACE_XHTML);
-            root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-            IteratorIterable<Element> elements = root.getDescendants(Filters.element());
-            for (Element element : elements)
-            {
-                if (element.getNamespace() == null)
-                {
-                    element.setNamespace(Constants.NAMESPACE_XHTML);
-                }
-            }
-            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-
-            XMLOutputter outputter = new XMLOutputter();
-            Format xmlFormat = Format.getPrettyFormat();
-            outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            outputter.output(jdomDocument, bos);
-            bytes = bos.toByteArray();
+            return XHTMLUtils.outputXHTMLDocument(jdomDocument);
         }
         catch (IllegalAddException e)
         {
@@ -83,26 +57,9 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
             HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            Element root = jdomDocument.getRootElement();
-            root.setNamespace(Constants.NAMESPACE_XHTML);
-            root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-            IteratorIterable<Element> elements = root.getDescendants(Filters.element());
-            for (Element element : elements)
-            {
-                if (element.getNamespace() == null)
-                {
-                    element.setNamespace(Constants.NAMESPACE_XHTML);
-                }
-            }
-            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-
-            XMLOutputter outputter = new XMLOutputter();
-            Format xmlFormat = Format.getPrettyFormat();
-            outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-            String content = outputter.outputString(jdomDocument);
+            String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument);
             logger.debug("new content " + content);
-            resource.setData(content.getBytes("UTF-8"));
+            resource.setData(content.getBytes(StandardCharsets.UTF_8));
             resource.setInputEncoding("UTF-8");
         }
         catch (IOException e)

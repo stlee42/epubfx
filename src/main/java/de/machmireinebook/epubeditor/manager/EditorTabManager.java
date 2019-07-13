@@ -57,7 +57,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Content;
-import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -66,8 +65,6 @@ import org.jdom2.filter.Filter;
 import org.jdom2.filter.Filters;
 import org.jdom2.located.LocatedElement;
 import org.jdom2.located.LocatedJDOMFactory;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.BeanFactory;
@@ -88,7 +85,6 @@ import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -977,30 +973,8 @@ public class EditorTabManager
 
     public String formatAsXHTML(String xhtml) throws IOException, JDOMException
     {
-        DocType doctype = new DocType("html", "-//W3C//DTD XHTML 1.1//EN", "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd");
-        Namespace namespace = Namespace.getNamespace("http://www.w3.org/1999/xhtml");
-
         Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
-
-        Element root = document.getRootElement();
-        root.setNamespace(namespace);
-        root.addNamespaceDeclaration(namespace);
-        IteratorIterable<org.jdom2.Element> elements = root.getDescendants(Filters.element());
-        for (org.jdom2.Element element : elements)
-        {
-            if (element.getNamespace() == null)
-            {
-                element.setNamespace(Constants.NAMESPACE_XHTML);
-            }
-        }
-        document.setDocType(doctype);
-
-        XMLOutputter outputter = new XMLOutputter();
-        Format xmlFormat = Format.getPrettyFormat();
-        outputter.setFormat(xmlFormat);
-        outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-        String result = outputter.outputString(document);
-        return result;
+        return XHTMLUtils.outputXHTMLDocumentAsString(document);
     }
 
     public String repairXHTML(String xhtml)

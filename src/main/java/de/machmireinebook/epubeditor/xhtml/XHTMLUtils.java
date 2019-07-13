@@ -103,24 +103,9 @@ public class XHTMLUtils
                         }
                     }
                 }
-                root.setNamespace(Constants.NAMESPACE_XHTML);
-                root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-                IteratorIterable<Element> elements = root.getDescendants(Filters.element());
-                for (Element element : elements)
-                {
-                    if (element.getNamespace() == null)
-                    {
-                        element.setNamespace(Constants.NAMESPACE_XHTML);
-                    }
-                }
-                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
             }
 
-            XMLOutputter outputter = new XMLOutputter();
-            Format xmlFormat = Format.getPrettyFormat();
-            outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-            content = outputter.outputString(jdomDocument);
+            content = outputXHTMLDocumentAsString(jdomDocument);
         }
         catch (IOException | IllegalAddException e)
         {
@@ -168,7 +153,7 @@ public class XHTMLUtils
         builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         builder.setFeature("http://xml.org/sax/features/resolve-dtd-uris", false);
         builder.setFeature("http://xml.org/sax/features/validation", false);
-        builder.setExpandEntities(false);
+        builder.setExpandEntities(true);
         if (factory != null)
         {
             builder.setJDOMFactory(factory);
@@ -177,11 +162,48 @@ public class XHTMLUtils
         return document;
     }
 
+    public static String repair(String originalHtml)
+    {
+        String content = null;
+        try
+        {
+            HtmlCleaner cleaner = createHtmlCleaner();
+
+            //wir probieren es erstmal mit UTF-8
+            TagNode rootNode = cleaner.clean(originalHtml);
+            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            content = outputXHTMLDocumentAsString(jdomDocument);
+        }
+        catch (IllegalAddException e)
+        {
+            logger.error("", e);
+        }
+        return content;
+    }
+
+    public static String outputXHTMLDocumentAsString(Document document) {
+        return new String(outputXHTMLDocument(document), StandardCharsets.UTF_8);
+    }
+
     public static byte[] outputXHTMLDocument(Document document)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try
         {
+            Element root = document.getRootElement();
+            if (root != null) {
+                root.setNamespace(Constants.NAMESPACE_XHTML);
+                root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
+                IteratorIterable<Element> elements = root.getDescendants(Filters.element());
+                for (Element element : elements)
+                {
+                    if (element.getNamespace() == null)
+                    {
+                        element.setNamespace(Constants.NAMESPACE_XHTML);
+                    }
+                }
+            }
+
             document.setDocType(Constants.DOCTYPE_XHTML.clone());
 
             XMLOutputter outputter = new XMLOutputter();
@@ -195,31 +217,6 @@ public class XHTMLUtils
             logger.error("", e);
         }
         return baos.toByteArray();
-    }
-
-    public static String repair(String originalHtml)
-    {
-        String content = null;
-        try
-        {
-            HtmlCleaner cleaner = createHtmlCleaner();
-
-            //wir probieren es erstmal mit UTF-8
-            TagNode rootNode = cleaner.clean(originalHtml);
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-
-            XMLOutputter outputter = new XMLOutputter();
-            Format xmlFormat = Format.getPrettyFormat();
-            outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-            content = outputter.outputString(jdomDocument);
-        }
-        catch (IllegalAddException e)
-        {
-            logger.error("", e);
-        }
-        return content;
     }
 
     public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent)
