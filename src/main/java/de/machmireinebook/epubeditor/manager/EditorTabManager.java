@@ -998,6 +998,7 @@ public class EditorTabManager
 
     public void refreshAll()
     {
+        CodeEditor previousCurrentEditor = currentEditor.getValue();
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs)
         {
@@ -1005,10 +1006,12 @@ public class EditorTabManager
             if (tab.getContent() instanceof  CodeEditor)
             {
                 CodeEditor editor = (CodeEditor) tab.getContent();
+                currentEditor.setValue(editor);
                 editor.setCode(new String(resource.getData(), StandardCharsets.UTF_8));
                 editor.scrollTo(0);
             }
         }
+        currentEditor.setValue(previousCurrentEditor);
     }
 
     public void refreshEditorCode(Resource resourceToUpdate)

@@ -46,6 +46,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
@@ -63,9 +66,6 @@ import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 import com.google.common.io.Files;
 
@@ -408,7 +408,7 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Delete...");
+        MenuItem item = new MenuItem("Delete");
         item.setUserData(treeItem);
         item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.BACK_SPACE));
