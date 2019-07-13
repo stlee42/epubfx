@@ -3,13 +3,13 @@ package de.machmireinebook.epubeditor.epublib.bookprocessor;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
-
-import org.apache.log4j.Logger;
 
 /**
  * Helper class for BookProcessors that only manipulate html type resources.
@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 public abstract class HtmlBookProcessor implements BookProcessor {
 
 	private final static Logger log = Logger.getLogger(HtmlBookProcessor.class);
-	public static final String OUTPUT_ENCODING = "UTF-8";
 
 	public HtmlBookProcessor() {
 	}

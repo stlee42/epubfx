@@ -1,7 +1,6 @@
 package de.machmireinebook.epubeditor.manager;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -254,17 +253,11 @@ public class EditorTabManager
         contextMenuXHTML.getItems().add(clipsItem);
         contextMenuXHTML.getItems().add(separatorItem);
 
-        MenuItem itemRepairHTML = new MenuItem("Repair HTML");
+        MenuItem itemRepairHTML = new MenuItem("Repair and format HTML");
         itemRepairHTML.setOnAction(e -> {
-            beautifyOrRepairHTML("repair");
+            repairHTML();
         });
         contextMenuXHTML.getItems().add(itemRepairHTML);
-
-        MenuItem itemBeautifyHTML = new MenuItem("Format HTML");
-        itemBeautifyHTML.setOnAction(e -> {
-            beautifyOrRepairHTML("format");
-        });
-        contextMenuXHTML.getItems().add(itemBeautifyHTML);
 
         contextMenuXHTML.getItems().add(separatorItem);
 
@@ -301,17 +294,11 @@ public class EditorTabManager
         contextMenuXML.getItems().add(separatorItem2);
         separatorItem2.visibleProperty().bind(generateUuidMenuItem.visibleProperty());
 
-        MenuItem itemRepairXML = new MenuItem("Repair XML");
+        MenuItem itemRepairXML = new MenuItem("Repair and format XML");
         itemRepairXML.setOnAction(e -> {
-            beautifyOrRepairXML("repair");
+            repairXML();
         });
         contextMenuXML.getItems().add(itemRepairXML);
-
-        MenuItem itemBeautifyXML = new MenuItem("Format XML");
-        itemBeautifyXML.setOnAction(e -> {
-            beautifyOrRepairXML("format");
-        });
-        contextMenuXML.getItems().add(itemBeautifyXML);
 
         //css menu
         contextMenuCSS = new ContextMenu();
@@ -370,47 +357,26 @@ public class EditorTabManager
 
     }
 
-    private void beautifyOrRepairHTML(String mode)
+    private void repairHTML()
     {
         logger.info("beautifying html");
-        try
+        CodeEditor editor = currentEditor.getValue();
+        Integer currentCursorPosition = editor.getAbsoluteCursorPosition();
+        String code = editor.getCode();
+        if (currentEditorIsXHTML.get())
         {
-            CodeEditor editor = currentEditor.getValue();
-            Integer currentCursorPosition = editor.getAbsoluteCursorPosition();
-            String code = editor.getCode();
-            if (currentEditorIsXHTML.get())
-            {
-                try
-                {
-                    Resource resource = currentXHTMLResource.get();
-                    resource.setData(code.getBytes(StandardCharsets.UTF_8));
-                    switch (mode)
-                    {
-                        case "format": code = formatAsXHTML(code);
-                                       break;
-                        case "repair": code = repairXHTML(code);
-                            break;
-                    }
-                    resource.setData(code.getBytes(StandardCharsets.UTF_8));
-                }
-                catch (UnsupportedEncodingException e)
-                {
-                    //never happens
-                }
-            }
-            editor.setCode(code);
-            editor.setAbsoluteCursorPosition(currentCursorPosition);
-            editor.scrollTo(currentCursorPosition);
-            book.setBookIsChanged(true);
+            Resource resource = currentXHTMLResource.get();
+            resource.setData(code.getBytes(StandardCharsets.UTF_8));
+            code = repairXHTML(code);
+            resource.setData(code.getBytes(StandardCharsets.UTF_8));
         }
-        catch (IOException | JDOMException e)
-        {
-            logger.error("", e);
-            ExceptionDialog.showAndWait(e, null,  "Format not possible", "Kann Datei nicht formatieren. Bitte die Fehlermeldung an den Hersteller weitergeben.");
-        }
+        editor.setCode(code);
+        editor.setAbsoluteCursorPosition(currentCursorPosition);
+        editor.scrollTo(currentCursorPosition);
+        book.setBookIsChanged(true);
     }
 
-    private void beautifyOrRepairXML(String mode)
+    private void repairXML()
     {
     }
 

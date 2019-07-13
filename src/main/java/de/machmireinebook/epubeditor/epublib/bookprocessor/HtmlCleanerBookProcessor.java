@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import org.htmlcleaner.EpubJDomSerializer;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.JDomSerializer;
 import org.htmlcleaner.TagNode;
 import org.jdom2.Document;
 import org.jdom2.IllegalAddException;
@@ -56,7 +55,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
         {
             HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
             TagNode rootNode = cleaner.clean(resource.getInputStream());
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
             String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument);
             logger.debug("new content " + content);
             resource.setData(content.getBytes(StandardCharsets.UTF_8));

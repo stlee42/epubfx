@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpubJDomSerializer;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.JDomSerializer;
 import org.htmlcleaner.TagNode;
 import org.jdom2.Content;
 import org.jdom2.Document;
@@ -94,8 +93,7 @@ public class XHTMLUtils
                                         byte[] recodedHTML = ResourceUtil.recode(charsetContent, "UTF-8", originalHtml);
                                         HtmlCleaner cleaner2 = createHtmlCleaner();
                                         rootNode = cleaner2.clean(new String(recodedHTML, StandardCharsets.UTF_8));
-                                        jdomDocument = new JDomSerializer(cleaner2.getProperties(), false).createJDom(rootNode);
-                                        root = jdomDocument.getRootElement();
+                                        jdomDocument = new EpubJDomSerializer(cleaner2.getProperties(), false).createJDom(rootNode);
                                     }
                                     break;
                                 }
@@ -153,7 +151,7 @@ public class XHTMLUtils
         builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         builder.setFeature("http://xml.org/sax/features/resolve-dtd-uris", false);
         builder.setFeature("http://xml.org/sax/features/validation", false);
-        builder.setExpandEntities(true);
+        builder.setExpandEntities(false);
         if (factory != null)
         {
             builder.setJDOMFactory(factory);
@@ -169,9 +167,8 @@ public class XHTMLUtils
         {
             HtmlCleaner cleaner = createHtmlCleaner();
 
-            //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(originalHtml);
-            Document jdomDocument = new JDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
             content = outputXHTMLDocumentAsString(jdomDocument);
         }
         catch (IllegalAddException e)
@@ -227,7 +224,7 @@ public class XHTMLUtils
             HtmlCleaner htmlCleaner = createHtmlCleaner();
             TagNode rootNode = htmlCleaner.clean(new ByteArrayInputStream(data));
 
-            Document jdomDocument = new JDomSerializer(htmlCleaner.getProperties(), false).createJDom(rootNode);
+            Document jdomDocument = new EpubJDomSerializer(htmlCleaner.getProperties(), false).createJDom(rootNode);
             Element root = jdomDocument.getRootElement();
 
             Element headElement = root.getChild("head");
