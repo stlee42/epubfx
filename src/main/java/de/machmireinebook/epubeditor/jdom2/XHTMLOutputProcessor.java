@@ -32,9 +32,11 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 {
     private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
-    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
-    private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
-    private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "div", "blockquote", "table", "tr", "hr");
+    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a", "li");
+    private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
+            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
+    private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
+            "div", "blockquote", "table", "tr", "hr", "ul", "ol");
 
 
     protected void printElement(final Writer out, final FormatStack fstack,

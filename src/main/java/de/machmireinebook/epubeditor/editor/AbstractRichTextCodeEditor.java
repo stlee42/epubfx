@@ -39,6 +39,7 @@ import org.fxmisc.wellbehaved.event.Nodes;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
@@ -65,6 +66,9 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
 
+    protected MediaType mediaType;
+    private int durationHighlightingComputation = 10;
+
     AbstractRichTextCodeEditor()
     {
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
@@ -82,11 +86,13 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setParagraphGraphicFactory(factory);
 
         codeArea.multiPlainChanges()
-                .successionEnds(Duration.ofMillis(500))
+                .successionEnds(Duration.ofMillis(durationHighlightingComputation))
                 .supplyTask(this::computeHighlightingAsync)
                 .awaitLatest(codeArea.multiPlainChanges())
                 .filterMap(tryTask -> {
                     if (tryTask.isSuccess()) {
+                        //set up the duration after first successfull highlighting after opening file
+                        durationHighlightingComputation = 500;
                         return Optional.of(tryTask.get());
                     } else {
                         tryTask.getFailure().printStackTrace();
@@ -115,6 +121,12 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         CodeArea codeArea = getCodeArea();
         Nodes.removeInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
+    }
+
+    @Override
+    public MediaType getMediaType()
+    {
+        return mediaType;
     }
 
     private void insertTab(KeyEvent event) {
@@ -287,6 +299,11 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     public String getSelection()
     {
         return codeArea.getSelectedText();
+    }
+
+    public IndexRange getSelectedRange()
+    {
+        return codeArea.getSelection();
     }
 
     @Override

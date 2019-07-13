@@ -60,7 +60,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
     private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
 
-    private final MediaType mediaType;
     private JLanguageTool langTool;
     private ResultCache cache;
 
@@ -96,15 +95,26 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         CodeArea codeArea = getCodeArea();
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
+        /*codeArea.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.SPACE) {
+                logger.debug("Ctrl-SPACE Pressed");
+                removeTags();
+                event.consume();
+            }
+        });*/
+
     }
 
     private void removeTags(KeyEvent event) {
         logger.info("remove tags from selection");
+        int selectionStartIndex = getSelectedRange().getStart();
         String selectedText = getSelection();
-        String replacement = selectedText.replaceAll("<(.*)>", "");
-        replacement = replacement.replaceAll("</(.*)>", "");
-        replacement = replacement.replaceAll("<(.*)/>", "");
+        //regex ungreedy and sing line, that only tags matches and line breaks are included in . token
+        String replacement = selectedText.replaceAll("(?s)<(.*?)>", "");
+        replacement = replacement.replaceAll("(?s)</(.*?)>", "");
+        replacement = replacement.replaceAll("(?s)<(.*?)/>", "");
         replaceSelection(replacement);
+        select(selectionStartIndex, selectionStartIndex + replacement.length());
     }
 
     private void completeTag(KeyEvent event) {
@@ -158,13 +168,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }
-
-
-    @Override
-    public MediaType getMediaType()
-    {
-        return mediaType;
     }
 
     @Override
