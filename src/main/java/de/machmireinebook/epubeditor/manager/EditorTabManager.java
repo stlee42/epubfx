@@ -27,8 +27,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,7 +47,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -92,8 +89,7 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
  * Time: 20:29
  */
 @Singleton
-public class EditorTabManager
-{
+public class EditorTabManager {
     private static final Logger logger = Logger.getLogger(EditorTabManager.class);
 
     private TabPane tabPane;
@@ -104,7 +100,6 @@ public class EditorTabManager
     private ReadOnlyObjectWrapper<Resource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentCssResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentXMLResource = new ReadOnlyObjectWrapper<>();
-    private RefreshPreviewScheduledService scheduledService = new RefreshPreviewScheduledService();
     private BooleanProperty needsRefresh = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty currentEditorIsXHTML = new SimpleBooleanProperty();
     private SimpleBooleanProperty canUndo = new SimpleBooleanProperty();
@@ -125,8 +120,7 @@ public class EditorTabManager
     private boolean refreshAll = false;
 
 
-    public class ImageViewerPane extends ScrollPane implements Initializable
-    {
+    public class ImageViewerPane extends ScrollPane implements Initializable {
         @FXML
         private ImageView imageView;
         @FXML
@@ -135,103 +129,63 @@ public class EditorTabManager
         private VBox vBox;
         private ImageResource imageResource;
 
-        public ImageViewerPane()
-        {
+        public ImageViewerPane() {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/image_view.fxml"), null, new JavaFXBuilderFactory(),
                     type -> BeanFactory.getInstance().getBean(type));
             loader.setRoot(this);
             loader.setController(this);
 
-            try
-            {
+            try {
                 loader.load();
             }
-            catch (IOException e)
-            {
-                ExceptionDialog.showAndWait(e, null,  "Bild anzeigen", "Fehler beim Öffnen eines Bildes.");
+            catch (IOException e) {
+                ExceptionDialog.showAndWait(e, null, "Show Image", "Error while opening image.");
                 logger.error("", e);
             }
         }
 
         @Override
-        public void initialize(URL location, ResourceBundle resources)
-        {
+        public void initialize(URL location, ResourceBundle resources) {
             vBox.minWidthProperty().bind(this.widthProperty());
             vBox.minHeightProperty().bind(this.heightProperty());
         }
 
-        public Label getImagePropertiesLabel()
-        {
+        public Label getImagePropertiesLabel() {
             return imagePropertiesLabel;
         }
 
-        public void setImagePropertiesLabel(Label imagePropertiesLabel)
-        {
+        public void setImagePropertiesLabel(Label imagePropertiesLabel) {
             this.imagePropertiesLabel = imagePropertiesLabel;
         }
 
-        public ImageView getImageView()
-        {
+        public ImageView getImageView() {
             return imageView;
         }
 
-        public void setImageView(ImageView imageView)
-        {
+        public void setImageView(ImageView imageView) {
             this.imageView = imageView;
         }
 
-        public ImageResource getImageResource()
-        {
+        public ImageResource getImageResource() {
             return imageResource;
         }
 
-        public void setImageResource(ImageResource imageResource)
-        {
+        public void setImageResource(ImageResource imageResource) {
             this.imageResource = imageResource;
         }
     }
 
-    protected class RefreshPreviewScheduledService extends ScheduledService<Boolean>
-    {
-        public RefreshPreviewScheduledService()
-        {
-            setDelay(Duration.seconds(1));
-            setRestartOnFailure(false);
-        }
-
-        @Override
-        protected Task<Boolean> createTask()
-        {
-            return new Task<>()
-            {
-                protected Boolean call()
-                {
-                    logger.info("scheduled refresh task, one second after last change");
-                    Platform.runLater(() -> {
-                        needsRefresh.setValue(true);
-                        needsRefresh.setValue(false);
-                    });
-                    cancel();
-                    return true;
-                }
-            };
-        }
-    }
-
     @PostConstruct
-    public void init()
-    {
+    public void init() {
         currentEditor.addListener((observable, oldValue, newValue) -> {
             canUndo.unbind();
             canRedo.unbind();
-            if (newValue != null)
-            {
+            if (newValue != null) {
                 currentEditorIsXHTML.setValue(currentEditor.getValue().getMediaType().equals(MediaType.XHTML));
                 canUndo.bind(currentEditor.getValue().canUndoProperty());
                 canRedo.bind(currentEditor.getValue().canRedoProperty());
             }
-            else
-            {
+            else {
                 currentEditorIsXHTML.setValue(false);
                 canUndo.setValue(false);
                 canRedo.setValue(false);
@@ -280,12 +234,10 @@ public class EditorTabManager
         });
         contextMenuXML.getItems().add(generateUuidMenuItem);
         currentXMLResource.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && currentXMLResource.get().mediaTypeProperty().getValue().equals(MediaType.OPF))
-            {
+            if (newValue != null && currentXMLResource.get().mediaTypeProperty().getValue().equals(MediaType.OPF)) {
                 generateUuidMenuItem.visibleProperty().setValue(true);
             }
-            else
-            {
+            else {
                 generateUuidMenuItem.visibleProperty().setValue(false);
             }
         });
@@ -314,19 +266,15 @@ public class EditorTabManager
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
 
-    private void writeClipMenuItemChildren(TreeItem<Clip> parentTreeItem, Menu parentMenu)
-    {
+    private void writeClipMenuItemChildren(TreeItem<Clip> parentTreeItem, Menu parentMenu) {
         List<TreeItem<Clip>> children = parentTreeItem.getChildren();
-        for (TreeItem<Clip> child : children)
-        {
-            if (child.getValue().isGroup())
-            {
+        for (TreeItem<Clip> child : children) {
+            if (child.getValue().isGroup()) {
                 Menu menu = new Menu(child.getValue().getName());
                 parentMenu.getItems().add(menu);
                 writeClipMenuItemChildren(child, menu);
             }
-            else
-            {
+            else {
                 MenuItem menuItem = new MenuItem(child.getValue().getName());
                 parentMenu.getItems().add(menuItem);
                 menuItem.setOnAction(event -> {
@@ -336,8 +284,7 @@ public class EditorTabManager
         }
     }
 
-    private void insertClip(Clip clip)
-    {
+    private void insertClip(Clip clip) {
         CodeEditor editor = currentEditor.getValue();
         String selection = editor.getSelection();
         String insertedClip = selection.replaceAll("^(.*)$", clip.getContent());
@@ -345,28 +292,23 @@ public class EditorTabManager
         book.setBookIsChanged(true);
     }
 
-    private void beautifyCSS(String type)
-    {
+    private void beautifyCSS(String type) {
 
 
     }
 
-    private void openInExternalBrowser(ObjectProperty<CodeEditor> currentEditor)
-    {
+    private void openInExternalBrowser(ObjectProperty<CodeEditor> currentEditor) {
 
 
     }
 
-    private void repairHTML()
-    {
+    private void repairHTML() {
         logger.info("beautifying html");
         CodeEditor editor = currentEditor.getValue();
         Integer currentCursorPosition = editor.getAbsoluteCursorPosition();
         String code = editor.getCode();
-        if (currentEditorIsXHTML.get())
-        {
+        if (currentEditorIsXHTML.get()) {
             Resource resource = currentXHTMLResource.get();
-            resource.setData(code.getBytes(StandardCharsets.UTF_8));
             code = repairXHTML(code);
             resource.setData(code.getBytes(StandardCharsets.UTF_8));
         }
@@ -376,16 +318,13 @@ public class EditorTabManager
         book.setBookIsChanged(true);
     }
 
-    private void repairXML()
-    {
+    private void repairXML() {
     }
 
-    public void openImageFile(Resource resource)
-    {
+    public void openImageFile(Resource resource) {
         Tab tab = new Tab();
         tab.setClosable(true);
-        if (resource == null)
-        {
+        if (resource == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("File not found");
             alert.getDialogPane().setHeader(null);
@@ -416,14 +355,11 @@ public class EditorTabManager
     }
 
 
-    private boolean isTabAlreadyOpen(Resource resource)
-    {
+    private boolean isTabAlreadyOpen(Resource resource) {
         boolean found = false;
         List<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs)
-        {
-            if (tab.getUserData().equals(resource))
-            {
+        for (Tab tab : tabs) {
+            if (tab.getUserData().equals(resource)) {
                 tabPane.getSelectionModel().select(tab);
                 found = true;
             }
@@ -431,14 +367,11 @@ public class EditorTabManager
         return found;
     }
 
-    public void openFileInEditor(Resource resource, MediaType mediaType) throws IllegalArgumentException
-    {
-        if (!isTabAlreadyOpen(resource))
-        {
+    public void openFileInEditor(Resource resource, MediaType mediaType) throws IllegalArgumentException {
+        if (!isTabAlreadyOpen(resource)) {
             Tab tab = new Tab();
             tab.setClosable(true);
-            if (resource == null)
-            {
+            if (resource == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("File not found");
                 alert.getDialogPane().setHeader(null);
@@ -454,33 +387,27 @@ public class EditorTabManager
             });
 
             String content = "";
-            try
-            {
+            try {
                 content = new String(resource.getData(), resource.getInputEncoding());
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
                 logger.error("", e);
             }
 
             CodeEditor editor;
-            if (mediaType.equals(MediaType.CSS))
-            {
+            if (mediaType.equals(MediaType.CSS)) {
                 editor = new CssRichTextCodeEditor();
                 editor.setContextMenu(contextMenuCSS);
             }
-            else if (mediaType.equals(MediaType.XHTML))
-            {
+            else if (mediaType.equals(MediaType.XHTML)) {
                 editor = new XhtmlRichTextCodeEditor(mediaType);
                 editor.setContextMenu(contextMenuXHTML);
             }
-            else if (mediaType.equals(MediaType.XML))
-            {
+            else if (mediaType.equals(MediaType.XML)) {
                 editor = new XhtmlRichTextCodeEditor(mediaType);
                 editor.setContextMenu(contextMenuXML);
             }
-            else
-            {
+            else {
                 throw new IllegalArgumentException("no editor for mediatype " + mediaType.getName());
             }
 
@@ -491,8 +418,7 @@ public class EditorTabManager
 
             final String code = content;
             editor.stateProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue.equals(Worker.State.SUCCEEDED))
-                {
+                if (newValue.equals(Worker.State.SUCCEEDED)) {
                     openingEditorTab = true;
                     editor.setCode(code);
                     editor.clearUndoHistory();
@@ -516,151 +442,129 @@ public class EditorTabManager
                         + " | Text Information: " + StringUtils.defaultString(textIformation, ""));
             });
 
-            editor.getCodeArea().multiPlainChanges()
+            editor.getCodeArea()
+                    .multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(500))
-                    .subscribe(plainTextChanges -> logger.info("subscribing eventstream"));
-
-            editor.codeProperty().addListener((observable1, oldValue, newValue) -> {
-                logger.info("getting event code text changed");
-                if (openingEditorTab || editor.isChangingCode() || refreshAll)
-                {
-                    return;
-                }
-                if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-                {
-                    currentXHTMLResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
-                }
-                else if (currentEditor.getValue().getMediaType().equals(MediaType.CSS))
-                {
-                    currentCssResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
-                }
-                else if (currentEditor.getValue().getMediaType().equals(MediaType.XML))
-                {
-                    try
-                    {
-                        currentXMLResource.get().setData(newValue.getBytes(StandardCharsets.UTF_8));
-                        if (((XMLResource)resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType()))
-                        {
-                            if (book.isEpub3()) {
-                                Epub3PackageDocumentReader.read(resource, book);
-                            } else {
-                                PackageDocumentReader.read(resource, book);
+                    .subscribe(plainTextChanges -> {
+                        logger.info("subscribing eventstream");
+                        logger.info("getting event code text changed");
+                        if (openingEditorTab || editor.isChangingCode() || refreshAll) {
+                            return;
+                        }
+                        CodeEditor codeEditor = currentEditor.getValue();
+                        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+                            currentXHTMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                        }
+                        else if (codeEditor.getMediaType().equals(MediaType.CSS)) {
+                            currentCssResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                        }
+                        else if (codeEditor.getMediaType().equals(MediaType.XML)) {
+                            try {
+                                currentXMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                                if (((XMLResource) resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType())) {
+                                    if (book.isEpub3()) {
+                                        Epub3PackageDocumentReader.read(resource, book);
+                                    }
+                                    else {
+                                        PackageDocumentReader.read(resource, book);
+                                    }
+                                }
+                            }
+                            catch (JDOMException | IOException e) {
+                                logger.error("", e);
                             }
                         }
-                    }
-                    catch (JDOMException | IOException e)
-                    {
-                        logger.error("", e);
-                    }
-                }
-
-                if (scheduledService.getState().equals(Worker.State.READY))
-                {
-                    scheduledService.start();
-                }
-                else
-                {
-                    scheduledService.restart();
-                }
-                book.setBookIsChanged(true);
-            });
+                        book.setBookIsChanged(true);
+                    });
+            editor.getCodeArea()
+                    .multiPlainChanges()
+                    .successionEnds(java.time.Duration.ofMillis(1000))
+                    .subscribe(plainTextChanges -> {
+                        logger.info("scheduled refresh task, one second after last change");
+                        Platform.runLater(() -> {
+                            needsRefresh.setValue(true);
+                            needsRefresh.setValue(false);
+                        });
+                    });
         }
     }
 
-    public Resource getCurrentSearchableResource()
-    {
+    public Resource getCurrentSearchableResource() {
         return currentSearchableResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentSearchableResourceProperty()
-    {
+    public ReadOnlyObjectProperty<Resource> currentSearchableResourceProperty() {
         return currentSearchableResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentXHTMLResource()
-    {
+    public Resource getCurrentXHTMLResource() {
         return currentXHTMLResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentXHTMLResourceProperty()
-    {
+    public ReadOnlyObjectProperty<Resource> currentXHTMLResourceProperty() {
         return currentXHTMLResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentCssResource()
-    {
+    public Resource getCurrentCssResource() {
         return currentCssResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentCssResourceProperty()
-    {
+    public ReadOnlyObjectProperty<Resource> currentCssResourceProperty() {
         return currentCssResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentXMLResource()
-    {
+    public Resource getCurrentXMLResource() {
         return currentXMLResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentXMLResourceProperty()
-    {
+    public ReadOnlyObjectProperty<Resource> currentXMLResourceProperty() {
         return currentXMLResource.getReadOnlyProperty();
     }
 
-    public BooleanProperty needsRefreshProperty()
-    {
+    public BooleanProperty needsRefreshProperty() {
         return needsRefresh;
     }
 
-    public void setTabPane(TabPane tabPane)
-    {
+    public void setTabPane(TabPane tabPane) {
         this.tabPane = tabPane;
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             Resource resource;
-            if (newValue != null && newValue.getContent() instanceof CodeEditor)
-            {
+            if (newValue != null && newValue.getContent() instanceof CodeEditor) {
                 CodeEditor selectedEditor = (CodeEditor) newValue.getContent();
                 resource = (Resource) newValue.getUserData();
                 currentSearchableResource.set(resource);
                 currentEditor.setValue(selectedEditor);
 
-                if (selectedEditor.getMediaType().equals(MediaType.XHTML))
-                {
+                if (selectedEditor.getMediaType().equals(MediaType.XHTML)) {
                     currentXHTMLResource.set(resource);
                 }
-                else if (selectedEditor.getMediaType().equals(MediaType.CSS))
-                {
+                else if (selectedEditor.getMediaType().equals(MediaType.CSS)) {
                     currentCssResource.set(resource);
                 }
-                else if (selectedEditor.getMediaType().equals(MediaType.XML))
-                {
+                else if (selectedEditor.getMediaType().equals(MediaType.XML)) {
                     currentXMLResource.set(resource);
                 }
             }
         });
     }
 
-    public void surroundParagraphWithTag(String tagName)
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void surroundParagraphWithTag(String tagName) {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
             optional.ifPresent(pair -> {
                 logger.info("found xml block tag " + pair.getTagName());
                 //erst das schließende Tag ersetzen, da sich sonst die Koordinaten verschieben können
-                xhtmlCodeEditor.replaceRange(pair.getCloseTagRange(),  tagName);
+                xhtmlCodeEditor.replaceRange(pair.getCloseTagRange(), tagName);
                 xhtmlCodeEditor.replaceRange(pair.getOpenTagRange(), tagName);
                 refreshPreview();
             });
         }
     }
 
-    public void insertStyle(String styleName, String value)
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void insertStyle(String styleName, String value) {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
 
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
@@ -681,10 +585,9 @@ public class EditorTabManager
                     }
                     xhtmlCodeEditor.replaceRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()), tagAtttributes);
                 }
-                else
-                {
+                else {
                     int pos = pair.getOpenTagRange().getEnd();
-                    xhtmlCodeEditor.insertAt(pos, " style=\"" + styleName +":" + value + "\"");
+                    xhtmlCodeEditor.insertAt(pos, " style=\"" + styleName + ":" + value + "\"");
                 }
                 refreshPreview();
                 xhtmlCodeEditor.requestFocus();
@@ -692,10 +595,8 @@ public class EditorTabManager
         }
     }
 
-    public void surroundSelectionWithTag(String tagName)
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void surroundSelectionWithTag(String tagName) {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             String selection = currentEditor.get().getSelection();
             currentEditor.get().replaceSelection("<" + tagName + ">" + selection + "</" + tagName + ">");
             refreshPreview();
@@ -703,10 +604,8 @@ public class EditorTabManager
         }
     }
 
-    public void surroundSelection(String start, String end)
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void surroundSelection(String start, String end) {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             String selection = currentEditor.get().getSelection();
             currentEditor.get().replaceSelection(start + selection + end);
             refreshPreview();
@@ -714,10 +613,8 @@ public class EditorTabManager
         }
     }
 
-    public void increaseIndent()
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void increaseIndent() {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
             optional.ifPresent(pair -> {
@@ -725,24 +622,23 @@ public class EditorTabManager
                 String tagAtttributes = xhtmlCodeEditor.getRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()));
 
                 Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
-                if (regexMatcher.find())
-                {
+                if (regexMatcher.find()) {
                     String currentIndentStr = regexMatcher.group(2);
                     int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
                     String currentUnit = regexMatcher.group(3);
-                    switch(currentUnit)
-                    {
+                    switch (currentUnit) {
                         case "%":
                         case "rem":
-                        case "em":  currentIndent++;
+                        case "em":
+                            currentIndent++;
                             break;
-                        case "px":  currentIndent = currentIndent + 10;
+                        case "px":
+                            currentIndent = currentIndent + 10;
                             break;
                     }
                     insertStyle("margin-left", currentIndent + currentUnit);
                 }
-                else
-                {
+                else {
                     insertStyle("margin-left", "5%");
                 }
             });
@@ -750,10 +646,8 @@ public class EditorTabManager
         }
     }
 
-    public void decreaseIndent()
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+    public void decreaseIndent() {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
 
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
@@ -762,24 +656,23 @@ public class EditorTabManager
                 String tagAtttributes = xhtmlCodeEditor.getRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd());
 
                 Matcher regexMatcher = indentRegex.matcher(tagAtttributes);
-                if (regexMatcher.find())
-                {
+                if (regexMatcher.find()) {
                     String currentIndentStr = regexMatcher.group(2);
                     int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
                     String currentUnit = regexMatcher.group(3);
-                    switch(currentUnit)
-                    {
+                    switch (currentUnit) {
                         case "%":
                         case "rem":
-                        case "em":  currentIndent--;
+                        case "em":
+                            currentIndent--;
                             break;
-                        case "px":  currentIndent = currentIndent - 10;
+                        case "px":
+                            currentIndent = currentIndent - 10;
                             break;
                     }
                     insertStyle("margin-left", currentIndent + currentUnit);
                 }
-                else
-                {
+                else {
                     insertStyle("margin-left", "-5%");
                 }
             });
@@ -787,18 +680,14 @@ public class EditorTabManager
         }
     }
 
-    public boolean splitXHTMLFile()
-    {
+    public boolean splitXHTMLFile() {
         boolean result = false;
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
-            if (optional.isPresent())
-            {
+            if (optional.isPresent()) {
                 XMLTagPair pair = optional.get();
-                if ("head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName()))
-                {
+                if ("head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName())) {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Split not possible");
                     alert.getDialogPane().setHeader(null);
@@ -811,8 +700,7 @@ public class EditorTabManager
                 logger.debug("umgebendes pair " + pair.getTagName());
                 //wir sind innerhalb des Body
                 int index = xhtmlCodeEditor.getAbsoluteCursorPosition();
-                try
-                {
+                try {
                     String originalCode = xhtmlCodeEditor.getCode();
                     Document originalDocument = XHTMLUtils.parseXHTMLDocument(originalCode);
                     List<Content> originalHeadContent = getOriginalHeadContent(originalDocument);
@@ -839,8 +727,7 @@ public class EditorTabManager
                     needsRefresh.setValue(true);
                     needsRefresh.setValue(false);
                 }
-                catch (IOException | JDOMException | ResourceDataException e)
-                {
+                catch (IOException | JDOMException | ResourceDataException e) {
                     logger.error("", e);
                     ExceptionDialog.showAndWait(e, null, "Split not possible", "Can't split file because unknown error.");
                 }
@@ -851,29 +738,24 @@ public class EditorTabManager
         return result;
     }
 
-    private List<Content> getOriginalHeadContent(Document doc)
-    {
+    private List<Content> getOriginalHeadContent(Document doc) {
         Element root = doc.getRootElement();
         List<Content> contentList = new ArrayList<>();
-        if (root != null)
-        {
+        if (root != null) {
             Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
-            if (headElement != null)
-            {
+            if (headElement != null) {
                 List<Content> contents = headElement.getContent();
                 contentList.addAll(contents);
             }
         }
         //erst ausserhalb der Schleife detachen
-        for (Content content : contentList)
-        {
+        for (Content content : contentList) {
             content.detach();
         }
         return contentList;
     }
 
-    public void refreshPreview()
-    {
+    public void refreshPreview() {
         if (currentEditorIsXHTML.get()) {
             CodeEditor xhtmlCodeEditor = currentEditor.getValue();
             if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null) {
@@ -884,12 +766,10 @@ public class EditorTabManager
         needsRefresh.setValue(false);
     }
 
-    public void reset()
-    {
+    public void reset() {
     }
 
-    public ObservableBooleanValue currentEditorIsXHTMLProperty()
-    {
+    public ObservableBooleanValue currentEditorIsXHTMLProperty() {
         return currentEditorIsXHTML;
     }
 
@@ -897,67 +777,54 @@ public class EditorTabManager
         return currentEditorIsXHTML.get();
     }
 
-    public boolean getCanRedo()
-    {
+    public boolean getCanRedo() {
         return canRedo.get();
     }
 
-    public SimpleBooleanProperty canRedoProperty()
-    {
+    public SimpleBooleanProperty canRedoProperty() {
         return canRedo;
     }
 
-    public boolean getCanUndo()
-    {
+    public boolean getCanUndo() {
         return canUndo.get();
     }
 
-    public SimpleBooleanProperty canUndoProperty()
-    {
+    public SimpleBooleanProperty canUndoProperty() {
         return canUndo;
     }
 
-    public void setBook(Book book)
-    {
+    public void setBook(Book book) {
         this.book = book;
     }
 
-    public void setBookBrowserManager(BookBrowserManager bookBrowserManager)
-    {
+    public void setBookBrowserManager(BookBrowserManager bookBrowserManager) {
         this.bookBrowserManager = bookBrowserManager;
     }
 
-    public CodeEditor getCurrentEditor()
-    {
+    public CodeEditor getCurrentEditor() {
         return currentEditor.get();
     }
 
-    public ObjectProperty<CodeEditor> currentEditorProperty()
-    {
+    public ObjectProperty<CodeEditor> currentEditorProperty() {
         return currentEditor;
     }
 
-    public String formatAsXHTML(String xhtml) throws IOException, JDOMException
-    {
+    public String formatAsXHTML(String xhtml) throws IOException, JDOMException {
         Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
         return XHTMLUtils.outputXHTMLDocumentAsString(document);
     }
 
-    public String repairXHTML(String xhtml)
-    {
+    public String repairXHTML(String xhtml) {
         return XHTMLUtils.repair(xhtml);
     }
 
-    public void refreshAll()
-    {
+    public void refreshAll() {
         refreshAll = true;
         CodeEditor previousCodeEditior = currentEditor.get();
         List<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs)
-        {
+        for (Tab tab : tabs) {
             Resource resource = (Resource) tab.getUserData();
-            if (tab.getContent() instanceof  CodeEditor)
-            {
+            if (tab.getContent() instanceof CodeEditor) {
                 CodeEditor editor = (CodeEditor) tab.getContent();
                 currentEditor.setValue(editor);
                 editor.setCode(new String(resource.getData(), StandardCharsets.UTF_8));
@@ -968,31 +835,26 @@ public class EditorTabManager
         refreshAll = false;
     }
 
-    public void refreshEditorCode(Resource resourceToUpdate)
-    {
+    public void refreshEditorCode(Resource resourceToUpdate) {
         openingEditorTab = true;
         List<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs)
-        {
+        for (Tab tab : tabs) {
             Resource resource = (Resource) tab.getUserData();
-            if(resourceToUpdate.equals(resource))
-            {
-                CodeEditor editor = (CodeEditor)tab.getContent();
+            if (resourceToUpdate.equals(resource)) {
+                CodeEditor editor = (CodeEditor) tab.getContent();
                 editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
-                editor.setAbsoluteCursorPosition(0);;
+                editor.setAbsoluteCursorPosition(0);
+                ;
             }
         }
         openingEditorTab = false;
     }
 
-    public void refreshImageViewer(Resource resourceToUpdate)
-    {
+    public void refreshImageViewer(Resource resourceToUpdate) {
         List<Tab> tabs = tabPane.getTabs();
-        for (Tab tab : tabs)
-        {
+        for (Tab tab : tabs) {
             Resource resource = (Resource) tab.getUserData();
-            if (resourceToUpdate.equals(resource))
-            {
+            if (resourceToUpdate.equals(resource)) {
                 ImageResource imageResource = (ImageResource) resourceToUpdate;
                 logger.info("refreshing image resource");
                 ImageViewerPane imageViewerPane = (ImageViewerPane) tab.getContent();
@@ -1007,11 +869,9 @@ public class EditorTabManager
         }
     }
 
-    public boolean isInsertablePosition()
-    {
+    public boolean isInsertablePosition() {
         boolean result = false;
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML))
-        {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
             result = !(optional.isEmpty() || "head".equals(optional.get().getTagName()) || "html".equals(optional.get().getTagName()) || StringUtils.isEmpty(optional.get().getTagName()));
@@ -1019,29 +879,22 @@ public class EditorTabManager
         return result;
     }
 
-    public void scrollTo(Deque<ElementPosition> nodeChain)
-    {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML) && nodeChain.size() > 0)
-        {
+    public void scrollTo(Deque<ElementPosition> nodeChain) {
+        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML) && nodeChain.size() > 0) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             String code = xhtmlCodeEditor.getCode();
             LocatedJDOMFactory factory = new LocatedJDOMFactory();
-            try
-            {
+            try {
                 org.jdom2.Document document = XHTMLUtils.parseXHTMLDocument(code, factory);
                 org.jdom2.Element currentElement = document.getRootElement();
                 ElementPosition currentElementPosition = nodeChain.pop();
-                while(currentElementPosition != null)
-                {
+                while (currentElementPosition != null) {
                     IteratorIterable<org.jdom2.Element> children;
-                    if (StringUtils.isNotEmpty(currentElementPosition.getNamespaceUri()))
-                    {
+                    if (StringUtils.isNotEmpty(currentElementPosition.getNamespaceUri())) {
                         List<Namespace> namespaces = currentElement.getNamespacesInScope();
                         Namespace currentNamespace = null;
-                        for (Namespace namespace : namespaces)
-                        {
-                            if (namespace.getURI().equals(currentElementPosition.getNamespaceUri()))
-                            {
+                        for (Namespace namespace : namespaces) {
+                            if (namespace.getURI().equals(currentElementPosition.getNamespaceUri())) {
                                 currentNamespace = namespace;
                                 break;
                             }
@@ -1049,29 +902,24 @@ public class EditorTabManager
                         Filter<org.jdom2.Element> filter = Filters.element(currentElementPosition.getNodeName(), currentNamespace);
                         children = currentElement.getDescendants(filter);
                     }
-                    else
-                    {
+                    else {
                         Filter<org.jdom2.Element> filter = Filters.element(currentElementPosition.getNodeName());
                         children = currentElement.getDescendants(filter);
                     }
 
                     int currentNumber = 0;
-                    for (org.jdom2.Element child : children)
-                    {
-                        if (currentNumber == currentElementPosition.getPosition())
-                        {
+                    for (org.jdom2.Element child : children) {
+                        if (currentNumber == currentElementPosition.getPosition()) {
                             currentElement = child;
                             break;
                         }
                         currentNumber++;
                     }
 
-                    try
-                    {
+                    try {
                         currentElementPosition = nodeChain.pop();
                     }
-                    catch (NoSuchElementException e)
-                    {
+                    catch (NoSuchElementException e) {
                         logger.info("no more element in node chain");
                         currentElementPosition = null;
                     }
@@ -1082,15 +930,13 @@ public class EditorTabManager
                 logger.info("pos for scrolling to is " + pos.toJson());
                 xhtmlCodeEditor.scrollTo(pos);
             }
-            catch (IOException | JDOMException e)
-            {
+            catch (IOException | JDOMException e) {
                 logger.error("", e);
             }
         }
     }
 
-    public ObservableValue<? extends String> cursorPosLabelProperty()
-    {
+    public ObservableValue<? extends String> cursorPosLabelProperty() {
         return cursorPosLabelProperty;
     }
 }

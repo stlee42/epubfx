@@ -1,6 +1,6 @@
-# Scripto - EpubFx
+# SmoekerSchriever - EpubFx
 ## General
-Scripto is an epub editor written in JavaFX.
+SmoekerSchriever (lower german for _book writer_) is an epub editor written in JavaFX.
 
 The layout and the functionality of this application is inspired by the famous editor Sigil. But i want added some more convenient functions for easier and more user friendly epub editing. 
 
@@ -14,19 +14,23 @@ This project is in early stage, but some functions are working:
 - Creating of ebooks by free configurable templates (put only a epub file into a folder, the system find it and the user can choose this epub as template)
 - HTML-Editor with syntax highlighting and undo/redo
 - CSS-Editor with syntax highlighting and undo/redo
+- spell check
 - Applying text snippets and text snippets editor  
-- inserting images and ohter media into book using configurable templates 
+- inserting images and other media into book using configurable templates 
+- inserting tables using configurable templates
 - Preview of xhtml file
 - basic search function
 - creating toc ncx (epub 2) and nav (epub 3)
 - creating cover file by image
 - splitting files
+- enaming files
 
 ### Planned feature:
-- inserting tables using configurable templates
 - check of ebook with official epub checker
-- spell check
-- openeing files in external applications (for example to edit images)
+- opening files in external applications (for example to edit images)
+- checking internal and external links
+- symbol table 
+- europatastatur like inserting of symbols (adaption of key codes of the project https://www.europatastatur.de/)
 
 ## Build and Running
 

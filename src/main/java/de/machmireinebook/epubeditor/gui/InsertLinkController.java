@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
@@ -24,6 +25,14 @@ public class InsertLinkController extends AbstractStandardController {
     private ListView targetsInBookListView;
     @Inject
     private EditorTabManager editorTabManager;
+
+    @Override
+    public void setStage(Stage stage)
+    {
+        super.setStage(stage);
+        targetTextField.requestFocus();
+    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

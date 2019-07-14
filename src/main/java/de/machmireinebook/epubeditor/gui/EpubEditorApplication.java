@@ -29,13 +29,13 @@ import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
-import com.sun.net.httpserver.HttpServer;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.MainStage;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
+
+import com.sun.net.httpserver.HttpServer;
 
 public class EpubEditorApplication extends Application
 {
@@ -100,7 +100,7 @@ public class EpubEditorApplication extends Application
                 server.start();
 
                 updateProgress(3, 3);
-                updateMessage("Scripto is starting");
+                updateMessage("SmoekerSchriever is starting");
 
                 return true;
             }
@@ -178,7 +178,7 @@ public class EpubEditorApplication extends Application
         initStage.setX(bounds.getMinX() + bounds.getWidth() / 2 - SPLASH_WIDTH / 2.0);
         initStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - SPLASH_HEIGHT / 2.0);
         initStage.getIcons().add(applicationIcon);
-        initStage.setTitle("Scripto");
+        initStage.setTitle("SmoekerSchriever");
         initStage.show();
     }
 

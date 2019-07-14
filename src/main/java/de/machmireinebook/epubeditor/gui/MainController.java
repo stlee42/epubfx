@@ -291,12 +291,12 @@ public class MainController implements Initializable
                 if (newValue.getVersion() != null)
                 {
                     stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - EPUB " + newValue.getVersion().getVersion() + " - Scripto");
+                            + " - EPUB " + newValue.getVersion().getVersion() + " - SmoekerSchriever");
                 }
                 else
                 {
                     stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - Scripto");
+                            + " - SmoekerSchriever");
                 }
             }
 

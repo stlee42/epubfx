@@ -95,14 +95,10 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         CodeArea codeArea = getCodeArea();
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
-        /*codeArea.setOnKeyPressed(event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.SPACE) {
-                logger.debug("Ctrl-SPACE Pressed");
-                removeTags();
-                event.consume();
-            }
-        });*/
 
+        codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
+            logger.debug("caret position " + newValue);
+        });
     }
 
     private void removeTags(KeyEvent event) {
@@ -119,6 +115,17 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     private void completeTag(KeyEvent event) {
         logger.info("insert closing tag for last opened tag");
+        String text = getCodeArea().subDocument(0, getAbsoluteCursorPosition()).getText();
+        Matcher matcher = XML_TAG.matcher(text);
+        while (matcher.find()) {
+            if(matcher.group("COMMENT") != null) {
+
+            } else if(matcher.group("ELEMENTOPEN") != null) {
+
+            } else if(matcher.group("ELEMENTCLOSE") != null) {
+
+            }
+        }
     }
 
     @Override
