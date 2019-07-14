@@ -73,10 +73,12 @@ import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.CSSResource;
 import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.ResourceDataException;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentReader;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
@@ -97,8 +99,8 @@ public class EditorTabManager {
     //getrennte Verwaltung der current resource für html und css, da der Previewer auf der html property lauscht und
     // wenn ein css bearbeitet wird, das letzte html-doument weiterhin im previewer angezeigt werden soll
     private ReadOnlyObjectWrapper<Resource> currentSearchableResource = new ReadOnlyObjectWrapper<>();
-    private ReadOnlyObjectWrapper<Resource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
-    private ReadOnlyObjectWrapper<Resource> currentCssResource = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<XHTMLResource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<CSSResource> currentCssResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentXMLResource = new ReadOnlyObjectWrapper<>();
     private BooleanProperty needsRefresh = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty currentEditorIsXHTML = new SimpleBooleanProperty();
@@ -454,6 +456,7 @@ public class EditorTabManager {
                         CodeEditor codeEditor = currentEditor.getValue();
                         if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
                             currentXHTMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                            currentXHTMLResource.get().prepareWebViewDocument();
                         }
                         else if (codeEditor.getMediaType().equals(MediaType.CSS)) {
                             currentCssResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
@@ -476,6 +479,7 @@ public class EditorTabManager {
                         }
                         book.setBookIsChanged(true);
                     });
+
             editor.getCodeArea()
                     .multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(1000))
@@ -501,7 +505,7 @@ public class EditorTabManager {
         return currentXHTMLResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentXHTMLResourceProperty() {
+    public ReadOnlyObjectProperty<XHTMLResource> currentXHTMLResourceProperty() {
         return currentXHTMLResource.getReadOnlyProperty();
     }
 
@@ -509,7 +513,7 @@ public class EditorTabManager {
         return currentCssResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentCssResourceProperty() {
+    public ReadOnlyObjectProperty<CSSResource> currentCssResourceProperty() {
         return currentCssResource.getReadOnlyProperty();
     }
 
@@ -536,11 +540,11 @@ public class EditorTabManager {
                 currentSearchableResource.set(resource);
                 currentEditor.setValue(selectedEditor);
 
-                if (selectedEditor.getMediaType().equals(MediaType.XHTML)) {
-                    currentXHTMLResource.set(resource);
+                if (selectedEditor.getMediaType().equals(MediaType.XHTML) && resource instanceof XHTMLResource) {
+                    currentXHTMLResource.set((XHTMLResource) resource);
                 }
-                else if (selectedEditor.getMediaType().equals(MediaType.CSS)) {
-                    currentCssResource.set(resource);
+                else if (selectedEditor.getMediaType().equals(MediaType.CSS) && resource instanceof CSSResource) {
+                    currentCssResource.set((CSSResource) resource);
                 }
                 else if (selectedEditor.getMediaType().equals(MediaType.XML)) {
                     currentXMLResource.set(resource);
@@ -723,7 +727,7 @@ public class EditorTabManager {
                     openFileInEditor(resource, MediaType.XHTML);
 
                     bookBrowserManager.refreshBookBrowser();
-                    currentXHTMLResource.set(resource);
+                    currentXHTMLResource.set((XHTMLResource) resource);
                     needsRefresh.setValue(true);
                     needsRefresh.setValue(false);
                 }

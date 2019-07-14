@@ -17,6 +17,8 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 public class XHTMLResource extends Resource<Document>
 {
     private static final Logger logger = Logger.getLogger(XHTMLResource.class);
+
+    private Document webViewPreparedDocument;
     
     public XHTMLResource(String href)
     {
@@ -83,5 +85,12 @@ public class XHTMLResource extends Resource<Document>
     public void setMediaType(MediaType mediaType)
     {
         super.setMediaType(mediaType);
+    }
+
+    public void prepareWebViewDocument() {
+        if (getData() == null || getData().length == 0) {
+            return;
+        }
+        
     }
 }
