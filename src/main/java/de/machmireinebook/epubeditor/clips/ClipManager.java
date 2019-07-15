@@ -1,8 +1,7 @@
-package de.machmireinebook.epubeditor.manager;
+package de.machmireinebook.epubeditor.clips;
 
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.clips.Clip;
 import javafx.scene.control.TreeItem;
 
 /**

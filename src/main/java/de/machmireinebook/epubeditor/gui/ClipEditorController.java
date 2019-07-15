@@ -26,7 +26,7 @@ import javafx.util.converter.DefaultStringConverter;
 
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.manager.ClipManager;
+import de.machmireinebook.epubeditor.clips.ClipManager;
 
 import org.apache.log4j.Logger;
 

@@ -3,13 +3,13 @@ package de.machmireinebook.epubeditor.manager;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,6 +18,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventTarget;
+
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 /**
  * User: mjungierek
@@ -30,12 +33,33 @@ public class PreviewManager
     private static final Logger logger = Logger.getLogger(PreviewManager.class);
 
     private WebView webview;
-    private EditorTabManager editorManager;
     private boolean isVisible;
+
+    @Inject
+    private EditorTabManager editorManager;
 
     public PreviewManager()
     {
         isVisible = true;
+    }
+
+    @PostConstruct
+    public void init() {
+        editorManager.currentXHTMLResourceProperty().addListener((observable, oldValue, newValue) -> refreshWebView(newValue));
+        editorManager.needsRefreshProperty().addListener((observable, oldValue, newValue) ->
+        {
+            if (newValue)
+            {
+                logger.info("getting reload event from needs refresh property");
+                webview.getEngine().reload();
+            }
+        });
+
+        editorManager.currentLineProperty().addListener((observable, oldValue, newValue) -> {
+            //webview.getEngine().executeScript("editor.indexFromPos({line:" + (to + 1) +",ch: 0});");
+            logger.info("getting event line is changed, new line: " + newValue);
+            scrollTo(newValue.intValue());
+        });
     }
 
     public void setWebview(WebView webview)
@@ -46,20 +70,6 @@ public class PreviewManager
         WebEngine engine = webview.getEngine();
         engine.setOnError(event -> logger.error(event.getMessage(), event.getException()));
         engine.setOnAlert(event -> logger.info(event.getData()));
-    }
-
-    public void setEditorManager(EditorTabManager editorManager)
-    {
-        editorManager.currentXHTMLResourceProperty().addListener((observable, oldValue, newValue) -> refreshWebView(newValue));
-        editorManager.needsRefreshProperty().addListener((observable, oldValue, newValue) ->
-        {
-            if (newValue)
-            {
-                logger.info("getting reload event from needs refresh property");
-                webview.getEngine().reload();
-            }
-        });
-        this.editorManager = editorManager;
     }
 
     private void refreshWebView(Resource resource)
@@ -125,6 +135,13 @@ public class PreviewManager
             engine.load("http://localhost:8777/" + resource.getHref());
         }
     }
+
+    public void scrollTo(int line) {
+        if (line > 0) {
+            webview.getEngine().executeScript("var list = document.getElementsByClassName(\"" + EpubEditorConfiguration.LOCATION_CLASS_PREFIX + line + "\"); if (list[0]){list[0].scrollIntoView()}");
+        }
+    }
+
 
     public void setVisible(boolean isVisible)
     {

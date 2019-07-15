@@ -19,6 +19,8 @@ import javax.inject.Singleton;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -48,10 +50,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
+import org.fxmisc.richtext.CodeArea;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -65,6 +69,7 @@ import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.clips.ClipManager;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
@@ -107,7 +112,8 @@ public class EditorTabManager {
     private SimpleBooleanProperty canUndo = new SimpleBooleanProperty();
     private SimpleBooleanProperty canRedo = new SimpleBooleanProperty();
     private StringProperty cursorPosLabelProperty = new SimpleStringProperty();
-    private BookBrowserManager bookBrowserManager;
+    private final ReadOnlyIntegerWrapper currentLineProperty = new ReadOnlyIntegerWrapper(this, "currentLine");
+
     private Book book;
     private ContextMenu contextMenuXHTML;
     private ContextMenu contextMenuXML;
@@ -117,6 +123,8 @@ public class EditorTabManager {
 
     @Inject
     private ClipManager clipManager;
+    @Inject
+    private BookBrowserManager bookBrowserManager;
 
     private boolean openingEditorTab = false;
     private boolean refreshAll = false;
@@ -388,14 +396,6 @@ public class EditorTabManager {
                 tab.setText(resource.getFileName());
             });
 
-            String content = "";
-            try {
-                content = new String(resource.getData(), resource.getInputEncoding());
-            }
-            catch (IOException e) {
-                logger.error("", e);
-            }
-
             CodeEditor editor;
             if (mediaType.equals(MediaType.CSS)) {
                 editor = new CssRichTextCodeEditor();
@@ -404,6 +404,7 @@ public class EditorTabManager {
             else if (mediaType.equals(MediaType.XHTML)) {
                 editor = new XhtmlRichTextCodeEditor(mediaType);
                 editor.setContextMenu(contextMenuXHTML);
+                ((XHTMLResource)resource).prepareWebViewDocument();
             }
             else if (mediaType.equals(MediaType.XML)) {
                 editor = new XhtmlRichTextCodeEditor(mediaType);
@@ -418,7 +419,7 @@ public class EditorTabManager {
             tabPane.getTabs().add(tab);
             tabPane.getSelectionModel().select(tab);
 
-            final String code = content;
+            final String code = StringUtils.toEncodedString(resource.getData(), Charsets.toCharset(resource.getInputEncoding()));
             editor.stateProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue.equals(Worker.State.SUCCEEDED)) {
                     openingEditorTab = true;
@@ -444,8 +445,8 @@ public class EditorTabManager {
                         + " | Text Information: " + StringUtils.defaultString(textIformation, ""));
             });
 
-            editor.getCodeArea()
-                    .multiPlainChanges()
+            CodeArea codeArea = editor.getCodeArea();
+            codeArea.multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(500))
                     .subscribe(plainTextChanges -> {
                         logger.info("subscribing eventstream");
@@ -480,8 +481,7 @@ public class EditorTabManager {
                         book.setBookIsChanged(true);
                     });
 
-            editor.getCodeArea()
-                    .multiPlainChanges()
+            codeArea.multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(1000))
                     .subscribe(plainTextChanges -> {
                         logger.info("scheduled refresh task, one second after last change");
@@ -490,6 +490,14 @@ public class EditorTabManager {
                             needsRefresh.setValue(false);
                         });
                     });
+            //snychronise caret position with web view
+            if (mediaType.equals(MediaType.XHTML)) {
+                codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
+                    logger.debug("caret position " + newValue);
+                    Optional<XMLTagPair> pairOptional = ((XhtmlRichTextCodeEditor)editor).findSurroundingTags(new XhtmlRichTextCodeEditor.HtmlLayoutTagInspector());
+                    pairOptional.ifPresent(xmlTagPair -> currentLineProperty.set(xmlTagPair.getTagParagraphIndex() + 1));
+                });
+            }
         }
     }
 
@@ -542,6 +550,7 @@ public class EditorTabManager {
 
                 if (selectedEditor.getMediaType().equals(MediaType.XHTML) && resource instanceof XHTMLResource) {
                     currentXHTMLResource.set((XHTMLResource) resource);
+                    currentLineProperty.set(selectedEditor.getCodeArea().getCurrentParagraph());
                 }
                 else if (selectedEditor.getMediaType().equals(MediaType.CSS) && resource instanceof CSSResource) {
                     currentCssResource.set((CSSResource) resource);
@@ -801,10 +810,6 @@ public class EditorTabManager {
         this.book = book;
     }
 
-    public void setBookBrowserManager(BookBrowserManager bookBrowserManager) {
-        this.bookBrowserManager = bookBrowserManager;
-    }
-
     public CodeEditor getCurrentEditor() {
         return currentEditor.get();
     }
@@ -942,5 +947,12 @@ public class EditorTabManager {
 
     public ObservableValue<? extends String> cursorPosLabelProperty() {
         return cursorPosLabelProperty;
+    }
+
+    public final ReadOnlyIntegerProperty currentLineProperty() {
+        return currentLineProperty.getReadOnlyProperty();
+    }
+    public final int getCurrentLine() {
+        return currentLineProperty.get();
     }
 }

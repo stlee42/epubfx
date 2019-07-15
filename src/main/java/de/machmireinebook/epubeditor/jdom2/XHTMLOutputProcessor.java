@@ -38,6 +38,14 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
             "div", "blockquote", "table", "tr", "hr", "ul", "ol");
 
+    private boolean escapeOutput = false;
+
+    public XHTMLOutputProcessor() {
+    }
+
+    public XHTMLOutputProcessor(boolean escapeOutput) {
+        this.escapeOutput = escapeOutput;
+    }
 
     protected void printElement(final Writer out, final FormatStack fstack,
                                 final NamespaceStack nstack, final Element element) throws IOException
@@ -94,7 +102,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
             fstack.push();
             try
             {
-                fstack.setEscapeOutput(false);
+                fstack.setEscapeOutput(escapeOutput);
                 // Check for xml:space and adjust format settings
                 final String space = element.getAttributeValue("space", Namespace.XML_NAMESPACE);
 

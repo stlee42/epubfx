@@ -396,6 +396,16 @@ public class Resource<T> implements Externalizable, ToStringConvertible
         this.properties = properties;
     }
 
+	/**
+	 * In standard case the data for web view is identically with the data. in some cases its needed to enriche the data
+	 * (e.g. location information to synchronize the viewport in webview with caret position in editor)
+	 *
+	 * @return the byte array for display in web view
+	 */
+	public byte[] getWebViewPreparedData() {
+		return getData();
+	}
+
     public String toString()
     {
         String result;

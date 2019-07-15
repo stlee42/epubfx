@@ -40,7 +40,7 @@ import org.jdom2.output.XMLOutputter;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
-import de.machmireinebook.epubeditor.manager.ClipManager;
+import de.machmireinebook.epubeditor.clips.ClipManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.StageSizer;
 
@@ -68,6 +68,7 @@ public class EpubEditorConfiguration
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 
     public static final int RECENT_FILE_NUMBER = 3;
+    public static final String LOCATION_CLASS_PREFIX = "epubfx-line-";
 
     //tag names in xml for main sections
     public static final String PREFERENCES_ELEMENT_NAME = "preferences";

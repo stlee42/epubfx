@@ -55,6 +55,8 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
+import com.pixelduke.control.Ribbon;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -76,7 +78,6 @@ import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 
-import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -264,10 +265,8 @@ public class MainController implements Initializable
         epubFilesTabPane.getTabs().clear();
         epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         editorManager.setTabPane(epubFilesTabPane);
-        editorManager.setBookBrowserManager(bookBrowserManager);
 
         previewManager.setWebview(previewWebview);
-        previewManager.setEditorManager(editorManager);
 
         tocViewManager.setTreeView(tocTreeView);
         tocViewManager.setEditorManager(editorManager);
@@ -937,7 +936,7 @@ public class MainController implements Initializable
 
     public void strikeButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("strike");
+        editorManager.surroundSelectionWithTag("s");
         currentBookProperty.get().setBookIsChanged(true);
     }
 

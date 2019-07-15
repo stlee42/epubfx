@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
+import de.machmireinebook.epubeditor.jdom2.LocatedIdentifiableJDOMFactory;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -18,7 +19,7 @@ public class XHTMLResource extends Resource<Document>
 {
     private static final Logger logger = Logger.getLogger(XHTMLResource.class);
 
-    private Document webViewPreparedDocument;
+    private byte[] webViewPreparedData;
     
     public XHTMLResource(String href)
     {
@@ -88,9 +89,22 @@ public class XHTMLResource extends Resource<Document>
     }
 
     public void prepareWebViewDocument() {
-        if (getData() == null || getData().length == 0) {
+        byte[] code = getData();
+        if (code == null || code.length == 0) {
             return;
         }
-        
+        LocatedIdentifiableJDOMFactory factory = new LocatedIdentifiableJDOMFactory();
+        try {
+            Document document = XHTMLUtils.parseXHTMLDocument(code, factory);
+            webViewPreparedData  = XHTMLUtils.outputXHTMLDocument(document, true);
+        }
+        catch (IOException | JDOMException e) {
+            logger.error("error while creating prepared document for webview, in most cases the xhtml is not valid, use the original data for webviewer");
+            webViewPreparedData = code;
+        }
+    }
+
+    public byte[] getWebViewPreparedData() {
+        return webViewPreparedData;
     }
 }

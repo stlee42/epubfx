@@ -12,13 +12,15 @@ public class XMLTagPair
     private IndexRange openTagRange;
     private IndexRange closeTagRange;
     private int tagAttributesEnd;
+    private int tagParagraphIndex;
     private String tagName;
 
-    public XMLTagPair(IndexRange openTagRange, IndexRange closeTagRange, int tagAttributesEnd)
+    public XMLTagPair(IndexRange openTagRange, IndexRange closeTagRange, int tagAttributesEnd, int tagParagraphIndex)
     {
         this.openTagRange = openTagRange;
         this.closeTagRange = closeTagRange;
         this.tagAttributesEnd = tagAttributesEnd;
+        this.tagParagraphIndex = tagParagraphIndex;
     }
 
     public IndexRange getOpenTagRange()
@@ -59,5 +61,9 @@ public class XMLTagPair
     public void setTagAttributesEnd(int tagAttributesEnd)
     {
         this.tagAttributesEnd = tagAttributesEnd;
+    }
+
+    public int getTagParagraphIndex() {
+        return tagParagraphIndex;
     }
 }

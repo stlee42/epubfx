@@ -12,13 +12,13 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
 
 /**
  * User: mjungierek
@@ -54,7 +54,7 @@ public class EpubHttpHandler implements HttpHandler
                 httpExchange.sendResponseHeaders(200, 0);
                 logger.info("return code 200");
                 OutputStream out = httpExchange.getResponseBody();
-                out.write(resource.getData());
+                out.write(resource.getWebViewPreparedData());
                 out.close();
             }
             else

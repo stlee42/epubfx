@@ -69,6 +69,19 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         boolean isTagFound(String tagName);
     }
 
+    public static class HtmlLayoutTagInspector implements TagInspector
+    {
+        private List<String> htmlLayoutTags = Arrays.asList("body", "h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center", "table",
+                "th", "td", "tr", "tbody", "thead", "tfoot", "figure", "figcaption", "caption", "dt", "dd", "q", "blockquote",
+                "section", "nav", "aside", "address", "main", "code", "map", "svg", "object", "video", "audio",
+                "ul", "ol", "li", "pre", "img", "a", "hr", "cite");
+
+        public boolean isTagFound(String tagName)
+        {
+            return htmlLayoutTags.contains(tagName);
+        }
+    }
+
     public static class BlockTagInspector implements TagInspector
     {
         private List<String> blockTags = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center");
@@ -96,9 +109,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
 
-        codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
-            logger.debug("caret position " + newValue);
-        });
     }
 
     private void removeTags(KeyEvent event) {
@@ -280,6 +290,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         int openTagNameStartPosition = -1;
         int openTagNameEndPosition = -1;
         int openTagEndPosition = -1;
+        int openTagParagraphIndex = -1;
         int closeTagNameStartPosition = -1;
         int closeTagNameEndPosition = -1;
 
@@ -342,6 +353,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                             openTagNameStartPosition = getAbsolutePosition(paragraphIndex, openTagNameStartOffset);
                             openTagNameEndPosition = getAbsolutePosition(paragraphIndex, openTagNameEndOffset);
                             openTagEndPosition = getAbsolutePosition(paragraphIndex, openTagEnd);
+                            openTagParagraphIndex = paragraphIndex;
                         }
                     }
                     if (foundCloseOpen && foundCloseClose &&  "closetag".equals(style) && !foundCloseTag)
@@ -363,7 +375,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
             if (foundOpenTag && foundCloseTag && openTagName.equals(closeTagName))
             {
                 bothTagsNotFound = false;
-                pair = new XMLTagPair(new IndexRange(openTagNameStartPosition, openTagNameEndPosition), new IndexRange(closeTagNameStartPosition, closeTagNameEndPosition), openTagEndPosition);
+                pair = new XMLTagPair(new IndexRange(openTagNameStartPosition, openTagNameEndPosition), new IndexRange(closeTagNameStartPosition, closeTagNameEndPosition), openTagEndPosition, openTagParagraphIndex);
                 pair.setTagName(openTagName);
             }
             else if (foundOpenTag)

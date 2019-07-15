@@ -141,6 +141,11 @@ public class XHTMLUtils
         return parseXHTMLDocument(xhtml, null);
     }
 
+    public static Document parseXHTMLDocument(byte[] bytes, JDOMFactory factory) throws IOException, JDOMException {
+        String xhtml = new String(bytes, StandardCharsets.UTF_8);
+        return parseXHTMLDocument(xhtml, factory);
+    }
+
     public static Document parseXHTMLDocument(String xhtml, JDOMFactory factory) throws IOException, JDOMException
     {
         //DTD ersetzen, da die originale nicht erreichbar bzw. nur sehr langsam ist,
@@ -182,7 +187,11 @@ public class XHTMLUtils
         return new String(outputXHTMLDocument(document), StandardCharsets.UTF_8);
     }
 
-    public static byte[] outputXHTMLDocument(Document document)
+    public static byte[] outputXHTMLDocument(Document document) {
+        return outputXHTMLDocument(document, false);
+    }
+
+    public static byte[] outputXHTMLDocument(Document document, boolean escapeOutput)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try
@@ -206,7 +215,8 @@ public class XHTMLUtils
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();
             outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
+            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor(escapeOutput));
+            outputter.escapeElementEntities("&");
             outputter.output(document, baos);
         }
         catch (IOException e)
