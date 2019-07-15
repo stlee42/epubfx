@@ -30,7 +30,7 @@ public class InsertLinkController extends AbstractStandardController {
     public void setStage(Stage stage)
     {
         super.setStage(stage);
-        targetTextField.requestFocus();
+        stage.setOnShown(event -> targetTextField.requestFocus());
     }
 
 

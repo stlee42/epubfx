@@ -217,6 +217,7 @@ public class XHTMLUtils
             outputter.setFormat(xmlFormat);
             outputter.setXMLOutputProcessor(new XHTMLOutputProcessor(escapeOutput));
             outputter.escapeElementEntities("&");
+            outputter.escapeAttributeEntities("&");
             outputter.output(document, baos);
         }
         catch (IOException e)

@@ -127,7 +127,7 @@ public class BookBrowserManager
         @Override
         public TreeCell<Resource> call(TreeView<Resource> resourceTreeView)
         {
-            EditingTreeCell<Resource> treeCell = new EditingTreeCell<>();
+            EditingTreeCell<Resource> treeCell = new EditingTreeCell<>(true);
 
             treeCell.itemProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())

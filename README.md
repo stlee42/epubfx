@@ -36,6 +36,25 @@ This project is in early stage, but some functions are working:
 
 Scripto needs Java 11 or higher to run. The application is build by maven. Currently you can the application only running in an ide (like eclipse, intellij) by starting the `EpubEditorStarter` class. 
 
-I plan to include the maven javafx plugin for easier running the app.   
+I plan to include the maven javafx plugin for easier running the app.  
+
+## Editor
+### Keys 
+- DEL: Delete forward
+- BACKSPACE: Delete back
+- RETURN, ENTER: insert paragraph
+- TAB: insert tab or spaces (configurable)
+- CTRL-DEL: delete next word
+- CTRL-BACKSPACE: delete previous word
+- CTRL-C: Copy selection 
+- CTRL-X: Cut out selection
+- CTRL-Y: Paste
+- CTRL-Z: undo
+- CTRL-SHIFT-Z, CTRL-Y: redo
+
+### Mouse
+- Mouse double click: select word
+- Mouse triple click: select paragraph  
+- SHIFT-Mouse Click: Select text from current caret position to mouse click position
 
 

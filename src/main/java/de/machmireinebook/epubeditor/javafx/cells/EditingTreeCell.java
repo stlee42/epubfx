@@ -8,9 +8,9 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 
-import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
-
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 
 /**
  * User: mjungierek
@@ -22,10 +22,15 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
     private static final Logger logger = Logger.getLogger(EditingTreeCell.class);
 
     private TextField textField;
+    private boolean selectOnlyFirstPartOfFileName;
 
-    public EditingTreeCell()
-    {
+    public EditingTreeCell() {
+        this(false);
+    }
+    
+    public EditingTreeCell(boolean selectOnlyFirstPartOfFileName) {
         super();
+        this.selectOnlyFirstPartOfFileName = selectOnlyFirstPartOfFileName;
     }
 
     @Override
@@ -49,8 +54,15 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
         }
         setText(null);
         setGraphic(textField);
-        textField.setText(getString());
-        textField.selectAll();
+        String text = getString();
+        textField.setText(text);
+
+        int index = text.indexOf(".");
+        if (index > -1 && selectOnlyFirstPartOfFileName) {
+            textField.selectRange(0, index);
+        } else {
+            textField.selectAll();
+        }
         Platform.runLater(textField::requestFocus);
     }
 

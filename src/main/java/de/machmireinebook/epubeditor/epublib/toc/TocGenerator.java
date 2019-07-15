@@ -285,10 +285,9 @@ public class TocGenerator
 
         Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
-        Document navDoc;
+        Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
         if (navResource == null)
         {
-            navDoc = templateManager.getNavTemplate();
             navResource = new XHTMLResource(navDoc, "Text/nav.xhtml");
             if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
             {
@@ -302,23 +301,13 @@ public class TocGenerator
                 book.getSpine().setTocResource(navResource);
             }
         }
-        else
-        {
-            navDoc = (Document) navResource.asNativeFormat();
-        }
+
         TocGeneratorResult result = new TocGeneratorResult(navResource, resourcesToRewrite);
         //for now we presume that nav template is in most parts how we expect it
         Element root = navDoc.getRootElement();
 
         Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
-        if (langAttribute == null)
-        {
-            root.setAttribute("lang", book.getMetadata().getLanguage(), Namespace.XML_NAMESPACE);
-        }
-        else
-        {
-            langAttribute.setValue(book.getMetadata().getLanguage());
-        }
+        setLanguage(book, langAttribute, root);
         Element headElement = root.getChild("head", NAMESPACE_XHTML);
         if (headElement != null)
         {
@@ -336,14 +325,7 @@ public class TocGenerator
         {
             //language attribute
             langAttribute = bodyElement.getAttribute("lang", Namespace.XML_NAMESPACE);
-            if (langAttribute == null)
-            {
-                bodyElement.setAttribute("lang", book.getMetadata().getLanguage(), Namespace.XML_NAMESPACE);
-            }
-            else
-            {
-                langAttribute.setValue(book.getMetadata().getLanguage());
-            }
+            setLanguage(book, langAttribute, bodyElement);
 
             //the different navs
             List<Element> navElements = bodyElement.getChildren("nav", NAMESPACE_XHTML);
@@ -362,6 +344,25 @@ public class TocGenerator
         }
         navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc));
         return result;
+    }
+
+    private void setLanguage(Book book, Attribute langAttribute, Element element) {
+        if (langAttribute == null)
+        {
+            if (book.getMetadata().getLanguage() != null) {
+                element.setAttribute("lang", book.getMetadata().getLanguage(), Namespace.XML_NAMESPACE);
+            } else {
+                element.setAttribute("lang", preferencesManager.getLanguageSpellSelection().getStorageContent(), Namespace.XML_NAMESPACE);
+            }
+        }
+        else
+        {
+            if (book.getMetadata().getLanguage() != null) {
+                langAttribute.setValue(book.getMetadata().getLanguage());
+            } else {
+                langAttribute.setValue(preferencesManager.getLanguageSpellSelection().getStorageContent());
+            }
+        }
     }
 
     private void generateToc(List<TocEntry<? extends TocEntry, Document>> tocEntries, Element navElement, TocGeneratorResult tocGeneratorResult)
