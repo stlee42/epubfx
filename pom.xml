@@ -110,6 +110,11 @@
             <artifactId>jidefx-common</artifactId>
             <version>LATEST</version>
         </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx</artifactId>
+            <version>8.9</version>
+        </dependency>
 
         <!-- html /xml -->
         <dependency>
