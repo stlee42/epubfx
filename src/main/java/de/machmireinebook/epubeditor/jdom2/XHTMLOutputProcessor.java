@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
 import org.jdom2.Attribute;
 import org.jdom2.CDATA;
 import org.jdom2.Comment;
@@ -17,6 +18,8 @@ import org.jdom2.EntityRef;
 import org.jdom2.Namespace;
 import org.jdom2.ProcessingInstruction;
 import org.jdom2.Text;
+import org.jdom2.Verifier;
+import org.jdom2.output.EscapeStrategy;
 import org.jdom2.output.Format;
 import org.jdom2.output.support.AbstractXMLOutputProcessor;
 import org.jdom2.output.support.FormatStack;
@@ -39,11 +42,39 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
             "div", "blockquote", "table", "tr", "hr", "ul", "ol");
 
     private boolean escapeOutput = false;
+    private XhtmlEscapeStrategy xhtmlEscapeStrategy;
+    private static class XhtmlEscapeStrategy implements EscapeStrategy {
+        /**
+         * Includes all characters that should escaped every time, e.g. the non breaking space, to avoid confusions with normal spaces
+         */
+        private List<Character> specialXhtmlCharacter = Arrays.asList(
+                (char) 160,  //non breaking space
+                (char) 0x2002,  //en space
+                (char) 0x2003, //em space
+                (char) 0x2004, //Three-Per-Em Space (thick space, 1/3 of em)
+                (char) 0x2005, //Four-Per-Em Space (mid space, 1/4 of em)
+                (char) 0x2006, //Six-Per-Em Space
+                (char) 0x2007, //Figure Space (widht of number)
+                (char) 0x2008, //Punctuation Space
+                (char) 0x2009, //Thin Space
+                (char) 0x200A, //Hair Space
+                (char) 0x200B, //Zero-Width Space
+                (char) 8239,  //narrow no-break space
+                (char) 65279  //zero width no-break space
+                );
+
+        @Override
+        public boolean shouldEscape(char ch) {
+            return Verifier.isHighSurrogate(ch) || specialXhtmlCharacter.contains(ch);
+        }
+    }
 
     public XHTMLOutputProcessor() {
+        xhtmlEscapeStrategy = new XhtmlEscapeStrategy();
     }
 
     public XHTMLOutputProcessor(boolean escapeOutput) {
+        this();
         this.escapeOutput = escapeOutput;
     }
 
@@ -265,7 +296,8 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     {
         if (fstack.getEscapeOutput())
         {
-            textRawRemoveBreaks(out, Format.escapeText(fstack.getEscapeStrategy(),
+            //always use the xhtml escape strategy if we output xhtml
+            textRawRemoveBreaks(out, Format.escapeText(xhtmlEscapeStrategy,
                     fstack.getLineSeparator(), text));
 
             return;

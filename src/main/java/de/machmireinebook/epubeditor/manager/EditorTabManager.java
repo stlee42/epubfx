@@ -820,7 +820,7 @@ public class EditorTabManager {
 
     public String formatAsXHTML(String xhtml) throws IOException, JDOMException {
         Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
-        return XHTMLUtils.outputXHTMLDocumentAsString(document);
+        return XHTMLUtils.outputXHTMLDocumentAsString(document, true);
     }
 
     public String repairXHTML(String xhtml) {

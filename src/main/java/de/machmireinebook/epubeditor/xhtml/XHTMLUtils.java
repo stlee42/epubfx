@@ -187,6 +187,10 @@ public class XHTMLUtils
         return new String(outputXHTMLDocument(document), StandardCharsets.UTF_8);
     }
 
+    public static String outputXHTMLDocumentAsString(Document document, boolean escapeOutput) {
+        return new String(outputXHTMLDocument(document, escapeOutput), StandardCharsets.UTF_8);
+    }
+
     public static byte[] outputXHTMLDocument(Document document) {
         return outputXHTMLDocument(document, false);
     }

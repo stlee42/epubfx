@@ -342,7 +342,7 @@ public class TocGenerator
                 }
             }
         }
-        navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc));
+        navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc, true));
         return result;
     }
 

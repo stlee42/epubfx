@@ -1,6 +1,5 @@
 package de.machmireinebook.epubeditor.gui;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,21 +23,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import org.apache.log4j.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
-
-import org.apache.log4j.Logger;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
  * User: mjungierek
@@ -299,14 +296,9 @@ public class AddStylesheetController implements StandardController
                     headElement.addContent(styleElement);
                 }
                 Document document = headElement.getDocument();
-                XMLOutputter outputter = new XMLOutputter();
-                Format xmlFormat = Format.getPrettyFormat();
-                outputter.setFormat(xmlFormat);
-                outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                outputter.output(document, bos);
+                byte[] bytes = XHTMLUtils.outputXHTMLDocument(document, true);
 
-                resource.setData(bos.toByteArray());
+                resource.setData(bytes);
                 editorManager.refreshEditorCode(resource);
             }
         }
