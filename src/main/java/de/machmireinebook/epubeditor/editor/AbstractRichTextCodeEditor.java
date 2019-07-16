@@ -263,7 +263,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     {
         isChangingCode = true; //this change of code is not relevant for listeners
         codeArea.clear();
-        isChangingCode = false;
         codeArea.insertText(0, newCode);
     }
 
@@ -440,6 +439,10 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public final String getTextInformation() {
         return textInformation.get();
+    }
+
+    public void resetChangingCode() {
+        isChangingCode = false;
     }
 
     @Override

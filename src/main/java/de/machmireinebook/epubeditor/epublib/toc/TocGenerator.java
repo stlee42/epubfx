@@ -448,4 +448,12 @@ public class TocGenerator
             }
         }
     }
+
+    public TocGenerator.TocGeneratorResult createNcxFromNav() {
+        TableOfContents toc = bookProperty.get().getTableOfContents();
+        TocGenerator.TocGeneratorResult result = generateNcx(toc.getTocReferences());
+        return result;
+    }
+
+
 }

@@ -127,6 +127,7 @@ public class EditorTabManager {
     private BookBrowserManager bookBrowserManager;
 
     private boolean openingEditorTab = false;
+    private boolean refreshAllInProgress = false;
     private boolean refreshAll = false;
 
 
@@ -450,8 +451,11 @@ public class EditorTabManager {
                     .successionEnds(java.time.Duration.ofMillis(500))
                     .subscribe(plainTextChanges -> {
                         logger.info("subscribing eventstream");
-                        logger.info("getting event code text changed");
-                        if (openingEditorTab || editor.isChangingCode() || refreshAll) {
+                        //the openingEditorTab and refreshAllInProgress shows that a code change is in progress, dont reset it here,
+                        // the other two that code changes are done, reset that the next changes are executed
+                        if (openingEditorTab || refreshAllInProgress || editor.isChangingCode()  || refreshAll) {
+                            editor.resetChangingCode();
+                            refreshAll = false;
                             return;
                         }
                         CodeEditor codeEditor = currentEditor.getValue();
@@ -828,6 +832,9 @@ public class EditorTabManager {
     }
 
     public void refreshAll() {
+        //refresh all is in progress, avoid listener
+        refreshAllInProgress = true;
+        //refresh was executed, and after execution avoid listener, will be reseted by listener
         refreshAll = true;
         CodeEditor previousCodeEditior = currentEditor.get();
         List<Tab> tabs = tabPane.getTabs();
@@ -841,7 +848,7 @@ public class EditorTabManager {
             }
         }
         currentEditor.set(previousCodeEditior);
-        refreshAll = false;
+        refreshAllInProgress = false;
     }
 
     public void refreshEditorCode(Resource resourceToUpdate) {

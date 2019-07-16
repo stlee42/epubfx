@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -39,6 +40,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -55,7 +57,7 @@ import javafx.stage.StageStyle;
 
 import org.apache.log4j.Logger;
 
-import com.pixelduke.control.Ribbon;
+import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -67,6 +69,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
+import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
@@ -77,7 +80,11 @@ import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
+import de.machmireinebook.epubeditor.validation.ValidationManager;
+import de.machmireinebook.epubeditor.validation.ValidationMessage;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -89,6 +96,10 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Button validateEpubButton;
+    @FXML
+    private TableView<ValidationMessage> validationResultsTableView;
     @FXML
     private Button singleQuotationMarksButton;
     @FXML
@@ -204,8 +215,6 @@ public class MainController implements Initializable
     @FXML
     private ListView<Resource> clipListView;
     @FXML
-    private ListView validationResultsListView;
-    @FXML
     private TreeView<TocEntry> tocTreeView;
     @FXML
     private WebView previewWebview;
@@ -239,7 +248,7 @@ public class MainController implements Initializable
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
-    private EditorTabManager editorManager;
+    private EditorTabManager editorTabManager;
     @Inject
     private PreviewManager previewManager;
     @Inject
@@ -252,6 +261,10 @@ public class MainController implements Initializable
     private SearchAnchorPane searchAnchorPane;
     @Inject
     private PreferencesManager preferencesManager;
+    @Inject
+    private TocGenerator tocGenerator;
+    @Inject
+    private ValidationManager validationManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -260,24 +273,27 @@ public class MainController implements Initializable
         searchable.setRecursive(true);
 
         bookBrowserManager.setTreeView(epubStructureTreeView);
-        bookBrowserManager.setEditorManager(editorManager);
+        bookBrowserManager.setEditorManager(editorTabManager);
 
         epubFilesTabPane.getTabs().clear();
         epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-        editorManager.setTabPane(epubFilesTabPane);
+        editorTabManager.setTabPane(epubFilesTabPane);
 
         previewManager.setWebview(previewWebview);
 
         tocViewManager.setTreeView(tocTreeView);
-        tocViewManager.setEditorManager(editorManager);
+        tocViewManager.setEditorManager(editorTabManager);
         tocViewManager.bookProperty().bind(currentBookProperty);
+
+        tocGenerator.bookProperty().bind(currentBookProperty);
+
 
         currentBookProperty.addListener((observable, oldValue, newValue) -> {
             epubFilesTabPane.getTabs().clear();
 
             bookBrowserManager.setBook(newValue);
-            editorManager.reset();
-            editorManager.setBook(newValue);
+            editorTabManager.reset();
+            editorTabManager.setBook(newValue);
             previewManager.reset();
             saveButton.disableProperty().unbind();
             createHtmlTocButton.disableProperty().unbind();
@@ -300,13 +316,13 @@ public class MainController implements Initializable
             }
 
         });
-        BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorManager.currentEditorIsXHTMLProperty())
+        BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorTabManager.currentEditorIsXHTMLProperty())
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
         BooleanBinding isNoEditorBinding = Bindings.isNull(currentBookProperty)
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs()))
-                .or(Bindings.isNull(editorManager.currentXHTMLResourceProperty())
-                .and(Bindings.isNull(editorManager.currentCssResourceProperty()))
-                .and(Bindings.isNull(editorManager.currentXMLResourceProperty())));
+                .or(Bindings.isNull(editorTabManager.currentXHTMLResourceProperty())
+                .and(Bindings.isNull(editorTabManager.currentCssResourceProperty()))
+                .and(Bindings.isNull(editorTabManager.currentXMLResourceProperty())));
 
         addCoverButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         editMetadataButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
@@ -337,8 +353,8 @@ public class MainController implements Initializable
         addExistingFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
         saveButton.setDisable(true);
-        undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canUndoProperty())));
-        redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorManager.canRedoProperty())));
+        undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canUndoProperty())));
+        redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canRedoProperty())));
 
         searchReplaceButton.disableProperty().bind(Bindings.isNull(currentBookProperty).or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
 
@@ -356,7 +372,7 @@ public class MainController implements Initializable
         createHtmlTocButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
         createNcxButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
 
-        cursorPosLabel.textProperty().bind(editorManager.cursorPosLabelProperty());
+        cursorPosLabel.textProperty().bind(editorTabManager.cursorPosLabelProperty());
 
         //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
         clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());
@@ -383,18 +399,22 @@ public class MainController implements Initializable
             }
             leftDivider.setVisibility(0, newValue);
         });
-        validationResultsListView.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
+        validationResultsTableView.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
         showValidationResultsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
             {
-                if (!centerDivider.getItems().contains(validationResultsListView))
+                if (!centerDivider.getItems().contains(validationResultsTableView))
                 {
-                    centerDivider.getItems().add(validationResultsListView);
+                    centerDivider.getItems().add(validationResultsTableView);
                     centerDivider.setDividerPosition(0, 0.8);
                 }
             }
             centerDivider.setVisibility(1, newValue);
         });
+
+        validateEpubButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentBookProperty.get().getPhysicalFileName() == null));
+        validationManager.setTableView(validationResultsTableView);
+
         previewAnchorPane.visibleProperty().bindBidirectional(showPreviewToggleButton.selectedProperty());
         showPreviewToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
@@ -479,7 +499,7 @@ public class MainController implements Initializable
                     if (!currentBook.getSpine().isEmpty())
                     {
                         Resource firstResource = currentBook.getSpine().getResource(0);
-                        editorManager.openFileInEditor(firstResource, firstResource.getMediaType());
+                        editorTabManager.openFileInEditor(firstResource, firstResource.getMediaType());
                     }
                 }
                 catch (IOException e)
@@ -558,7 +578,7 @@ public class MainController implements Initializable
                 if (!currentBook.getSpine().isEmpty())
                 {
                     Resource firstResource = currentBook.getSpine().getResource(0);
-                    editorManager.openFileInEditor(firstResource, firstResource.getMediaType());
+                    editorTabManager.openFileInEditor(firstResource, firstResource.getMediaType());
                 }
             }
             catch (IOException e)
@@ -852,43 +872,43 @@ public class MainController implements Initializable
 
     public void h1ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h1");
+        editorTabManager.surroundParagraphWithTag("h1");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void h2ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h2");
+        editorTabManager.surroundParagraphWithTag("h2");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void h3ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h3");
+        editorTabManager.surroundParagraphWithTag("h3");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void h4ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h4");
+        editorTabManager.surroundParagraphWithTag("h4");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void h5ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h5");
+        editorTabManager.surroundParagraphWithTag("h5");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void h6ButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("h6");
+        editorTabManager.surroundParagraphWithTag("h6");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void paragraphButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundParagraphWithTag("p");
+        editorTabManager.surroundParagraphWithTag("p");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
@@ -897,7 +917,7 @@ public class MainController implements Initializable
         String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
         logger.info("select quotation mark " + selectedQuotationMark);
         QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
-        editorManager.surroundSelection(quotationMark.getLeft(), quotationMark.getRight());
+        editorTabManager.surroundSelection(quotationMark.getLeft(), quotationMark.getRight());
         currentBookProperty.get().setBookIsChanged(true);
     }
 
@@ -908,13 +928,13 @@ public class MainController implements Initializable
 
     public void boldButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("b");
+        editorTabManager.surroundSelectionWithTag("b");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void kursivButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("i");
+        editorTabManager.surroundSelectionWithTag("i");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
@@ -930,55 +950,55 @@ public class MainController implements Initializable
 
     public void underlineButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("u");
+        editorTabManager.surroundSelectionWithTag("u");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void strikeButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("s");
+        editorTabManager.surroundSelectionWithTag("s");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void subscriptButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("sub");
+        editorTabManager.surroundSelectionWithTag("sub");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void superscriptButtonAction(ActionEvent actionEvent)
     {
-        editorManager.surroundSelectionWithTag("sup");
+        editorTabManager.surroundSelectionWithTag("sup");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void alignLeftButtonAction(ActionEvent actionEvent)
     {
-        editorManager.insertStyle("text-align", "left");
+        editorTabManager.insertStyle("text-align", "left");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void centerButtonAction(ActionEvent actionEvent)
     {
-        editorManager.insertStyle("text-align", "center");
+        editorTabManager.insertStyle("text-align", "center");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void rightAlignButtonAction(ActionEvent actionEvent)
     {
-        editorManager.insertStyle("text-align", "right");
+        editorTabManager.insertStyle("text-align", "right");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void justifyButtonAction(ActionEvent actionEvent)
     {
-        editorManager.insertStyle("text-align", "justify");
+        editorTabManager.insertStyle("text-align", "justify");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void undoButtonAction(ActionEvent actionEvent)
     {
-        CodeEditor currentEditor = editorManager.currentEditorProperty().get();
+        CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
         if (currentEditor != null)
         {
             currentEditor.undo();
@@ -987,7 +1007,7 @@ public class MainController implements Initializable
 
     public void redoButtonAction(ActionEvent actionEvent)
     {
-        CodeEditor currentEditor = editorManager.currentEditorProperty().get();
+        CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
         if (currentEditor != null)
         {
             currentEditor.redo();
@@ -1009,13 +1029,13 @@ public class MainController implements Initializable
     public void searchReplaceButtonAction()
     {
         //set search string also if pane is already open
-        String selection = editorManager.getCurrentEditor().getSelection();
+        String selection = editorTabManager.getCurrentEditor().getSelection();
         searchAnchorPane.setSearchString(selection);
     }
 
     public void splitButtonAction(ActionEvent actionEvent)
     {
-        boolean success = editorManager.splitXHTMLFile();
+        boolean success = editorTabManager.splitXHTMLFile();
         if (success)
         {
             currentBookProperty.get().setBookIsChanged(true);
@@ -1024,7 +1044,7 @@ public class MainController implements Initializable
 
     public void insertImageButtonAction(ActionEvent actionEvent)
     {
-        if (editorManager.isInsertablePosition())
+        if (editorTabManager.isInsertablePosition())
         {
             createAndOpenStandardController("/insert_media.fxml", InsertMediaController.class);
         }
@@ -1068,18 +1088,18 @@ public class MainController implements Initializable
 
     public void increaseIndentButtonAction(ActionEvent actionEvent)
     {
-        editorManager.increaseIndent();
+        editorTabManager.increaseIndent();
 
     }
 
     public void decreaseIndentButtonAction(ActionEvent actionEvent)
     {
-        editorManager.decreaseIndent();
+        editorTabManager.decreaseIndent();
     }
 
     public void insertTableButtonAction(ActionEvent actionEvent)
     {
-        if (editorManager.isInsertablePosition())
+        if (editorTabManager.isInsertablePosition())
         {
             createAndOpenStandardController("/insert-table.fxml", InsertTableController.class);
         }
@@ -1247,7 +1267,18 @@ public class MainController implements Initializable
 
     public void createNcxAction(ActionEvent actionEvent)
     {
+        TocGenerator.TocGeneratorResult result = tocGenerator.createNcxFromNav();
+        Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
 
+        for (Resource resource : allResourcesToRewrite.keySet())
+        {
+            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource)));
+            editorTabManager.refreshEditorCode(resource);
+        }
+
+        bookBrowserManager.refreshBookBrowser();
+        editorTabManager.refreshEditorCode(result.getTocResource());
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void createHtmlTocAction(ActionEvent actionEvent)
@@ -1257,7 +1288,7 @@ public class MainController implements Initializable
 
     public void insertLinkAction(ActionEvent actionEvent)
     {
-        if (editorManager.isInsertablePosition())
+        if (editorTabManager.isInsertablePosition())
         {
             createAndOpenStandardController("/insert-link.fxml", InsertLinkController.class);
         }
@@ -1287,10 +1318,9 @@ public class MainController implements Initializable
         preferencesManager.showPreferencesDialog();
     }
 
-    public void epubCheckButton(ActionEvent actionEvent)
+    public void validateEpubButton(ActionEvent actionEvent)
     {
-
-
+        validationManager.startValidationEpub(currentBookProperty.get().getPhysicalFileName());
     }
 
     public void checkLinksButton(ActionEvent actionEvent)

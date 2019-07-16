@@ -38,6 +38,8 @@ public interface CodeEditor
 
     //methods of the java part of editor
     boolean isChangingCode();
+    void resetChangingCode();
+
     void setContextMenu(ContextMenu contextMenu);
     ObjectProperty<Worker.State> stateProperty();
     IntegerProperty cursorPositionProperty();

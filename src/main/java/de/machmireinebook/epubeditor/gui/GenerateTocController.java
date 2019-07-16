@@ -193,8 +193,7 @@ public class GenerateTocController implements StandardController
             tocEntry.setCompleteHref(newValue);
         });
         tc4.visibleProperty().bind(editModeProperty);
-
-
+        
         showTocItemsCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> setTableViewItems());
         showTocItemsCheckBox.setSelected(true);
         showTocItemsCheckBox.visibleProperty().bind(editModeProperty.not());
@@ -202,8 +201,6 @@ public class GenerateTocController implements StandardController
 
         headingLevelComboBox.visibleProperty().bind(editModeProperty.not());
         headingLevelLabel.visibleProperty().bind(editModeProperty.not());
-
-        tocGenerator.bookProperty().bind(currentBook);
 
         editModeProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue)
