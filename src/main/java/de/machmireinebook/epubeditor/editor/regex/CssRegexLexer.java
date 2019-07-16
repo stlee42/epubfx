@@ -9,7 +9,8 @@ public class CssRegexLexer extends RegexLexer {
     public CssRegexLexer() {
         super();
 
-        addRule(new RegexKeywordLexerRule("KEYWORD", "null", "important", "fill", "url"));
+        addRule(new RegexKeywordLexerRule("FUNCTION", "null", "important", "fill", "url", "calc"));
+        addRule(new RegexKeywordLexerRule("KEYWORD", "@page", "@import", "@font-face", "@media", "@namespace", "@keyframes", "@viewport", "@supports"));
         addRule(new RegexKeywordLexerRule("VALUE", "normal", "bold", "bolder", "italic",
                 "black", "grey", "gray", "firebrick",
                 "transparent",
@@ -127,7 +128,7 @@ public class CssRegexLexer extends RegexLexer {
         addRule(new RegexLexerRule("CONTROL", "\\;|\\,|\\:"));
         addRule(new RegexLexerRule("STRING", "((\"([^\"\\\\]|\\\\.)*\")|(\'([^\'\\\\]|\\\\.)*\'))"));
         addRule(new RegexLexerRule("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/"));
-        addRule(new RegexLexerRule("SELECTOR", "(\\.|\\#)?[a-zA-Z0-9\\_\\*\\+\\-\\ \\.\\#\\:\\,\\n\\r\\t]{1,}[ ]{0,}(\\{)", -1));
+        addRule(new RegexLexerRule("SELECTOR", "(\\.|\\#)?[a-zA-Z0-9\\_\\*\\+\\-\\ \\~\\>\\.\\#\\:\\,\\n\\r\\t]{1,}[ ]{0,}(\\{)", -1));
 
         addRule(new RegexLexerRule("NUMBER", "[0-9]+(\\.[0-9]+)?"));
         addRule(new RegexLexerRule("COLOR", "\\#[\\dA-Fa-f]{2,6}"));

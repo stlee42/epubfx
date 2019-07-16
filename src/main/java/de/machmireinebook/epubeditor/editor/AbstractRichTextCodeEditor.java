@@ -24,6 +24,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -44,6 +45,7 @@ import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 import static org.fxmisc.wellbehaved.event.InputMap.consume;
+import static org.fxmisc.wellbehaved.event.InputMap.sequence;
 
 /**
  * User: mjungierek
@@ -120,7 +122,27 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         //setup special keys
         CodeArea codeArea = getCodeArea();
         Nodes.removeInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
-        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
+        Nodes.addInputMap(codeArea, sequence(
+                                    consume(keyPressed(KeyCode.TAB), this::insertTab),
+                                    consume(keyPressed(KeyCode.TAB, KeyCombination.SHIFT_DOWN), this::shiftTabPressed)));
+
+        codeArea.setOnKeyTyped(e -> {
+            String character = e.getCharacter();
+            switch (character) {
+                case "{":
+                    completePair("}");
+                    break;
+                case "\"":
+                    completePair("\"");
+                    break;
+                case "(":
+                    completePair(")");
+                    break;
+                case "[":
+                    completePair("]");
+                    break;
+            }
+        });
     }
 
     @Override
@@ -136,6 +158,15 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         } else {
             insertAt(getAbsoluteCursorPosition(), "\t");
         }
+    }
+
+    private void shiftTabPressed(KeyEvent event) {
+
+    }
+
+    protected void completePair(String closingPart) {
+        insertAt(getAbsoluteCursorPosition(), closingPart);
+        setAbsoluteCursorPosition(getAbsoluteCursorPosition() - closingPart.length());
     }
 
     public void setWrapText(boolean wrapText)
@@ -261,7 +292,11 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     @Override
     public void insertAt(Integer pos, String insertion)
     {
-        codeArea.insertText(pos, insertion);
+        if (pos > codeArea.getLength()) {
+            codeArea.appendText(insertion);
+        } else {
+            codeArea.insertText(pos, insertion);
+        }
     }
 
     @Override

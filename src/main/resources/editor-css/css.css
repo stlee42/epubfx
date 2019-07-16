@@ -10,6 +10,26 @@
     -fx-font-weight: bold;
 }
 
+.code-area .text.function {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+.code-area .text.attributename {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+.code-area .text.keyword {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
+.code-area .text.pseudoselector {
+    -fx-fill: #000080;
+    -fx-font-weight: bold;
+}
+
 .code-area .text.string
 {
     -fx-fill: #008000;
