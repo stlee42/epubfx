@@ -17,10 +17,12 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
@@ -269,6 +271,25 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     public String getCode()
     {
         return codeArea.getText();
+    }
+
+    public void requestFocus() {
+        Platform.runLater(() -> {
+            if (codeArea.getScene() != null)
+                codeArea.requestFocus();
+            else {
+                // text area still does not have a scene
+                // --> use listener on scene to make sure that text area receives focus
+                ChangeListener<Scene> l = new ChangeListener<Scene>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                        codeArea.sceneProperty().removeListener(this);
+                        codeArea.requestFocus();
+                    }
+                };
+                codeArea.sceneProperty().addListener(l);
+            }
+        });
     }
 
     @Override
