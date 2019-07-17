@@ -43,8 +43,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
     private static final Logger logger = Logger.getLogger(Epub3PackageDocumentReader.class);
 
 
-    public static void read(Resource packageResource, Document packageDocument, Book book, Resources resources)
-    {
+    public static void read(Resource packageResource, Document packageDocument, Book book, Resources resources) {
         Element root = packageDocument.getRootElement();
 
         String packageHref = packageResource.getHref();

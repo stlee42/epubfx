@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
@@ -176,7 +177,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
                 {
                     continue;
                 }
-                String idName = identifierElement.getAttributeValue(DCAttributes.id);
+                String idName = identifierElement.getAttributeValue(DublinCoreAttributes.id.name());
                 Identifier identifier = new Identifier(idName, identifierValue);
                 if (bookIdId.equals(idName))
                 {
@@ -223,7 +224,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = authorElement.getAttributeValue(DCAttributes.id);
+            String idName = authorElement.getAttributeValue(DublinCoreAttributes.id.name());
             String language = authorElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
             Author author = new Author(idName, authorValue, language);
             if (StringUtils.isNotEmpty(idName)) {
@@ -255,7 +256,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = dcElement.getAttributeValue(DCAttributes.id);
+            String idName = dcElement.getAttributeValue(DublinCoreAttributes.id.name());
             String language = dcElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
             DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, titleValue, language);
             if (StringUtils.isNotEmpty(idName)) {
@@ -275,7 +276,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             return null;
         }
         String value = dcDateElement.getText();
-        String idName = dcDateElement.getAttributeValue(DCAttributes.id);
+        String idName = dcDateElement.getAttributeValue(DublinCoreAttributes.id.name());
         return new MetadataDate(idName, value);
     }
 
@@ -295,7 +296,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
             {
                 continue;
             }
-            String idName = langElement.getAttributeValue(DCAttributes.id);
+            String idName = langElement.getAttributeValue(DublinCoreAttributes.id.name());
             DublinCoreMetadataElement language = new DublinCoreMetadataElement(idName, langValue);
             result.add(language);
         }

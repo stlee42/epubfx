@@ -6,26 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.Resources;
-import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
-import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
-import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.*;
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
+import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
+import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_EPUB;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_XHTML;
 
 /**
  * User: mjungierek
@@ -102,6 +106,9 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
 
     private static void readLandmarks(Book book, Element navElement, Resources resources)
     {
+        Landmarks landmarks = book.getLandmarks();
+        String title = navElement.getChildText("h1");
+        landmarks.setTitle(title);
         Element olElement = navElement.getChild("ol", NAMESPACE_XHTML);
         if (olElement != null)
         {
@@ -129,7 +136,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
                         }
                     }
                     LandmarkReference reference = new LandmarkReference(resource, semantic, anchorElement.getTextNormalize());
-                    book.getLandmarks().addReference(reference);
+                    landmarks.addReference(reference);
                 }
             }
         }
@@ -139,6 +146,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
     {
         TableOfContents tableOfContents = new TableOfContents();
         Element h1Element = navElement.getChild("h1", NAMESPACE_XHTML);
+        tableOfContents.setId(navElement.getAttributeValue(DublinCoreAttributes.id.name()));
         if (h1Element != null)
         {
             tableOfContents.setTocTitle(h1Element.getText());

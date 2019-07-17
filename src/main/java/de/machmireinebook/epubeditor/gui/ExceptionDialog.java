@@ -13,8 +13,8 @@ public class ExceptionDialog
     {
         org.controlsfx.dialog.ExceptionDialog exceptionDialog = new org.controlsfx.dialog.ExceptionDialog(t);
         exceptionDialog.setTitle(title);
-        exceptionDialog.setHeaderText(null);
-        exceptionDialog.setContentText(text);
+        exceptionDialog.setHeaderText(text);
+        exceptionDialog.setContentText(null);
         exceptionDialog.initOwner(stage);
         exceptionDialog.showAndWait();
     }

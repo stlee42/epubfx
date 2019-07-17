@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Element;
 
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
@@ -191,7 +192,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         {
             for (Element identifierElement : identifierElements)
             {
-                String schemeName = identifierElement.getAttributeValue(DCAttributes.scheme, NAMESPACE_OPF);
+                String schemeName = identifierElement.getAttributeValue(DublinCoreAttributes.scheme.name(), NAMESPACE_OPF);
                 String identifierValue = identifierElement.getText();
                 if (StringUtils.isBlank(identifierValue))
                 {
