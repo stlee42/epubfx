@@ -8,19 +8,23 @@ package de.machmireinebook.epubeditor.epublib.domain.epub2;
 public class DublinCoreMetadataElement
 {
     private String id;
-    private String scheme;
     private String value;
+    private String language;
 
     public DublinCoreMetadataElement(String value)
     {
-        this(null, null, value);
+        this(null, value, null);
     }
 
-    public DublinCoreMetadataElement(String id, String scheme, String value)
+    public DublinCoreMetadataElement(String id, String value) {
+        this(id, value, null);
+    }
+
+    public DublinCoreMetadataElement(String id, String value, String language)
     {
         this.id = id;
-        this.scheme = scheme;
         this.value = value;
+        this.language = language;
     }
 
     public String getId()
@@ -33,15 +37,6 @@ public class DublinCoreMetadataElement
         this.id = id;
     }
 
-    public String getScheme()
-    {
-        return scheme;
-    }
-
-    public void setScheme(String scheme)
-    {
-        this.scheme = scheme;
-    }
 
     public String getValue()
     {
@@ -51,5 +46,13 @@ public class DublinCoreMetadataElement
     public void setValue(String value)
     {
         this.value = value;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

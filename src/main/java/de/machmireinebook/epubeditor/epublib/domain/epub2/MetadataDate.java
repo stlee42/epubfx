@@ -2,6 +2,8 @@ package de.machmireinebook.epubeditor.epublib.domain.epub2;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * A Date used by the book's metadata.
  * 
@@ -19,6 +21,7 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 
 	public enum Event {
 		UNKNOWN(""),
+		EMPTY(""),
 		PUBLICATION("publication"),
 		MODIFICATION("modification"),
 		CREATION("creation");
@@ -30,6 +33,9 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 		}
 
 		public static Event fromValue(String v) {
+			if (StringUtils.isEmpty(v)) {
+				return EMPTY;
+			}
 			for (Event c : Event.values()) {
 				if (c.value.equals(v)) {
 					return c;
@@ -44,6 +50,7 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 	}
 
 	private Event event;
+	private String unknownEventValue;
 
     public MetadataDate(String dateString, Event event) {
         super(null, null, dateString);
@@ -80,6 +87,14 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 			return getValue();
 		}
 		return event + ":" + getValue();
+	}
+
+	public String getUnknownEventValue() {
+		return unknownEventValue;
+	}
+
+	public void setUnknownEventValue(String unknownEventValue) {
+		this.unknownEventValue = unknownEventValue;
 	}
 }
 

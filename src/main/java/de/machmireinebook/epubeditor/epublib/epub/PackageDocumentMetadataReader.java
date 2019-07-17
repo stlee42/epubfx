@@ -37,6 +37,8 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     public Metadata readMetadata(Element root)
     {
+        //TODO: improve as here described http://www.idpf.org/epub/20/spec/OPF_2.0.1_draft.htm#AppendixA
+        //using strings is to simple and leads to loss of data and significance
         Metadata result = new Metadata();
         metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
@@ -52,6 +54,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.type.getName()));
         result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.subject.getName()));
         result.setCoverages(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.coverage.getName()));
+        //result.setRelations(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.relation.getName()));
         result.setIdentifiers(readIdentifiers());
         result.setAuthors(readCreators());
         result.setContributors(readContributors());
@@ -152,6 +155,11 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             {
                 String event = dateElement.getAttributeValue(OPFAttributes.event, NAMESPACE_OPF);
                 date = new MetadataDate(dateElement.getText(), event);
+                if (date.getEvent() == MetadataDate.Event.UNKNOWN) {
+                    // the value of event was not in our standard list
+                    // specification says: "The set of values for event are not defined by this specification"
+                    date.setUnknownEventValue(event);
+                }
                 result.add(date);
             }
             catch (IllegalArgumentException e)

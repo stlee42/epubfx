@@ -70,9 +70,13 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         for (MetadataDate date : metadata.getDates())
         {
             Element dateElement = new Element(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
-            if (date.getEvent() != null && date.getEvent() != MetadataDate.Event.UNKNOWN) //dont write the internal event UNKNOWN to opf, the input was not epub conform or empty
+            if (date.getEvent() != null && date.getEvent() != MetadataDate.Event.EMPTY) //dont write the internal event EMPTY to opf
             {
-                dateElement.setAttribute(OPFAttributes.event, date.getEvent().toString(), NAMESPACE_OPF_WITH_PREFIX);
+                if (date.getEvent() == MetadataDate.Event.UNKNOWN) {
+                    dateElement.setAttribute(OPFAttributes.event, date.getUnknownEventValue(), NAMESPACE_OPF_WITH_PREFIX);
+                } else {
+                    dateElement.setAttribute(OPFAttributes.event, date.getEvent().toString(), NAMESPACE_OPF_WITH_PREFIX);
+                }
             }
 
             dateElement.setText(date.getValue());

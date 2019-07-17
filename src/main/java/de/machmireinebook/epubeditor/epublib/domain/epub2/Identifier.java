@@ -14,7 +14,8 @@ import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
  *
  */
 public class Identifier extends DublinCoreMetadataElement implements EpubIdentifier, Serializable {
-	
+
+	private String scheme;
 	/**
 	 * 
 	 */
@@ -49,14 +50,16 @@ public class Identifier extends DublinCoreMetadataElement implements EpubIdentif
 
 	public Identifier(String id, String scheme, String value)
 	{
-		super(id, scheme, value);
+		super(id, value);
+		this.scheme = scheme;
 	}
 
 	/**
 	 * Creates an EpubIdentifier with as value a random UUID and scheme "UUID"
 	 */
 	public Identifier() {
-		super(null, Scheme.UUID.getValue(), UUID.randomUUID().toString());
+		super(null, UUID.randomUUID().toString());
+		scheme = Scheme.UUID.getValue();
 	}
 
 
@@ -77,5 +80,15 @@ public class Identifier extends DublinCoreMetadataElement implements EpubIdentif
 	 */
 	public boolean isBookId() {
 		return bookId;
+	}
+
+	public String getScheme()
+	{
+		return scheme;
+	}
+
+	public void setScheme(String scheme)
+	{
+		this.scheme = scheme;
 	}
 }

@@ -93,7 +93,7 @@ public class EpubEditorApplication extends Application
 
                 ResourceHttpHandler resourceHttpHandler = new ResourceHttpHandler();
                 //if ebooks uses internally this uri part, and a book resource will be tried to serve with this http handler,
-                // prefix it with somethin like "epubfx-" and remove it in resource handler
+                // prefix it with something like "epubfx-" and remove it in resource handler
                 server.createContext("/dtd", resourceHttpHandler);
 
                 server.start();
