@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +19,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.CodeArea;
@@ -25,6 +29,16 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.wellbehaved.event.Nodes;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filter;
+import org.jdom2.filter.Filters;
+import org.jdom2.located.LocatedElement;
+import org.jdom2.located.LocatedJDOMFactory;
+import org.jdom2.util.IteratorIterable;
 import org.languagetool.JLanguageTool;
 import org.languagetool.ResultCache;
 import org.languagetool.markup.AnnotatedText;
@@ -32,7 +46,10 @@ import org.languagetool.markup.AnnotatedTextBuilder;
 import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.RuleMatch;
 
+import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.manager.ElementPosition;
+import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 import static org.fxmisc.wellbehaved.event.InputMap.consume;
@@ -47,6 +64,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))"
             + "|(?<COMMENT><!--[^<>]+-->)");
     private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
+    private static final Pattern INDENT = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
 
     private static final int GROUP_OPEN_BRACKET = 2;
     private static final int GROUP_ELEMENT_NAME = 3;
@@ -108,14 +126,23 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         CodeArea codeArea = getCodeArea();
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
+    }
 
+    public void surroundParagraphWithTag(String tagName) {
+        Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+        optional.ifPresent(pair -> {
+            logger.info("found xml block tag " + pair.getTagName());
+            // replcae the closing tag first, otherwise the end index of paragraph is changed
+            replaceRange(pair.getCloseTagRange(), tagName);
+            replaceRange(pair.getOpenTagRange(), tagName);
+        });
     }
 
     private void removeTags(KeyEvent event) {
         logger.info("remove tags from selection");
         int selectionStartIndex = getSelectedRange().getStart();
         String selectedText = getSelection();
-        //regex ungreedy and sing line, that only tags matches and line breaks are included in . token
+        //regex ungreedy and single line, that only tags matches and line breaks are included in . token
         String replacement = selectedText.replaceAll("(?s)<(.*?)>", "");
         replacement = replacement.replaceAll("(?s)</(.*?)>", "");
         replacement = replacement.replaceAll("(?s)<(.*?)/>", "");
@@ -136,6 +163,90 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
             }
         }
+    }
+
+    public void increaseIndent() {
+        Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+        optional.ifPresent(pair -> {
+            logger.info("found xml block tag " + pair.getTagName());
+            String tagAtttributes = getRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()));
+
+            Matcher regexMatcher = INDENT.matcher(tagAtttributes);
+            if (regexMatcher.find()) {
+                String currentIndentStr = regexMatcher.group(2);
+                int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
+                String currentUnit = regexMatcher.group(3);
+                switch (currentUnit) {
+                    case "%":
+                    case "rem":
+                    case "em":
+                        currentIndent++;
+                        break;
+                    case "px":
+                        currentIndent = currentIndent + 10;
+                        break;
+                }
+                insertStyle("margin-left", currentIndent + currentUnit);
+            }
+            else {
+                insertStyle("margin-left", "5%");
+            }
+        });
+    }
+
+    public void decreaseIndent() {
+        Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+        optional.ifPresent(pair -> {
+            logger.info("found xml block tag " + pair.getTagName());
+            String tagAtttributes = getRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd());
+
+            Matcher regexMatcher = INDENT.matcher(tagAtttributes);
+            if (regexMatcher.find()) {
+                String currentIndentStr = regexMatcher.group(2);
+                int currentIndent = NumberUtils.toInt(currentIndentStr, 0);
+                String currentUnit = regexMatcher.group(3);
+                switch (currentUnit) {
+                    case "%":
+                    case "rem":
+                    case "em":
+                        currentIndent--;
+                        break;
+                    case "px":
+                        currentIndent = currentIndent - 10;
+                        break;
+                }
+                insertStyle("margin-left", currentIndent + currentUnit);
+            }
+            else {
+                insertStyle("margin-left", "-5%");
+            }
+        });
+    }
+
+    public void insertStyle(String styleName, String value) {
+        Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
+        optional.ifPresent(pair -> {
+            logger.info("found xml block tag " + pair.getTagName());
+            String tagAtttributes = getRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()));
+            if (tagAtttributes.contains("style=")) //wenn bereits styles vorhanden, dann diese modifizieren
+            {
+                if (tagAtttributes.contains(styleName)) //replace old value of style with new one
+                {
+                    tagAtttributes = tagAtttributes.replaceAll("style\\s*=\\s*\"(.*)" + styleName + ":([^;]*)(;?)(.*)\\s*\"",
+                            "style=\"$1" + styleName + ":" + value + "$3$4\"");
+                }
+                else //otherwise append style
+                {
+                    tagAtttributes = tagAtttributes.replaceAll("style\\s*=\\s*\"(.*)\"",
+                            "style=\"$1;" + styleName + ":" + value + "\"");
+                }
+                replaceRange(new IndexRange(pair.getOpenTagRange().getEnd(), pair.getTagAttributesEnd()), tagAtttributes);
+            }
+            else {
+                int pos = pair.getOpenTagRange().getEnd();
+                insertAt(pos, " style=\"" + styleName + ":" + value + "\"");
+            }
+        });
     }
 
     @Override
@@ -243,6 +354,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
         return builder.build();
     }
+
     @Override
     public void applySpellCheckResults(List<RuleMatch> matches) {
         for (RuleMatch match : matches) {
@@ -267,6 +379,69 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                     currentPosition = currentPosition + currentStyle.getLength();
                 }
             }
+        }
+    }
+
+    public boolean isInsertablePosition() {
+        Optional<XMLTagPair> optional = findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName)
+                || "html".equals(tagName));
+        return !(optional.isEmpty() || "head".equals(optional.get().getTagName())
+                || "html".equals(optional.get().getTagName())
+                || StringUtils.isEmpty(optional.get().getTagName()));
+    }
+
+
+    public void scrollTo(Deque<ElementPosition> nodeChain) {
+        String code = getCode();
+        LocatedJDOMFactory factory = new LocatedJDOMFactory();
+        try {
+            Document document = XHTMLUtils.parseXHTMLDocument(code, factory);
+            Element currentElement = document.getRootElement();
+            ElementPosition currentElementPosition = nodeChain.pop();
+            while (currentElementPosition != null) {
+                IteratorIterable<Element> children;
+                if (StringUtils.isNotEmpty(currentElementPosition.getNamespaceUri())) {
+                    List<Namespace> namespaces = currentElement.getNamespacesInScope();
+                    Namespace currentNamespace = null;
+                    for (Namespace namespace : namespaces) {
+                        if (namespace.getURI().equals(currentElementPosition.getNamespaceUri())) {
+                            currentNamespace = namespace;
+                            break;
+                        }
+                    }
+                    Filter<Element> filter = Filters.element(currentElementPosition.getNodeName(), currentNamespace);
+                    children = currentElement.getDescendants(filter);
+                }
+                else {
+                    Filter<org.jdom2.Element> filter = Filters.element(currentElementPosition.getNodeName());
+                    children = currentElement.getDescendants(filter);
+                }
+
+                int currentNumber = 0;
+                for (org.jdom2.Element child : children) {
+                    if (currentNumber == currentElementPosition.getPosition()) {
+                        currentElement = child;
+                        break;
+                    }
+                    currentNumber++;
+                }
+
+                try {
+                    currentElementPosition = nodeChain.pop();
+                }
+                catch (NoSuchElementException e) {
+                    logger.info("no more element in node chain");
+                    currentElementPosition = null;
+                }
+            }
+
+            LocatedElement locatedElement = (LocatedElement) currentElement;
+            EditorPosition pos = new EditorPosition(locatedElement.getLine(), locatedElement.getColumn());
+            logger.info("pos for scrolling to is " + pos.toJson());
+            scrollTo(pos);
+        }
+        catch (IOException | JDOMException e) {
+            logger.error("", e);
         }
     }
 
@@ -409,5 +584,23 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
 
         return Optional.ofNullable(pair);
+    }
+
+    public List<Content> getHeadContent() throws IOException, JDOMException {
+        Document doc = XHTMLUtils.parseXHTMLDocument(getCode());
+        Element root = doc.getRootElement();
+        List<Content> contentList = new ArrayList<>();
+        if (root != null) {
+            Element headElement = root.getChild("head", Constants.NAMESPACE_XHTML);
+            if (headElement != null) {
+                List<Content> contents = headElement.getContent();
+                contentList.addAll(contents);
+            }
+        }
+        //erst ausserhalb der Schleife detachen
+        for (Content content : contentList) {
+            content.detach();
+        }
+        return contentList;
     }
 }

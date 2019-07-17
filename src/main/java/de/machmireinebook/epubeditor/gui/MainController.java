@@ -59,6 +59,8 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 
+import com.pixelduke.control.Ribbon;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -84,7 +86,6 @@ import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -318,14 +319,14 @@ public class MainController implements Initializable
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorTabManager.currentEditorIsXHTMLProperty())
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
-        BooleanBinding isNoEditorBinding = Bindings.isNull(currentBookProperty)
+        BooleanBinding isNoEditorBinding = currentBookProperty.isNull()
                 .or(Bindings.isEmpty(epubFilesTabPane.getTabs()))
-                .or(Bindings.isNull(editorTabManager.currentXHTMLResourceProperty())
-                .and(Bindings.isNull(editorTabManager.currentCssResourceProperty()))
-                .and(Bindings.isNull(editorTabManager.currentXMLResourceProperty())));
+                .or(editorTabManager.currentXHTMLResourceProperty().isNull())
+                .and(editorTabManager.currentCssResourceProperty().isNull())
+                .and(editorTabManager.currentXMLResourceProperty().isNull());
 
-        addCoverButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        editMetadataButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
+        addCoverButton.disableProperty().bind(currentBookProperty.isNull());
+        editMetadataButton.disableProperty().bind(currentBookProperty.isNull());
 
         h1Button.disableProperty().bind(isNoXhtmlEditorBinding);
         h2Button.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -349,18 +350,18 @@ public class MainController implements Initializable
         centerButton.disableProperty().bind(isNoXhtmlEditorBinding);
         rightAlignButton.disableProperty().bind(isNoXhtmlEditorBinding);
         justifyButton.disableProperty().bind(isNoXhtmlEditorBinding);
-        addFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        addExistingFileButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
+        addFileButton.disableProperty().bind(currentBookProperty.isNull());
+        addExistingFileButton.disableProperty().bind(currentBookProperty.isNull());
 
         saveButton.setDisable(true);
         undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canUndoProperty())));
         redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canRedoProperty())));
 
-        searchReplaceButton.disableProperty().bind(Bindings.isNull(currentBookProperty).or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
+        searchReplaceButton.disableProperty().bind(currentBookProperty.isNull().or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
 
         increaseIndentButton.disableProperty().bind(isNoXhtmlEditorBinding);
         decreaseIndentButton.disableProperty().bind(isNoXhtmlEditorBinding);
-        saveAsButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
+        saveAsButton.disableProperty().bind(currentBookProperty.isNull());
         insertImageButton.disableProperty().bind(isNoXhtmlEditorBinding);
         splitButton.disableProperty().bind(isNoXhtmlEditorBinding);
         insertTableButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -369,8 +370,8 @@ public class MainController implements Initializable
         lowercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
         uppercaseButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
-        createHtmlTocButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
-        createNcxButton.disableProperty().bind(Bindings.isNull(currentBookProperty));
+        createHtmlTocButton.disableProperty().bind(currentBookProperty.isNull());
+        createNcxButton.disableProperty().bind(currentBookProperty.isNull());
 
         cursorPosLabel.textProperty().bind(editorTabManager.cursorPosLabelProperty());
 
@@ -412,7 +413,10 @@ public class MainController implements Initializable
             centerDivider.setVisibility(1, newValue);
         });
 
-        validateEpubButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentBookProperty.get().getPhysicalFileName() == null));
+        validateEpubButton.disableProperty().bind(currentBookProperty.isNull()
+                                                  .or(Bindings.createBooleanBinding(
+                                                          () -> currentBookProperty.get().getPhysicalFileName() == null))
+                                                 );
         validationManager.setTableView(validationResultsTableView);
 
         previewAnchorPane.visibleProperty().bindBidirectional(showPreviewToggleButton.selectedProperty());

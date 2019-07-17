@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -65,7 +64,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
     private boolean isChangingCode = false;
     private ExecutorService taskExecutor;
-    PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
+    protected PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
 
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
@@ -229,12 +228,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public ObservableValue<String> codeProperty()
-    {
-        return codeArea.textProperty();
-    }
-
-    @Override
     public void undo()
     {
         codeArea.undo();
@@ -279,7 +272,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
             else {
                 // text area still does not have a scene
                 // --> use listener on scene to make sure that text area receives focus
-                ChangeListener<Scene> l = new ChangeListener<Scene>() {
+                ChangeListener<Scene> l = new ChangeListener<>() {
                     @Override
                     public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
                         codeArea.sceneProperty().removeListener(this);
@@ -369,12 +362,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void scroll(int delta)
-    {
-
-    }
-
-    @Override
     public void scrollTo(int index)
     {
 //        codeArea.scrollXBy(index);
@@ -432,10 +419,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         return codeArea;
     }
 
-    @Override
-    public final ReadOnlyStringProperty textInformationProperty() {
-        return textInformation.getReadOnlyProperty();
-    }
     @Override
     public final String getTextInformation() {
         return textInformation.get();

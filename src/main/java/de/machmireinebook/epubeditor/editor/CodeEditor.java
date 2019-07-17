@@ -11,8 +11,6 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexRange;
@@ -24,40 +22,36 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * A syntax highlighting code editor for JavaFX created by wrapping a
- * CodeMirror code editor in a WebView.
- * <p>
- * See http://codemirror.net for more information on using the codemirror editor.
+ * richtextFX code editor
  */
 public interface CodeEditor
 {
     MediaType getMediaType();
 
-    void scroll(int delta);
-    void scrollTo(int index);
-    void scrollTo(EditorPosition pos);
-
-    //methods of the java part of editor
-    boolean isChangingCode();
-    void resetChangingCode();
-
     void setContextMenu(ContextMenu contextMenu);
+    void setCodeEditorSize(double width, double height);
     ObjectProperty<Worker.State> stateProperty();
-    IntegerProperty cursorPositionProperty();
-    ObservableValue<String> codeProperty();
+    void requestFocus();
+
     void undo();
     void redo();
+    void clearUndoHistory();
     BooleanProperty canUndoProperty();
     BooleanProperty canRedoProperty();
 
-    //methods of the underlying editor component
     void setCode(String newCode);
     String getCode();
     CodeArea getCodeArea();
+    boolean isChangingCode();
+    void resetChangingCode();
 
+    void scrollTo(int index);
+    void scrollTo(EditorPosition pos);
     EditorPosition getCursorPosition();
-
+    IntegerProperty cursorPositionProperty();
     Integer getAbsoluteCursorPosition();
     void setAbsoluteCursorPosition(int position);
+
     void insertAt(Integer pos , String insertion);
     void select(int fromIndex, int toIndex);
     String getSelection();
@@ -67,13 +61,8 @@ public interface CodeEditor
     String getRange(IndexRange range);
     void replaceRange(IndexRange range, String replacement);
 
-    void setCodeEditorSize(double width, double height);
-
     List<RuleMatch> spellCheck();
     void applySpellCheckResults(List<RuleMatch> matches);
-    void clearUndoHistory();
 
-    ReadOnlyStringProperty textInformationProperty();
     String getTextInformation();
-
 }
