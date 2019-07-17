@@ -299,22 +299,22 @@ public class MainController implements Initializable
             saveButton.disableProperty().unbind();
             createHtmlTocButton.disableProperty().unbind();
             createNcxButton.disableProperty().unbind();
-            if (newValue != null)
+            validateEpubButton.disableProperty().unbind();
+
+            saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
+            createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
+            createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
+            if (newValue.getVersion() != null)
             {
-                saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
-                createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
-                createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
-                if (newValue.getVersion() != null)
-                {
-                    stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - EPUB " + newValue.getVersion().getVersion() + " - SmoekerSchriever");
-                }
-                else
-                {
-                    stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                            + " - SmoekerSchriever");
-                }
+                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                        + " - EPUB " + newValue.getVersion().getVersion() + " - SmoekerSchriever");
             }
+            else
+            {
+                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                        + " - SmoekerSchriever");
+            }
+            validateEpubButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentBookProperty.get().getPhysicalFileName() == null));
 
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorTabManager.currentEditorIsXHTMLProperty())
@@ -413,10 +413,7 @@ public class MainController implements Initializable
             centerDivider.setVisibility(1, newValue);
         });
 
-        validateEpubButton.disableProperty().bind(currentBookProperty.isNull()
-                                                  .or(Bindings.createBooleanBinding(
-                                                          () -> currentBookProperty.get().getPhysicalFileName() == null))
-                                                 );
+        validateEpubButton.disableProperty().bind(currentBookProperty.isNull());
         validationManager.setTableView(validationResultsTableView);
 
         previewAnchorPane.visibleProperty().bindBidirectional(showPreviewToggleButton.selectedProperty());

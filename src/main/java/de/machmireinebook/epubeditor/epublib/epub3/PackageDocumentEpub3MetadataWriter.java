@@ -56,7 +56,12 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         writeSimpleMetadataElements(DublinCoreTag.type.getName(), metadata.getTypes());
         writeSimpleMetadataElements(DublinCoreTag.rights.getName(), metadata.getRights());
         writeSimpleMetadataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages());
-        writeSimpleMetadataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages());
+        // write languages, if empty in metadata use the spell check language, because the field is mandatory
+        if (metadata.getLanguages().isEmpty()) {
+            metadata.getLanguages().add(new DublinCoreMetadataElement(preferencesManager.getLanguageSpellSelection().getLanguage()
+                                                                        .getShortCodeWithCountryAndVariant()));
+        }
+        writeDublinCoreMetadataElements(DublinCoreTag.language.getName(), metadata.getLanguages());
 
         // write authors
         for (Author author : metadata.getAuthors())
@@ -114,14 +119,6 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         DublinCoreMetadataElement source = metadata.getSource();
         writeDublinCoreMetadataElement(DublinCoreTag.source.getName(), source);
 
-        // write language, if empty in metadata use the spell check language, because the field is mandatory
-        Element langElement = new Element("language", NAMESPACE_DUBLIN_CORE);
-        if (StringUtils.isNotBlank(metadata.getLanguage())) {
-            langElement.setText(metadata.getLanguage());
-        } else {
-            langElement.setText(preferencesManager.getLanguageSpellSelection().getLanguage().getShortCodeWithCountryAndVariant());
-        }
-        metadataElement.addContent(langElement);
 
         // write coverimage
         if (book.getCoverImage() != null)

@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface EpubMetadata
 {
+    public static final String DEFAULT_LANGUAGE = "en";
+
     String getFirstTitle();
     void generateNewUuid();
     String getLanguage();

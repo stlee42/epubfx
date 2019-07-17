@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.epublib.domain.epub2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Metadata implements Serializable, EpubMetadata
     private List<Author> authors = new ArrayList<>();
     private List<Author> contributors = new ArrayList<>();
     private List<MetadataDate> dates = new ArrayList<>();
-    private String language = DEFAULT_LANGUAGE;
+    private List<String> languages = Arrays.asList(DEFAULT_LANGUAGE);
     private List<String> rights = new ArrayList<>();
     private List<String> sources = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
@@ -143,14 +144,14 @@ public class Metadata implements Serializable, EpubMetadata
         this.contributors = contributors;
     }
 
-    public String getLanguage()
+    public List<String> getLanguages()
     {
-        return language;
+        return languages;
     }
 
-    public void setLanguage(String language)
+    public void setLanguages(List<String> languages)
     {
-        this.language = language;
+        this.languages = languages;
     }
 
     public List<String> getSubjects()
@@ -375,4 +376,18 @@ public class Metadata implements Serializable, EpubMetadata
     {
         this.sources = sources;
     }
+
+    @Override
+    public String getLanguage()
+    {
+        if (!getLanguages().isEmpty())
+        {
+            return getLanguages().get(0);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
 }

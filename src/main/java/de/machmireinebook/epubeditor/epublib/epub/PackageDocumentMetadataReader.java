@@ -28,16 +28,17 @@ import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
  *
  * @author paul
  */
-// package
 class PackageDocumentMetadataReader extends PackageDocumentBase
 {
 
     private static final Logger logger = Logger.getLogger(PackageDocumentMetadataReader.class);
 
-    public static Metadata readMetadata(Element root)
+    private Element metadataElement;
+
+    public Metadata readMetadata(Element root)
     {
         Metadata result = new Metadata();
-        Element metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
+        metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
         if (metadataElement == null)
         {
             logger.error("Package does not contain element " + OPFTags.metadata);
@@ -51,24 +52,17 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.type.getName()));
         result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.subject.getName()));
         result.setCoverages(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.coverage.getName()));
-        result.setIdentifiers(readIdentifiers(metadataElement));
-        result.setAuthors(readCreators(metadataElement));
-        result.setContributors(readContributors(metadataElement));
-        result.setDates(readDates(metadataElement));
-        result.setEpub2MetaAttributes(readEpub2MetaProperties(metadataElement));
-        result.setLanguage(metadataElement.getChildText(DublinCoreTag.language.getName(), NAMESPACE_DUBLIN_CORE));
+        result.setIdentifiers(readIdentifiers());
+        result.setAuthors(readCreators());
+        result.setContributors(readContributors());
+        result.setDates(readDates());
+        result.setEpub2MetaAttributes(readEpub2MetaProperties());
+        result.setLanguages(readLanguages());
 
         return result;
     }
 
-    /**
-     * consumes meta tags that have a property attribute as defined in the standard. For example:
-     * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
-     *
-     * @param metadataElement
-     * @return
-     */
-    private static List<MetadataProperty> readOtherProperties(Element metadataElement)
+    private List<MetadataProperty> readOtherProperties()
     {
         List<MetadataProperty> result = new ArrayList<>();
 
@@ -98,10 +92,9 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
      * consumes meta tags that have a property attribute as defined in the standard. For example:
      * &lt;meta property="rendition:layout"&gt;pre-paginated&lt;/meta&gt;
      *
-     * @param metadataElement
      * @return
      */
-    private static Map<String, String> readEpub2MetaProperties(Element metadataElement)
+    private Map<String, String> readEpub2MetaProperties()
     {
         Map<String, String> result = new HashMap<>();
 
@@ -116,23 +109,23 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
         return result;
     }
 
-    private static String getBookIdId(Element root)
+    private String getBookIdId(Element root)
     {
         String result = root.getAttributeValue(OPFAttributes.uniqueIdentifier);
         return result;
     }
 
-    private static List<Author> readCreators(Element metadataElement)
+    private List<Author> readCreators()
     {
-        return readAuthors(DublinCoreTag.creator.getName(), metadataElement);
+        return readAuthors(DublinCoreTag.creator.getName());
     }
 
-    private static List<Author> readContributors(Element metadataElement)
+    private List<Author> readContributors()
     {
-        return readAuthors(DublinCoreTag.contributor.getName(), metadataElement);
+        return readAuthors(DublinCoreTag.contributor.getName());
     }
 
-    private static List<Author> readAuthors(String authorTag, Element metadataElement)
+    private List<Author> readAuthors(String authorTag)
     {
         List<Element> elements = metadataElement.getChildren(authorTag, NAMESPACE_DUBLIN_CORE);
         List<Author> result = new ArrayList<>(elements.size());
@@ -148,7 +141,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     }
 
-    private static List<MetadataDate> readDates(Element metadataElement)
+    private List<MetadataDate> readDates()
     {
         List<Element> elements = metadataElement.getChildren(DublinCoreTag.date.getName(), NAMESPACE_DUBLIN_CORE);
         List<MetadataDate> result = new ArrayList<>(elements.size());
@@ -170,7 +163,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
 
     }
 
-    private static Author createAuthor(Element authorElement)
+    private Author createAuthor(Element authorElement)
     {
         String authorString = authorElement.getText();
         if (StringUtils.isBlank(authorString))
@@ -184,7 +177,7 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
     }
 
 
-    private static List<Identifier> readIdentifiers(Element metadataElement)
+    private List<Identifier> readIdentifiers()
     {
         List<Element> identifierElements = metadataElement.getChildren(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
         if (identifierElements.isEmpty())
@@ -211,6 +204,27 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
                 }
                 result.add(identifier);
             }
+        }
+        return result;
+    }
+
+    private List<String> readLanguages()
+    {
+        List<Element> langElements = metadataElement.getChildren(DublinCoreTag.language.getName(), NAMESPACE_DUBLIN_CORE);
+        if (langElements.isEmpty())
+        {
+            logger.error("Package does not contain element " + DublinCoreTag.language.getName());
+            return new ArrayList<>();
+        }
+        List<String> result = new ArrayList<>();
+        for (Element langElement : langElements)
+        {
+            String langValue = langElement.getText();
+            if (StringUtils.isBlank(langValue))
+            {
+                continue;
+            }
+            result.add(langValue);
         }
         return result;
     }

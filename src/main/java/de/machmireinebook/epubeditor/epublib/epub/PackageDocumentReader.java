@@ -60,7 +60,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         Resources bookResources = readManifest(root, resources, idMapping);
         book.setResources(bookResources);
         readCover(root, book);
-        book.setMetadata(PackageDocumentMetadataReader.readMetadata(root));
+        book.setMetadata(new PackageDocumentMetadataReader().readMetadata(root));
         book.setSpine(readSpine(root, book, idMapping));
     }
 
@@ -80,7 +80,7 @@ public class PackageDocumentReader extends PackageDocumentBase
         Resources resources = readManifest(root, book.getResources(), idMapping);
         book.setResources(resources);
         readCover(root, book);
-        book.setMetadata(PackageDocumentMetadataReader.readMetadata(root));
+        book.setMetadata(new PackageDocumentMetadataReader().readMetadata(root));
         book.setSpine(readSpine(root, book, idMapping));
     }
 
