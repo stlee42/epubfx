@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 
+import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
@@ -21,6 +22,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -28,6 +30,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
 {
     private Book book;
     private Element metadataElement;
+    private PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
 
     private List<MetadataProperty> alreadyWrittenMetaProperty = new ArrayList<>();
 
@@ -52,6 +55,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         writeSimpleMetadataElements(DublinCoreTag.publisher.getName(), metadata.getPublishers());
         writeSimpleMetadataElements(DublinCoreTag.type.getName(), metadata.getTypes());
         writeSimpleMetadataElements(DublinCoreTag.rights.getName(), metadata.getRights());
+        writeSimpleMetadataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages());
         writeSimpleMetadataElements(DublinCoreTag.coverage.getName(), metadata.getCoverages());
 
         // write authors
@@ -110,13 +114,14 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         DublinCoreMetadataElement source = metadata.getSource();
         writeDublinCoreMetadataElement(DublinCoreTag.source.getName(), source);
 
-        // write language
-        if (StringUtils.isNotBlank(metadata.getLanguage()))
-        {
-            Element langElement = new Element("language", NAMESPACE_DUBLIN_CORE);
+        // write language, if empty in metadata use the spell check language, because the field is mandatory
+        Element langElement = new Element("language", NAMESPACE_DUBLIN_CORE);
+        if (StringUtils.isNotBlank(metadata.getLanguage())) {
             langElement.setText(metadata.getLanguage());
-            metadataElement.addContent(langElement);
+        } else {
+            langElement.setText(preferencesManager.getLanguageSpellSelection().getLanguage().getShortCodeWithCountryAndVariant());
         }
+        metadataElement.addContent(langElement);
 
         // write coverimage
         if (book.getCoverImage() != null)

@@ -18,6 +18,7 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 	private static final long serialVersionUID = 7533866830395120136L;
 
 	public enum Event {
+		UNKNOWN(""),
 		PUBLICATION("publication"),
 		MODIFICATION("modification"),
 		CREATION("creation");
@@ -34,7 +35,7 @@ public class MetadataDate extends DublinCoreMetadataElement implements Serializa
 					return c;
 				}
 			}
-			return null;
+			return UNKNOWN;
 		}
 		
 		public String toString() {

@@ -157,7 +157,8 @@ class PackageDocumentMetadataReader extends PackageDocumentBase
             MetadataDate date;
             try
             {
-                date = new MetadataDate(dateElement.getText(), dateElement.getAttributeValue(OPFAttributes.event, NAMESPACE_OPF));
+                String event = dateElement.getAttributeValue(OPFAttributes.event, NAMESPACE_OPF);
+                date = new MetadataDate(dateElement.getText(), event);
                 result.add(date);
             }
             catch (IllegalArgumentException e)

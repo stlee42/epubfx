@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
@@ -15,12 +21,6 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
 import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import org.jdom2.Element;
-import org.jdom2.Namespace;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
