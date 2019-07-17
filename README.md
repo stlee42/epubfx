@@ -8,12 +8,13 @@ The editor supports ebooks in epub 2 and epub 3 format.
 
 ## Functions
 ### Current features
-This project is in early stage, but some functions are working:
+This project is in early stage, but some functions are working (with possible bugs):
 
 - book browser
 - Creating of ebooks by free configurable templates (put only a epub file into a folder, the system find it and the user can choose this epub as template)
 - HTML-Editor with syntax highlighting and undo/redo
 - CSS-Editor with syntax highlighting and undo/redo
+- auto completion of [, {, ( and " with the second part of it
 - spell check
 - Applying text snippets and text snippets editor  
 - inserting images and other media into book using configurable templates 
@@ -23,7 +24,7 @@ This project is in early stage, but some functions are working:
 - creating toc ncx (epub 2) and nav (epub 3)
 - creating cover file by image
 - splitting files
-- enaming files
+- renaming files
 
 ### Planned feature:
 - check of ebook with official epub checker
@@ -38,12 +39,17 @@ Scripto needs Java 11 or higher to run. The application is build by maven. Curre
 
 I plan to include the maven javafx plugin for easier running the app.  
 
-## Editor
-### Keys 
+## Usage
+### General Keys
+- CTRL-S: Saves the ebook
+- CTRL-F: Opens the search panel
+- CTRL-O: Opens an ebook
+
+### Editor Keys 
 - DEL: Delete forward
 - BACKSPACE: Delete back
 - RETURN, ENTER: insert paragraph
-- TAB: insert tab or spaces (configurable)
+- TAB: insert tab or spaces (configurable how much spaces or tab character is used)
 - CTRL-DEL: delete next word
 - CTRL-BACKSPACE: delete previous word
 - CTRL-C: Copy selection 

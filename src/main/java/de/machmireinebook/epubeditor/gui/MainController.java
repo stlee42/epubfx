@@ -72,7 +72,6 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
@@ -518,7 +517,7 @@ public class MainController implements Initializable
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setTitle("EpubFX");
+        stage.setTitle("SmoekerSchriever - EpubFX");
 
         stage.setOnCloseRequest(event -> {
             checkBeforeCloseBook();
@@ -795,14 +794,6 @@ public class MainController implements Initializable
                     }
                 }
             });
-        }
-    }
-
-    public void setEpubHttpHandler(EpubHttpHandler epubHttpHandler)
-    {
-        if (epubHttpHandler != null)
-        {
-            epubHttpHandler.bookProperty().bind(currentBookProperty);
         }
     }
 

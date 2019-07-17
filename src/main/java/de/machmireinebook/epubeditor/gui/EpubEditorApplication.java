@@ -29,13 +29,13 @@ import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
+import com.sun.net.httpserver.HttpServer;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.MainStage;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
-
-import com.sun.net.httpserver.HttpServer;
 
 public class EpubEditorApplication extends Application
 {
@@ -131,7 +131,7 @@ public class EpubEditorApplication extends Application
                 MainController controller =  BeanFactory.getInstance().getBean(MainController.class);
                 controller.setStage(mainStage);
                 controller.newMinimalEpubAction();
-                controller.setEpubHttpHandler(epubHttpHandler);
+                epubHttpHandler.bookProperty().bind(controller.currentBookProperty());
             });
 
         }
