@@ -86,16 +86,15 @@ public class EpubEditorApplication extends Application
                 lifecycle = WebBeansContext.currentInstance().getService(ContainerLifecycle.class);
 
                 updateProgress(2, 3);
-                updateMessage("Starting internal web server");
+                updateMessage("Starting internal web servers");
                 server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8777), 1000);
                 epubHttpHandler = new EpubHttpHandler();
                 server.createContext("/", epubHttpHandler);
 
                 ResourceHttpHandler resourceHttpHandler = new ResourceHttpHandler();
-                server.createContext("/codemirror", resourceHttpHandler);
+                //if ebooks uses internally this uri part, and a book resource will be tried to serve with this http handler,
+                // prefix it with somethin like "epubfx-" and remove it in resource handler
                 server.createContext("/dtd", resourceHttpHandler);
-                server.createContext("/modes", resourceHttpHandler);
-                server.createContext("/images", resourceHttpHandler);
 
                 server.start();
 
