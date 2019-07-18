@@ -294,10 +294,13 @@ public class XHTMLUtils
     }
 
     public static String unescapedHtmlWithXmlExceptions(String escapedText) {
+        //leave nbsp untouched
+        Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
+        withoutNbsp.remove("&nbsp;");
         CharSequenceTranslator translator =
                 new AggregateTranslator(
                         new LookupTranslator(BASIC_UNESCAPE),
-                        new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE),
+                        new LookupTranslator(withoutNbsp),
                         new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE),
                         new NumericEntityUnescaper()
                 );
