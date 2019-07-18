@@ -208,6 +208,12 @@ public class EditorTabManager {
         });
         contextMenuXHTML.getItems().add(itemRepairHTML);
 
+        MenuItem itemUnescapeHTML = new MenuItem("Unescape HTML");
+        itemUnescapeHTML.setOnAction(e -> {
+            unescapeHTML();
+        });
+        contextMenuXHTML.getItems().add(itemUnescapeHTML);
+
         contextMenuXHTML.getItems().add(separatorItem);
 
         MenuItem openInExternalBrowserItem = new MenuItem("Open in external Browser");
@@ -314,6 +320,23 @@ public class EditorTabManager {
     }
 
     private void repairXML() {
+    }
+
+    private void unescapeHTML() {
+        logger.info("unescape html");
+        CodeEditor editor = currentEditor.getValue();
+        Integer currentCursorPosition = editor.getAbsoluteCursorPosition();
+        String code = editor.getCode();
+        if (currentEditorIsXHTML.get()) {
+            Resource resource = currentXHTMLResource.get();
+            code = XHTMLUtils.unescapedHtmlWithXmlExceptions(code);
+            resource.setData(code.getBytes(StandardCharsets.UTF_8));
+        }
+        refreshPreview();
+        editor.setCode(code);
+        editor.setAbsoluteCursorPosition(currentCursorPosition);
+        editor.scrollTo(currentCursorPosition);
+        book.setBookIsChanged(true);
     }
 
     public void openImageFile(Resource resource) {

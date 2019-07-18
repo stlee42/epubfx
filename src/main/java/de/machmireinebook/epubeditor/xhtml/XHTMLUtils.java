@@ -297,6 +297,8 @@ public class XHTMLUtils
         //leave nbsp untouched
         Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
         withoutNbsp.remove("&nbsp;");
+        //some scripts for generating html from docx generate this (wrong typed) entity for „
+        withoutNbsp.put("&dbquo;", "„");
         CharSequenceTranslator translator =
                 new AggregateTranslator(
                         new LookupTranslator(BASIC_UNESCAPE),
