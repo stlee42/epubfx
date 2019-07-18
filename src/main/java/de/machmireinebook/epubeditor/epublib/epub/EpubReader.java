@@ -11,10 +11,12 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.OpfNotReadableException;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
@@ -108,9 +110,9 @@ public class EpubReader
     private Resource processPackageResource(String packageResourceHref, Book book, Resources resources)
     {
         Resource packageResource = resources.remove(packageResourceHref);
-        try
-        {
-            Document packageDocument = ResourceUtil.getAsDocument(packageResource);
+        Document packageDocument = null;
+        try {
+            packageDocument = ResourceUtil.getAsDocument(packageResource);
             Element root = packageDocument.getRootElement();
             EpubVersion version = EpubVersion.getByString(root.getAttributeValue("version"));
             book.setVersion(version);
@@ -120,9 +122,9 @@ public class EpubReader
                 PackageDocumentReader.read(packageResource, packageDocument, book, resources);
             }
         }
-        catch (Exception e)
-        {
-            logger.error(e.getMessage(), e);
+        catch (IOException | JDOMException e) {
+            logger.error(e);
+            throw new OpfNotReadableException("opf file in epub is not readable, ebook can't be opened");
         }
         return packageResource;
     }

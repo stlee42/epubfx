@@ -33,6 +33,8 @@ import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
@@ -338,7 +340,7 @@ public class TocGenerator
                 }
                 else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSepcificationName()))
                 {
-                    generateLandmarks(tocEntries, navElement);
+                    generateLandmarks(navElement);
                 }
             }
         }
@@ -373,7 +375,14 @@ public class TocGenerator
             h1Element = new Element("h1", NAMESPACE_XHTML);
             navElement.addContent(h1Element);
         }
-        String tocHeadline = preferencesManager.getHeadlineToc();
+        Book book = bookProperty.get();
+        TableOfContents toc = book.getTableOfContents();
+        String tocHeadline;
+        if (StringUtils.isNotEmpty(toc.getTocTitle())) {
+            tocHeadline = toc.getTocTitle();
+        } else {
+            tocHeadline = preferencesManager.getHeadlineToc();
+        }
         h1Element.setText(tocHeadline);
 
         generateNavOrderedList(tocEntries, navElement, tocGeneratorResult);
@@ -412,9 +421,29 @@ public class TocGenerator
         }
     }
 
-    private void generateLandmarks(List<TocEntry<? extends TocEntry, Document>> tocEntries, Element navElement)
+    private void generateLandmarks(Element navElement)
     {
+        //insert per default the titlepage, copyright page and cover
+        Book book = getBook();
+        Landmarks landmarks = book.getLandmarks();
 
+        Element titleElement = new Element("h1");
+        titleElement.setText(landmarks.getTitle());
+        navElement.addContent(titleElement);
+
+        Element olElement = new Element("ol");
+        navElement.addContent(olElement);
+
+        for (LandmarkReference landmark : landmarks) {
+            Element liElement = new Element("li");
+            olElement.addContent(liElement);
+
+            Element ahrefElement = new Element("a");
+            liElement.addContent(ahrefElement);
+            
+            ahrefElement.setAttribute("type", landmark.getType().getName(), NAMESPACE_EPUB);
+            ahrefElement.setAttribute("href", landmark.getCompleteHref());
+        }
     }
 
     public TocGeneratorResult generateNcx(List<TocEntry<? extends TocEntry, Document>> tocEntries)

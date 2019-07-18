@@ -1,7 +1,7 @@
 package de.machmireinebook.epubeditor.epublib;
 
 /**
- * @author Michail Jungierek, CGI
+ * @author Michail Jungierek
  */
 public class NavNotFoundException extends RuntimeException
 {

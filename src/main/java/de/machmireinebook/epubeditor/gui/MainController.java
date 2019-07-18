@@ -59,12 +59,12 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 
-import com.pixelduke.control.Ribbon;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
+import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
+import de.machmireinebook.epubeditor.epublib.OpfNotReadableException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.Resource;
@@ -85,6 +85,7 @@ import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -562,9 +563,9 @@ public class MainController implements Initializable
     {
         checkBeforeCloseBook();
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("EPUB-Datei öffnen");
+        fileChooser.setTitle("Open ebook file");
         fileChooser.getExtensionFilters().removeAll();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("EPUB-Datei", "*.epub"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("EPUB File", "*.epub"));
         File file = fileChooser.showOpenDialog(stage);
         if (file != null)
         {
@@ -581,10 +582,10 @@ public class MainController implements Initializable
                     editorTabManager.openFileInEditor(firstResource, firstResource.getMediaType());
                 }
             }
-            catch (IOException e)
+            catch (IOException | NavNotFoundException | OpfNotReadableException e)
             {
                 logger.error("", e);
-                ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName());
+                ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName() + ", cause: ");
             }
             finally
             {

@@ -9,12 +9,6 @@ package de.machmireinebook.epubeditor.epublib.epub;
  */
 public class PackageDocumentBase
 {
-    protected interface DCAttributes
-    {
-        String scheme = "scheme";
-        String id = "id";
-    }
-
     protected interface OPFTags
     {
         String metadata = "metadata";

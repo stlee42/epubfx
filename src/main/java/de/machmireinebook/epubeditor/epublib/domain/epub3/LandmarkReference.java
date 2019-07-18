@@ -7,7 +7,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TitledResourceReference;
 
 
 /**
- * These are references to elements of the book's guide.
+ * These are references to elements of the landmarks in the nav resource
  */
 public class LandmarkReference extends TitledResourceReference implements Serializable
 {

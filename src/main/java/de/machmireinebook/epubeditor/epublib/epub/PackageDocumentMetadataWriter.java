@@ -8,13 +8,17 @@ import org.jdom2.Element;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.*;
+import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF_WITH_PREFIX;
 
 public class PackageDocumentMetadataWriter extends PackageDocumentBase
 {
@@ -139,7 +143,7 @@ public class PackageDocumentMetadataWriter extends PackageDocumentBase
         List<Identifier> identifiers = metadata.getEpub2Identifiers();
 
         Element identifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
-        identifierElement.setAttribute(DCAttributes.id, BOOK_ID_ID);
+        identifierElement.setAttribute(DublinCoreAttributes.id.name(), BOOK_ID_ID);
         if (bookIdIdentifier.getScheme() != null)
         {
             identifierElement.setAttribute(OPFAttributes.scheme, bookIdIdentifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);

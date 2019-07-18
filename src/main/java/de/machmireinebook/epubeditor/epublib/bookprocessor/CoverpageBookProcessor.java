@@ -120,17 +120,17 @@ public class CoverpageBookProcessor implements BookProcessor
         return DEFAULT_COVER_IMAGE_HREF;
     }
 
-    private ImageResource getFirstImageSource(Resource CoverPageResource, Resources resources)
+    private ImageResource getFirstImageSource(Resource coverPageResource, Resources resources)
     {
         try
         {
-            Document titlePageDocument = ResourceUtil.getAsDocument(CoverPageResource);
+            Document titlePageDocument = ResourceUtil.getAsDocument(coverPageResource);
             Filter<Element> imgFilter = new ElementFilter("img");
             List<Element> imageElements = titlePageDocument.getRootElement().getContent(imgFilter);
             for (Element imageElement : imageElements)
             {
                 String relativeImageHref = imageElement.getAttributeValue("src");
-                String absoluteImageHref = calculateAbsoluteImageHref(relativeImageHref, CoverPageResource.getHref());
+                String absoluteImageHref = calculateAbsoluteImageHref(relativeImageHref, coverPageResource.getHref());
                 ImageResource imageResource = (ImageResource)resources.getByHref(absoluteImageHref);
                 if (imageResource != null)
                 {
