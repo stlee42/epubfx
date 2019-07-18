@@ -258,9 +258,11 @@ public class PackageDocumentEpub3MetadataReader
             }
             String idName = dcElement.getAttributeValue(DublinCoreAttributes.id.name());
             String language = dcElement.getAttributeValue(OPFAttribute.lang.getName(), Namespace.XML_NAMESPACE);
-            String dirValue = dcElement.getAttributeValue(OpfDirAttribute.attributeName);
             DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, value, language);
-            dublinCoreMetadataElement.setDir(OpfDirAttribute.valueOf(dirValue));
+            String dirValue = dcElement.getAttributeValue(OpfDirAttribute.attributeName);
+            if (StringUtils.isNotEmpty(dirValue)) {
+                dublinCoreMetadataElement.setDir(OpfDirAttribute.valueOf(dirValue));
+            }
             if (StringUtils.isNotEmpty(idName)) {
                 refinableElements.put(idName, dublinCoreMetadataElement);
             }
