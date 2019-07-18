@@ -27,7 +27,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 

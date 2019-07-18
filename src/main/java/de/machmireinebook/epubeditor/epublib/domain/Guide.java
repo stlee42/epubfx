@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.ResourceReference;
+
 /**
  * The guide is a selection of special pages of the book.
  * Examples of these are the cover, list of illustrations, etc.

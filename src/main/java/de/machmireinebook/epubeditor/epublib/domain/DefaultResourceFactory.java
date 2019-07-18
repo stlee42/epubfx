@@ -2,6 +2,9 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
+
 /**
  * User: mjungierek
  * Date: 01.09.2014

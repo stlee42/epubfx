@@ -23,9 +23,9 @@ import javafx.stage.Stage;
 
 import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;

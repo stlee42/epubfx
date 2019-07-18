@@ -7,6 +7,14 @@ import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.machmireinebook.epubeditor.epublib.resource.CSSResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.FontResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.JavascriptResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.XMLResourceFactory;
+
 /**
  * MediaType is used to tell the type of content a resource is.
  * <p>

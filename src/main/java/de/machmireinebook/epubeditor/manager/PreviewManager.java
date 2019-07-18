@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventTarget;
 
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * User: mjungierek

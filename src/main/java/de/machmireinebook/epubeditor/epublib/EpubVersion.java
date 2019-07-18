@@ -20,7 +20,7 @@ public enum EpubVersion
         this.version = version;
     }
 
-    public String getVersion()
+    public String asString()
     {
         return version;
     }

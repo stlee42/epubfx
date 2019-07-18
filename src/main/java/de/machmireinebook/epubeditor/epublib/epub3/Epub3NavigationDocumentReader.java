@@ -17,32 +17,31 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_EPUB;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_XHTML;
+import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
 /**
  * User: mjungierek
  * Date: 26.07.2014
  * Time: 17:11
  */
-public class Epub3NavigationDocumentReader extends PackageDocumentBase
+public class Epub3NavigationDocumentReader
 {
     private static final Logger logger = Logger.getLogger(Epub3NavigationDocumentReader.class);
 
     public static XHTMLResource read(Element packageRootElement, Resources resources)
     {
-        Element manifestElement = packageRootElement.getChild(PackageDocumentBase.OPFTags.manifest, NAMESPACE_OPF);
+        Element manifestElement = packageRootElement.getChild(OPFTag.manifest.name(), NAMESPACE_OPF);
         List<Element> manifestElements = manifestElement.getChildren("item", NAMESPACE_OPF);
         XHTMLResource resource = null;
 
@@ -52,7 +51,7 @@ public class Epub3NavigationDocumentReader extends PackageDocumentBase
             {
                 String href = element.getAttributeValue("href");
                 String id = element.getAttributeValue("id");
-                String mediaTypeName = element.getAttributeValue(OPFAttributes.media_type);
+                String mediaTypeName = element.getAttributeValue(OPFAttribute.media_type.getName());
 
                 try
                 {

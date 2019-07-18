@@ -19,11 +19,13 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
+import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.domain.XMLResource;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
+import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
@@ -33,7 +35,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.*;
  *
  * @author paul
  */
-public class Epub3PackageDocumentWriter extends PackageDocumentBase
+public class Epub3PackageDocumentWriter
 {
 
     private static final Logger logger = Logger.getLogger(Epub3PackageDocumentWriter.class);
@@ -86,8 +88,8 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
         Document opfDocument = new Document();
         //<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
         Element root = new Element("package", NAMESPACE_OPF);
-        root.setAttribute(OPFAttributes.version, String.valueOf(book.getVersion().getVersion()));
-        root.setAttribute(OPFAttributes.uniqueIdentifier, BOOK_ID_ID);
+        root.setAttribute(OPFAttribute.version.getName(), String.valueOf(book.getVersion().asString()));
+        root.setAttribute(OPFAttribute.uniqueIdentifier.getName(), BOOK_ID_ID);
         opfDocument.setRootElement(root);
 
         new PackageDocumentEpub3MetadataWriter(book, root).writeMetaData();
@@ -104,18 +106,18 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
      */
     private static void writeSpine(Book book, Element root)
     {
-        Element spineElement = new Element(OPFTags.spine, NAMESPACE_OPF);
+        Element spineElement = new Element(OPFTag.spine.getName(), NAMESPACE_OPF);
         //set toc ncx as attribute for compatibility with epub 2
-        spineElement.setAttribute(OPFAttributes.toc, book.getNcxResource().getId());
+        spineElement.setAttribute(OPFAttribute.toc.getName(), book.getNcxResource().getId());
         root.addContent(spineElement);
 
         if (book.getCoverPage() != null // there is a cover page
                 && book.getSpine().findFirstResourceById(book.getCoverPage().getId()) < 0)
         {   // cover page is not already in the spine
             // write the cover html file
-            Element itemRefElement = new Element(OPFTags.itemref, NAMESPACE_OPF);
-            itemRefElement.setAttribute(OPFAttributes.idref, book.getCoverPage().getId());
-            itemRefElement.setAttribute(OPFAttributes.linear, "no");
+            Element itemRefElement = new Element(OPFTag.itemref.getName(), NAMESPACE_OPF);
+            itemRefElement.setAttribute(OPFAttribute.idref.getName(), book.getCoverPage().getId());
+            itemRefElement.setAttribute(OPFAttribute.linear.getName(), OPFValue.no.getName());
             spineElement.addContent(itemRefElement);
         }
         writeSpineItems(book.getSpine(), spineElement);
@@ -124,13 +126,13 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
 
     private static void writeManifest(Book book, Element root)
     {
-        Element manifestElement = new Element(OPFTags.manifest, NAMESPACE_OPF);
+        Element manifestElement = new Element(OPFTag.manifest.getName(), NAMESPACE_OPF);
         root.addContent(manifestElement);
 
-        Element ncxItemElement = new Element(OPFTags.item, NAMESPACE_OPF.getURI());
-        ncxItemElement.setAttribute(OPFAttributes.id, DEFAULT_NCX_ID);
-        ncxItemElement.setAttribute(OPFAttributes.href, DEFAULT_NCX_HREF);
-        ncxItemElement.setAttribute(OPFAttributes.media_type, MediaType.NCX.getName());
+        Element ncxItemElement = new Element(OPFTag.item.getName(), NAMESPACE_OPF.getURI());
+        ncxItemElement.setAttribute(OPFAttribute.id.getName(), DEFAULT_NCX_ID);
+        ncxItemElement.setAttribute(OPFAttribute.href.getName(), DEFAULT_NCX_HREF);
+        ncxItemElement.setAttribute(OPFAttribute.media_type.getName(), MediaType.NCX.getName());
         manifestElement.addContent(ncxItemElement);
 
         List<Resource> allResources = getAllResourcesSortById(book);
@@ -174,12 +176,12 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
             return;
         }
 
-        Element manifestItemElement = new Element(OPFTags.item, NAMESPACE_OPF.getURI());
-        manifestItemElement.setAttribute(OPFAttributes.id, resource.getId());
-        manifestItemElement.setAttribute(OPFAttributes.href, resource.getHref());
-        manifestItemElement.setAttribute(OPFAttributes.media_type, resource.getMediaType().getName());
+        Element manifestItemElement = new Element(OPFTag.item.getName(), NAMESPACE_OPF.getURI());
+        manifestItemElement.setAttribute(OPFAttribute.id.getName(), resource.getId());
+        manifestItemElement.setAttribute(OPFAttribute.href.getName(), resource.getHref());
+        manifestItemElement.setAttribute(OPFAttribute.media_type.getName(), resource.getMediaType().getName());
         if (StringUtils.isNotEmpty(resource.getProperties())) {
-            manifestItemElement.setAttribute(OPFAttributes.properties, resource.getProperties());
+            manifestItemElement.setAttribute(OPFAttribute.properties.getName(), resource.getProperties());
         }
         manifestElement.addContent(manifestItemElement);
     }
@@ -192,19 +194,19 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
 
 		for(SpineReference spineReference: spine.getSpineReferences())
         {
-            Element itemRefElement = new Element(OPFTags.itemref, NAMESPACE_OPF.getURI());
-            itemRefElement.setAttribute(OPFAttributes.idref, spineReference.getResourceId());
+            Element itemRefElement = new Element(OPFTag.itemref.getName(), NAMESPACE_OPF.getURI());
+            itemRefElement.setAttribute(OPFAttribute.idref.getName(), spineReference.getResourceId());
             spineElement.addContent(itemRefElement);
 			if (!spineReference.isLinear())
             {
-                itemRefElement.setAttribute(OPFAttributes.linear, OPFValues.no);
+                itemRefElement.setAttribute(OPFAttribute.linear.getName(), OPFValue.no.getName());
 			}
 		}
     }
 
     private static void writeGuide(Book book, Element root)
     {
-        Element guideElement = new Element(OPFTags.guide, NAMESPACE_OPF);
+        Element guideElement = new Element(OPFTag.guide.getName(), NAMESPACE_OPF);
         root.addContent(guideElement);
         ensureCoverPageGuideReferenceWritten(book.getGuide(), guideElement);
         for (GuideReference reference : book.getGuide().getReferences())
@@ -233,13 +235,13 @@ public class Epub3PackageDocumentWriter extends PackageDocumentBase
         {
             return;
         }
-        Element referenceElement = new Element(OPFTags.reference, NAMESPACE_OPF.getURI());
-        referenceElement.setAttribute(OPFAttributes.type, reference.getType().getName());
-        referenceElement.setAttribute(OPFAttributes.href, reference.getCompleteHref());
+        Element referenceElement = new Element(OPFTag.reference.getName(), NAMESPACE_OPF.getURI());
+        referenceElement.setAttribute(OPFAttribute.type.getName(), reference.getType().getName());
+        referenceElement.setAttribute(OPFAttribute.href.getName(), reference.getCompleteHref());
 
         if (StringUtils.isNotBlank(reference.getTitle()))
         {
-            referenceElement.setAttribute(OPFAttributes.title, reference.getTitle());
+            referenceElement.setAttribute(OPFAttribute.title.getName(), reference.getTitle());
         }
         guideElement.addContent(referenceElement);
     }

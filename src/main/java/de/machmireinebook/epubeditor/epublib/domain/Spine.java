@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+
 /**
  * The spine sections are the sections of the book in the order in which the book should be read.
  * <p>

@@ -13,6 +13,8 @@ import org.jdom2.Namespace;
 
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
+import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
@@ -20,7 +22,6 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
@@ -31,7 +32,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
  * Date: 26.07.2014
  * Time: 19:00
  */
-public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
+public class PackageDocumentEpub3MetadataReader
 {
     private static final Logger logger = Logger.getLogger(PackageDocumentEpub3MetadataReader.class);
 
@@ -41,10 +42,10 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
     public Metadata readMetadata(Element root)
     {
         Metadata result = new Metadata();
-        metadataElement = root.getChild(OPFTags.metadata, NAMESPACE_OPF);
+        metadataElement = root.getChild(OPFTag.metadata.getName(), NAMESPACE_OPF);
         if (metadataElement == null)
         {
-            logger.error("Package does not contain element " + OPFTags.metadata);
+            logger.error("Package does not contain element " + OPFTag.metadata);
             return result;
         }
 
@@ -87,11 +88,11 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
     {
         List<MetadataProperty> result = new ArrayList<>();
 
-        List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
+        List<Element> metaTags = metadataElement.getChildren(OPFTag.meta.getName(), NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
             MetadataProperty otherMetadataElement = new MetadataProperty();
-            String property = metaTag.getAttributeValue(OPFAttributes.property);
+            String property = metaTag.getAttributeValue(OPFAttribute.property.getName());
             if (StringUtils.isNotEmpty(property)) //if property not set it's a epub 2 metadata, read it later
             {
                 boolean putInList = true;
@@ -100,13 +101,13 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
                 String value = metaTag.getText();
                 otherMetadataElement.setValue(value);
 
-                String id = metaTag.getAttributeValue(OPFAttributes.id);
+                String id = metaTag.getAttributeValue(OPFAttribute.id.getName());
                 otherMetadataElement.setId(id);
-                String language = metaTag.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
+                String language = metaTag.getAttributeValue(OPFAttribute.lang.getName(), Namespace.XML_NAMESPACE);
                 otherMetadataElement.setLanguage(language);
-                String refines = metaTag.getAttributeValue(OPFAttributes.refines);
+                String refines = metaTag.getAttributeValue(OPFAttribute.refines.getName());
                 otherMetadataElement.setRefines(refines);
-                String scheme = metaTag.getAttributeValue(OPFAttributes.scheme);
+                String scheme = metaTag.getAttributeValue(OPFAttribute.scheme.getName());
                 otherMetadataElement.setScheme(scheme);
 
                 if (StringUtils.isNotEmpty(refines)) {
@@ -142,16 +143,16 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
     {
         Map<String, String> result = new HashMap<>();
 
-        List<Element> metaTags = metadataElement.getChildren(OPFTags.meta, NAMESPACE_OPF);
+        List<Element> metaTags = metadataElement.getChildren(OPFTag.meta.getName(), NAMESPACE_OPF);
         for (Element metaTag : metaTags)
         {
-            if (metaTag.getAttribute(OPFAttributes.property) != null)
+            if (metaTag.getAttribute(OPFAttribute.property.getName()) != null)
             {
                 continue; //is epub 3 metadata, will be read in another method
             }
 
-            String name = metaTag.getAttributeValue(OPFAttributes.name);
-            String value = metaTag.getAttributeValue(OPFAttributes.content);
+            String name = metaTag.getAttributeValue(OPFAttribute.name_attribute.getName());
+            String value = metaTag.getAttributeValue(OPFAttribute.content.getName());
             result.put(name, value);
         }
 
@@ -194,7 +195,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
 
     private String getBookIdId(Element root)
     {
-        String result = root.getAttributeValue(OPFAttributes.uniqueIdentifier);
+        String result = root.getAttributeValue(OPFAttribute.uniqueIdentifier.getName());
         return result;
     }
 
@@ -225,7 +226,7 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
                 continue;
             }
             String idName = authorElement.getAttributeValue(DublinCoreAttributes.id.name());
-            String language = authorElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
+            String language = authorElement.getAttributeValue(OPFAttribute.lang.getName(), Namespace.XML_NAMESPACE);
             Author author = new Author(idName, authorValue, language);
             if (StringUtils.isNotEmpty(idName)) {
                 refinableElements.put(idName, author);
@@ -251,14 +252,14 @@ public class PackageDocumentEpub3MetadataReader extends PackageDocumentBase
         List<DublinCoreMetadataElement> result = new ArrayList<>(dcElements.size());
         for (Element dcElement : dcElements)
         {
-            String titleValue = dcElement.getText();
-            if (StringUtils.isEmpty(titleValue))
+            String value = dcElement.getText();
+            if (StringUtils.isEmpty(value))
             {
                 continue;
             }
             String idName = dcElement.getAttributeValue(DublinCoreAttributes.id.name());
-            String language = dcElement.getAttributeValue(OPFAttributes.lang, Namespace.XML_NAMESPACE);
-            DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, titleValue, language);
+            String language = dcElement.getAttributeValue(OPFAttribute.lang.getName(), Namespace.XML_NAMESPACE);
+            DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, value, language);
             if (StringUtils.isNotEmpty(idName)) {
                 refinableElements.put(idName, dublinCoreMetadataElement);
             }

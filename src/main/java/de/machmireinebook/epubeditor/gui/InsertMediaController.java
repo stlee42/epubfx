@@ -36,9 +36,9 @@ import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;

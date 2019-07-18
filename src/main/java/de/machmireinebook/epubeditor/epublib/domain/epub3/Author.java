@@ -19,7 +19,6 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 	
 	private static final long serialVersionUID = 6663408501416574200L;
 	
-	private String name;
 	private MetadataProperty role;
 	private MetadataProperty fileAs;
 
@@ -31,23 +30,22 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 					.replaceAll(" ", "_")
 					.toLowerCase());
 		}
-		this.name = name;
 	}
 	
 	
 	public String getName() {
-		return name;
+		return getValue();
 	}
 	public void setName(String name) {
-		this.name = name;
+		setValue(name);
 	}
 	
 	public String toString() {
-		return name;
+		return getValue();
 	}
 	
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(name);
+		return HashCodeBuilder.reflectionHashCode(getValue());
 	}
 	
 	public boolean equals(Object authorObject) {
@@ -55,7 +53,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 			return false;
 		}
 		Author other = (Author) authorObject;
-		return StringUtils.equals(name, other.name);
+		return StringUtils.equals(getValue(), other.getValue());
 	}
 
 	public void setRole(Relator relator)

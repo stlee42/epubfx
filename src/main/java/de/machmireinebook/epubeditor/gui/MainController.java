@@ -67,10 +67,10 @@ import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.OpfNotReadableException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
-import de.machmireinebook.epubeditor.epublib.epub.EpubWriter;
+import de.machmireinebook.epubeditor.epublib.epub2.EpubReader;
+import de.machmireinebook.epubeditor.epublib.epub2.EpubWriter;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
@@ -307,7 +307,7 @@ public class MainController implements Initializable
             if (newValue.getVersion() != null)
             {
                 stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - EPUB " + newValue.getVersion().getVersion() + " - SmoekerSchriever");
+                        + " - EPUB " + newValue.getVersion().asString() + " - SmoekerSchriever");
             }
             else
             {

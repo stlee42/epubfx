@@ -31,7 +31,7 @@ import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
-import de.machmireinebook.epubeditor.epublib.epub.EpubReader;
+import de.machmireinebook.epubeditor.epublib.epub2.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 

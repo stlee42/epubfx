@@ -13,11 +13,11 @@ import org.jdom2.filter.ElementFilter;
 import org.jdom2.filter.Filter;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.Resources;
-import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
+import de.machmireinebook.epubeditor.epublib.epub2.BookProcessor;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**

@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.epub2.BookProcessor;
 
 /**
  * Helper class for BookProcessors that only manipulate html type resources.

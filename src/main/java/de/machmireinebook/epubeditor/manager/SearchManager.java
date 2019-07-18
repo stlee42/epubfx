@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.eaio.stringsearch.BoyerMooreHorspool;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * User: mjungierek

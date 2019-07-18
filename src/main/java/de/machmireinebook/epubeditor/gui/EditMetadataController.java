@@ -26,6 +26,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
 import de.machmireinebook.epubeditor.epublib.domain.Relator;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Author;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
@@ -232,8 +233,8 @@ public class EditMetadataController implements Initializable
         TableView<Relator> tableView = chooserWindowController.getChosserWindowTableView();
         chooserWindowController.getChooserWindowOkButton().setOnAction(event -> {
             Relator relator = tableView.getSelectionModel().getSelectedItem();
-            Author contributor = new Author(null, null,"", null);
-            contributor.setRelator(relator);
+            Author contributor = new Author(null, "");
+            contributor.setRole(relator);
             otherContributorsTableView.getItems().add(contributor);
             chooserWindowController.getChooserWindow().close();
         });
@@ -243,8 +244,8 @@ public class EditMetadataController implements Initializable
             if ((mb.equals(MouseButton.PRIMARY) && clicks == 2) || mb.equals(MouseButton.MIDDLE))
             {
                 Relator relator = tableView.getSelectionModel().getSelectedItem();
-                Author contributor = new Author(null, null, "", null);
-                contributor.setRelator(relator);
+                Author contributor = new Author(null, "");
+                contributor.setRole(relator);
                 otherContributorsTableView.getItems().add(contributor);
                 chooserWindowController.getChooserWindow().close();
             }
@@ -320,7 +321,7 @@ public class EditMetadataController implements Initializable
     {
         Metadata metadata = (Metadata) book.getMetadata();
         //auhtor
-        Author firstAuthor = new Author(null, null, authorTextField.getText(), null);
+        Author firstAuthor = new Author(null, authorTextField.getText());
         firstAuthor.setFileAs(saveAsAuthorTextField.getText());
         metadata.getAuthors().clear();
         metadata.getContributors().clear();
@@ -329,7 +330,7 @@ public class EditMetadataController implements Initializable
         for (Author otherContributor : otherContributors)
         {
             logger.info("other contributor " + otherContributor);
-            if (otherContributor.getRelator().equals(Relator.AUTHOR))
+            if (otherContributor.getRole() == Relator.AUTHOR)
             {
                 metadata.getAuthors().add(otherContributor);
             }
@@ -338,9 +339,9 @@ public class EditMetadataController implements Initializable
                 metadata.getContributors().add(otherContributor);
             }
         }
-        //title
+        //title, TODO: improve it that more than one titles are possible and with id for title
         metadata.getTitles().clear();
-        metadata.addTitle(titleTextField.getText());
+        metadata.addTitle(new DublinCoreMetadataElement(titleTextField.getText()));
 
         //metadata
         metadata.getDates().clear();
@@ -397,13 +398,13 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        List<String> titles = metadata.getTitles();
+        List<DublinCoreMetadataElement> titles = metadata.getTitles();
         if (titles.size() > 0)
         {
             titles = titles.subList(1, titles.size());
-            for (String title : titles)
+            for (DublinCoreMetadataElement title : titles)
             {
-                MetadataElement element = new MetadataElement("title", title, "");
+                MetadataElement element = new MetadataElement("title", title.getValue(), title.getLanguage());
                 elements.add(element);
             }
         }
@@ -429,17 +430,17 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        List<String> descriptions = metadata.getDescriptions();
-        for (String description : descriptions)
+        List<DublinCoreMetadataElement> descriptions = metadata.getDescriptions();
+        for (DublinCoreMetadataElement description : descriptions)
         {
-            MetadataElement element = new MetadataElement("description", description, "");
+            MetadataElement element = new MetadataElement("description", description.getValue(), "");
             elements.add(element);
         }
 
-        List<String> publishers = metadata.getPublishers();
-        for (String publisher : publishers)
+        List<DublinCoreMetadataElement> publishers = metadata.getPublishers();
+        for (DublinCoreMetadataElement publisher : publishers)
         {
-            MetadataElement element = new MetadataElement("publisher", publisher, "");
+            MetadataElement element = new MetadataElement("publisher", publisher.getValue(), "");
             elements.add(element);
         }
 

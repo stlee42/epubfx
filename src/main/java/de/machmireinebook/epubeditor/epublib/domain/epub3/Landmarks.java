@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
-import de.machmireinebook.epubeditor.epublib.domain.ResourceReference;
+import de.machmireinebook.epubeditor.epublib.resource.ResourceReference;
 
 /**
  * User: Michail Jungierek

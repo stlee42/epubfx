@@ -2,7 +2,7 @@ package de.machmireinebook.epubeditor.epublib.util;
 
 import java.util.Comparator;
 
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * User: mjungierek

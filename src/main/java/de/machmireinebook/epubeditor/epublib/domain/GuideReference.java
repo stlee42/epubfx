@@ -2,6 +2,9 @@ package de.machmireinebook.epubeditor.epublib.domain;
 
 import java.io.Serializable;
 
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.TitledResourceReference;
+
 
 /**
  * These are references to elements of the book's guide.

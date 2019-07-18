@@ -18,16 +18,18 @@ import org.jdom2.JDOMException;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.Resources;
+import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
+import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
@@ -38,7 +40,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
  *
  * @author paul
  */
-public class Epub3PackageDocumentReader extends PackageDocumentBase
+public class Epub3PackageDocumentReader
 {
     private static final Logger logger = Logger.getLogger(Epub3PackageDocumentReader.class);
 
@@ -102,18 +104,18 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
      */
     private static Resources readManifest(Element root, Resources resources, Map<String, String> idMapping)
     {
-        Element manifestElement = root.getChild(OPFTags.manifest, NAMESPACE_OPF);
+        Element manifestElement = root.getChild(OPFTag.manifest.getName(), NAMESPACE_OPF);
         Resources result = new Resources();
         if (manifestElement == null)
         {
-            logger.error("Package document does not contain element " + OPFTags.manifest);
+            logger.error("Package document does not contain element " + OPFTag.manifest);
             return result;
         }
-        List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
+        List<Element> itemElements = manifestElement.getChildren(OPFTag.item.getName(), NAMESPACE_OPF);
         for (Element itemElement : itemElements)
         {
-            String id = itemElement.getAttributeValue(OPFAttributes.id);
-            String href = itemElement.getAttributeValue(OPFAttributes.href);
+            String id = itemElement.getAttributeValue(OPFAttribute.id.getName());
+            String href = itemElement.getAttributeValue(OPFAttribute.href.getName());
             try
             {
                 href = URLDecoder.decode(href, CHARACTER_ENCODING);
@@ -122,7 +124,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             {
                 logger.error(e.getMessage());
             }
-            String mediaTypeName = itemElement.getAttributeValue(OPFAttributes.media_type);
+            String mediaTypeName = itemElement.getAttributeValue(OPFAttribute.media_type.getName());
             Resource resource = resources.remove(href);
             if (resource == null)
             {
@@ -135,7 +137,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             {
                 resource.setMediaType(mediaType);
             }
-            String properties = itemElement.getAttributeValue(OPFAttributes.properties);
+            String properties = itemElement.getAttributeValue(OPFAttribute.properties.getName());
             resource.setProperties(properties);
 
             result.add(resource);
@@ -202,25 +204,25 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
     private static Spine readSpine(Element root, Book book, Map<String, String> idMapping)
     {
         Resources resources = book.getResources();
-        Element spineElement =  root.getChild(OPFTags.spine, NAMESPACE_OPF);
+        Element spineElement =  root.getChild(OPFTag.spine.getName(), NAMESPACE_OPF);
         if (spineElement == null)
         {
-            logger.error("Element " + OPFTags.spine + " not found in package document, generating one automatically");
+            logger.error("Element " + OPFTag.spine + " not found in package document, generating one automatically");
             return generateSpineFromResources(book);
         }
         Spine result = new Spine();
         result.setTocResource(book.getEpub3NavResource());
         //for compatibility it's possible that a ncx toc is included in epub, read it into
-        String epub2TocId = spineElement.getAttributeValue(OPFAttributes.toc);
+        String epub2TocId = spineElement.getAttributeValue(OPFAttribute.toc.getName());
         if (StringUtils.isNotEmpty(epub2TocId)) {
             Resource ncxResource = resources.getByIdOrHref(epub2TocId);
             book.setNcxResource(ncxResource);
         }
-        List<Element> spineItems = spineElement.getChildren(OPFTags.itemref, NAMESPACE_OPF);
+        List<Element> spineItems = spineElement.getChildren(OPFTag.itemref.getName(), NAMESPACE_OPF);
         List<SpineReference> spineReferences = new ArrayList<>(spineItems.size());
         for (Element spineItem : spineItems)
         {
-            String itemref = spineItem.getAttributeValue(OPFAttributes.idref);
+            String itemref = spineItem.getAttributeValue(OPFAttribute.idref.getName());
             if (StringUtils.isBlank(itemref))
             {
                 logger.error("itemref with missing or empty idref"); // XXX
@@ -239,7 +241,7 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
             }
 
             SpineReference spineReference = new SpineReference(resource);
-            if (OPFValues.no.equalsIgnoreCase(spineItem.getAttributeValue(OPFAttributes.linear)))
+            if (OPFValue.no.getName().equalsIgnoreCase(spineItem.getAttributeValue(OPFAttribute.linear.getName())))
             {
                 spineReference.setLinear(false);
             }
@@ -278,15 +280,15 @@ public class Epub3PackageDocumentReader extends PackageDocumentBase
 
     private static void readCoverImage(Element root, Book book)
     {
-        Element manifestElement = root.getChild(OPFTags.manifest, NAMESPACE_OPF);
+        Element manifestElement = root.getChild(OPFTag.manifest.getName(), NAMESPACE_OPF);
         if (manifestElement != null)
         {
-            List<Element> itemElements = manifestElement.getChildren(OPFTags.item, NAMESPACE_OPF);
+            List<Element> itemElements = manifestElement.getChildren(OPFTag.item.getName(), NAMESPACE_OPF);
             for (Element itemElement : itemElements)
             {
-                if (ManifestItemProperties.cover_image.getName().equals(itemElement.getAttributeValue(OPFAttributes.properties)))
+                if (ManifestItemProperties.cover_image.getName().equals(itemElement.getAttributeValue(OPFAttribute.properties.getName())))
                 {
-                    String coverHref = itemElement.getAttributeValue(OPFAttributes.href);
+                    String coverHref = itemElement.getAttributeValue(OPFAttribute.href.getName());
                     Resource resource = book.getResources().getByHref(coverHref);
                     if (resource == null)
                     {

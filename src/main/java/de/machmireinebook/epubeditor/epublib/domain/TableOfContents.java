@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * The table of contents of the book.

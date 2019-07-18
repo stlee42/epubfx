@@ -3,10 +3,10 @@ package de.machmireinebook.epubeditor.epublib.domain.epub2;
 import java.io.Serializable;
 import java.text.Normalizer;
 
-import de.machmireinebook.epubeditor.epublib.domain.Relator;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import de.machmireinebook.epubeditor.epublib.domain.Relator;
 
 /**
  * Represents one of the authors of the book
@@ -19,35 +19,32 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 	
 	private static final long serialVersionUID = 6663408501416574200L;
 	
-	private String name;
     private String fileAs;
-	private Relator relator = Relator.AUTHOR;
+	private Relator role = Relator.AUTHOR;
 
-	public Author(String id, String scheme, String name, String language) {
-	    super(id, scheme, name);
+	public Author(String id, String name) {
+	    super(id, name);
 	    if (StringUtils.isEmpty(id)) {
 			setId(Normalizer.normalize(name, Normalizer.Form.NFD)
 					.replaceAll("[^\\p{ASCII}]", "")
 					.replaceAll(" ", "_")
 					.toLowerCase());
 		}
-		this.name = name;
 	}
-	
 	
 	public String getName() {
-		return name;
+		return getValue();
 	}
 	public void setName(String name) {
-		this.name = name;
+		setValue(name);
 	}
 	
 	public String toString() {
-		return name;
+		return getValue();
 	}
 	
 	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(name);
+		return HashCodeBuilder.reflectionHashCode(getValue());
 	}
 	
 	public boolean equals(Object authorObject) {
@@ -55,7 +52,7 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 			return false;
 		}
 		Author other = (Author) authorObject;
-		return StringUtils.equals(name, other.name) && StringUtils.equals(fileAs, other.fileAs);
+		return StringUtils.equals(getValue(), other.getValue()) && StringUtils.equals(fileAs, other.fileAs);
 	}
 
 	public Relator setRole(String code) {
@@ -63,16 +60,16 @@ public class Author extends DublinCoreMetadataElement implements Serializable
 		if (result == null) {
 			result = Relator.AUTHOR;
 		}
-		this.relator = result;
+		this.role = result;
 		return result;
 	}
 
-	public Relator getRelator() {
-		return relator;
+	public Relator getRole() {
+		return role;
 	}
 
-	public void setRelator(Relator relator) {
-		this.relator = relator;
+	public void setRole(Relator role) {
+		this.role = role;
 	}
 
     public String getFileAs()

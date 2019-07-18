@@ -40,7 +40,7 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.EditableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;

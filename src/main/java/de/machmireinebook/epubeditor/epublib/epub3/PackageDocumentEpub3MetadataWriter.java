@@ -15,6 +15,9 @@ import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreTag;
+import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
+import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Author;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Identifier;
@@ -22,15 +25,11 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentBase;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
-import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF_WITH_PREFIX;
+import static de.machmireinebook.epubeditor.epublib.Constants.*;
 
-public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
+public class PackageDocumentEpub3MetadataWriter
 {
     private Book book;
     private Element metadataElement;
@@ -39,7 +38,7 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
     private List<MetadataProperty> alreadyWrittenMetaProperty = new ArrayList<>();
 
     public PackageDocumentEpub3MetadataWriter(Book book, Element root) {
-        metadataElement = new Element(OPFTags.metadata, NAMESPACE_OPF);
+        metadataElement = new Element(OPFTag.metadata.getName(), NAMESPACE_OPF);
         metadataElement.addNamespaceDeclaration(NAMESPACE_OPF_WITH_PREFIX);
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
         root.addContent(metadataElement);
@@ -127,16 +126,16 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         // write coverimage
         if (book.getCoverImage() != null)
         { // write the cover image
-            Element metaElement = new Element(OPFTags.meta, NAMESPACE_OPF);
-            metaElement.setAttribute(OPFAttributes.name, OPFValues.meta_cover);
-            metaElement.setAttribute(OPFAttributes.content, book.getCoverImage().getId());
+            Element metaElement = new Element(OPFTag.meta.getName(), NAMESPACE_OPF);
+            metaElement.setAttribute(OPFAttribute.name_attribute.getName(), OPFValue.meta_cover.getName());
+            metaElement.setAttribute(OPFAttribute.content.getName(), book.getCoverImage().getId());
             metadataElement.addContent(metaElement);
         }
 
         // write generator
-        Element generatorElement = new Element(OPFTags.meta, NAMESPACE_OPF);
-        generatorElement.setAttribute(OPFAttributes.name, OPFValues.generator);
-        generatorElement.setAttribute(OPFAttributes.content, Constants.EPUBLIB_GENERATOR_NAME);
+        Element generatorElement = new Element(OPFTag.meta.getName(), NAMESPACE_OPF);
+        generatorElement.setAttribute(OPFAttribute.name_attribute.getName(), OPFValue.generator.getName());
+        generatorElement.setAttribute(OPFAttribute.content.getName(), Constants.EPUBLIB_GENERATOR_NAME);
         metadataElement.addContent(generatorElement);
 
         writeMetaElements(metadata.getEpub3MetaProperties());
@@ -164,15 +163,15 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         metaElement.setText(value.getValue());
         if (value.getProperty() != null)
         {
-            metaElement.setAttribute(OPFAttributes.property, value.getProperty());
+            metaElement.setAttribute(OPFAttribute.property.getName(), value.getProperty());
         }
         if (StringUtils.isNotEmpty(value.getRefines()))
         {
-            metaElement.setAttribute(OPFAttributes.refines, value.getRefines());
+            metaElement.setAttribute(OPFAttribute.refines.getName(), value.getRefines());
         }
         if (StringUtils.isNotEmpty(value.getScheme()))
         {
-            metaElement.setAttribute(OPFAttributes.scheme, value.getScheme());
+            metaElement.setAttribute(OPFAttribute.scheme.getName(), value.getScheme());
         }
         metadataElement.addContent(metaElement);
     }
@@ -203,11 +202,11 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
             dcElement.setText(value.getValue());
             if (StringUtils.isNotEmpty(value.getId()))
             {
-                dcElement.setAttribute(OPFAttributes.id, value.getId());
+                dcElement.setAttribute(OPFAttribute.id.getName(), value.getId());
             }
             if (StringUtils.isNotEmpty(value.getLanguage()))
             {
-                dcElement.setAttribute(OPFAttributes.lang, value.getLanguage(), Namespace.XML_NAMESPACE);
+                dcElement.setAttribute(OPFAttribute.lang.getName(), value.getLanguage(), Namespace.XML_NAMESPACE);
             }
             metadataElement.addContent(dcElement);
         }
@@ -221,11 +220,11 @@ public class PackageDocumentEpub3MetadataWriter extends PackageDocumentBase
         dcElement.setText(dcMetadata.getValue());
         if (StringUtils.isNotEmpty(dcMetadata.getId()))
         {
-            dcElement.setAttribute(OPFAttributes.id, dcMetadata.getId());
+            dcElement.setAttribute(OPFAttribute.id.getName(), dcMetadata.getId());
         }
         if (StringUtils.isNotEmpty(dcMetadata.getLanguage()))
         {
-            dcElement.setAttribute(OPFAttributes.lang, dcMetadata.getLanguage(), Namespace.XML_NAMESPACE);
+            dcElement.setAttribute(OPFAttribute.lang.getName(), dcMetadata.getLanguage(), Namespace.XML_NAMESPACE);
         }
         metadataElement.addContent(dcElement);
     }

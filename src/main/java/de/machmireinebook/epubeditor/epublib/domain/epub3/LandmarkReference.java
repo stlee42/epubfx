@@ -2,8 +2,8 @@ package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
 
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.TitledResourceReference;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.TitledResourceReference;
 
 
 /**

@@ -12,8 +12,8 @@ import org.jdom2.Document;
 import org.jdom2.IllegalAddException;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
-import de.machmireinebook.epubeditor.epublib.epub.BookProcessor;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.epub2.BookProcessor;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**

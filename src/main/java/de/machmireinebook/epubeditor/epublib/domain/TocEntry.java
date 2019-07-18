@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.TitledResourceReference;
+
 /**
  * An item in the Table of Contents.
  */

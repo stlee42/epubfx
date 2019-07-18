@@ -28,14 +28,14 @@ import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.domain.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
-import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.epub2.NCXDocument;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;

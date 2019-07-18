@@ -34,9 +34,13 @@ import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
-import de.machmireinebook.epubeditor.epublib.epub.NCXDocument;
-import de.machmireinebook.epubeditor.epublib.epub.PackageDocumentWriter;
+import de.machmireinebook.epubeditor.epublib.epub2.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.epub2.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
