@@ -391,10 +391,10 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        List<String> rights = metadata.getRights();
-        for (String right : rights)
+        List<DublinCoreMetadataElement> rights = metadata.getRights();
+        for (DublinCoreMetadataElement right : rights)
         {
-            MetadataElement element = new MetadataElement("right", right, "");
+            MetadataElement element = new MetadataElement("right", right.getValue(), "");
             elements.add(element);
         }
 
@@ -416,17 +416,17 @@ public class EditMetadataController implements Initializable
             elements.add(element);
         }
 
-        List<String> subjects = metadata.getSubjects();
-        for (String subject : subjects)
+        List<DublinCoreMetadataElement> subjects = metadata.getSubjects();
+        for (DublinCoreMetadataElement subject : subjects)
         {
-            MetadataElement element = new MetadataElement("subject", subject, "");
+            MetadataElement element = new MetadataElement("subject", subject.getValue(), "");
             elements.add(element);
         }
 
-        List<String> types = metadata.getTypes();
-        for (String type : types)
+        List<DublinCoreMetadataElement> types = metadata.getTypes();
+        for (DublinCoreMetadataElement type : types)
         {
-            MetadataElement element = new MetadataElement("type", type, "");
+            MetadataElement element = new MetadataElement("type", type.getValue(), "");
             elements.add(element);
         }
 

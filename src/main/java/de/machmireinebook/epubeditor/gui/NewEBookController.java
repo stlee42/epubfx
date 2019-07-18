@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
@@ -135,11 +136,11 @@ public class NewEBookController implements StandardController
                         cover = book.getCoverImage().asNativeFormat();
                     }
                     Metadata metadata = (Metadata) book.getMetadata();
-                    List<String> descriptions = metadata.getDescriptions();
+                    List<DublinCoreMetadataElement> descriptions = metadata.getDescriptions();
                     String description = "";
                     if (descriptions.size() > 0)
                     {
-                        description = descriptions.get(0);
+                        description = descriptions.get(0).getValue();
                     }
                     epub2Books.add(new BookTemplate(book.getTitle(), cover, description, path, 2.0));
                 }
@@ -151,11 +152,11 @@ public class NewEBookController implements StandardController
                         cover = book.getCoverImage().asNativeFormat();
                     }
                     de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata metadata = (de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata) book.getMetadata();
-                    List<String> descriptions = metadata.getDescriptions();
+                    List<de.machmireinebook.epubeditor.epublib.domain.epub3.DublinCoreMetadataElement> descriptions = metadata.getDescriptions();
                     String description = "[No description available]";
                     if (descriptions.size() > 0)
                     {
-                        description = descriptions.get(0);
+                        description = descriptions.get(0).getValue();
                     }
                     BookTemplate template = new BookTemplate(book.getTitle(), cover, description, path, 3.0);
                     List<MetadataProperty> otherProperties = metadata.getEpub3MetaProperties();

@@ -99,7 +99,7 @@ public class PackageDocumentWriter
         }
         else
         {
-            PackageDocumentMetadataWriter.writeMetaData(book, root);
+            new PackageDocumentMetadataWriter().writeMetaData(book, root);
         }
 
         writeManifest(book, root);

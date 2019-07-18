@@ -63,4 +63,11 @@ public class XhtmlTest {
         String output = XHTMLUtils.repair(template);
         logger.info("output: \n" + output);
     }
+
+    @Test
+    public void unescapeEscapingTest() throws Exception {
+        String template = IOUtils.toString(getClass().getResourceAsStream("/test-unescape.xhtml"), "UTF-8");
+        String unescaped = XHTMLUtils.unescapedHtmlWithXmlExceptions(template);
+        logger.info("output: \n" + unescaped);
+    }
 }

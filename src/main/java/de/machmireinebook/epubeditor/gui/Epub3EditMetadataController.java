@@ -394,7 +394,7 @@ public class Epub3EditMetadataController implements Initializable
                 metadata.getPublicationDate().setValue(metadataElement.getValue());
             }
             if (metadataElement.getType().equals("right")) {
-                metadata.getRights().add(metadataElement.getValue());
+                metadata.getRights().add(new DublinCoreMetadataElement(metadataElement.getValue()));
             }
             if (metadataElement.getType().equals("title")) {
                 DublinCoreMetadataElement titleDCElement = new DublinCoreMetadataElement(metadataElement.getValue());
@@ -408,13 +408,13 @@ public class Epub3EditMetadataController implements Initializable
                 metadata.getIdentifiers().add(idDCElement);
             }
             if (metadataElement.getType().equals("subject")) {
-                metadata.getSubjects().add(metadataElement.getValue());
+                metadata.getSubjects().add(new DublinCoreMetadataElement(metadataElement.getValue()));
             }
             if (metadataElement.getType().equals("type")) {
-                metadata.getTypes().add(metadataElement.getValue());
+                metadata.getTypes().add(new DublinCoreMetadataElement(metadataElement.getValue()));
             }
             if (metadataElement.getType().equals("description")) {
-                metadata.getDescriptions().add(metadataElement.getValue());
+                metadata.getDescriptions().add(new DublinCoreMetadataElement(metadataElement.getValue()));
             }
         }
 
@@ -451,10 +451,10 @@ public class Epub3EditMetadataController implements Initializable
             elements.add(pubDateElement);
         }
 
-        List<String> rights = metadata.getRights();
-        for (String right : rights)
+        List<DublinCoreMetadataElement> rights = metadata.getRights();
+        for (DublinCoreMetadataElement right : rights)
         {
-            MetadataListItem rightElement = new MetadataListItem("right", right);
+            MetadataListItem rightElement = new MetadataListItem("right", right.getValue());
             elements.add(rightElement);
         }
 
@@ -478,31 +478,31 @@ public class Epub3EditMetadataController implements Initializable
             elements.add(idElement);
         }
 
-        List<String> subjects = metadata.getSubjects();
-        for (String subject : subjects)
+        List<DublinCoreMetadataElement> subjects = metadata.getSubjects();
+        for (DublinCoreMetadataElement subject : subjects)
         {
-            MetadataListItem subjectElement = new MetadataListItem("subject", subject);
+            MetadataListItem subjectElement = new MetadataListItem("subject", subject.getValue());
             elements.add(subjectElement);
         }
 
-        List<String> types = metadata.getTypes();
-        for (String type : types)
+        List<DublinCoreMetadataElement> types = metadata.getTypes();
+        for (DublinCoreMetadataElement type : types)
         {
-            MetadataListItem typeElement = new MetadataListItem("type", type);
+            MetadataListItem typeElement = new MetadataListItem("type", type.getValue());
             elements.add(typeElement);
         }
 
-        List<String> descriptions = metadata.getDescriptions();
-        for (String description : descriptions)
+        List<DublinCoreMetadataElement> descriptions = metadata.getDescriptions();
+        for (DublinCoreMetadataElement description : descriptions)
         {
-            MetadataListItem descElement = new MetadataListItem("description", description);
+            MetadataListItem descElement = new MetadataListItem("description", description.getValue());
             elements.add(descElement);
         }
 
-        List<String> publishers = metadata.getPublishers();
-        for (String publisher : publishers)
+        List<DublinCoreMetadataElement> publishers = metadata.getPublishers();
+        for (DublinCoreMetadataElement publisher : publishers)
         {
-            MetadataListItem publisherElement = new MetadataListItem("publisher", publisher);
+            MetadataListItem publisherElement = new MetadataListItem("publisher", publisher.getValue());
             elements.add(publisherElement);
         }
 

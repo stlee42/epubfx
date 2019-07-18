@@ -4,8 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.text.translate.AggregateTranslator;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.EntityArrays;
+import org.apache.commons.text.translate.LookupTranslator;
+import org.apache.commons.text.translate.NumericEntityUnescaper;
 import org.apache.log4j.Logger;
 
 import org.htmlcleaner.CleanerProperties;
@@ -39,6 +47,18 @@ import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
 public class XHTMLUtils
 {
     private static final Logger logger = Logger.getLogger(XHTMLUtils.class);
+
+    public static final Map<CharSequence, CharSequence> BASIC_ESCAPE;
+    static {
+        final Map<CharSequence, CharSequence> initialMap = new HashMap<>();
+        initialMap.put("\"", "&quot;"); // " - double-quote
+        BASIC_ESCAPE = Collections.unmodifiableMap(initialMap);
+    }
+    public static final Map<CharSequence, CharSequence> BASIC_UNESCAPE;
+    static {
+        BASIC_UNESCAPE = Collections.unmodifiableMap(EntityArrays.invert(BASIC_ESCAPE));
+    }
+
 
     public static Resource fromHtml(Resource res)
     {
@@ -271,5 +291,17 @@ public class XHTMLUtils
             logger.error("", e);
         }
         return baos.toByteArray();
+    }
+
+    public static String unescapedHtmlWithXmlExceptions(String escapedText) {
+        CharSequenceTranslator translator =
+                new AggregateTranslator(
+                        new LookupTranslator(BASIC_UNESCAPE),
+                        new LookupTranslator(EntityArrays.ISO8859_1_UNESCAPE),
+                        new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE),
+                        new NumericEntityUnescaper()
+                );
+        String unescapedXhtml = translator.translate(escapedText);
+        return unescapedXhtml;
     }
 }
