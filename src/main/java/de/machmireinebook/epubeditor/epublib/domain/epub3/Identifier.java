@@ -15,9 +15,6 @@ import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
  */
 public class Identifier extends DublinCoreMetadataElement implements EpubIdentifier, Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 955949951416391810L;
 
 	public enum Scheme {

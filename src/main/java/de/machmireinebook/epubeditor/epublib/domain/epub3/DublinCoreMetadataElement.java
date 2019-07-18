@@ -13,6 +13,7 @@ public class DublinCoreMetadataElement
     private String id;
     private String value;
     private String language;
+    private OpfDirAttribute dir;
     private List<MetadataProperty> refinements = new ArrayList<>();
 
     public DublinCoreMetadataElement(String value)
@@ -60,6 +61,14 @@ public class DublinCoreMetadataElement
     public void setLanguage(String language)
     {
         this.language = language;
+    }
+
+    public OpfDirAttribute getDir() {
+        return dir;
+    }
+
+    public void setDir(OpfDirAttribute dir) {
+        this.dir = dir;
     }
 
     public List<MetadataProperty> getRefinements()

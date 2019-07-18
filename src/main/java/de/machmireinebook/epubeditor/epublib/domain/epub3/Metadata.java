@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
 import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
  * A Book's collection of Metadata.
@@ -34,16 +33,17 @@ public class Metadata implements Serializable, EpubMetadata
     private MetadataProperty modificationDate;
     private List<DublinCoreMetadataElement> languages = new ArrayList<>();
     private List<MetadataProperty> epub3MetaProperties = new ArrayList<>();
-    private List<String> rights = new ArrayList<>();
-    private DublinCoreMetadataElement source;
+    private List<DublinCoreMetadataElement> rights = new ArrayList<>();
+    private List<DublinCoreMetadataElement> sources;
     private List<DublinCoreMetadataElement> titles = new ArrayList<>();
     private List<Identifier> identifiers = new ArrayList<>();
-    private List<String> subjects = new ArrayList<>();
-    private String format = MediaType.EPUB.getName();
-    private List<String> types = new ArrayList<>();
-    private List<String> descriptions = new ArrayList<>();
-    private List<String> publishers = new ArrayList<>();
-    private List<String> coverages = new ArrayList<>();
+    private List<DublinCoreMetadataElement> subjects = new ArrayList<>();
+    private List<DublinCoreMetadataElement> formats = new ArrayList<>();
+    private List<DublinCoreMetadataElement> types = new ArrayList<>();
+    private List<DublinCoreMetadataElement> descriptions = new ArrayList<>();
+    private List<DublinCoreMetadataElement> publishers = new ArrayList<>();
+    private List<DublinCoreMetadataElement> relations = new ArrayList<>();
+    private List<DublinCoreMetadataElement> coverages = new ArrayList<>();
     private Map<String, String> epub2MetaAttributes = new HashMap<>();
 
     public Metadata()
@@ -185,26 +185,25 @@ public class Metadata implements Serializable, EpubMetadata
         }
     }
 
-    public List<String> getSubjects()
+    public List<DublinCoreMetadataElement> getSubjects()
     {
         return subjects;
     }
 
-    public void setSubjects(List<String> subjects)
+    public void setSubjects(List<DublinCoreMetadataElement> subjects)
     {
         this.subjects = subjects;
     }
 
-    public void setRights(List<String> rights)
+    public void setRights(List<DublinCoreMetadataElement> rights)
     {
         this.rights = rights;
     }
 
-    public List<String> getRights()
+    public List<DublinCoreMetadataElement> getRights()
     {
         return rights;
     }
-
 
     /**
      * Gets the first non-blank title of the book.
@@ -246,34 +245,34 @@ public class Metadata implements Serializable, EpubMetadata
         return titles;
     }
 
-    public String addPublisher(String publisher)
+    public DublinCoreMetadataElement addPublisher(DublinCoreMetadataElement publisher)
     {
         this.publishers.add(publisher);
         return publisher;
     }
 
-    public void setPublishers(List<String> publishers)
+    public void setPublishers(List<DublinCoreMetadataElement> publishers)
     {
         this.publishers = publishers;
     }
 
-    public List<String> getPublishers()
+    public List<DublinCoreMetadataElement> getPublishers()
     {
         return publishers;
     }
 
-    public String addDescription(String description)
+    public DublinCoreMetadataElement addDescription(DublinCoreMetadataElement description)
     {
         this.descriptions.add(description);
         return description;
     }
 
-    public void setDescriptions(List<String> descriptions)
+    public void setDescriptions(List<DublinCoreMetadataElement> descriptions)
     {
         this.descriptions = descriptions;
     }
 
-    public List<String> getDescriptions()
+    public List<DublinCoreMetadataElement> getDescriptions()
     {
         return descriptions;
     }
@@ -347,44 +346,34 @@ public class Metadata implements Serializable, EpubMetadata
         return identifiers;
     }
 
-    public void setFormat(String format)
-    {
-        this.format = format;
-    }
-
-    public String getFormat()
-    {
-        return format;
-    }
-
-    public String addType(String type)
+    public DublinCoreMetadataElement addType(DublinCoreMetadataElement type)
     {
         this.types.add(type);
         return type;
     }
 
-    public List<String> getTypes()
+    public List<DublinCoreMetadataElement> getTypes()
     {
         return types;
     }
 
-    public void setTypes(List<String> types)
+    public void setTypes(List<DublinCoreMetadataElement> types)
     {
         this.types = types;
     }
 
-    public String addCoverage(String coverage)
+    public DublinCoreMetadataElement addCoverage(DublinCoreMetadataElement coverage)
     {
         this.coverages.add(coverage);
         return coverage;
     }
 
-    public List<String> getCoverages()
+    public List<DublinCoreMetadataElement> getCoverages()
     {
         return coverages;
     }
 
-    public void setCoverages(List<String> coverages)
+    public void setCoverages(List<DublinCoreMetadataElement> coverages)
     {
         this.coverages = coverages;
     }
@@ -399,13 +388,29 @@ public class Metadata implements Serializable, EpubMetadata
         this.epub2MetaAttributes = metaAttributes;
     }
 
-    public DublinCoreMetadataElement getSource()
+    public List<DublinCoreMetadataElement> getSources()
     {
-        return source;
+        return sources;
     }
 
-    public void setSource(DublinCoreMetadataElement source)
+    public void setSources(List<DublinCoreMetadataElement> sources)
     {
-        this.source = source;
+        this.sources = sources;
+    }
+
+    public List<DublinCoreMetadataElement> getFormats() {
+        return formats;
+    }
+
+    public void setFormats(List<DublinCoreMetadataElement> formats) {
+        this.formats = formats;
+    }
+
+    public List<DublinCoreMetadataElement> getRelations() {
+        return relations;
+    }
+
+    public void setRelations(List<DublinCoreMetadataElement> relations) {
+        this.relations = relations;
     }
 }

@@ -22,7 +22,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
-import de.machmireinebook.epubeditor.jdom2.JDOM2Utils;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.OpfDirAttribute;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -50,16 +50,15 @@ public class PackageDocumentEpub3MetadataReader
         }
 
         result.setTitles(readTitles());
-        result.setPublishers(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.publisher.getName()));
-        result.setDescriptions(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.description.getName()));
-        result.setRights(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.rights.getName()));
-        String sourceValue = metadataElement.getChildText(DublinCoreTag.source.getName(), NAMESPACE_DUBLIN_CORE);
-        if (StringUtils.isNotEmpty(sourceValue))
-        {
-            result.setSource(new DublinCoreMetadataElement(sourceValue));
-        }
-        result.setTypes(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.type.getName()));
-        result.setSubjects(JDOM2Utils.getChildrenText(metadataElement, NAMESPACE_DUBLIN_CORE, DublinCoreTag.subject.getName()));
+        result.setPublishers(readDublinCoreMetadata(DublinCoreTag.publisher));
+        result.setDescriptions(readDublinCoreMetadata(DublinCoreTag.description));
+        result.setRights(readDublinCoreMetadata(DublinCoreTag.rights));
+        result.setCoverages(readDublinCoreMetadata(DublinCoreTag.coverage));
+        result.setSources(readDublinCoreMetadata(DublinCoreTag.source));
+        result.setTypes(readDublinCoreMetadata(DublinCoreTag.type));
+        result.setFormats(readDublinCoreMetadata(DublinCoreTag.format));
+        result.setSubjects(readDublinCoreMetadata(DublinCoreTag.subject));
+        result.setRelations(readDublinCoreMetadata(DublinCoreTag.relation));
         result.setIdentifiers(readIdentifiers());
         result.setAuthors(readCreators());
         result.setContributors(readContributors());
@@ -238,15 +237,15 @@ public class PackageDocumentEpub3MetadataReader
 
     private List<DublinCoreMetadataElement> readTitles()
     {
-        return readDublinCoreMetadata(DublinCoreTag.title.getName());
+        return readDublinCoreMetadata(DublinCoreTag.title);
     }
 
-    private List<DublinCoreMetadataElement> readDublinCoreMetadata(String dcTagName)
+    private List<DublinCoreMetadataElement> readDublinCoreMetadata(DublinCoreTag dcTag)
     {
-        List<Element> dcElements = metadataElement.getChildren(dcTagName, NAMESPACE_DUBLIN_CORE);
+        List<Element> dcElements = metadataElement.getChildren(dcTag.getName(), NAMESPACE_DUBLIN_CORE);
         if (dcElements.isEmpty())
         {
-            logger.info("Package does not contain element " + dcTagName);
+            logger.info("Package does not contain element " + dcTag);
             return new ArrayList<>();
         }
         List<DublinCoreMetadataElement> result = new ArrayList<>(dcElements.size());
@@ -259,7 +258,9 @@ public class PackageDocumentEpub3MetadataReader
             }
             String idName = dcElement.getAttributeValue(DublinCoreAttributes.id.name());
             String language = dcElement.getAttributeValue(OPFAttribute.lang.getName(), Namespace.XML_NAMESPACE);
+            String dirValue = dcElement.getAttributeValue(OpfDirAttribute.attributeName);
             DublinCoreMetadataElement dublinCoreMetadataElement = new DublinCoreMetadataElement(idName, value, language);
+            dublinCoreMetadataElement.setDir(OpfDirAttribute.valueOf(dirValue));
             if (StringUtils.isNotEmpty(idName)) {
                 refinableElements.put(idName, dublinCoreMetadataElement);
             }
