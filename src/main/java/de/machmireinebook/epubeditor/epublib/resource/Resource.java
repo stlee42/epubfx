@@ -1,11 +1,8 @@
 package de.machmireinebook.epubeditor.epublib.resource;
 
 import java.io.ByteArrayInputStream;
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.Reader;
 import java.nio.file.Path;
 
@@ -31,18 +28,17 @@ import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
  * @author paul
  *
  */
-public class Resource<T> implements Externalizable, ToStringConvertible
+public class Resource<T> implements ToStringConvertible
 {
     private static final Logger logger = Logger.getLogger(Resource.class);
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1043946707835004037L;
+
 	private String id;
 	private String title;
 	private StringProperty href = new SimpleStringProperty();
-	protected String originalHref;
+	private String originalHref;
     private String properties;
+	private String fallback;
+	private String mediaOverlay;
 	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
@@ -337,7 +333,7 @@ public class Resource<T> implements Externalizable, ToStringConvertible
 	 * Does all sorts of smart things (courtesy of apache commons io XMLStreamREader) to handle encodings, byte order markers, etc.
 	 * 
 	 * @return the contents of the Resource as Reader.
-	 * @throws java.io.IOException
+	 * @throws java.io.IOException if readers throws an exception
 	 */
 	public Reader asReader() throws IOException {
 		return new XmlStreamReader(new ByteArrayInputStream(getData()), getInputEncoding());
@@ -397,6 +393,22 @@ public class Resource<T> implements Externalizable, ToStringConvertible
         this.properties = properties;
     }
 
+	public String getFallback() {
+		return fallback;
+	}
+
+	public void setFallback(String fallback) {
+		this.fallback = fallback;
+	}
+
+	public String getMediaOverlay() {
+		return mediaOverlay;
+	}
+
+	public void setMediaOverlay(String mediaOverlay) {
+		this.mediaOverlay = mediaOverlay;
+	}
+
 	/**
 	 * In standard case the data for web view is identically with the data. in some cases its needed to enriche the data
 	 * (e.g. location information to synchronize the viewport in webview with caret position in editor)
@@ -439,41 +451,4 @@ public class Resource<T> implements Externalizable, ToStringConvertible
         }
         setHref(getHref().replace(fileName, string));
     }
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException
-	{
-/*
-	private String id;
-	private String title;
-	private StringProperty href = new SimpleStringProperty();
-	protected String originalHref;
-    private String properties;
-	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
-	private String inputEncoding = Constants.CHARACTER_ENCODING;
-	protected byte[] data;
-
- */
-		out.writeObject(id);
-		out.writeObject(title);
-		out.writeObject(href.get());
-		out.writeObject(originalHref);
-		out.writeObject(properties);
-		out.writeObject(mediaType.get());
-		out.writeObject(inputEncoding);
-		out.writeObject(data);
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-	{
-		id = (String) in.readObject();
-		title = (String) in.readObject();
-		href.set((String) in.readObject());
-		originalHref = (String) in.readObject();
-		properties = (String) in.readObject();
-		mediaType.set((MediaType) in.readObject());
-		inputEncoding = (String) in.readObject();
-		data = (byte[]) in.readObject();
-	}
 }

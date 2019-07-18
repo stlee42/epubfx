@@ -18,6 +18,7 @@ import org.jdom2.JDOMException;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -114,8 +115,8 @@ public class Epub3PackageDocumentReader
         List<Element> itemElements = manifestElement.getChildren(OPFTag.item.getName(), NAMESPACE_OPF);
         for (Element itemElement : itemElements)
         {
-            String id = itemElement.getAttributeValue(OPFAttribute.id.getName());
-            String href = itemElement.getAttributeValue(OPFAttribute.href.getName());
+            String id = itemElement.getAttributeValue(ManifestItemAttribute.id.getName());
+            String href = itemElement.getAttributeValue(ManifestItemAttribute.href.getName());
             try
             {
                 href = URLDecoder.decode(href, CHARACTER_ENCODING);
@@ -124,7 +125,7 @@ public class Epub3PackageDocumentReader
             {
                 logger.error(e.getMessage());
             }
-            String mediaTypeName = itemElement.getAttributeValue(OPFAttribute.media_type.getName());
+            String mediaTypeName = itemElement.getAttributeValue(ManifestItemAttribute.media_type.getName());
             Resource resource = resources.remove(href);
             if (resource == null)
             {
@@ -137,8 +138,12 @@ public class Epub3PackageDocumentReader
             {
                 resource.setMediaType(mediaType);
             }
-            String properties = itemElement.getAttributeValue(OPFAttribute.properties.getName());
+            String properties = itemElement.getAttributeValue(ManifestItemAttribute.properties.getName());
             resource.setProperties(properties);
+            String fallback = itemElement.getAttributeValue(ManifestItemAttribute.fallback.getName());
+            resource.setFallback(fallback);
+            String mediaOverlay = itemElement.getAttributeValue(ManifestItemAttribute.media_overlay.getName());
+            resource.setMediaOverlay(mediaOverlay);
 
             result.add(resource);
             if (resource.getMediaType() == MediaType.CSS)

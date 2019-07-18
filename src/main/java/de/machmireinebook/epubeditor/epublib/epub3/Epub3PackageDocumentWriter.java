@@ -22,9 +22,10 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.*;
@@ -175,13 +176,19 @@ public class Epub3PackageDocumentWriter
             logger.error("resource mediatype must not be empty (id: " + resource.getId() + ", href:" + resource.getHref() + ")");
             return;
         }
-
+        //opf.fallback.attr? & opf.media-overlay.attr?
         Element manifestItemElement = new Element(OPFTag.item.getName(), NAMESPACE_OPF.getURI());
-        manifestItemElement.setAttribute(OPFAttribute.id.getName(), resource.getId());
-        manifestItemElement.setAttribute(OPFAttribute.href.getName(), resource.getHref());
-        manifestItemElement.setAttribute(OPFAttribute.media_type.getName(), resource.getMediaType().getName());
+        manifestItemElement.setAttribute(ManifestItemAttribute.id.getName(), resource.getId());
+        manifestItemElement.setAttribute(ManifestItemAttribute.href.getName(), resource.getHref());
+        manifestItemElement.setAttribute(ManifestItemAttribute.media_type.getName(), resource.getMediaType().getName());
         if (StringUtils.isNotEmpty(resource.getProperties())) {
-            manifestItemElement.setAttribute(OPFAttribute.properties.getName(), resource.getProperties());
+            manifestItemElement.setAttribute(ManifestItemAttribute.properties.getName(), resource.getProperties());
+        }
+        if (StringUtils.isNotEmpty(resource.getFallback())) {
+            manifestItemElement.setAttribute(ManifestItemAttribute.fallback.getName(), resource.getFallback());
+        }
+        if (StringUtils.isNotEmpty(resource.getMediaOverlay())) {
+            manifestItemElement.setAttribute(ManifestItemAttribute.media_overlay.getName(), resource.getMediaOverlay());
         }
         manifestElement.addContent(manifestItemElement);
     }
