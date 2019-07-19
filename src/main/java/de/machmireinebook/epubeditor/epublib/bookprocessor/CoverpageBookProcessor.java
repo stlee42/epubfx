@@ -3,8 +3,8 @@ package de.machmireinebook.epubeditor.epublib.bookprocessor;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
@@ -13,11 +13,11 @@ import org.jdom2.filter.ElementFilter;
 import org.jdom2.filter.Filter;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.epub2.BookProcessor;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.Resources;
-import de.machmireinebook.epubeditor.epublib.epub2.BookProcessor;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**

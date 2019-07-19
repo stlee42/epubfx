@@ -513,7 +513,11 @@ public class Book implements Serializable
         {
             resources.add(coverPage);
         }
-        guide.setCoverPage(coverPage);
+        if (isEpub3()) {
+            getLandmarks().addReference(new LandmarkReference(coverPage, LandmarkReference.Semantics.COVER, "Cover"));
+        } else {
+            guide.setCoverPage(coverPage);
+        }
     }
 
     /**

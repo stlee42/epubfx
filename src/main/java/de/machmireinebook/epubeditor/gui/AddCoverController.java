@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -23,8 +24,9 @@ import javafx.stage.Stage;
 
 import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
@@ -136,7 +138,25 @@ public class AddCoverController implements Initializable
         ImageResource image = tableView.getSelectionModel().getSelectedItem();
         book.setCoverImage(image);
         new CoverpageBookProcessor().processBook(book);
-        Resource coverPage = book.getGuide().getCoverPage();
+        Resource coverPage = null;
+        if (book.isEpub3()) {
+            List<LandmarkReference> landmarks = book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantics.COVER);
+            if (!landmarks.isEmpty()) {
+                coverPage = landmarks.get(0).getResource();
+            }
+        } else {
+            coverPage = book.getGuide().getCoverPage();
+        }
+        if (coverPage == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(stage);
+            alert.setTitle("Coverpage not generated");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("Can't find generated cover page, something goes wrong");
+            alert.showAndWait();
+            return;
+        }
         book.getSpine().addResource(coverPage, 0);
         bookBrowserManager.refreshBookBrowser();
         bookBrowserManager.selectTextItem(coverPage);

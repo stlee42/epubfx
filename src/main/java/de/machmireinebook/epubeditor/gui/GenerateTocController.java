@@ -213,6 +213,8 @@ public class GenerateTocController implements StandardController
             }
         });
 
+        tocGenerator.bookProperty().bind(currentBook);
+
         instance = this;
     }
 
