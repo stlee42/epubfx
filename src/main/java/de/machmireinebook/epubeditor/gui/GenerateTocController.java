@@ -10,9 +10,12 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,8 +43,8 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.toc.EditableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
@@ -56,6 +59,7 @@ import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
 public class GenerateTocController implements StandardController
 {
     private static final Logger logger = Logger.getLogger(GenerateTocController.class);
+
     @FXML
     private Label headingLevelLabel;
     @FXML
@@ -88,13 +92,13 @@ public class GenerateTocController implements StandardController
     @Inject
     private EditorTabManager editorTabManager;
 
-
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
     private ObservableList<EditableTocEntry> allTocEntries = FXCollections.observableArrayList();
     private Map<Resource, Document> resourcesToRewrite = new HashMap<>();
-    // editModeProperty
     private final BooleanProperty editModeProperty = new SimpleBooleanProperty(this, "editMode");
+    // levelToShowProperty
+    private final IntegerProperty levelToShowProperty = new SimpleIntegerProperty(this, "levelToShow");
 
     private static GenerateTocController instance;
 
@@ -202,6 +206,17 @@ public class GenerateTocController implements StandardController
         headingLevelComboBox.visibleProperty().bind(editModeProperty.not());
         headingLevelLabel.visibleProperty().bind(editModeProperty.not());
 
+        levelToShowProperty.bind(Bindings.createIntegerBinding(() -> {
+                if (headingLevelComboBox.getSelectionModel().getSelectedIndex() < 3) {
+                    return headingLevelComboBox.getSelectionModel().getSelectedIndex();
+                } else {
+                    return 99;
+                }
+            }, headingLevelComboBox.getSelectionModel().selectedIndexProperty()));
+        headingLevelComboBox.getSelectionModel().selectLast();
+
+        levelToShowProperty.addListener((observable, oldValue, newValue) -> setTableViewItems());
+
         editModeProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue)
             {
@@ -256,15 +271,14 @@ public class GenerateTocController implements StandardController
     {
         int levelIncrement = 0;
         TreeItem<EditableTocEntry> newParent = treeItem;
-        if (!showTocItemsCheckBox.isSelected() || tocEntry.getChoosed())
-        {
+        if ((!showTocItemsCheckBox.isSelected() || tocEntry.getChoosed()) &&
+                ((!isEditMode() && TocGenerator.getLevel(tocEntry.getLevel()) <= levelToShowProperty.get()) || isEditMode())) {
             newParent = new TreeItem<>(tocEntry);
             newParent.setExpanded(true);
             treeItem.getChildren().add(newParent);
             levelIncrement = 1;
         }
-        for (TocEntry childEntry : tocEntry.getChildren())
-        {
+        for (TocEntry childEntry : tocEntry.getChildren()) {
             addTocEntryToTableView((EditableTocEntry)childEntry, newParent, level + levelIncrement);
         }
     }
@@ -312,16 +326,6 @@ public class GenerateTocController implements StandardController
 
     }
 
-    public void showTocItemsCheckBoxAction()
-    {
-
-    }
-
-    public void headingLevelComboBoxAction()
-    {
-
-    }
-
     public void onOkAction()
     {
         try
@@ -354,6 +358,7 @@ public class GenerateTocController implements StandardController
 
             bookBrowserManager.refreshBookBrowser();
             editorTabManager.refreshEditorCode(result.getTocResource());
+            editorTabManager.refreshPreview();
         }
         catch (IOException | JDOMException e)
         {

@@ -316,4 +316,25 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         write(out, replaced);
     }
 
+    protected void printNamespace(final Writer out, final FormatStack fstack,
+                                  final Namespace ns)  throws IOException {
+        final String prefix = ns.getPrefix();
+        final String uri = ns.getURI();
+
+        if (StringUtils.isEmpty(uri)) {
+            //don't write empty namespace attributes
+            return;
+        }
+
+        write(out, " xmlns");
+        if (StringUtils.isNotEmpty(prefix)) {
+            write(out, ":");
+            write(out, prefix);
+        }
+        write(out, "=\"");
+        attributeEscapedEntitiesFilter(out, fstack, uri);
+        write(out, "\"");
+    }
+
+
 }

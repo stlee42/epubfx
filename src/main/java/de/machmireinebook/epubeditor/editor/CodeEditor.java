@@ -65,4 +65,6 @@ public interface CodeEditor
     void applySpellCheckResults(List<RuleMatch> matches);
 
     String getTextInformation();
+
+    void shutdown();
 }

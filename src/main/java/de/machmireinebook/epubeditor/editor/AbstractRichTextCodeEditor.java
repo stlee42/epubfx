@@ -439,4 +439,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     {
         codeArea.getUndoManager().forgetHistory();
     }
+
+    public void shutdown() {
+        taskExecutor.shutdownNow();
+    }
 }

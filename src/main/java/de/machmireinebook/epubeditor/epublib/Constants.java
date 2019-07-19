@@ -1,6 +1,9 @@
 package de.machmireinebook.epubeditor.epublib;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jdom2.DocType;
 import org.jdom2.Namespace;
 
@@ -23,6 +26,8 @@ public interface Constants {
 	Namespace NAMESPACE_EPUB = Namespace.getNamespace("epub", "http://www.idpf.org/2007/ops");
 	String dateFormat = "yyyy-MM-dd";
 
-	String CLASS_SIGIL_NOT_IN_TOC = "sigil_not_in_toc";
+	//String CLASS_SIGIL_NOT_IN_TOC = "sigil_not_in_toc";
+	//String CLASS_SIGIL_NOT_IN_TOC2 = "sigilNotInTOC";
 	String IGNORE_IN_TOC = "ignore-in-toc";
+	List<String> IGNORE_IN_TOC_CLASS_NAMES = Arrays.asList(IGNORE_IN_TOC, "sigil_not_in_toc", "sigilNotInTOC");
 }

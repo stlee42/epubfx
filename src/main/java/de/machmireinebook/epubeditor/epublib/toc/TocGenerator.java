@@ -168,8 +168,7 @@ public class TocGenerator
 
 
                     if (possibleTocEntryElement.getAttributeValue("class") != null
-                            && (possibleTocEntryElement.getAttributeValue("class").contains(CLASS_SIGIL_NOT_IN_TOC) ||
-                            possibleTocEntryElement.getAttributeValue("class").contains(IGNORE_IN_TOC)))
+                            && IGNORE_IN_TOC_CLASS_NAMES.contains(possibleTocEntryElement.getAttributeValue("class")))
                     {
                         tocEntry.setChoosed(false);
                     }
@@ -247,7 +246,7 @@ public class TocGenerator
         }
     }
 
-    private int getLevel(String tagName)
+    public static int getLevel(String tagName)
     {
         int level = -1;
         switch (tagName)

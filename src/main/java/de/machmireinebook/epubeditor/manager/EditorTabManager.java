@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -64,15 +65,15 @@ import de.machmireinebook.epubeditor.editor.XMLTagPair;
 import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.epub2.PackageDocumentReader;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.epublib.resource.CSSResource;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
-import de.machmireinebook.epubeditor.epublib.epub2.PackageDocumentReader;
-import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentReader;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
@@ -267,6 +268,17 @@ public class EditorTabManager {
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
 
+    @PreDestroy
+    public void shutdown() {
+        logger.info("pre destroy");
+        List<Tab> tabs = tabPane.getTabs();
+        for (Tab tab : tabs) {
+            if (tab.getUserData() instanceof CodeEditor) {
+                ((CodeEditor)tab.getUserData()).shutdown();
+            }
+        }
+    }
+
     private void writeClipMenuItemChildren(TreeItem<Clip> parentTreeItem, Menu parentMenu) {
         List<TreeItem<Clip>> children = parentTreeItem.getChildren();
         for (TreeItem<Clip> child : children) {
@@ -423,6 +435,7 @@ public class EditorTabManager {
             else {
                 throw new IllegalArgumentException("no editor for mediatype " + mediaType.getName());
             }
+            tab.setOnCloseRequest(event -> editor.shutdown());
 
             tab.setContent((Node) editor);
             tab.setUserData(resource);

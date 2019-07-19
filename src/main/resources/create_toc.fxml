@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
@@ -8,7 +10,6 @@
 <?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="542.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.GenerateTocController">
    <children>
       <TreeTableView fx:id="treeTableView" layoutX="21.0" layoutY="22.0" prefHeight="460.0" prefWidth="410.0" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="20.0">
@@ -22,10 +23,19 @@
       <Button fx:id="renameButton" layoutX="449.0" layoutY="20.0" mnemonicParsing="false" onAction="#renameButtonAction" prefHeight="25.0" prefWidth="85.0" styleClass="flat" text="Rename" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="20.0" />
       <Button fx:id="higherLevelButton" layoutX="449.0" layoutY="259.0" mnemonicParsing="false" onAction="#higherLevelButtonAction" prefHeight="25.0" prefWidth="25.0" styleClass="flat" text="&lt;" AnchorPane.rightAnchor="126.0" AnchorPane.topAnchor="259.0" />
       <Button fx:id="deeperLevelButton" layoutX="509.0" layoutY="259.0" mnemonicParsing="false" onAction="#deeperLevelButtonAction" prefHeight="25.0" prefWidth="25.0" styleClass="flat" text="&gt;" AnchorPane.rightAnchor="66.0" AnchorPane.topAnchor="259.0" />
-      <CheckBox fx:id="showTocItemsCheckBox" layoutX="226.0" layoutY="430.0" mnemonicParsing="false" onAction="#showTocItemsCheckBoxAction" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="226.0" />
+      <CheckBox fx:id="showTocItemsCheckBox" layoutX="226.0" layoutY="430.0" mnemonicParsing="false" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="226.0" />
       <Label fx:id="headingLevelLabel" layoutX="20.0" layoutY="459.0" text="Level of heading to include in TOC" AnchorPane.bottomAnchor="66.0" AnchorPane.leftAnchor="20.0" />
       <Label fx:id="showTocItemsLabel" layoutX="20.0" layoutY="430.0" text="Show only TOC items" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="20.0" />
-      <ComboBox fx:id="headingLevelComboBox" layoutX="225.0" layoutY="455.0" onAction="#headingLevelComboBoxAction" prefWidth="150.0" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="225.0" />
+      <ComboBox fx:id="headingLevelComboBox" layoutX="225.0" layoutY="455.0" prefWidth="150.0" AnchorPane.bottomAnchor="62.0" AnchorPane.leftAnchor="225.0" >
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Level 1" />
+               <String fx:value="Level 2" />
+               <String fx:value="Level 3" />
+               <String fx:value="All" />
+            </FXCollections>
+         </items>
+      </ComboBox>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
