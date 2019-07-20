@@ -69,6 +69,7 @@ public class EpubEditorConfiguration
 
     public static final int RECENT_FILE_NUMBER = 3;
     public static final String LOCATION_CLASS_PREFIX = "epubfx-line-";
+    public static final String SPACE_ESCAPE_STRING = "__SPACE__";
 
     //tag names in xml for main sections
     public static final String PREFERENCES_ELEMENT_NAME = "preferences";
@@ -281,6 +282,7 @@ public class EpubEditorConfiguration
             {
                 String name = child.getChildText("name");
                 String content = child.getChildText("content");
+                content = content.replaceAll(SPACE_ESCAPE_STRING, " ");
                 Clip clip = new Clip(name, content);
                 TreeItem<Clip> treeItem = new TreeItem<>(clip);
                 parentTreeItem.getChildren().add(treeItem);
@@ -579,7 +581,12 @@ public class EpubEditorConfiguration
 
                 Element contentElement =  new Element("content");
                 clipElement.addContent(contentElement);
-                contentElement.setContent(new CDATA(treeItem.getValue().getContent()));
+                String value = treeItem.getValue().getContent();
+                //replace any space with a unique string, because somewehre in the process of generating xml, strings
+                //will be trimed (cdata doesn't prevent this) so that important spaces at begin and/or the end of the clips
+                // are eliminated
+                value = value.replaceAll(" ", SPACE_ESCAPE_STRING);
+                contentElement.setContent(new CDATA(value));
             }
         }
     }

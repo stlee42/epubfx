@@ -273,8 +273,8 @@ public class EditorTabManager {
         logger.info("pre destroy");
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            if (tab.getUserData() instanceof CodeEditor) {
-                ((CodeEditor)tab.getUserData()).shutdown();
+            if (tab.getContent() instanceof CodeEditor) {
+                ((CodeEditor)tab.getContent()).shutdown();
             }
         }
     }
