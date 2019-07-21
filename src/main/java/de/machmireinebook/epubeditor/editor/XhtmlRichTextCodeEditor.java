@@ -1,18 +1,22 @@
 package de.machmireinebook.epubeditor.editor;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
@@ -23,7 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
+import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -44,7 +51,10 @@ import org.languagetool.ResultCache;
 import org.languagetool.markup.AnnotatedText;
 import org.languagetool.markup.AnnotatedTextBuilder;
 import org.languagetool.rules.CategoryIds;
+import org.languagetool.rules.IncorrectExample;
 import org.languagetool.rules.RuleMatch;
+import org.reactfx.EventStreams;
+import org.reactfx.util.FxTimer;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -77,9 +87,14 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private static final String SPELLCHECK_CLASS_NAME = "spell-check-error";
     private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
     private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
+    private static final String SPELLCHECK_INDIVIDUAL_CLASS_PREFIX = "spell-check-match-";
 
     private JLanguageTool langTool;
     private ResultCache cache;
+    private Map<String, RuleMatch> matchesToText = new HashMap<>();
+    private PopOver popOver = new PopOver();
+    private StyleClassedTextArea popOverTextArea = new StyleClassedTextArea();
+    private boolean isOpenendShortly = false;
 
     @FunctionalInterface
     public interface TagInspector
@@ -126,6 +141,60 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         CodeArea codeArea = getCodeArea();
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
+
+        codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
+        popOver.setContentNode(popOverTextArea);
+        popOver.setTitle("Spell Check Result");
+        popOverTextArea.setUseInitialStyleForInsertion(true);
+
+        EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
+                .successionEnds(Duration.ofMillis(500))
+                .subscribe(event -> {
+                    logger.info("receive mouse over text event");
+                    if (popOver.isShowing()) { //already visible do nothing
+                        logger.info("already visible do nothing");
+                        return;
+                    }
+                    int index = event.getCharacterIndex();
+                    popOverTextArea.clear();
+                    StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index);
+                    for (StyleSpan<Collection<String>> currentStyle : currentStyles) {
+                        List<String> currentStyleNames = new ArrayList<>(currentStyle.getStyle());
+                        for (String currentStyleName : currentStyleNames) {
+                            if (currentStyleName.contains(SPELLCHECK_INDIVIDUAL_CLASS_PREFIX)) {
+                                logger.info("mouse is over text with spellcheck match " + currentStyleName);
+                                RuleMatch match = matchesToText.get(currentStyleName);
+                                logger.info("match " + match);
+
+                                String message = match.getMessage();
+                                popOverTextArea.appendText(message);
+
+                                List<String> examples = match.getRule().getIncorrectExamples()
+                                        .stream()
+                                        .map(IncorrectExample::toString)
+                                        .collect(Collectors.toList());
+                                popOverTextArea.appendText(StringUtils.join(examples, "\n"));
+
+                                List<String> suggestions = match.getSuggestedReplacements();
+                                popOverTextArea.appendText(StringUtils.join(suggestions, "\n"));
+                                popOver.show(codeArea, event.getScenePosition().getX(), event.getScenePosition().getY());
+                                isOpenendShortly = true;
+                                FxTimer.runLater( //let the popup at least 2.5 sec open and ignore MOUSE_OVER_TEXT_END
+                                        Duration.ofMillis(2500),
+                                        () -> isOpenendShortly = false);
+                            }
+                        }
+                    }
+                });
+        EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_END)
+                .successionEnds(Duration.ofMillis(500))
+                .subscribe(event -> {
+                                logger.info("receive mouse over text end event");
+                                if (popOver.isShowing() && !isOpenendShortly) { //do only anything if it's showing and it's not opened shortly
+                                    popOver.hide();
+                                    popOverTextArea.clear();
+                                }
+                            });
     }
 
     public void surroundParagraphWithTag(String tagName) {
@@ -357,6 +426,8 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     @Override
     public void applySpellCheckResults(List<RuleMatch> matches) {
+        matchesToText.clear();
+        int id = 1;
         for (RuleMatch match : matches) {
             int start = match.getFromPos();
             int end = match.getToPos();
@@ -374,7 +445,9 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                                           break;
                         default         : cssClass = SPELLCHECK_CLASS_NAME;
                     }
-                    Collections.addAll(currentStyleNames, cssClass);
+                    String individualCssClass = SPELLCHECK_INDIVIDUAL_CLASS_PREFIX + id++;
+                    matchesToText.put(individualCssClass, match);
+                    Collections.addAll(currentStyleNames, cssClass, individualCssClass);
                     getCodeArea().setStyle(currentPosition, currentPosition + currentStyle.getLength(), currentStyleNames);
                     currentPosition = currentPosition + currentStyle.getLength();
                 }

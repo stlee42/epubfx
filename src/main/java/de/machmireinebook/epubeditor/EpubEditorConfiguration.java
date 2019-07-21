@@ -582,7 +582,7 @@ public class EpubEditorConfiguration
                 Element contentElement =  new Element("content");
                 clipElement.addContent(contentElement);
                 String value = treeItem.getValue().getContent();
-                //replace any space with a unique string, because somewehre in the process of generating xml, strings
+                //replace any space with a unique string, because somewhere in the process of generating xml, strings
                 //will be trimed (cdata doesn't prevent this) so that important spaces at begin and/or the end of the clips
                 // are eliminated
                 value = value.replaceAll(" ", SPACE_ESCAPE_STRING);

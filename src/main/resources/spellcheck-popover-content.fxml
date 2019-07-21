@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" type="de.machmireinebook.epubeditor.editor.SpellcheckPopoverContentAnchorPane">
+   <children>
+      <Label fx:id="messageLabel" layoutX="14.0" layoutY="21.0" text="Message" wrapText="true"/>
+      <Separator layoutY="60.0" prefHeight="3.0" prefWidth="281.0" />
+      <Label fx:id="examplesLabel" layoutX="14.0" layoutY="70.0" text="Examples" wrapText="true"/>
+      <Separator layoutY="120.0" prefHeight="3.0" prefWidth="281.0" />
+      <Label fx:id="suggestionsLabel" layoutX="14.0" layoutY="110.0" text="Suggestions" wrapText="true"/>
+   </children>
+</fx:root>

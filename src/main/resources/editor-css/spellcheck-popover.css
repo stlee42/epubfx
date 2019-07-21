@@ -1,0 +1,16 @@
+.styled-text-area {
+    -fx-cursor: text;
+    -fx-font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+}
+
+.styled-text-area .normal {
+    -fx-font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+}
+
+.styled-text-area .code {
+    -fx-font-family: 'DejaVu Sans Mono', monospace;
+}
+
+.styled-text-area .bold {
+   -fx-font-weight: bold;
+}
