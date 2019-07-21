@@ -54,7 +54,6 @@ import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.IncorrectExample;
 import org.languagetool.rules.RuleMatch;
 import org.reactfx.EventStreams;
-import org.reactfx.util.FxTimer;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -94,7 +93,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
     private PopOver popOver = new PopOver();
     private StyleClassedTextArea popOverTextArea = new StyleClassedTextArea();
-    private boolean isOpenendShortly = false;
 
     @FunctionalInterface
     public interface TagInspector
@@ -155,6 +153,9 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                         logger.info("already visible do nothing");
                         return;
                     }
+                    logger.info("Position: " + event.getPosition());
+                    logger.info("ScenePosition: " + event.getScenePosition());
+                    logger.info("ScreenPosition: " + event.getScreenPosition());
                     int index = event.getCharacterIndex();
                     popOverTextArea.clear();
                     StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index);
@@ -178,19 +179,18 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                                 List<String> suggestions = match.getSuggestedReplacements();
                                 popOverTextArea.appendText(StringUtils.join(suggestions, "\n"));
                                 popOver.show(codeArea, event.getScenePosition().getX(), event.getScenePosition().getY());
-                                isOpenendShortly = true;
-                                FxTimer.runLater( //let the popup at least 2.5 sec open and ignore MOUSE_OVER_TEXT_END
-                                        Duration.ofMillis(2500),
-                                        () -> isOpenendShortly = false);
                             }
                         }
                     }
                 });
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_END)
-                .successionEnds(Duration.ofMillis(500))
+                .successionEnds(Duration.ofMillis(1500))
                 .subscribe(event -> {
                                 logger.info("receive mouse over text end event");
-                                if (popOver.isShowing() && !isOpenendShortly) { //do only anything if it's showing and it's not opened shortly
+                                if (popOver.isShowing()) { //do only anything if it's showing and it's not opened shortly
+                                    logger.info("Position: " + event.getPosition());
+                                    logger.info("ScenePosition: " + event.getScenePosition());
+                                    logger.info("ScreenPosition: " + event.getScreenPosition());
                                     popOver.hide();
                                     popOverTextArea.clear();
                                 }
