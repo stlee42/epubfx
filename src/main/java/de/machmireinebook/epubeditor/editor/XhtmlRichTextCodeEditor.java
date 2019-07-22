@@ -18,10 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javafx.geometry.Point2D;
 import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -93,6 +95,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
     private PopOver popOver = new PopOver();
     private StyleClassedTextArea popOverTextArea = new StyleClassedTextArea();
+    private Point2D popOverOpeningPosition;
 
     @FunctionalInterface
     public interface TagInspector
@@ -140,22 +143,22 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
 
+        //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
         popOver.setContentNode(popOverTextArea);
         popOver.setTitle("Spell Check Result");
+        popOver.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
         popOverTextArea.setUseInitialStyleForInsertion(true);
+        popOverTextArea.setEditable(false);
+        popOverTextArea.getStylesheets().add(getClass().getResource("/editor-css/spellcheck-popover.css").toExternalForm());
 
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
                 .successionEnds(Duration.ofMillis(500))
                 .subscribe(event -> {
-                    logger.info("receive mouse over text event");
                     if (popOver.isShowing()) { //already visible do nothing
                         logger.info("already visible do nothing");
                         return;
                     }
-                    logger.info("Position: " + event.getPosition());
-                    logger.info("ScenePosition: " + event.getScenePosition());
-                    logger.info("ScreenPosition: " + event.getScreenPosition());
                     int index = event.getCharacterIndex();
                     popOverTextArea.clear();
                     StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index);
@@ -178,21 +181,24 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
                                 List<String> suggestions = match.getSuggestedReplacements();
                                 popOverTextArea.appendText(StringUtils.join(suggestions, "\n"));
-                                popOver.show(codeArea, event.getScenePosition().getX(), event.getScenePosition().getY());
+                                //dont use any x and y values of popover directly (like anchorY or anchorY), because its includes any
+                                // unknown offsets, bounds and so on
+                                popOverOpeningPosition = event.getScreenPosition();
+                                popOver.show(codeArea, event.getScreenPosition().getX(), event.getScreenPosition().getY());
                             }
                         }
                     }
                 });
-        EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_END)
-                .successionEnds(Duration.ofMillis(1500))
+        EventStreams.eventsOf(codeArea, MouseEvent.MOUSE_MOVED)
+                .successionEnds(Duration.ofMillis(500))
                 .subscribe(event -> {
-                                logger.info("receive mouse over text end event");
-                                if (popOver.isShowing()) { //do only anything if it's showing and it's not opened shortly
-                                    logger.info("Position: " + event.getPosition());
-                                    logger.info("ScenePosition: " + event.getScenePosition());
-                                    logger.info("ScreenPosition: " + event.getScreenPosition());
-                                    popOver.hide();
-                                    popOverTextArea.clear();
+                                if (popOver.isShowing()) { //do only anything if it's showing
+                                    double popOverX = popOverOpeningPosition.getX();
+                                    double popOverY = popOverOpeningPosition.getY();
+                                    if (Math.abs(popOverX - event.getX()) > 20 || Math.abs(popOverY - event.getY()) > 20) {
+                                        popOver.hide();
+                                        popOverTextArea.clear();
+                                    }
                                 }
                             });
     }
