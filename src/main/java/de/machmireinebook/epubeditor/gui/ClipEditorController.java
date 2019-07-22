@@ -24,11 +24,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.converter.DefaultStringConverter;
 
-import de.machmireinebook.epubeditor.clips.Clip;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.clips.ClipManager;
-
 import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.clips.ClipManager;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
 
 /**
  * User: mjungierek
@@ -200,16 +200,15 @@ public class ClipEditorController implements StandardController
     {
         int selectedIndex = treeTableView.getSelectionModel().getSelectedIndex();
         TreeItem<Clip> selectedItem = treeTableView.getSelectionModel().getSelectedItem();
-        Clip clip;
+        TreeItem<Clip> treeItem;
         if (isGroup)
         {
-            clip = new Clip("Name", true);
+            treeItem = clipManager.createClipTreeItem("Name", true);
         }
         else
         {
-            clip = new Clip("Name", "");
+            treeItem = clipManager.createClipTreeItem("Name", "");
         }
-        TreeItem<Clip> treeItem = new TreeItem<>(clip);
         selectedItem.getParent().getChildren().add(selectedIndex + 1, treeItem);
         //focus auf neue Zeile setzen
         Platform.runLater(() -> {

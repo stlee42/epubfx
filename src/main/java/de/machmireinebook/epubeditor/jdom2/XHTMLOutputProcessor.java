@@ -312,7 +312,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         {
             return;
         }
-        String replaced = str.replaceAll("\\s{2,}", "");
+        String replaced = str.replaceAll("\\s{2,}", " ");
         write(out, replaced);
     }
 

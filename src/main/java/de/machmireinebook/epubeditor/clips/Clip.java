@@ -11,14 +11,14 @@ public class Clip
     private String content;
     private boolean isGroup;
 
-    public Clip(String name, String content)
+    Clip(String name, String content)
     {
         this.content = content;
         this.name = name;
         isGroup = false;
     }
 
-    public Clip(String name, boolean isGroup)
+    Clip(String name, boolean isGroup)
     {
         this.isGroup = isGroup;
         this.name = name;
