@@ -7,21 +7,26 @@ package de.machmireinebook.epubeditor.preferences;
  */
 public enum QuotationMark
 {
-    ENGLISH("“ ” (English)", "“", "”"),
-    GERMAN("„“ (Deutsch)", "„", "“"),
-    GERMAN_GUILLEMETS("»« (Deutsch)", "»", "«"),
-    FRENCH("«» (Français)", "«", "»"),
+    ENGLISH("“ ” (English, UK)", "“", "”", "‘", "’"),
+    ENGLISH_US("“ ” (English, US)", "‘", "’", "“", "”"),
+    GERMAN("„“ (Deutsch)", "„", "“", "‚", "‘"),
+    GERMAN_GUILLEMETS("»« (Deutsch)", "»", "«", "›", "‹"),
+    FRENCH("«» (Français)", "«", "»",  "‹", "›"),
             ;
 
     private String description;
     private String left;
     private String right;
+    private String singleLeft;
+    private String singleRight;
 
-    QuotationMark(String description, String left, String right)
+    QuotationMark(String description, String left, String right, String singleLeft, String singleRight)
     {
         this.description = description;
         this.left = left;
         this.right = right;
+        this.singleLeft = singleLeft;
+        this.singleRight = singleRight;
     }
 
     public static QuotationMark findByDescription(String description)
@@ -48,6 +53,14 @@ public enum QuotationMark
     public String getRight()
     {
         return right;
+    }
+
+    public String getSingleLeft() {
+        return singleLeft;
+    }
+
+    public String getSingleRight() {
+        return singleRight;
     }
 
     @Override

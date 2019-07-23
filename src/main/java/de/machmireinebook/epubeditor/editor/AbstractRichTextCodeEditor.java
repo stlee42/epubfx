@@ -26,12 +26,14 @@ import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CharacterHit;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
@@ -140,6 +142,15 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                     break;
             }
         });
+        codeArea.addEventHandler(MouseEvent.MOUSE_PRESSED, (MouseEvent event) -> {
+            if (event.getClickCount() == 1 && event.isSecondaryButtonDown()) {
+                CharacterHit hit = codeArea.hit(event.getX(), event.getY());
+                int characterPosition = hit.getInsertionIndex();
+
+                // move the caret to that character's position and restore the selection, the
+                codeArea.displaceCaret(characterPosition);
+            }
+        });
     }
 
     @Override
@@ -184,7 +195,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
-        isChangingCode = true; //this change of code is not relevant for listeners
         codeArea.setStyleSpans(0, highlighting);
     }
 

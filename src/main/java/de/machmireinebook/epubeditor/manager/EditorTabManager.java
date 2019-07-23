@@ -317,9 +317,10 @@ public class EditorTabManager {
     private void insertClip(Clip clip) {
         CodeEditor editor = currentEditor.getValue();
         String selection = editor.getSelection();
-        String insertedClip = selection.replaceAll("^(.*)$", clip.getContent());
+        String insertedClip = selection.replaceAll("(?s)^(.*)$", clip.getContent());
         editor.replaceSelection(insertedClip);
         book.setBookIsChanged(true);
+        editor.requestFocus();
     }
 
     private void beautifyCSS(String type) {
@@ -366,6 +367,7 @@ public class EditorTabManager {
         editor.setAbsoluteCursorPosition(currentCursorPosition);
         editor.scrollTo(currentCursorPosition);
         book.setBookIsChanged(true);
+        editor.requestFocus();
     }
 
     public void openImageFile(Resource resource) {
@@ -644,16 +646,16 @@ public class EditorTabManager {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             xhtmlCodeEditor.increaseIndent();
-            xhtmlCodeEditor.requestFocus();
         }
+        currentEditor.get().requestFocus();
     }
 
     public void decreaseIndent() {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             xhtmlCodeEditor.decreaseIndent();
-            xhtmlCodeEditor.requestFocus();
         }
+        currentEditor.get().requestFocus();
     }
 
     public boolean splitXHTMLFile() {
@@ -839,6 +841,7 @@ public class EditorTabManager {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             xhtmlCodeEditor.scrollTo(nodeChain);
         }
+        currentEditor.get().requestFocus();
     }
 
     public ObservableValue<? extends String> cursorPosLabelProperty() {

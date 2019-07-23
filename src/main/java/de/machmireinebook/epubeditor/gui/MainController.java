@@ -59,8 +59,6 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 
-import com.pixelduke.control.Ribbon;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -87,6 +85,7 @@ import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
+import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -98,6 +97,9 @@ import jidefx.scene.control.searchable.TreeViewSearchable;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    
+    @FXML
+    private Button blockQuoteButton;
     @FXML
     private Button validateEpubButton;
     @FXML
@@ -338,6 +340,7 @@ public class MainController implements Initializable
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
         quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
         singleQuotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        blockQuoteButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
         kursivButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -918,9 +921,18 @@ public class MainController implements Initializable
 
     public void singleQuotationMarksButtonAction(ActionEvent actionEvent)
     {
+        String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
+        logger.info("select quotation mark " + selectedQuotationMark);
+        QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
+        editorTabManager.surroundSelection(quotationMark.getSingleLeft(), quotationMark.getSingleRight());
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
+    public void blockQuoteButtonAction(ActionEvent actionEvent) {
+        editorTabManager.surroundSelectionWithTag("blockquote");
+    }
 
+    
     public void boldButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundSelectionWithTag("b");
@@ -1323,5 +1335,4 @@ public class MainController implements Initializable
 
 
     }
-
 }

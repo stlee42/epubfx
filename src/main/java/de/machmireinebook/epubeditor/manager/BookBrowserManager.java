@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -78,6 +79,9 @@ import com.google.common.io.Files;
 public class BookBrowserManager
 {
     private static final Logger logger = Logger.getLogger(BookBrowserManager.class);
+
+    private static final String CSS_FILE_ICON = "/icons/icons8_CSS_Filetype_96px.png";
+    private static final String IMAGE_FILE_ICON = "/icons/icons8_Image_File_96px.png";
 
     private TreeItem<Resource> textItem;
     private TreeItem<Resource> cssItem;
@@ -698,7 +702,7 @@ public class BookBrowserManager
             item.setOnAction(event -> openWithApplication(treeItem, application.getFileName()));
             menu.getItems().add(item);
         }
-        MenuItem item = new MenuItem("Weitere Anwendung konfigurieren...");
+        MenuItem item = new MenuItem("Configure another application ...");
         item.setUserData(treeItem);
         item.setOnAction(event -> configureApplicationForOpenImage(treeItem));
         menu.getItems().add(item);
@@ -727,7 +731,7 @@ public class BookBrowserManager
         for (Resource cssResource : cssResources)
         {
             TreeItem<Resource> item = new TreeItem<>(cssResource);
-            item.setGraphic(FXUtils.getIcon("/icons/icons8_CSS_Filetype_96px.png", 24));
+            item.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
             cssItem.getChildren().add(item);
         }
 
@@ -766,19 +770,19 @@ public class BookBrowserManager
             TreeItem<Resource> item = new TreeItem<>(imageResource);
             if (imageResource.getMediaType().equals(MediaType.GIF))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.PNG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.SVG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
             }
             else if (imageResource.getMediaType().equals(MediaType.JPG))
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Image_File_96px.png", 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
             }
             imagesItem.getChildren().add(item);
         }
@@ -1215,19 +1219,12 @@ public class BookBrowserManager
     {
         String fileName = book.getNextStandardFileName(MediaType.CSS);
         Resource res = book.addResourceFromTemplate("/epub/template.css", "Styles/" + fileName);
-        try
-        {
-            String content = new String(res.getData(), "UTF-8");
-            content = content.replace("${Title}", book.getTitle());
-            res.setData(content.getBytes("UTF-8"));
-        }
-        catch (IOException e)
-        {
-            //never happens
-        }
+        String content = new String(res.getData(), StandardCharsets.UTF_8);
+        content = content.replace("${Title}", book.getTitle());
+        res.setData(content.getBytes(StandardCharsets.UTF_8));
 
         TreeItem<Resource> emptyItem = new TreeItem<>(res);
-        emptyItem.setGraphic(FXUtils.getIcon("/icons/document_gear.png", 24));
+        emptyItem.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
         cssItem.getChildren().add(emptyItem);
 
         book.addResource(res);

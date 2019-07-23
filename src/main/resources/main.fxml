@@ -793,7 +793,7 @@
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Surround with double quotation marks" />
+                                            <Tooltip styleClass="white-tooltip" text="Surround selection with primary quotation marks" />
                                         </tooltip>
                                     </Button>
                                 </Column>
@@ -807,12 +807,23 @@
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Surround with single quotation marks" />
+                                            <Tooltip styleClass="white-tooltip" text="Surround selection with secondary quotation marks" />
                                         </tooltip>
                                     </Button>
                                 </Column>
                                 <Column>
                                 <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" styleClass="letter-button" text="h3" />
+                                    <Button fx:id="blockQuoteButton" mnemonicParsing="false" onAction="#blockQuoteButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Term_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround selection with blockquote tag" />
+                                        </tooltip>
+                                    </Button>
                                 </Column>
                                 <Column>
                                 <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" styleClass="letter-button" text="h4" />
@@ -1108,7 +1119,7 @@
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="icons/icons8_Content_96px.png" />
+                                                <Image url="icons/icons8_New_Property_96px.png" />
                                             </image>
                                         </ImageView>
                                     </graphic>
@@ -1118,7 +1129,7 @@
                                     <graphic>
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-                                                <Image url="icons/icons8_Content_96px_edit.png" />
+                                                <Image url="icons/icons8_Edit_Property_96px.png" />
                                             </image>
                                         </ImageView>
                                     </graphic>

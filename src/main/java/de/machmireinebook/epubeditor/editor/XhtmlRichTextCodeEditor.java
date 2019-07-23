@@ -24,7 +24,6 @@ import javax.inject.Named;
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.IndexRange;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -35,7 +34,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.controlsfx.control.PopOver;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -174,15 +172,13 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
         popOver.setTitle("Spell Check Result");
-        popOver.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
+        popOver.setPrefSize(300, USE_COMPUTED_SIZE);
         popOverTextArea.setUseInitialStyleForInsertion(true);
         popOverTextArea.setEditable(false);
         popOverTextArea.setShowCaret(Caret.CaretVisibility.OFF);
+        popOverTextArea.setWrapText(true);
         popOverTextArea.getStylesheets().add(getClass().getResource("/editor-css/spellcheck-popover.css").toExternalForm());
-        VirtualizedScrollPane<StyleClassedTextArea> popOverScrollPane = new VirtualizedScrollPane<>(popOverTextArea);
-        popOverScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        popOverScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        popOver.setContentNode(popOverScrollPane);
+        popOver.setContentNode(popOverTextArea);
 
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
                 .filter(mouseEvent -> !popOver.isShowing())
