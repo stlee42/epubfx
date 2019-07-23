@@ -16,7 +16,6 @@ import javax.inject.Singleton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
 
 import org.apache.commons.collections4.list.SetUniqueList;
@@ -29,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.WriterAppender;
 
-import org.jdom2.CDATA;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -37,10 +35,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import de.machmireinebook.epubeditor.clips.Clip;
+import de.machmireinebook.epubeditor.clips.ClipManager;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
-import de.machmireinebook.epubeditor.clips.ClipManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.StageSizer;
 
@@ -69,7 +66,6 @@ public class EpubEditorConfiguration
 
     public static final int RECENT_FILE_NUMBER = 3;
     public static final String LOCATION_CLASS_PREFIX = "epubfx-line-";
-    public static final String SPACE_ESCAPE_STRING = "__SPACE__";
 
     //tag names in xml for main sections
     public static final String PREFERENCES_ELEMENT_NAME = "preferences";
@@ -255,8 +251,7 @@ public class EpubEditorConfiguration
 
                     Element clipsElement = root.getChild(CLIPS_ELEMENT_NAME);
                     List<Element> children = clipsElement.getChildren();
-                    TreeItem<Clip> clipsRoot =  clipManager.getClipsRoot();
-                    readChildren(children, clipsRoot);
+                    clipManager.readClips(children);
 
                     Element preferencesElement = root.getChild(PREFERENCES_ELEMENT_NAME);
                     if (preferencesElement == null) {
@@ -271,31 +266,6 @@ public class EpubEditorConfiguration
             logger.error("", e);
             //im fehlerfall leeres Document erzeugen
             configurationDocument = new Document(new Element("configuration"));
-        }
-    }
-
-    private void readChildren(List<Element> children, TreeItem<Clip> parentTreeItem)
-    {
-        for (Element child : children)
-        {
-            if (child.getName().equals("clip"))
-            {
-                String name = child.getChildText("name");
-                String content = child.getChildText("content");
-                content = content.replaceAll(SPACE_ESCAPE_STRING, " ");
-                Clip clip = new Clip(name, content);
-                TreeItem<Clip> treeItem = new TreeItem<>(clip);
-                parentTreeItem.getChildren().add(treeItem);
-            }
-            else if (child.getName().equals("group"))
-            {
-                String name = child.getAttributeValue("name");
-                Clip clip = new Clip(name, true);
-                TreeItem<Clip> treeItem = new TreeItem<>(clip);
-                parentTreeItem.getChildren().add(treeItem);
-                List<Element> subChildren = child.getChildren();
-                readChildren(subChildren, treeItem);
-            }
         }
     }
 
@@ -534,8 +504,7 @@ public class EpubEditorConfiguration
 
             //neu aus ClipManager aufbauen
             clipsElement.removeContent();
-            TreeItem<Clip> clipRootItem = clipManager.getClipsRoot();
-            writeChildren(clipRootItem, clipsElement);
+            clipManager.saveClips(clipsElement);
 
             //create new from element in preferences manager
             root.removeChild(PREFERENCES_ELEMENT_NAME);
@@ -556,39 +525,6 @@ public class EpubEditorConfiguration
             logger.error("", e);
         }
 
-    }
-
-    private void writeChildren(TreeItem<Clip> parentTreeItem, Element parentElement)
-    {
-        List<TreeItem<Clip>> treeItems = parentTreeItem.getChildren();
-        for (TreeItem<Clip> treeItem : treeItems)
-        {
-            if (treeItem.getValue().isGroup())
-            {
-                Element groupElement = new Element("group");
-                groupElement.setAttribute("name", treeItem.getValue().getName());
-                writeChildren(treeItem, groupElement);
-                parentElement.addContent(groupElement);
-            }
-            else
-            {
-                Element clipElement = new Element("clip");
-                parentElement.addContent(clipElement);
-
-                Element nameElement =  new Element("name");
-                clipElement.addContent(nameElement);
-                nameElement.setText(treeItem.getValue().getName());
-
-                Element contentElement =  new Element("content");
-                clipElement.addContent(contentElement);
-                String value = treeItem.getValue().getContent();
-                //replace any space with a unique string, because somewhere in the process of generating xml, strings
-                //will be trimed (cdata doesn't prevent this) so that important spaces at begin and/or the end of the clips
-                // are eliminated
-                value = value.replaceAll(" ", SPACE_ESCAPE_STRING);
-                contentElement.setContent(new CDATA(value));
-            }
-        }
     }
 
     private void saveApplications(Element element, List<OpenWithApplication> applications)

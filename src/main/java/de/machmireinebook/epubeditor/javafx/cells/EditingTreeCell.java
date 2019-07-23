@@ -57,13 +57,15 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
         String text = getString();
         textField.setText(text);
 
-        int index = text.indexOf(".");
-        if (index > -1 && selectOnlyFirstPartOfFileName) {
-            textField.selectRange(0, index);
-        } else {
-            textField.selectAll();
-        }
-        Platform.runLater(textField::requestFocus);
+        Platform.runLater(() -> {
+            textField.requestFocus();
+            int index = text.indexOf(".");
+            if (index > -1 && selectOnlyFirstPartOfFileName) {
+                textField.selectRange(0, index);
+            } else {
+                textField.selectAll();
+            }
+        });
     }
 
     @Override

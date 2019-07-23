@@ -196,7 +196,12 @@ public class EditorTabManager {
         contextMenuXHTML.setAutoHide(true);
 
         Menu clipsItem = new Menu("Text Snippets");
-        clipManager.getClipsRoot().addEventHandler(TreeItem.<Clip>childrenModificationEvent(), event -> {
+        clipManager.clipsRootProperty().addListener(event -> {
+            logger.info("whole clips tree changed, (re)build the clip menu");
+            clipsItem.getItems().clear();
+            writeClipMenuItemChildren(clipManager.getClipsRoot(), clipsItem);
+        });
+        clipManager.setOnClipsTreeChanged(c -> {
             clipsItem.getItems().clear();
             writeClipMenuItemChildren(clipManager.getClipsRoot(), clipsItem);
         });
