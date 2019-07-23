@@ -2,7 +2,6 @@ package de.machmireinebook.epubeditor.editor;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,7 +37,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.wellbehaved.event.Nodes;
-import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -57,7 +55,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 {
     private static final Logger logger = Logger.getLogger(AbstractRichTextCodeEditor.class);
 
-    private ExecutorService taskExecutor =  Executors.newWorkStealingPool(5);
+    ExecutorService taskExecutor =  Executors.newWorkStealingPool(5);
 
     private CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
@@ -68,9 +66,9 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
-    protected final PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
+    final PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
     protected MediaType mediaType;
-    private int durationHighlightingComputation = 10;
+    int durationHighlightingComputation = 10;
 
     AbstractRichTextCodeEditor()
     {
@@ -101,21 +99,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                     }
                 })
                 .subscribe(this::applyHighlighting);
-
-        codeArea.multiPlainChanges()
-                .filter(plainTextChanges -> preferencesManager.isSpellcheck())
-                .successionEnds(Duration.ofMillis(durationHighlightingComputation))
-                .supplyTask(this::spellCheckAsync)
-                .awaitLatest(codeArea.multiPlainChanges())
-                .filterMap(tryTask -> {
-                    if (tryTask.isSuccess()) {
-                        return Optional.of(tryTask.get());
-                    } else {
-                        tryTask.getFailure().printStackTrace();
-                        return Optional.empty();
-                    }
-                })
-                .subscribe(this::applySpellCheckResults);
 
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
@@ -203,18 +186,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
         isChangingCode = true; //this change of code is not relevant for listeners
         codeArea.setStyleSpans(0, highlighting);
-    }
-
-    private Task<List<RuleMatch>> spellCheckAsync() {
-        logger.info("creating spellcheck task");
-        Task<List<RuleMatch>> task = new Task<>() {
-            @Override
-            protected List<RuleMatch> call() {
-                return spellCheck();
-            }
-        };
-        taskExecutor.execute(task);
-        return task;
     }
 
     protected abstract StyleSpans<Collection<String>> computeHighlighting(String text);

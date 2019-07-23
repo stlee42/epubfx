@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
@@ -62,7 +63,10 @@ import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.editor.CssRichTextCodeEditor;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.editor.XMLTagPair;
+import de.machmireinebook.epubeditor.editor.XhtmlCodeEditor;
 import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
+import de.machmireinebook.epubeditor.editor.XmlCodeEditor;
+import de.machmireinebook.epubeditor.editor.XmlRichTextCodeEditor;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -110,6 +114,14 @@ public class EditorTabManager {
     private ClipManager clipManager;
     @Inject
     private BookBrowserManager bookBrowserManager;
+    @Inject
+    @XhtmlCodeEditor
+    private Provider<XhtmlRichTextCodeEditor> xhtmlEditorProvider;
+    @Inject
+    @XmlCodeEditor
+    private Provider<XmlRichTextCodeEditor> xmlEditorProvider;
+    @Inject
+    private Provider<CssRichTextCodeEditor> cssEditorProvider;
 
     private boolean openingEditorTab = false;
     private boolean refreshAllInProgress = false;
@@ -425,16 +437,16 @@ public class EditorTabManager {
 
             CodeEditor editor;
             if (mediaType.equals(MediaType.CSS)) {
-                editor = new CssRichTextCodeEditor();
+                editor = cssEditorProvider.get();
                 editor.setContextMenu(contextMenuCSS);
             }
             else if (mediaType.equals(MediaType.XHTML)) {
-                editor = new XhtmlRichTextCodeEditor(mediaType);
+                editor = xhtmlEditorProvider.get();
                 editor.setContextMenu(contextMenuXHTML);
                 ((XHTMLResource)resource).prepareWebViewDocument();
             }
             else if (mediaType.equals(MediaType.XML)) {
-                editor = new XhtmlRichTextCodeEditor(mediaType);
+                editor = xmlEditorProvider.get();
                 editor.setContextMenu(contextMenuXML);
             }
             else {

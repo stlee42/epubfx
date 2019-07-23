@@ -13,13 +13,18 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.StringTokenizer;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.IndexRange;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
@@ -30,6 +35,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.controlsfx.control.PopOver;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
@@ -48,11 +55,8 @@ import org.jdom2.filter.Filters;
 import org.jdom2.located.LocatedElement;
 import org.jdom2.located.LocatedJDOMFactory;
 import org.jdom2.util.IteratorIterable;
-import org.languagetool.JLanguageTool;
-import org.languagetool.ResultCache;
 import org.languagetool.markup.AnnotatedText;
 import org.languagetool.markup.AnnotatedTextBuilder;
-import org.languagetool.rules.CategoryIds;
 import org.languagetool.rules.IncorrectExample;
 import org.languagetool.rules.RuleMatch;
 import org.reactfx.EventStreams;
@@ -60,6 +64,7 @@ import org.reactfx.EventStreams;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.manager.ElementPosition;
+import de.machmireinebook.epubeditor.manager.SpellcheckManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
@@ -68,6 +73,8 @@ import static org.fxmisc.wellbehaved.event.InputMap.consume;
 /**
  * Created by Michail Jungierek
  */
+@Named("xhtmlRichTextCodeEditor")
+@XhtmlCodeEditor
 public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 {
     private static final Logger logger = Logger.getLogger(XhtmlRichTextCodeEditor.class);
@@ -90,12 +97,13 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
     private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
     private static final String SPELLCHECK_INDIVIDUAL_CLASS_PREFIX = "spell-check-match-";
 
-    private JLanguageTool langTool;
-    private ResultCache cache;
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
     private PopOver popOver = new PopOver();
     private StyleClassedTextArea popOverTextArea = new StyleClassedTextArea();
     private Point2D popOverOpeningPosition;
+
+    @Inject
+    private SpellcheckManager spellchecker;
 
     @FunctionalInterface
     public interface TagInspector
@@ -126,10 +134,10 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
     }
 
-    public XhtmlRichTextCodeEditor(MediaType mediaType)
-    {
+    @Inject
+    public XhtmlRichTextCodeEditor() {
         super();
-        this.mediaType = mediaType;
+
         try {
             String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/xhtml.css").toExternalForm();
             addStyleSheet(stylesheet);
@@ -142,33 +150,42 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         CodeArea codeArea = getCodeArea();
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
         Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
+    }
+
+    @PostConstruct
+    public void init() {
+        CodeArea codeArea = getCodeArea();
+
+        codeArea.multiPlainChanges()
+                .filter(plainTextChanges -> preferencesManager.isSpellcheck())
+                .successionEnds(Duration.ofMillis(durationHighlightingComputation))
+                .supplyTask(this::spellCheckAsync)
+                .awaitLatest(codeArea.multiPlainChanges())
+                .filterMap(tryTask -> {
+                    if (tryTask.isSuccess()) {
+                        return Optional.of(tryTask.get());
+                    } else {
+                        tryTask.getFailure().printStackTrace();
+                        return Optional.empty();
+                    }
+                })
+                .subscribe(this::applySpellCheckResults);
 
         //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
-        popOver.setContentNode(popOverTextArea);
         popOver.setTitle("Spell Check Result");
         popOver.setPrefSize(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE);
         popOverTextArea.setUseInitialStyleForInsertion(true);
         popOverTextArea.setEditable(false);
+        popOverTextArea.setShowCaret(Caret.CaretVisibility.OFF);
         popOverTextArea.getStylesheets().add(getClass().getResource("/editor-css/spellcheck-popover.css").toExternalForm());
-
-        logger.info("creating spellcheck cache");
-        cache = new ResultCache(10000, 1, TimeUnit.HOURS);
-        logger.info("spellcheck cache created, creating langTool");
-        langTool = new JLanguageTool(preferencesManager.getLanguageSpellSelection().getLanguage(), null, cache);
-        langTool.disableCategory(CategoryIds.TYPOGRAPHY);
-        langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
-        langTool.disableCategory(CategoryIds.REDUNDANCY);
-        langTool.disableCategory(CategoryIds.STYLE);
-        langTool.disableCategory(CategoryIds.GENDER_NEUTRALITY);
-        langTool.disableCategory(CategoryIds.SEMANTICS);
-        langTool.disableCategory(CategoryIds.COLLOQUIALISMS);
-        langTool.disableCategory(CategoryIds.WIKIPEDIA);
-        langTool.disableCategory(CategoryIds.BARBARISM);
-        langTool.disableCategory(CategoryIds.MISC);
-        logger.info("langTool created");
+        VirtualizedScrollPane<StyleClassedTextArea> popOverScrollPane = new VirtualizedScrollPane<>(popOverTextArea);
+        popOverScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        popOverScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        popOver.setContentNode(popOverScrollPane);
 
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
+                .filter(mouseEvent -> !popOver.isShowing())
                 .successionEnds(Duration.ofMillis(500))
                 .subscribe(event -> {
                     if (popOver.isShowing()) { //already visible do nothing
@@ -197,7 +214,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
                                 List<String> suggestions = match.getSuggestedReplacements();
                                 popOverTextArea.appendText(StringUtils.join(suggestions, "\n"));
-                                //dont use any x and y values of popover directly (like anchorY or anchorY), because its includes any
+                                // dont use any x and y values of popover directly (like anchorY or anchorY), because its includes any
                                 // unknown offsets, bounds and so on
                                 popOverOpeningPosition = event.getScreenPosition();
                                 popOver.show(codeArea, event.getScreenPosition().getX(), event.getScreenPosition().getY());
@@ -206,17 +223,25 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                     }
                 });
         EventStreams.eventsOf(codeArea, MouseEvent.MOUSE_MOVED)
-                .successionEnds(Duration.ofMillis(500))
+                .filter(mouseEvent -> popOver.isShowing())
+                .thenIgnoreFor(Duration.ofMillis(500))
                 .subscribe(event -> {
-                                if (popOver.isShowing()) { //do only anything if it's showing
-                                    double popOverX = popOverOpeningPosition.getX();
-                                    double popOverY = popOverOpeningPosition.getY();
-                                    if (Math.abs(popOverX - event.getX()) > 20 || Math.abs(popOverY - event.getY()) > 20) {
-                                        popOver.hide();
-                                        popOverTextArea.clear();
-                                    }
-                                }
-                            });
+                    if (popOver.isShowing()) { //do only anything if it's showing
+                        double popOverX = popOverOpeningPosition.getX();
+                        double popOverY = popOverOpeningPosition.getY();
+                        if (Math.abs(popOverX - event.getX()) > 20 || Math.abs(popOverY - event.getY()) > 20) {
+                            popOver.hide();
+                            popOverTextArea.clear();
+                        }
+                    }
+                });
+
+    }
+
+    @Override
+    public MediaType getMediaType()
+    {
+        return MediaType.XHTML;
     }
 
     public void surroundParagraphWithTag(String tagName) {
@@ -389,21 +414,32 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         return spansBuilder.create();
     }
 
+    private Task<List<RuleMatch>> spellCheckAsync() {
+        logger.info("creating spellcheck task");
+        Task<List<RuleMatch>> task = new Task<>() {
+            @Override
+            protected List<RuleMatch> call() {
+                return spellCheck();
+            }
+        };
+        taskExecutor.execute(task);
+        return task;
+    }
+
     @Override
     public List<RuleMatch> spellCheck() {
         logger.info("starting spellcheck");
         List<RuleMatch> matches = Collections.emptyList();
-        if (mediaType == MediaType.XHTML) {
-            String text = getCodeArea().getText();
-            AnnotatedText annotatedText = makeAnnotatedText(text);
+        String text = getCodeArea().getText();
+        AnnotatedText annotatedText = makeAnnotatedText(text);
 
-            try {
-                matches = langTool.check(annotatedText);
-            }
-            catch (IOException e) {
-                logger.error("can't spell check text", e);
-            }
+        try {
+            matches = spellchecker.check(annotatedText);
         }
+        catch (IOException e) {
+            logger.error("can't spell check text", e);
+        }
+
         logger.info("spellcheck finished");
         return matches;
     }

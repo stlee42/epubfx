@@ -1,5 +1,7 @@
 package de.machmireinebook.epubeditor;
 
+import java.lang.annotation.Annotation;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -33,6 +35,14 @@ public class BeanFactory
     public <T> T getBean(Class<T> type)
     {
         Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type));
+        CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
+        return (T) beanManager.getReference(bean, type, creationalContext);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getBean(Class<T> type, Annotation... qualifiers)
+    {
+        Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type, qualifiers));
         CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
         return (T) beanManager.getReference(bean, type, creationalContext);
     }
