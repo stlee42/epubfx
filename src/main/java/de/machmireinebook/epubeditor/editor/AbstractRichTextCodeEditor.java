@@ -57,18 +57,18 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 {
     private static final Logger logger = Logger.getLogger(AbstractRichTextCodeEditor.class);
 
+    private ExecutorService taskExecutor =  Executors.newWorkStealingPool(5);
+
     private CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
     private BooleanProperty canRedo = new SimpleBooleanProperty();
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
     private IntegerProperty cursorPosition = new SimpleIntegerProperty();
     private boolean isChangingCode = false;
-    private ExecutorService taskExecutor;
-    protected PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
 
     // textInformationProperty
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
-
+    protected final PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
     protected MediaType mediaType;
     private int durationHighlightingComputation = 10;
 
@@ -81,8 +81,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         AnchorPane.setRightAnchor(scrollPane, 0.0);
 
         getChildren().add(scrollPane);
-
-        taskExecutor = Executors.newSingleThreadExecutor();
 
         IntFunction<String> format = (digits -> " %" + digits + "d ");
         IntFunction<Node> factory = LineNumberFactory.get(codeArea, format);
@@ -103,6 +101,21 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                     }
                 })
                 .subscribe(this::applyHighlighting);
+
+        codeArea.multiPlainChanges()
+                .filter(plainTextChanges -> preferencesManager.isSpellcheck())
+                .successionEnds(Duration.ofMillis(durationHighlightingComputation))
+                .supplyTask(this::spellCheckAsync)
+                .awaitLatest(codeArea.multiPlainChanges())
+                .filterMap(tryTask -> {
+                    if (tryTask.isSuccess()) {
+                        return Optional.of(tryTask.get());
+                    } else {
+                        tryTask.getFailure().printStackTrace();
+                        return Optional.empty();
+                    }
+                })
+                .subscribe(this::applySpellCheckResults);
 
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
@@ -188,21 +201,12 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+        isChangingCode = true; //this change of code is not relevant for listeners
         codeArea.setStyleSpans(0, highlighting);
-        if (preferencesManager.isSpellcheck()) {
-            Task<List<RuleMatch>> spellcheckTask = spellCheckAsync();
-
-            spellcheckTask.setOnSucceeded(event -> {
-                List<RuleMatch> matches = spellcheckTask.getValue();
-                applySpellCheckResults(matches);
-            });
-            spellcheckTask.setOnFailed(event -> {
-                logger.error("error while executing spell check", spellcheckTask.getException());
-            });
-        }
     }
 
     private Task<List<RuleMatch>> spellCheckAsync() {
+        logger.info("creating spellcheck task");
         Task<List<RuleMatch>> task = new Task<>() {
             @Override
             protected List<RuleMatch> call() {

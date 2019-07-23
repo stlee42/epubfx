@@ -145,6 +145,22 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         popOver.setTitle("Spell Check Result");
         popOverTextArea.setUseInitialStyleForInsertion(true);
 
+        logger.info("creating spellcheck cache");
+        cache = new ResultCache(10000, 1, TimeUnit.HOURS);
+        logger.info("spellcheck cache created, creating langTool");
+        langTool = new JLanguageTool(preferencesManager.getLanguageSpellSelection().getLanguage(), null, cache);
+        langTool.disableCategory(CategoryIds.TYPOGRAPHY);
+        langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
+        langTool.disableCategory(CategoryIds.REDUNDANCY);
+        langTool.disableCategory(CategoryIds.STYLE);
+        langTool.disableCategory(CategoryIds.GENDER_NEUTRALITY);
+        langTool.disableCategory(CategoryIds.SEMANTICS);
+        langTool.disableCategory(CategoryIds.COLLOQUIALISMS);
+        langTool.disableCategory(CategoryIds.WIKIPEDIA);
+        langTool.disableCategory(CategoryIds.BARBARISM);
+        langTool.disableCategory(CategoryIds.MISC);
+        logger.info("langTool created");
+
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
                 .successionEnds(Duration.ofMillis(500))
                 .subscribe(event -> {
@@ -369,27 +385,11 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     @Override
     public List<RuleMatch> spellCheck() {
+        logger.info("starting spellcheck");
         List<RuleMatch> matches = Collections.emptyList();
         if (mediaType == MediaType.XHTML) {
             String text = getCodeArea().getText();
             AnnotatedText annotatedText = makeAnnotatedText(text);
-            if (cache == null) {
-                cache = new ResultCache(10000, 1, TimeUnit.HOURS);
-            }
-
-            if (langTool == null) {
-                langTool = new JLanguageTool(preferencesManager.getLanguageSpellSelection().getLanguage(), null, cache);
-                langTool.disableCategory(CategoryIds.TYPOGRAPHY);
-                langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
-                langTool.disableCategory(CategoryIds.REDUNDANCY);
-                langTool.disableCategory(CategoryIds.STYLE);
-                langTool.disableCategory(CategoryIds.GENDER_NEUTRALITY);
-                langTool.disableCategory(CategoryIds.SEMANTICS);
-                langTool.disableCategory(CategoryIds.COLLOQUIALISMS);
-                langTool.disableCategory(CategoryIds.WIKIPEDIA);
-                langTool.disableCategory(CategoryIds.BARBARISM);
-                langTool.disableCategory(CategoryIds.MISC);
-            }
 
             try {
                 matches = langTool.check(annotatedText);
@@ -398,6 +398,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                 logger.error("can't spell check text", e);
             }
         }
+        logger.info("spellcheck finished");
         return matches;
     }
 
@@ -426,6 +427,7 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
 
     @Override
     public void applySpellCheckResults(List<RuleMatch> matches) {
+        logger.info("applying spellcheck result");
         matchesToText.clear();
         int id = 1;
         for (RuleMatch match : matches) {

@@ -35,7 +35,8 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 {
     private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
-    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a", "li");
+    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
+    private static final List<String> preserveTextContentsOnly = Arrays.asList("li");
     private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
             "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -151,6 +152,13 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                     fstack.setLevelEOL(null);
                     fstack.setLevelIndent(null);
                     fstack.setTextMode(Format.TextMode.PRESERVE);
+                } else if (preserveTextContentsOnly.contains(element.getQualifiedName())) {
+                    if (element.getContent().stream().allMatch(content1 -> content1 instanceof Element
+                            && emptyLineAfterElements.contains(((Element) content1).getQualifiedName()))) {
+                        fstack.setLevelEOL(null);
+                        fstack.setLevelIndent(null);
+                        fstack.setTextMode(Format.TextMode.PRESERVE);
+                    }
                 }
 
                 // note we ensure the FStack is right before creating the walker
@@ -312,7 +320,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         {
             return;
         }
-        String replaced = str.replaceAll("\\s{2,}", "");
+        String replaced = str.replaceAll("\\s{2,}", " ");
         write(out, replaced);
     }
 
