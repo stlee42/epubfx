@@ -11,8 +11,8 @@
 <?import javafx.scene.layout.HBox?>
 
 <?import org.controlsfx.control.GridView?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="">
-   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.InsertSpecialCharactersController">
+   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
       <children>
          <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
          <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
@@ -22,10 +22,8 @@
      <tabs>
        <Tab text="Symbols">
          <content>
-             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
-                 <GridView fx:id="lettersGridView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-
-                 </GridView>
+             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                 
              </AnchorPane>
          </content>
        </Tab>
@@ -47,5 +45,5 @@
      </tabs>
    </TabPane>
    <Label layoutX="396.0" layoutY="301.0" text="HTML Code" />
-   <TextField layoutX="473.0" layoutY="297.0" prefHeight="25.0" prefWidth="127.0" />
+   <TextField layoutX="473.0" layoutY="297.0" prefHeight="25.0" prefWidth="115.0" />
 </AnchorPane>

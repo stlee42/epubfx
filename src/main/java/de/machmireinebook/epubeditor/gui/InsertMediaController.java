@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -166,11 +167,11 @@ public class InsertMediaController implements Initializable, StandardController
             {
                 if (isEpub3)
                 {
-                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure.html"), "UTF-8");
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure.html"), StandardCharsets.UTF_8);
                 }
                 else
                 {
-                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), "UTF-8");
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), StandardCharsets.UTF_8);
                 }
                 snippet = StringUtils.replace(snippet, "${caption}", captionTextField.getText());
             }
@@ -178,11 +179,11 @@ public class InsertMediaController implements Initializable, StandardController
             {
                 if (isEpub3)
                 {
-                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure-without-caption.html"), "UTF-8");
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-figure-without-caption.html"), StandardCharsets.UTF_8);
                 }
                 else
                 {
-                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), "UTF-8");
+                    snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), StandardCharsets.UTF_8);
                 }
             }
             snippet = StringUtils.replace(snippet, "${url}", "/" + resource.getHref());
@@ -194,7 +195,7 @@ public class InsertMediaController implements Initializable, StandardController
             }
             if (fixWidthHeightRadioButton.isSelected())
             {
-                style += "width:" + resource.getWidth() +"px; height:" + resource.getWidth() + "px;";
+                style += "width:" + resource.getWidth() +"px; height:" + resource.getHeight() + "px;";
             }
             else if(flexibleWidthRadioButton.isSelected())
             {

@@ -147,8 +147,13 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                 CharacterHit hit = codeArea.hit(event.getX(), event.getY());
                 int characterPosition = hit.getInsertionIndex();
 
-                // move the caret to the character's position and let the selection untouched
-                codeArea.displaceCaret(characterPosition);
+                IndexRange indexRange = codeArea.getSelection();
+                if (indexRange.getLength() == 0) {
+                    codeArea.moveTo(characterPosition);
+                } else {  // move the caret to the character's position and let the selection untouched
+                    codeArea.displaceCaret(characterPosition);
+                }
+                codeArea.requestFocus();
             }
         });
     }
@@ -169,7 +174,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     private void shiftTabPressed(KeyEvent event) {
-
+        Paragraph paragraph = getCurrentParagraph();
+        paragraph.trim(4);   
     }
 
     protected void completePair(String closingPart) {

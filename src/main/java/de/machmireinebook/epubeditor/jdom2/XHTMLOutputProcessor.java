@@ -43,6 +43,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
             "div", "blockquote", "table", "tr", "hr", "ul", "ol");
+    private static final List<String> neverExpand = Arrays.asList("br", "hr", "img");
 
     static {
         List<String> inLiInsertBreak = Arrays.asList("ol", "ul");
@@ -141,8 +142,8 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 
             if (content.isEmpty())
             {
-                // Case content is empty
-                if (fstack.isExpandEmptyElements())
+                // Case content is empty, but some special tags never expands
+                if (fstack.isExpandEmptyElements() && !neverExpand.contains(element.getQualifiedName()))
                 {
                     write(out, "></");
                     write(out, element.getQualifiedName());

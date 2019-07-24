@@ -11,8 +11,8 @@ import java.util.Locale;
  */
 public class EpubFxNumberUtils
 {
-    private static final DecimalFormat integerFormat = new DecimalFormat("###,###,##0");
-    private static final DecimalFormat doubleFormat = new DecimalFormat("###,###,###.###########", DecimalFormatSymbols.getInstance(Locale.GERMANY));
+    private static final DecimalFormat integerFormat = new DecimalFormat("########0");
+    private static final DecimalFormat doubleFormat = new DecimalFormat("#########.###########", DecimalFormatSymbols.getInstance(Locale.GERMANY));
 
     public static String formatAsInteger(Number value)
     {

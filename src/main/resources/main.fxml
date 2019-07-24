@@ -1123,7 +1123,7 @@
                                             </image>
                                         </ImageView>
                                     </graphic>
-                                </Button>
+                                </Button>            
                                 <Button fx:id="editTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTocAction"
                                         text="Edit" wrapText="true">
                                     <graphic>

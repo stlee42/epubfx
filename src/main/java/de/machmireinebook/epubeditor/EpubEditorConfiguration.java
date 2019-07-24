@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
@@ -64,7 +66,7 @@ public class EpubEditorConfiguration
      */
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 
-    public static final int RECENT_FILE_NUMBER = 3;
+    public static final int RECENT_FILE_NUMBER = 10;
     public static final String LOCATION_CLASS_PREFIX = "epubfx-line-";
 
     //tag names in xml for main sections
@@ -138,12 +140,15 @@ public class EpubEditorConfiguration
                     Element recentFilesElement = root.getChild("recent-files");
                     if (recentFilesElement != null)
                     {
-                        List<Element> pathElements = recentFilesElement.getChildren("path");
-                        for (Element pathElement : pathElements)
-                        {
-                            Path path = Paths.get(pathElement.getText());
-                            recentFiles.add(path);
-                        }
+                        //noinspection ResultOfMethodCallIgnored
+                        recentFilesElement.getChildren("path")
+                                .stream()
+                                .map(element -> Paths.get(element.getText()))
+                                .collect(Collectors.collectingAndThen(Collectors.toList(), (Function<List<Path>, List<Path>>) pathList -> {
+                                    //trigger listeners only one
+                                    recentFiles.addAll(pathList);
+                                    return recentFiles;
+                                }));
                     }
 
                     Element layoutElement = root.getChild("layout");
@@ -376,6 +381,7 @@ public class EpubEditorConfiguration
                 recentFilesElement = new Element("recent-files");
                 root.addContent(recentFilesElement);
             }
+            recentFilesElement.removeContent();
             for (Path recentFile : recentFiles)
             {
                 Element recentFileElement = new Element("path");
