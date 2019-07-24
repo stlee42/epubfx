@@ -947,9 +947,17 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void orderedListButtonAction(ActionEvent actionEvent)
+    public void orderedListButtonAction()
     {
-        String tab = "";
+        insertList("ol");
+    }
+
+    public void unorderedListButtonAction() {
+        insertList("ul");
+    }
+
+    private void insertList(String tagName) {
+        String tab;
         int tabOffset;
         if (preferencesManager.isUseTab()) {
             tab = "\t";
@@ -959,64 +967,60 @@ public class MainController implements Initializable
             tabOffset = preferencesManager.getTabSize();
         }
 
-        String olString = "<ol>\n" + tab + "<li></li>\n</ol>";
+        String olString = "<" + tagName + ">\n" + tab + "<li></li>\n</" + tagName + ">";
         editorTabManager.insertAtCursorPosition(olString, 9 + tabOffset);
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void unorderedListButtonAction(ActionEvent actionEvent)
-    {
-    }
-
-    public void underlineButtonAction(ActionEvent actionEvent)
+    public void underlineButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("u");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void strikeButtonAction(ActionEvent actionEvent)
+    public void strikeButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("s");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void subscriptButtonAction(ActionEvent actionEvent)
+    public void subscriptButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("sub");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void superscriptButtonAction(ActionEvent actionEvent)
+    public void superscriptButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("sup");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void alignLeftButtonAction(ActionEvent actionEvent)
+    public void alignLeftButtonAction()
     {
         editorTabManager.insertStyle("text-align", "left");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void centerButtonAction(ActionEvent actionEvent)
+    public void centerButtonAction()
     {
         editorTabManager.insertStyle("text-align", "center");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void rightAlignButtonAction(ActionEvent actionEvent)
+    public void rightAlignButtonAction()
     {
         editorTabManager.insertStyle("text-align", "right");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void justifyButtonAction(ActionEvent actionEvent)
+    public void justifyButtonAction()
     {
         editorTabManager.insertStyle("text-align", "justify");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void undoButtonAction(ActionEvent actionEvent)
+    public void undoButtonAction()
     {
         CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
         if (currentEditor != null)
@@ -1025,7 +1029,7 @@ public class MainController implements Initializable
         }
     }
 
-    public void redoButtonAction(ActionEvent actionEvent)
+    public void redoButtonAction()
     {
         CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
         if (currentEditor != null)
@@ -1034,15 +1038,15 @@ public class MainController implements Initializable
         }
     }
 
-    public void cutButtonAction(ActionEvent actionEvent)
+    public void cutButtonAction()
     {
     }
 
-    public void copyButtonAction(ActionEvent actionEvent)
+    public void copyButtonAction()
     {
     }
 
-    public void pasteButtonAction(ActionEvent actionEvent)
+    public void pasteButtonAction()
     {
     }
 

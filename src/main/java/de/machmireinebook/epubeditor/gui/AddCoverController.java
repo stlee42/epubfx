@@ -158,6 +158,7 @@ public class AddCoverController implements Initializable
             return;
         }
         book.getSpine().addResource(coverPage, 0);
+        bookBrowserManager.refreshOpf();
         bookBrowserManager.refreshBookBrowser();
         bookBrowserManager.selectTextItem(coverPage);
         editorTabManager.openFileInEditor(coverPage, coverPage.getMediaType());
