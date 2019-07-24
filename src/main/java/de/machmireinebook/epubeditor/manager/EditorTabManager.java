@@ -607,11 +607,39 @@ public class EditorTabManager {
         });
     }
 
+    public void insertAtCursorPosition(String text) {
+        if (isInsertablePosition()) {
+            CodeEditor editor = getCurrentEditor();
+            Integer cursorPosition = editor.getAbsoluteCursorPosition();
+            editor.insertAt(cursorPosition, text);
+            refreshPreview();
+        }
+    }
+
+    /**
+     * Inserts the given text at caret position and moves the caret to a new position,
+     * the new position is given as difference from thre current position
+     *
+     * @param text text to insert
+     * @param moveCaretIndex difference of the current position to that the caret should be moved
+     */
+    public void insertAtCursorPosition(String text, int moveCaretIndex) {
+        if (isInsertablePosition() && currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
+            CodeEditor editor = getCurrentEditor();
+            Integer cursorPosition = editor.getAbsoluteCursorPosition();
+            editor.insertAt(cursorPosition, text);
+            editor.setAbsoluteCursorPosition(cursorPosition + moveCaretIndex);
+            refreshPreview();
+            editor.requestFocus();
+        }
+    }
+
     public void surroundParagraphWithTag(String tagName) {
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
             xhtmlCodeEditor.surroundParagraphWithTag(tagName);
             refreshPreview();
+            xhtmlCodeEditor.requestFocus();
         }
     }
 

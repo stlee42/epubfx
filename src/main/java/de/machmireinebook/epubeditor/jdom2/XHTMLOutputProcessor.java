@@ -3,7 +3,9 @@ package de.machmireinebook.epubeditor.jdom2;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,11 +38,16 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
-    private static final List<String> preserveTextContentsOnly = Arrays.asList("li");
     private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
             "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
+    private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
             "div", "blockquote", "table", "tr", "hr", "ul", "ol");
+
+    static {
+        List<String> inLiInsertBreak = Arrays.asList("ol", "ul");
+        insertBreakBeforeIfInElement.put("li", inLiInsertBreak);
+    }
 
     private boolean escapeOutput = false;
     private XhtmlEscapeStrategy xhtmlEscapeStrategy;
@@ -87,6 +94,29 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         try
         {
             final List<Content> content = element.getContent();
+
+            Element parent = element.getParentElement();
+            if (parent != null && insertBreakBeforeIfInElement.get(parent.getQualifiedName()) != null &&
+                    insertBreakBeforeIfInElement.get(parent.getQualifiedName()).contains(element.getQualifiedName()))
+            {
+                //if text before the element is not a break or the padding, write one
+                boolean insertBreak = true;
+                int ownIndex = parent.getContent().indexOf(element);
+                if (ownIndex == 0) { //padding with \r\n is already written by parent element
+                    insertBreak = false;
+                } else {
+                    Content previousContent = parent.getContent().get(ownIndex - 1);
+                    if (previousContent instanceof Text) {
+                        String previousText = ((Text) previousContent).getText();
+                        if (StringUtils.isBlank(previousText) && previousText.contains("\n")) {
+                            insertBreak = false;
+                        }
+                    }
+                }
+                if (insertBreak) {
+                    write(out, fstack.getPadBetween());
+                }
+            }
 
             // Print the beginning of the tag plus attributes and any
             // necessary namespace declarations
@@ -152,13 +182,6 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                     fstack.setLevelEOL(null);
                     fstack.setLevelIndent(null);
                     fstack.setTextMode(Format.TextMode.PRESERVE);
-                } else if (preserveTextContentsOnly.contains(element.getQualifiedName())) {
-                    if (element.getContent().stream().allMatch(content1 -> content1 instanceof Element
-                            && emptyLineAfterElements.contains(((Element) content1).getQualifiedName()))) {
-                        fstack.setLevelEOL(null);
-                        fstack.setLevelIndent(null);
-                        fstack.setTextMode(Format.TextMode.PRESERVE);
-                    }
                 }
 
                 // note we ensure the FStack is right before creating the walker
@@ -209,7 +232,6 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                 if (emptyLineAfterElements.contains(element.getQualifiedName()))
                 {
                     boolean isLast = false;
-                    Element parent = element.getParentElement();
                     if (parent != null)
                     {
                         List<Element> siblings = parent.getChildren();

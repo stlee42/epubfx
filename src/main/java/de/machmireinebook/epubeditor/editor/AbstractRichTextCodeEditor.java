@@ -147,7 +147,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                 CharacterHit hit = codeArea.hit(event.getX(), event.getY());
                 int characterPosition = hit.getInsertionIndex();
 
-                // move the caret to that character's position and restore the selection, the
+                // move the caret to the character's position and let the selection untouched
                 codeArea.displaceCaret(characterPosition);
             }
         });

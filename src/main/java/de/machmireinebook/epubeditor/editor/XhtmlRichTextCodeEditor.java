@@ -24,9 +24,6 @@ import javax.inject.Named;
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.IndexRange;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +38,6 @@ import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.fxmisc.wellbehaved.event.Nodes;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -65,30 +60,16 @@ import de.machmireinebook.epubeditor.manager.ElementPosition;
 import de.machmireinebook.epubeditor.manager.SpellcheckManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
-import static org.fxmisc.wellbehaved.event.InputMap.consume;
-
 /**
  * Created by Michail Jungierek
  */
 @Named("xhtmlRichTextCodeEditor")
 @XhtmlCodeEditor
-public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
+public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
 {
     private static final Logger logger = Logger.getLogger(XhtmlRichTextCodeEditor.class);
 
-    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))"
-            + "|(?<COMMENT><!--[^<>]+-->)");
-    private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
     private static final Pattern INDENT = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
-
-    private static final int GROUP_OPEN_BRACKET = 2;
-    private static final int GROUP_ELEMENT_NAME = 3;
-    private static final int GROUP_ATTRIBUTES_SECTION = 4;
-    private static final int GROUP_CLOSE_BRACKET = 5;
-    private static final int GROUP_ATTRIBUTE_NAME = 1;
-    private static final int GROUP_EQUAL_SYMBOL = 2;
-    private static final int GROUP_ATTRIBUTE_VALUE = 3;
 
     private static final String SPELLCHECK_CLASS_NAME = "spell-check-error";
     private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
@@ -132,22 +113,17 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         }
     }
 
-    @Inject
     public XhtmlRichTextCodeEditor() {
         super();
 
         try {
+            //the css for xml is already added by parent class
             String stylesheet = AbstractRichTextCodeEditor.class.getResource("/editor-css/xhtml.css").toExternalForm();
             addStyleSheet(stylesheet);
         } catch (Exception e) {
             logger.error("error while loading xhtml.css", e);
         }
         setWrapText(true);
-
-        //setup special keys
-        CodeArea codeArea = getCodeArea();
-        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.PERIOD, KeyCombination.CONTROL_DOWN), this::completeTag));
-        Nodes.addInputMap(codeArea, consume(keyPressed(KeyCode.SPACE, KeyCombination.CONTROL_DOWN), this::removeTags));
     }
 
     @PostConstruct
@@ -250,33 +226,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
         });
     }
 
-    private void removeTags(KeyEvent event) {
-        logger.info("remove tags from selection");
-        int selectionStartIndex = getSelectedRange().getStart();
-        String selectedText = getSelection();
-        //regex ungreedy and single line, that only tags matches and line breaks are included in . token
-        String replacement = selectedText.replaceAll("(?s)<(.*?)>", "");
-        replacement = replacement.replaceAll("(?s)</(.*?)>", "");
-        replacement = replacement.replaceAll("(?s)<(.*?)/>", "");
-        replaceSelection(replacement);
-        select(selectionStartIndex, selectionStartIndex + replacement.length());
-    }
-
-    private void completeTag(KeyEvent event) {
-        logger.info("insert closing tag for last opened tag");
-        String text = getCodeArea().subDocument(0, getAbsoluteCursorPosition()).getText();
-        Matcher matcher = XML_TAG.matcher(text);
-        while (matcher.find()) {
-            if(matcher.group("COMMENT") != null) {
-
-            } else if(matcher.group("ELEMENTOPEN") != null) {
-
-            } else if(matcher.group("ELEMENTCLOSE") != null) {
-
-            }
-        }
-    }
-
     public void increaseIndent() {
         Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
         optional.ifPresent(pair -> {
@@ -359,55 +308,6 @@ public class XhtmlRichTextCodeEditor extends AbstractRichTextCodeEditor
                 insertAt(pos, " style=\"" + styleName + ":" + value + "\"");
             }
         });
-    }
-
-    @Override
-    protected StyleSpans<Collection<String>> computeHighlighting(String text)
-    {
-        Matcher matcher = XML_TAG.matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        while(matcher.find()) {
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            if(matcher.group("COMMENT") != null) {
-                spansBuilder.add(Collections.singleton("comment"), matcher.end() - matcher.start());
-            }
-            else
-            {
-                if(matcher.group("ELEMENTOPEN") != null) {
-                    String attributesText = matcher.group(GROUP_ATTRIBUTES_SECTION);
-                    spansBuilder.add(Collections.singleton("tag-open-open"), matcher.end(GROUP_OPEN_BRACKET) - matcher.start(GROUP_OPEN_BRACKET));
-                    spansBuilder.add(Collections.singleton("opentag"), matcher.end(GROUP_ELEMENT_NAME) - matcher.end(GROUP_OPEN_BRACKET));
-                    if(!attributesText.isEmpty()) {
-                        lastKwEnd = 0;
-                        Matcher amatcher = ATTRIBUTES.matcher(attributesText);
-                        while(amatcher.find()) {
-                            spansBuilder.add(Collections.emptyList(), amatcher.start() - lastKwEnd);
-                            spansBuilder.add(Collections.singleton("attribute"), amatcher.end(GROUP_ATTRIBUTE_NAME) - amatcher.start(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("tagmark-equal"), amatcher.end(GROUP_EQUAL_SYMBOL) - amatcher.end(GROUP_ATTRIBUTE_NAME));
-                            spansBuilder.add(Collections.singleton("attribute-value"), amatcher.end(GROUP_ATTRIBUTE_VALUE) - amatcher.end(GROUP_EQUAL_SYMBOL));
-                            lastKwEnd = amatcher.end();
-                        }
-
-                        if(attributesText.length() > lastKwEnd)
-                        {
-                            spansBuilder.add(Collections.emptyList(), attributesText.length() - lastKwEnd);
-                        }
-                    }
-                    lastKwEnd = matcher.end(GROUP_ATTRIBUTES_SECTION);
-                    spansBuilder.add(Collections.singleton("tag-open-close"), matcher.end(GROUP_CLOSE_BRACKET) - lastKwEnd);
-                }
-                else if(matcher.group("ELEMENTCLOSE") != null) {
-                    spansBuilder.add(Collections.singleton("tag-close-open"), matcher.end(7) - matcher.start(7));
-                    spansBuilder.add(Collections.singleton("closetag"), matcher.end(8) - matcher.end(7));
-                    spansBuilder.add(Collections.singleton("tag-close-close"), matcher.end(10) - matcher.start(10));
-                }
-            }
-            lastKwEnd = matcher.end();
-        }
-
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
     }
 
     private Task<List<RuleMatch>> spellCheckAsync() {

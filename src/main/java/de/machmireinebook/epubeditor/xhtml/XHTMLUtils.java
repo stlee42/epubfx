@@ -185,8 +185,7 @@ public class XHTMLUtils
         return document;
     }
 
-    public static String repair(String originalHtml)
-    {
+    public static String repair(String originalHtml) {
         String content = null;
         try
         {
@@ -217,48 +216,39 @@ public class XHTMLUtils
 
     public static byte[] outputXHTMLDocument(Document document, boolean escapeOutput)
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            Element root = document.getRootElement();
-            if (root != null) {
-                root.setNamespace(Constants.NAMESPACE_XHTML);
-                root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-                IteratorIterable<Element> elements = root.getDescendants(Filters.element());
-                for (Element element : elements)
+        Element root = document.getRootElement();
+        if (root != null) {
+            root.setNamespace(Constants.NAMESPACE_XHTML);
+            root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
+            root.addNamespaceDeclaration(Constants.NAMESPACE_EPUB);
+            IteratorIterable<Element> elements = root.getDescendants(Filters.element());
+            for (Element element : elements)
+            {
+                if (element.getNamespace() == null)
                 {
-                    if (element.getNamespace() == null)
-                    {
-                        element.setNamespace(Constants.NAMESPACE_XHTML);
-                    }
+                    element.setNamespace(Constants.NAMESPACE_XHTML);
                 }
             }
-
-            document.setDocType(Constants.DOCTYPE_XHTML.clone());
-
-            XMLOutputter outputter = new XMLOutputter();
-            Format xmlFormat = Format.getPrettyFormat();
-            outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor(escapeOutput));
-            outputter.escapeElementEntities("&");
-            outputter.escapeAttributeEntities("&");
-            outputter.output(document, baos);
         }
-        catch (IOException e)
-        {
+
+        document.setDocType(Constants.DOCTYPE_XHTML.clone());
+
+        ByteArrayOutputStream baos;
+        try {
+            baos = outputXhtml(document, escapeOutput);
+        }
+        catch (IOException e) {
             logger.error("", e);
+            throw new XhtmlOutputException(e.getMessage());
         }
         return baos.toByteArray();
     }
 
-    public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent)
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            HtmlCleaner htmlCleaner = createHtmlCleaner();
+    public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent) {
+        HtmlCleaner htmlCleaner = createHtmlCleaner();
+        ByteArrayOutputStream baos;
+        try {
             TagNode rootNode = htmlCleaner.clean(new ByteArrayInputStream(data));
-
             Document jdomDocument = new EpubJDomSerializer(htmlCleaner.getProperties(), false).createJDom(rootNode);
             Element root = jdomDocument.getRootElement();
 
@@ -270,6 +260,7 @@ public class XHTMLUtils
 
             root.setNamespace(Constants.NAMESPACE_XHTML);
             root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
+            root.addNamespaceDeclaration(Constants.NAMESPACE_EPUB);
             IteratorIterable<Element> elements = root.getDescendants(Filters.element());
             for (Element element : elements)
             {
@@ -280,24 +271,36 @@ public class XHTMLUtils
             }
             jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
 
+            baos = outputXhtml(jdomDocument, false);
+        }
+        catch (IOException e) {
+            logger.error("", e);
+            throw new XhtmlOutputException(e.getMessage());
+        }
+
+        return baos.toByteArray();
+    }
+
+    private static ByteArrayOutputStream outputXhtml(Document document, boolean escapeOutput) throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();
+            xmlFormat.setExpandEmptyElements(true);
             outputter.setFormat(xmlFormat);
-            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor());
-            outputter.output(jdomDocument, baos);
+            outputter.setXMLOutputProcessor(new XHTMLOutputProcessor(escapeOutput));
+            outputter.escapeElementEntities("&");
+            outputter.escapeAttributeEntities("&");
+            outputter.output(document, baos);
+            return baos;
         }
-        catch (IOException e)
-        {
-            logger.error("", e);
-        }
-        return baos.toByteArray();
     }
 
     public static String unescapedHtmlWithXmlExceptions(String escapedText) {
         //leave nbsp untouched
         Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
         withoutNbsp.remove("&nbsp;");
-        //some scripts for generating html from docx generate this (wrong typed) entity for „
+        //some scripts for generating html from docx generate this (wrong typed) entity for „ (german double quote bottom)
+        //for convience replace it too
         withoutNbsp.put("&dbquo;", "„");
         CharSequenceTranslator translator =
                 new AggregateTranslator(

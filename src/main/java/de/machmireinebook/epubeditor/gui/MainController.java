@@ -55,9 +55,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
+
+import com.pixelduke.control.Ribbon;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -85,7 +88,6 @@ import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import com.pixelduke.control.Ribbon;
 import jidefx.scene.control.searchable.TreeViewSearchable;
 
 /**
@@ -947,8 +949,19 @@ public class MainController implements Initializable
 
     public void orderedListButtonAction(ActionEvent actionEvent)
     {
+        String tab = "";
+        int tabOffset;
+        if (preferencesManager.isUseTab()) {
+            tab = "\t";
+            tabOffset = 1;
+        } else {
+            tab = StringUtils.repeat(" ", preferencesManager.getTabSize());
+            tabOffset = preferencesManager.getTabSize();
+        }
 
-
+        String olString = "<ol>\n" + tab + "<li></li>\n</ol>";
+        editorTabManager.insertAtCursorPosition(olString, 9 + tabOffset);
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void unorderedListButtonAction(ActionEvent actionEvent)
