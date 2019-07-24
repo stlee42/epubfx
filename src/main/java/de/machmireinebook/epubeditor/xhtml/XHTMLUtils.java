@@ -35,6 +35,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 import de.machmireinebook.epubeditor.jdom2.XHTMLOutputProcessor;
@@ -60,11 +61,11 @@ public class XHTMLUtils
     }
 
 
-    public static Resource fromHtml(Resource res)
+    public static Resource fromHtml(Resource res, EpubVersion epubVersion)
     {
         try
         {
-            String xhtml = fromHtml(res.getData());
+            String xhtml = fromHtml(res.getData(), epubVersion);
             res.setData(xhtml.getBytes(StandardCharsets.UTF_8));
             res.setInputEncoding(StandardCharsets.UTF_8.displayName());
         }
@@ -76,7 +77,7 @@ public class XHTMLUtils
         return res;
     }
 
-    public static String fromHtml(byte[] originalHtml)
+    public static String fromHtml(byte[] originalHtml, EpubVersion epubVersion)
     {
         String content = null;
         try
@@ -123,7 +124,7 @@ public class XHTMLUtils
                 }
             }
 
-            content = outputXHTMLDocumentAsString(jdomDocument);
+            content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IOException | IllegalAddException e)
         {
@@ -185,7 +186,7 @@ public class XHTMLUtils
         return document;
     }
 
-    public static String repair(String originalHtml) {
+    public static String repair(String originalHtml, EpubVersion epubVersion) {
         String content = null;
         try
         {
@@ -193,7 +194,7 @@ public class XHTMLUtils
 
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            content = outputXHTMLDocumentAsString(jdomDocument);
+            content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IllegalAddException e)
         {
@@ -202,25 +203,27 @@ public class XHTMLUtils
         return content;
     }
 
-    public static String outputXHTMLDocumentAsString(Document document) {
-        return new String(outputXHTMLDocument(document), StandardCharsets.UTF_8);
+    public static String outputXHTMLDocumentAsString(Document document, EpubVersion epubVersion) {
+        return new String(outputXHTMLDocument(document, epubVersion), StandardCharsets.UTF_8);
     }
 
-    public static String outputXHTMLDocumentAsString(Document document, boolean escapeOutput) {
-        return new String(outputXHTMLDocument(document, escapeOutput), StandardCharsets.UTF_8);
+    public static String outputXHTMLDocumentAsString(Document document, boolean escapeOutput, EpubVersion epubVersion) {
+        return new String(outputXHTMLDocument(document, escapeOutput, epubVersion), StandardCharsets.UTF_8);
     }
 
-    public static byte[] outputXHTMLDocument(Document document) {
-        return outputXHTMLDocument(document, false);
+    public static byte[] outputXHTMLDocument(Document document, EpubVersion epubVersion) {
+        return outputXHTMLDocument(document, false, epubVersion);
     }
 
-    public static byte[] outputXHTMLDocument(Document document, boolean escapeOutput)
+    public static byte[] outputXHTMLDocument(Document document, boolean escapeOutput, EpubVersion epubVersion)
     {
         Element root = document.getRootElement();
         if (root != null) {
             root.setNamespace(Constants.NAMESPACE_XHTML);
             root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-            root.addNamespaceDeclaration(Constants.NAMESPACE_EPUB);
+            if (epubVersion.isEpub3()) {
+                root.addNamespaceDeclaration(Constants.NAMESPACE_EPUB);
+            }
             IteratorIterable<Element> elements = root.getDescendants(Filters.element());
             for (Element element : elements)
             {

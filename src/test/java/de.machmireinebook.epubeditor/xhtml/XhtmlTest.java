@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import com.sun.net.httpserver.HttpServer;
 
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 
@@ -53,14 +54,14 @@ public class XhtmlTest {
     public void escapingTestWithSaxParsing() throws Exception {
         String template = IOUtils.toString(getClass().getResourceAsStream("/test-escaping.xhtml"), "UTF-8");
         Document document =  XHTMLUtils.parseXHTMLDocument(template);
-        String output = XHTMLUtils.outputXHTMLDocumentAsString(document, true);
+        String output = XHTMLUtils.outputXHTMLDocumentAsString(document, true, EpubVersion.VERSION_2);
         logger.info("output: \n" + output);
     }
 
     @Test
     public void escapingTestWithCleaning() throws Exception {
         String template = IOUtils.toString(getClass().getResourceAsStream("/test-escaping.xhtml"), "UTF-8");
-        String output = XHTMLUtils.repair(template);
+        String output = XHTMLUtils.repair(template, EpubVersion.VERSION_2);
         logger.info("output: \n" + output);
     }
 

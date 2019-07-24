@@ -289,7 +289,8 @@ public class TocGenerator
         Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
         if (navResource == null)
         {
-            navResource = new XHTMLResource(navDoc, "Text/nav.xhtml");
+            //set here with empty data, will at the end replaced by the created document
+            navResource = new XHTMLResource(new byte[]{}, "Text/nav.xhtml");
             if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
             {
                 int index = book.getSpine().getResourceIndex(book.getCoverPage());
@@ -343,7 +344,7 @@ public class TocGenerator
                 }
             }
         }
-        navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc, true));
+        navResource.setData(XHTMLUtils.outputXHTMLDocument(navDoc, true, book.getVersion()));
         return result;
     }
 

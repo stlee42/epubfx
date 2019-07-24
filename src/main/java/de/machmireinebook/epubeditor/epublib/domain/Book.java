@@ -173,7 +173,7 @@ public class Book implements Serializable
     public Resource addSpineResourceFromFile(File file, String href, MediaType mediaType)
     {
         Resource res = createResourceFromFile(file, href, mediaType);
-        res = XHTMLUtils.fromHtml(res);
+        res = XHTMLUtils.fromHtml(res, getVersion());
         addSpineResource(res);
         return res;
     }
@@ -835,7 +835,7 @@ public class Book implements Serializable
                 }
                 //nach noch mehr Elementen suchen
                 //zB src-Attribut
-                xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document));
+                xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document, getVersion()));
             }
 
             //weiter nach import etc. in anderen css dateien suchen

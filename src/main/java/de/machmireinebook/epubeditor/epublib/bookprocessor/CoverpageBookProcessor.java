@@ -225,7 +225,7 @@ public class CoverpageBookProcessor implements BookProcessor
     }*/
 
     @Override
-    public Resource processResource(Resource resource)
+    public Resource processResource(Resource resource, Book book)
     {
         return resource;
     }

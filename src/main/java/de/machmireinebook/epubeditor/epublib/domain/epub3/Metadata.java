@@ -34,7 +34,7 @@ public class Metadata implements Serializable, EpubMetadata
     private List<DublinCoreMetadataElement> languages = new ArrayList<>();
     private List<MetadataProperty> epub3MetaProperties = new ArrayList<>();
     private List<DublinCoreMetadataElement> rights = new ArrayList<>();
-    private List<DublinCoreMetadataElement> sources;
+    private List<DublinCoreMetadataElement> sources = new ArrayList<>();
     private List<DublinCoreMetadataElement> titles = new ArrayList<>();
     private List<Identifier> identifiers = new ArrayList<>();
     private List<DublinCoreMetadataElement> subjects = new ArrayList<>();

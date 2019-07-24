@@ -13,5 +13,5 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
  */
 public interface BookProcessor {
 	Book processBook(Book book);
-    Resource processResource(Resource resource);
+    Resource processResource(Resource resource, Book book);
 }

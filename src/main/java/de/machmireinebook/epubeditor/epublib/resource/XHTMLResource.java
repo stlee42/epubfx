@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.jdom2.LocatedIdentifiableJDOMFactory;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -39,11 +40,6 @@ public class XHTMLResource extends Resource<Document>
 
     public XHTMLResource()
     {
-    }
-
-    public XHTMLResource(Document document, String href)
-    {
-        super(XHTMLUtils.outputXHTMLDocument(document), href, MediaType.XHTML);
     }
 
     public XHTMLResource(byte[] data, String href, MediaType mediaType)
@@ -89,7 +85,7 @@ public class XHTMLResource extends Resource<Document>
         super.setMediaType(mediaType);
     }
 
-    public void prepareWebViewDocument() {
+    public void prepareWebViewDocument(EpubVersion version) {
         byte[] code = getData();
         if (code == null || code.length == 0) {
             return;
@@ -97,7 +93,7 @@ public class XHTMLResource extends Resource<Document>
         LocatedIdentifiableJDOMFactory factory = new LocatedIdentifiableJDOMFactory();
         try {
             Document document = XHTMLUtils.parseXHTMLDocument(code, factory);
-            webViewPreparedData  = XHTMLUtils.outputXHTMLDocument(document, true);
+            webViewPreparedData  = XHTMLUtils.outputXHTMLDocument(document, true, version);
         }
         catch (IOException | JDOMException e) {
             logger.error("error while creating prepared document for webview, in most cases the xhtml is not valid, use the original data for webviewer");

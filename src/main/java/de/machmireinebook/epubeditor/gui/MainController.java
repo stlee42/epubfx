@@ -1292,7 +1292,7 @@ public class MainController implements Initializable
 
         for (Resource resource : allResourcesToRewrite.keySet())
         {
-            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource)));
+            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), getCurrentBook().getVersion()));
             editorTabManager.refreshEditorCode(resource);
         }
 

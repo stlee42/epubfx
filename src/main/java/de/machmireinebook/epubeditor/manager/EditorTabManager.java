@@ -67,6 +67,7 @@ import de.machmireinebook.epubeditor.editor.XhtmlCodeEditor;
 import de.machmireinebook.epubeditor.editor.XhtmlRichTextCodeEditor;
 import de.machmireinebook.epubeditor.editor.XmlCodeEditor;
 import de.machmireinebook.epubeditor.editor.XmlRichTextCodeEditor;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -445,7 +446,7 @@ public class EditorTabManager {
             else if (mediaType.equals(MediaType.XHTML)) {
                 editor = xhtmlEditorProvider.get();
                 editor.setContextMenu(contextMenuXHTML);
-                ((XHTMLResource)resource).prepareWebViewDocument();
+                ((XHTMLResource)resource).prepareWebViewDocument(book.getVersion());
             }
             else if (mediaType.equals(MediaType.XML)) {
                 editor = xmlEditorProvider.get();
@@ -502,7 +503,7 @@ public class EditorTabManager {
                         CodeEditor codeEditor = currentEditor.getValue();
                         if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
                             currentXHTMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
-                            currentXHTMLResource.get().prepareWebViewDocument();
+                            currentXHTMLResource.get().prepareWebViewDocument(book.getVersion());
                         }
                         else if (codeEditor.getMediaType().equals(MediaType.CSS)) {
                             currentCssResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
@@ -715,7 +716,7 @@ public class EditorTabManager {
                     Resource oldResource = currentXHTMLResource.getValue();
                     oldResource.setData(frontPart);
                     HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
-                    processor.processResource(oldResource);
+                    processor.processResource(oldResource, book);
                     xhtmlCodeEditor.setCode(new String(oldResource.getData(), StandardCharsets.UTF_8));
 
                     byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
@@ -795,11 +796,11 @@ public class EditorTabManager {
 
     public String formatAsXHTML(String xhtml) throws IOException, JDOMException {
         Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
-        return XHTMLUtils.outputXHTMLDocumentAsString(document, true);
+        return XHTMLUtils.outputXHTMLDocumentAsString(document, true, EpubVersion.VERSION_2);
     }
 
     public String repairXHTML(String xhtml) {
-        return XHTMLUtils.repair(xhtml);
+        return XHTMLUtils.repair(xhtml, book.getVersion());
     }
 
     public void refreshAll() {

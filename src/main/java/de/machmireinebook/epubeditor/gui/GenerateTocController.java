@@ -352,7 +352,7 @@ public class GenerateTocController implements StandardController
 
             for (Resource resource : allResourcesToRewrite.keySet())
             {
-                resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource)));
+                resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), currentBook.get().getVersion()));
                 editorTabManager.refreshEditorCode(resource);
             }
 

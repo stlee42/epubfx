@@ -296,7 +296,7 @@ public class AddStylesheetController implements StandardController
                     headElement.addContent(styleElement);
                 }
                 Document document = headElement.getDocument();
-                byte[] bytes = XHTMLUtils.outputXHTMLDocument(document, true);
+                byte[] bytes = XHTMLUtils.outputXHTMLDocument(document, true, currentBookProperty().get().getVersion());
 
                 resource.setData(bytes);
                 editorManager.refreshEditorCode(resource);

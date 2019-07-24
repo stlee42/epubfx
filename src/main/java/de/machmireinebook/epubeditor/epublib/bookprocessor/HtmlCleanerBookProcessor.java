@@ -39,7 +39,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            return XHTMLUtils.outputXHTMLDocument(jdomDocument);
+            return XHTMLUtils.outputXHTMLDocument(jdomDocument, book.getVersion());
         }
         catch (IllegalAddException e)
         {
@@ -49,14 +49,14 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
 	}
 
     @Override
-    public Resource processResource(Resource resource)
+    public Resource processResource(Resource resource, Book book)
     {
         try
         {
             HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument);
+            String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, book.getVersion());
             logger.debug("new content " + content);
             resource.setData(content.getBytes(StandardCharsets.UTF_8));
             resource.setInputEncoding("UTF-8");
