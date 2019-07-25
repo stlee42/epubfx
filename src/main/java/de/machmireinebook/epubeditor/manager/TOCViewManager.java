@@ -17,10 +17,9 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * User: mjungierek
@@ -72,7 +71,7 @@ public class TOCViewManager
 
                         return;
                     }
-                    editorManager.openFileInEditor(res, MediaType.XHTML);
+                    editorManager.openFileInEditor(res);
                 }
             }
         });

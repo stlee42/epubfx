@@ -2,27 +2,38 @@ package de.machmireinebook.epubeditor.validation;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 
 import org.apache.log4j.Logger;
 
 import org.controlsfx.dialog.ExceptionDialog;
 
 import com.adobe.epubcheck.api.EpubCheck;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
 /**
  * User: Michail Jungierek
@@ -33,21 +44,26 @@ import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 public class ValidationManager {
     private static final Logger logger = Logger.getLogger(ValidationManager.class);
 
+    @Inject
+    private EpubEditorConfiguration epubEditorConfiguration;
+    @Inject
+    private EditorTabManager editorTabManager;
+
     private TableView<ValidationMessage> tableView;
+    private final ObjectProperty<Book> bookProperty = new SimpleObjectProperty<>(this, "book");
 
     private class ValidateEpubService extends Service<EpubCheckReport>
     {
         private Path epubFileName;
 
-        public ValidateEpubService(Path epubFileName)
+        ValidateEpubService(Path epubFileName)
         {
             this.epubFileName = epubFileName;
         }
 
         @Override
         protected Task<EpubCheckReport> createTask() {
-            return new Task<>()
-            {
+            return new Task<>() {
                 @Override
                 protected EpubCheckReport call()
                 {
@@ -73,15 +89,26 @@ public class ValidationManager {
         messageCol.setCellValueFactory(new PropertyValueFactory<>("message"));
         messageCol.setPrefWidth(350);
 
-        tableView.getColumns().setAll(typeCol, resCol, lineCol, messageCol);
+        tableView.getColumns().setAll(Arrays.asList(typeCol, resCol, lineCol, messageCol));
 
         tableView.setPadding(new Insets(0, 0, 0, 0));
         tableView.setStyle("-fx-padding:0");
+
+        tableView.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                ValidationMessage message = tableView.getSelectionModel().getSelectedItem();
+                logger.info("double clicked on message " + message.getMessage() + " for resource " + message.getResource());
+                Resource resource = getBook().getResources().getByHref(message.getResource());
+                editorTabManager.openFileInEditor(resource);
+            }
+        });
     }
 
     public void startValidationEpub(Path epubFile)
     {
         ValidateEpubService service = new ValidateEpubService(epubFile);
+        tableView.getItems().clear();
+        Node placeholder = tableView.getPlaceholder();
         service.setOnSucceeded(event -> {
             EpubCheckReport report = service.getValue();
             List<ValidationMessage> messages = report.getMessages();
@@ -97,20 +124,17 @@ public class ValidationManager {
                 alert.showAndWait();
                 return;
             }
-
-            tableView.getItems().clear();
             tableView.getItems().addAll(FXCollections.observableList(messages));
         });
-        service.restart();
         service.setOnFailed(event -> {
             ExceptionDialog exceptionDialog = new ExceptionDialog(event.getSource().getException());
-            exceptionDialog.initOwner(tableView.getScene().getWindow());
+            exceptionDialog.initOwner(epubEditorConfiguration.getMainWindow());
             exceptionDialog.setTitle("Validation");
             exceptionDialog.setHeaderText(null);
             exceptionDialog.setContentText("Unknown error while validation ebook");
             exceptionDialog.showAndWait();
-
         });
+        service.restart();
     }
 
     public EpubCheckReport validateEpub(File epubFile)
@@ -130,5 +154,10 @@ public class ValidationManager {
         return report;
     }
 
-
+    public final ObjectProperty<Book> bookProperty() {
+        return bookProperty;
+    }
+    public final Book getBook() {
+        return bookProperty.get();
+    }
 }

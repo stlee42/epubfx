@@ -98,6 +98,10 @@
                     <groupId>at.bestsolution.efxclipse.eclipse</groupId>
                     <artifactId>org.apache.commons.lang</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>at.bestsolution.efxclipse.eclipse</groupId>
+                    <artifactId>com.google.guava</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -121,6 +125,12 @@
             <groupId>org.idpf</groupId>
             <artifactId>epubcheck</artifactId>
             <version>4.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.htmlcleaner</groupId>
@@ -201,7 +211,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>28.0-jre</version>
         </dependency>
         <dependency>
             <groupId>com.eaio.stringsearch</groupId>

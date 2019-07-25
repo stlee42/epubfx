@@ -5,6 +5,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -80,6 +81,7 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -115,6 +117,8 @@ public class EditorTabManager {
     private ClipManager clipManager;
     @Inject
     private BookBrowserManager bookBrowserManager;
+    @Inject
+    private PreferencesManager preferencesManager;
     @Inject
     @XhtmlCodeEditor
     private Provider<XhtmlRichTextCodeEditor> xhtmlEditorProvider;
@@ -418,6 +422,10 @@ public class EditorTabManager {
         return found;
     }
 
+    public void openFileInEditor(Resource resource) throws IllegalArgumentException {
+        openFileInEditor(resource, resource.getMediaType());
+    }
+
     public void openFileInEditor(Resource resource, MediaType mediaType) throws IllegalArgumentException {
         if (!isTabAlreadyOpen(resource)) {
             Tab tab = new Tab();
@@ -608,6 +616,12 @@ public class EditorTabManager {
         });
     }
 
+    public void scrollTo(EditorPosition position) {
+        CodeEditor codeEditor = currentEditor.getValue();
+        codeEditor.scrollTo(position);
+        codeEditor.requestFocus();
+    }
+
     public void insertAtCursorPosition(String text) {
         if (isInsertablePosition()) {
             CodeEditor editor = getCurrentEditor();
@@ -619,7 +633,7 @@ public class EditorTabManager {
 
     /**
      * Inserts the given text at caret position and moves the caret to a new position,
-     * the new position is given as difference from thre current position
+     * the new position is given as difference from the current position
      *
      * @param text text to insert
      * @param moveCaretIndex difference of the current position to that the caret should be moved
@@ -742,6 +756,24 @@ public class EditorTabManager {
             }
         }
         return result;
+    }
+
+    public void toUpperCase() {
+        CodeEditor codeEditor = currentEditor.get();
+        String selectedText = codeEditor.getSelection();
+        Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
+        String uppercaseText = StringUtils.upperCase(selectedText, spellcheckLocale);
+        codeEditor.replaceSelection(uppercaseText);
+        currentEditor.get().requestFocus();
+    }
+
+    public void toLowerCase() {
+        CodeEditor codeEditor = currentEditor.get();
+        String selectedText = codeEditor.getSelection();
+        Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
+        String lowercaseText = StringUtils.lowerCase(selectedText, spellcheckLocale);
+        codeEditor.replaceSelection(lowercaseText);
+        currentEditor.get().requestFocus();
     }
 
     public void refreshPreview() {

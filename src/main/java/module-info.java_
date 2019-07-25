@@ -18,7 +18,6 @@ module epubFX {
     requires log4j;
     requires jdom2;
     requires commons.io;
-    requires com.google.guava;
     requires jidefx.common;
     requires htmlcleaner;
 

@@ -161,7 +161,7 @@ public class AddCoverController implements Initializable
         bookBrowserManager.refreshOpf();
         bookBrowserManager.refreshBookBrowser();
         bookBrowserManager.selectTextItem(coverPage);
-        editorTabManager.openFileInEditor(coverPage, coverPage.getMediaType());
+        editorTabManager.openFileInEditor(coverPage);
         stage.close();
     }
 

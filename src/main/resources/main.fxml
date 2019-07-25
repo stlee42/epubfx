@@ -415,7 +415,7 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0"/>
                                 <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction"
                                         styleClass="flat"/>
-                                <Button fx:id="kursivButton" mnemonicParsing="false" onAction="#kursivButtonAction"
+                                <Button fx:id="italicButton" mnemonicParsing="false" onAction="#italicButtonAction"
                                         styleClass="flat"/>
                                 <Button fx:id="underlineButton" mnemonicParsing="false"
                                         onAction="#underlineButtonAction" styleClass="flat"/>
@@ -548,10 +548,9 @@
                                 <Column>
                                 <Button fx:id="newBookButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#newEpubAction" text="New" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Add_Book_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Add_Book_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -559,10 +558,9 @@
                                 <Column>
                                     <SplitMenuButton fx:id="openBookButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#openEpubAction" text="Open" wrapText="true">
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Literature_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Literature_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                         <items>
@@ -575,10 +573,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Save" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Save_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Save_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -624,20 +621,24 @@
                                 </Button>
                                 <Column>
                                     <Button fx:id="addCSSFilesButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addEmptyCSSFileAction" styleClass="left-align" text="Empty CSS">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add empty css file" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_CSS_Filetype_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_CSS_Filetype_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
                                     <Button fx:id="addOtherFilesButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#addEmptySVGFileAction" styleClass="left-align" text="Other File">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add svg html file" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Add_File_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Add_File_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
@@ -651,10 +652,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Undo" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Undo_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Undo_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -663,10 +663,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Redo" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Redo_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Redo_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -675,10 +674,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Cut" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Cut_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Cut_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -724,12 +722,14 @@
                         <RibbonGroup title="Settings">
                             <nodes>
                                 <Column>
-                                <Button fx:id="settingsButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#settingsButtonAction" prefHeight="80" prefWidth="80" text="Edit Settings" wrapText="true">
+                                <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#settingsButtonAction" prefHeight="80" prefWidth="80" text="Edit Settings" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Open Dialog to editing Settings" />
+                                    </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Settings_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Settings_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -743,19 +743,14 @@
                                             </ImageView>
 
                                         </graphic>
-                                        <label >
+                                        <label>
                                             Spellcheck Language
                                         </label>
                                         <item>
                                             <ComboBox fx:id="languageSpellComboBox">
-                                                <items>
-                                                    <FXCollections fx:factory="observableArrayList">
-                                                        <String fx:value="English" />
-                                                        <String fx:value="Deutsch" />
-                                                        <String fx:value="Francais" />
-                                                        <String fx:value="Italiano" />
-                                                    </FXCollections>
-                                                </items>
+                                                <tooltip>
+                                                    <Tooltip styleClass="white-tooltip" text="Languages to use for spellchecking text files" />
+                                                </tooltip>
                                             </ComboBox>
                                         </item>
                                           <padding>
@@ -763,7 +758,10 @@
                                           </padding>
 
                                     </RibbonItem>
-                                    <Button  text="Text Snippets Editor" wrapText="true" onAction="#clipEditorAction">
+                                    <Button  text="Text Snippet Editor" wrapText="true" onAction="#clipEditorAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Open the Text Snippet Editor" />
+                                        </tooltip>
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                                                 <Image url="icons/icons8_Coupon_96px_1.png" />
@@ -784,7 +782,11 @@
                         <RibbonGroup title="Format">
                             <nodes>
                                 <Column>
-                                    <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" styleClass="letter-button" text="h1" />
+                                    <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" styleClass="letter-button" text="h1">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 1" />
+                                        </tooltip>
+                                    </Button>
                                     <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction">
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -798,7 +800,12 @@
                                     </Button>
                                 </Column>
                                 <Column>
-                                    <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" styleClass="letter-button" text="h2" />
+                                    <Button fx:id="h2Button" mnemonicParsing="false" onAction="#h2ButtonAction" styleClass="letter-button" text="h2">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 2" />
+                                        </tooltip>
+                                    </Button>
+
                                     <Button fx:id="singleQuotationMarksButton" mnemonicParsing="false" onAction="#singleQuotationMarksButtonAction">
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -812,8 +819,12 @@
                                     </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" styleClass="letter-button" text="h3" />
-                                    <Button fx:id="blockQuoteButton" mnemonicParsing="false" onAction="#blockQuoteButtonAction">
+                                    <Button fx:id="h3Button" mnemonicParsing="false" onAction="#h3ButtonAction" styleClass="letter-button" text="h3">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 3" />
+                                        </tooltip>
+                                    </Button>
+                                    <Button fx:id="blockQuoteButton" mnemonicParsing="false" onAction="#blockQuoteButtonAction" >
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                        preserveRatio="true">
@@ -826,16 +837,33 @@
                                     </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" styleClass="letter-button" text="h4" />
+                                <Button fx:id="h4Button" mnemonicParsing="false" onAction="#h4ButtonAction" styleClass="letter-button" text="h4" >
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 4" />
+                                    </tooltip>
+                                </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction" styleClass="letter-button" text="h5" />
+                                    <Button fx:id="h5Button" mnemonicParsing="false" onAction="#h5ButtonAction" styleClass="letter-button" text="h5">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 5" />
+                                        </tooltip>
+                                    </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction" styleClass="letter-button" text="h6" />
+                                <Button fx:id="h6Button" mnemonicParsing="false" onAction="#h6ButtonAction" styleClass="letter-button" text="h6">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 6" />
+                                    </tooltip>
+                                </Button>
                                 </Column>
                                 <Column>
-                                <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false" onAction="#paragraphButtonAction" styleClass="letter-button" text="p" />
+                                    <Button fx:id="paragraphButton" minWidth="30.0" mnemonicParsing="false" onAction="#paragraphButtonAction" styleClass="letter-button" text="p">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change current block (headline or div) to a text paragraph" />
+                                        </tooltip>
+                                    </Button>
+
                                 </Column>
                             </nodes>
                         </RibbonGroup>
@@ -843,18 +871,20 @@
                             <nodes>
                                 <Column>
                                     <Button fx:id="orderedListButton" mnemonicParsing="false" onAction="#orderedListButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert an ordered (numbered) list with one list item" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/list_style_numbered.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/list_style_numbered.png"/>
                                             </ImageView>
                                         </graphic>
 
                                     </Button>
                                     <Button fx:id="increaseIndentButton" mnemonicParsing="false" onAction="#increaseIndentButtonAction">
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Increase indent" />
+                                            <Tooltip styleClass="white-tooltip" text="Add to paragraph or changes existing style to increase the left margin" />
                                         </tooltip>
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
@@ -866,24 +896,25 @@
                                 </Column>
                                 <Column>
                                     <Button fx:id="unorderedListButton" mnemonicParsing="false" onAction="#unorderedListButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert an unordered (bullet points) list with one list item" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/list_style_bullets.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/list_style_bullets.png"/>
                                             </ImageView>
                                         </graphic>
 
                                     </Button>
                                     <Button fx:id="decreaseIndentButton" mnemonicParsing="false" onAction="#decreaseIndentButtonAction">
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Decrease indent" />
+                                            <Tooltip styleClass="white-tooltip" text="Add to paragraph or changes existing style to decrease the left margin" />
                                         </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/indent_decrease.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/indent_decrease.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
@@ -891,21 +922,25 @@
                                 <Separator orientation="VERTICAL" prefHeight="30.0" styleClass="small" />
                                 <Column>
                                     <Button fx:id="alignLeftButton" mnemonicParsing="false" onAction="#alignLeftButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add to current paragraph style to left aligning the paragraph" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/text_align_left.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/text_align_left.png"/>
                                             </ImageView>
                                         </graphic>
 
                                     </Button>
                                     <Button fx:id="centerButton" mnemonicParsing="false" onAction="#centerButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add to current paragraph style to centering the paragraph" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/text_align_center.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/text_align_center.png"/>
                                             </ImageView>
                                         </graphic>
 
@@ -913,21 +948,25 @@
                                 </Column>
                                 <Column>
                                     <Button fx:id="rightAlignButton" mnemonicParsing="false" onAction="#rightAlignButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add to current paragraph style to right aligning the paragraph" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/text_align_right.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/text_align_right.png"/>
                                             </ImageView>
                                         </graphic>
 
                                     </Button>
                                     <Button fx:id="justifyButton" mnemonicParsing="false" onAction="#justifyButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Add to current paragraph style to justifying the paragraph" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/text_align_justified.png" />
-                                                </image>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/text_align_justified.png"/>
                                             </ImageView>
                                         </graphic>
 
@@ -940,63 +979,74 @@
                             <nodes>
                                 <Column>
                                     <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with bold tags &lt;b&gt;&lt;/b&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Bold_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Bold_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
                                     <Button fx:id="uppercaseButton" mnemonicParsing="false" onAction="#uppercaseButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change the selected text to upper case letters" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Uppercase_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Uppercase_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
                                 </Column>
                                 <Column>
-                                    <Button fx:id="kursivButton" mnemonicParsing="false" onAction="#kursivButtonAction">
+                                    <Button fx:id="italicButton" mnemonicParsing="false" onAction="#italicButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with italic tags &lt;i&gt;&lt;/i&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Italic_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Italic_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
                                     <Button fx:id="lowercaseButton" mnemonicParsing="false" onAction="#lowercaseButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Change the selected text to lower case letters" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Lowercase_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Lowercase_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
                                 </Column>
                                 <Column>
                                     <Button fx:id="underlineButton" mnemonicParsing="false" onAction="#underlineButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with underline tags &lt;u&gt;&lt;/u&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Underline_96px_1.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Underline_96px_1.png"/>
                                             </ImageView>
                                         </graphic>
-
                                     </Button>
                                 </Column>
                                 <Column>
                                     <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with strike throug tags &lt;s&gt;&lt;/s&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Strikethrough_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Strikethrough_96px.png"/>
                                             </ImageView>
                                         </graphic>
 
@@ -1004,11 +1054,13 @@
                                 </Column>
                                 <Column>
                                     <Button fx:id="subscriptButton" mnemonicParsing="false" onAction="#subscriptButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with subscript tags &lt;sub&gt;&lt;/sub&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Subscript_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Subscript_96px.png"/>
                                             </ImageView>
                                         </graphic>
 
@@ -1016,11 +1068,13 @@
                                 </Column>
                                 <Column>
                                     <Button fx:id="superscriptButton" mnemonicParsing="false" onAction="#superscriptButtonAction">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with super script tags &lt;sup&gt;&lt;/sup&gt;" />
+                                        </tooltip>
                                         <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                                                <image>
-                                                    <Image url="icons/icons8_Superscript_96px.png" />
-                                                </image>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Superscript_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
@@ -1034,10 +1088,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Insert table" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Insert_Table_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Insert_Table_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1046,10 +1099,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Add image or other media file" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Add_Image_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Add_Image_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1058,10 +1110,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Insert Symbol" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Sigma_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Sigma_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1070,10 +1121,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Insert Link" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Add_Link_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Add_Link_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1091,10 +1141,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Edit metadata" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_User_Manual_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_User_Manual_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1103,10 +1152,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Generate new Uuid for Book" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Hashtag_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Hashtag_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1116,21 +1164,25 @@
                             <nodes>
                                 <Button fx:id="createTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#createTocAction"
                                         text="Generate" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Create a new Table of Content, an existing ToC will be replaced by new one" />
+                                    </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_New_Property_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_New_Property_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>            
                                 <Button fx:id="editTocButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#editTocAction"
                                         text="Edit" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Edit the Tabel of Contents" />
+                                    </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Edit_Property_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Edit_Property_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1161,10 +1213,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Split file at cursor" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Cut_Paper_96px_2.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Cut_Paper_96px_2.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1174,13 +1225,12 @@
                             <nodes>
                                 <Button fx:id="addCoverButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#addCoverAction" text="Add Cover" wrapText="true">
                                     <tooltip>
-                                        <Tooltip styleClass="white-tooltip" text="Split file at cursor" />
+                                        <Tooltip styleClass="white-tooltip" text="Add cover to book" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Image_File_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Image_File_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1193,10 +1243,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Check book with official IDPF EPUB Check" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Checked_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Checked_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1205,10 +1254,9 @@
                                         <Tooltip styleClass="white-tooltip" text="Checks external links for rechability" />
                                     </tooltip>
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Link_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Link_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>
@@ -1223,46 +1271,41 @@
                             <nodes>
                                 <ToggleButton fx:id="showBookBrowserToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Book Browser" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Folder_Tree_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Folder_Tree_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
                                 <ToggleButton fx:id="showClipsToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Text Snippets" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Open_Box_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Open_Box_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
                                 <ToggleButton fx:id="showPreviewToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Preview" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Preview_Pane_96px_1.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Preview_Pane_96px_1.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showTocToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Table&#10;of Contents" wrapText="true">
+                                <ToggleButton fx:id="showTocToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Table of Contents" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Content_96px_view.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Content_96px_view.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
-                                <ToggleButton fx:id="showValidationResultsToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Validation&#10;Results" wrapText="true">
+                                <ToggleButton fx:id="showValidationResultsToggleButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="80" prefWidth="120" text="Validation Results" wrapText="true">
                                     <graphic>
-                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="icons/icons8_Inspection_96px.png" />
-                                            </image>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_Inspection_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </ToggleButton>
@@ -1273,10 +1316,10 @@
 
             </tabs>
         </Ribbon>
-        <ToolBar layoutY="848.0" prefHeight="40.0" prefWidth="1207.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <items>
-                <Label fx:id="cursorPosLabel" layoutX="1077.0" layoutY="12.0" text="Label" AnchorPane.bottomAnchor="11.0" AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="12.0" />
-            </items>
+        <ToolBar layoutY="848.0" prefHeight="40.0" prefWidth="1207.0" AnchorPane.bottomAnchor="0.0"
+                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Label fx:id="cursorPosLabel" layoutX="1077.0" layoutY="12.0" text="Label" AnchorPane.bottomAnchor="11.0"
+                   AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="12.0"/>
         </ToolBar>
     </children>
 </AnchorPane>
