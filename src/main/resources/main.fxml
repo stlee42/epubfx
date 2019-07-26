@@ -124,56 +124,50 @@
                     </items>
                 </StashableSplitPane>
                 <StashableSplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL">
-                    <items>
-                        <AnchorPane fx:id="previewAnchorPane" SplitPane.resizableWithParent="false">
-                            <children>
-                                <ToolBar layoutX="14.0" layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <items>
-                                        <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn" styleClass="flat">
-                                            <tooltip>
-                                                <Tooltip styleClass="white-tooltip" text="Zoom in" />
-                                            </tooltip>
-                                            <graphic>
-                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                    <image>
-                                                        <Image url="icons/icons8_Zoom_In_96px.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
-                                        </Button>
-                                        <Button fx:id="zoom100Button" mnemonicParsing="false" onAction="#preview100PercentZoom" styleClass="flat">
-                                            <tooltip>
-                                                <Tooltip styleClass="white-tooltip" text="100%" />
-                                            </tooltip>
-                                            <graphic>
-                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                    <image>
-                                                        <Image url="icons/icons8_Zoom_to_Actual_Size_96px.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
+                    <AnchorPane fx:id="previewAnchorPane" SplitPane.resizableWithParent="false">
+                        <ToolBar layoutX="14.0" layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0"
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn" styleClass="flat">
+                                <tooltip>
+                                    <Tooltip styleClass="white-tooltip" text="Zoom in"/>
+                                </tooltip>
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                               preserveRatio="true">
+                                        <Image url="icons/icons8_Zoom_In_96px.png"/>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="zoom100Button" mnemonicParsing="false" onAction="#preview100PercentZoom" styleClass="flat">
+                                <tooltip>
+                                    <Tooltip styleClass="white-tooltip" text="100%"/>
+                                </tooltip>
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                               preserveRatio="true">
+                                        <Image url="icons/icons8_Zoom_to_Actual_Size_96px.png"/>
+                                    </ImageView>
+                                </graphic>
 
-                                        </Button>
-                                        <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut" styleClass="flat">
-                                            <tooltip>
-                                                <Tooltip styleClass="white-tooltip" text="Zoom out" />
-                                            </tooltip>
-                                            <graphic>
-                                                <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                                    <image>
-                                                        <Image url="icons/icons8_Zoom_Out_96px.png" />
-                                                    </image>
-                                                </ImageView>
-                                            </graphic>
+                            </Button>
+                            <Button fx:id="zoomOutButton" mnemonicParsing="false" onAction="#previewZoomOut" styleClass="flat">
+                                <tooltip>
+                                    <Tooltip styleClass="white-tooltip" text="Zoom out"/>
+                                </tooltip>
+                                <graphic>
+                                    <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true"
+                                               preserveRatio="true">
+                                        <Image url="icons/icons8_Zoom_Out_96px.png"/>
+                                    </ImageView>
+                                </graphic>
 
-                                        </Button>
-                                    </items>
-                                </ToolBar>
-                                <WebView fx:id="previewWebview" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
-                            </children>
-                        </AnchorPane>
-                        <TreeView fx:id="tocTreeView" />
-                    </items>
+                            </Button>
+                        </ToolBar>
+                        <WebView fx:id="previewWebview" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0"
+                                 prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0"/>
+                    </AnchorPane>
+                    <TreeView fx:id="tocTreeView"/>
                 </StashableSplitPane>
             </items>
         </StashableSplitPane>

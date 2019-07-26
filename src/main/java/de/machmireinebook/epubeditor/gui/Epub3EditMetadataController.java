@@ -33,8 +33,6 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataDate;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
 
-import jidefx.scene.control.searchable.TableViewSearchable;
-
 /**
  * User: mjungierek
  * Date: 27.07.2014
@@ -192,7 +190,6 @@ public class Epub3EditMetadataController implements Initializable
     public void initialize(URL location, ResourceBundle resources)
     {
         logger.info("initialize");
-        new TableViewSearchable<>(otherContributorsTableView);
         otherContributorsTableView.setEditable(true);
         TableColumn<Author, String> tc = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("role"));
@@ -210,7 +207,6 @@ public class Epub3EditMetadataController implements Initializable
         TableColumn<Author, String> tc3 = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(2);
         tc3.setCellValueFactory(new PropertyValueFactory<>("fileAs"));
 
-        new TableViewSearchable<>(metadateTableView);
         metadateTableView.setEditable(true);
 
         TableColumn<MetadataListItem, String> tc4 = (TableColumn<MetadataListItem, String>) metadateTableView.getColumns().get(0);

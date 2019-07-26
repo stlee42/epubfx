@@ -45,8 +45,6 @@ import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
 
-import jidefx.scene.control.searchable.TableViewSearchable;
-
 /**
  * User: mjungierek
  * Date: 18.08.2014
@@ -103,8 +101,6 @@ public class InsertMediaController implements Initializable, StandardController
     public void initialize(URL location, ResourceBundle resources)
     {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        TableViewSearchable<ImageResource> searchable = new TableViewSearchable<>(tableView);
-        searchable.setCaseSensitive(false);
 
         TableColumn<ImageResource, String> tc = (TableColumn<ImageResource, String>) tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("href"));

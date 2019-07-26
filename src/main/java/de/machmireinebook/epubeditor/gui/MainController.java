@@ -89,8 +89,6 @@ import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import jidefx.scene.control.searchable.TreeViewSearchable;
-
 /**
  * User: mjungierek
  * Date: 07.02.14
@@ -284,9 +282,6 @@ public class MainController implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        TreeViewSearchable<Resource> searchable = new TreeViewSearchable<>(epubStructureTreeView);
-        searchable.setRecursive(true);
-
         bookBrowserManager.setTreeView(epubStructureTreeView);
         bookBrowserManager.setEditorManager(editorTabManager);
 

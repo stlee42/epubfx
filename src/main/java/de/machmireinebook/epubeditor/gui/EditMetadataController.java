@@ -31,8 +31,6 @@ import de.machmireinebook.epubeditor.epublib.domain.epub2.Identifier;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.MetadataDate;
 
-import jidefx.scene.control.searchable.TableViewSearchable;
-
 /**
  * User: mjungierek
  * Date: 27.07.2014
@@ -179,7 +177,6 @@ public class EditMetadataController implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        new TableViewSearchable<>(otherContributorsTableView);
         otherContributorsTableView.setEditable(true);
         TableColumn<Author, String> tc = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("relator"));
@@ -197,7 +194,6 @@ public class EditMetadataController implements Initializable
         TableColumn<Author, String> tc3 = (TableColumn<Author, String>) otherContributorsTableView.getColumns().get(2);
         tc3.setCellValueFactory(new PropertyValueFactory<>("fileAs"));
 
-        new TableViewSearchable<>(metadateTableView);
         metadateTableView.setEditable(true);
 
         TableColumn<MetadataElement, String> tc4 = (TableColumn<MetadataElement, String>) metadateTableView.getColumns().get(0);

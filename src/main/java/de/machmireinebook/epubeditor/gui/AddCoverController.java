@@ -32,8 +32,6 @@ import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 
-import jidefx.scene.control.searchable.TableViewSearchable;
-
 /**
  * User: mjungierek
  * Date: 27.07.2014
@@ -64,8 +62,6 @@ public class AddCoverController implements Initializable
     public void initialize(URL location, ResourceBundle resources)
     {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        TableViewSearchable<ImageResource> searchable = new TableViewSearchable<>(tableView);
-        searchable.setCaseSensitive(false);
 
         TableColumn<ImageResource, String> tc = (TableColumn<ImageResource, String>) tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("href"));

@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import jidefx.scene.control.searchable.TableViewSearchable;
 import org.apache.log4j.Logger;
 
 /**
@@ -52,14 +51,11 @@ public class ChooserWindowController implements Initializable
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
         logger.info("init chooser window");
         chooserWindowCancelButton.setOnAction(new CancelChooserWindowHandler());
-        TableViewSearchable searchableProvisions = new TableViewSearchable(chosserWindowTableView);
-        searchableProvisions.setCaseSensitive(false);
 
         instance = this;
     }

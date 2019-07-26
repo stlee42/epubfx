@@ -36,8 +36,6 @@ import de.machmireinebook.epubeditor.epublib.epub2.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
 
-import jidefx.scene.control.searchable.TableViewSearchable;
-
 import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_EPUB_2_BOOK;
 import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_EPUB_3_BOOK;
 
@@ -84,9 +82,6 @@ public class NewEBookController implements StandardController
             }
         });
         typeListView.getSelectionModel().select(0);
-
-        TableViewSearchable<BookTemplate> searchable = new TableViewSearchable<>(tableView);
-        searchable.setCaseSensitive(false);
 
         TableColumn<BookTemplate, String> tc = (TableColumn<BookTemplate, String>) tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("name"));

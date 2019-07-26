@@ -37,6 +37,8 @@ import de.machmireinebook.epubeditor.MainStage;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 
+import jfxtras.styles.jmetro8.JMetro;
+
 public class EpubEditorApplication extends Application
 {
     private static final Logger logger = Logger.getLogger(EpubEditorApplication.class);
@@ -166,7 +168,7 @@ public class EpubEditorApplication extends Application
                 initStage.hide();
                 Throwable t = task.getException();
                 logger.error("", t);
-                ExceptionDialog.showAndWait(t, mainStage,  "Can't load application", "Kann Applikation nicht laden, bitte Fehlermeldung weitergeben");
+                ExceptionDialog.showAndWait(t, mainStage,  "Can't load application", "Can't load application, please report error message");
             }
         });
 
@@ -178,6 +180,8 @@ public class EpubEditorApplication extends Application
         initStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - SPLASH_HEIGHT / 2.0);
         initStage.getIcons().add(applicationIcon);
         initStage.setTitle("SmoekerSchriever");
+        new JMetro(JMetro.Style.LIGHT).applyTheme(splashScene);
+
         initStage.show();
     }
 

@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -98,8 +99,24 @@ public class ValidationManager {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 ValidationMessage message = tableView.getSelectionModel().getSelectedItem();
                 logger.info("double clicked on message " + message.getMessage() + " for resource " + message.getResource());
-                Resource resource = getBook().getResources().getByHref(message.getResource());
-                editorTabManager.openFileInEditor(resource);
+                String href = message.getResource().replace("OEBPS/", "");
+                Resource resource = getBook().getResources().getByHref(href);
+                if (resource == null) {
+                    if (message.getResource().contains(getBook().getOpfResource().getHref())) {
+                        resource =  getBook().getOpfResource();
+                    }
+                }
+                if (resource != null) {
+                    editorTabManager.openFileInEditor(resource);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.NONE);
+                    alert.initOwner(tableView.getScene().getWindow());
+                    alert.setTitle("Open resource");
+                    alert.getDialogPane().setGraphic(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.FILES_ALT));
+                    alert.setContentText("Can't find resource");
+                    alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+                    alert.showAndWait();
+                }
             }
         });
     }
@@ -108,7 +125,9 @@ public class ValidationManager {
     {
         ValidateEpubService service = new ValidateEpubService(epubFile);
         tableView.getItems().clear();
-        Node placeholder = tableView.getPlaceholder();
+        Node oldPlaceholder = tableView.getPlaceholder();
+        Label placeholderLabel = new Label("Epub check is running");
+        tableView.setPlaceholder(placeholderLabel);
         service.setOnSucceeded(event -> {
             EpubCheckReport report = service.getValue();
             List<ValidationMessage> messages = report.getMessages();
@@ -124,6 +143,7 @@ public class ValidationManager {
                 alert.showAndWait();
                 return;
             }
+            tableView.setPlaceholder(oldPlaceholder);
             tableView.getItems().addAll(FXCollections.observableList(messages));
         });
         service.setOnFailed(event -> {
@@ -133,6 +153,7 @@ public class ValidationManager {
             exceptionDialog.setHeaderText(null);
             exceptionDialog.setContentText("Unknown error while validation ebook");
             exceptionDialog.showAndWait();
+            tableView.setPlaceholder(oldPlaceholder);
         });
         service.restart();
     }

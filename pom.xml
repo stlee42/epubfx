@@ -88,6 +88,12 @@
             <groupId>com.dlsc.preferencesfx</groupId>
             <artifactId>preferencesfx-core</artifactId>
             <version>11.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.controlsfx</groupId>
+                    <artifactId>controlsfx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>at.bestsolution.efxclipse.rt</groupId>
@@ -108,11 +114,6 @@
             <groupId>com.pixelduke</groupId>
             <artifactId>fxribbon</artifactId>
             <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jidefx-common</artifactId>
-            <version>LATEST</version>
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>
@@ -263,4 +264,16 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+    <plugins>
+    <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.1</version>
+        <configuration>
+            <mainClass>de.machmireinebook.epubeditor.EpubEditorStarter</mainClass>
+        </configuration>
+    </plugin>
+    </plugins>
+    </build>
 </project>

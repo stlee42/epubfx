@@ -456,7 +456,7 @@ public class EditorTabManager {
                 editor.setContextMenu(contextMenuXHTML);
                 ((XHTMLResource)resource).prepareWebViewDocument(book.getVersion());
             }
-            else if (mediaType.equals(MediaType.XML)) {
+            else if (mediaType.equals(MediaType.XML) || mediaType.equals(MediaType.OPF)) {
                 editor = xmlEditorProvider.get();
                 editor.setContextMenu(contextMenuXML);
             }
