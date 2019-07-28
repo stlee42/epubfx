@@ -16,19 +16,22 @@ import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.Guide;
-import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.Prefix;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.*;
+import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
+import static de.machmireinebook.epubeditor.epublib.Constants.DEFAULT_NCX_HREF;
+import static de.machmireinebook.epubeditor.epublib.Constants.DEFAULT_NCX_ID;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
 
 
 /**
@@ -91,6 +94,8 @@ public class Epub3PackageDocumentWriter
         Element root = new Element("package", NAMESPACE_OPF);
         root.setAttribute(OPFAttribute.version.getName(), String.valueOf(book.getVersion().asString()));
         root.setAttribute(OPFAttribute.uniqueIdentifier.getName(), BOOK_ID_ID);
+        //write by default all common not predefined prefixes, later it could be dependend by values
+        root.setAttribute("prefix", Prefix.allAsAttributeValue());
         opfDocument.setRootElement(root);
 
         new PackageDocumentEpub3MetadataWriter(book, root).writeMetaData();
@@ -155,8 +160,7 @@ public class Epub3PackageDocumentWriter
      */
     private static void writeItem(Book book, Resource resource, Element manifestElement)
     {
-        if (resource == null ||
-                (resource.getMediaType() == MediaType.NCX
+        if (resource == null || (resource.getMediaType() == MediaType.NCX
                         && book.getSpine().getTocResource() != null))
         {
             return;
@@ -215,28 +219,37 @@ public class Epub3PackageDocumentWriter
     {
         Element guideElement = new Element(OPFTag.guide.getName(), NAMESPACE_OPF);
         root.addContent(guideElement);
-        ensureCoverPageGuideReferenceWritten(book.getGuide(), guideElement);
-        for (GuideReference reference : book.getGuide().getReferences())
+        ensureCoverPageGuideReferenceWritten(book, guideElement);
+        ensureNavGuideReferenceWritten(book, guideElement);
+        for (LandmarkReference reference : book.getLandmarks().getReferences())
         {
             writeGuideReference(reference, guideElement);
         }
     }
 
-    private static void ensureCoverPageGuideReferenceWritten(Guide guide, Element guideElement)
+    private static void ensureCoverPageGuideReferenceWritten(Book book, Element guideElement)
     {
-        if (!(guide.getGuideReferencesByType(GuideReference.Semantics.COVER).isEmpty()))
-        {
+        if (!(book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.COVER).isEmpty())){
             return;
         }
-        Resource coverPage = guide.getCoverPage();
-        if (coverPage != null)
-        {
-            writeGuideReference(new GuideReference(guide.getCoverPage(), GuideReference.Semantics.COVER, GuideReference.Semantics.COVER.getName()), guideElement);
+        Resource coverPage = book.getCoverPage();
+        if (coverPage != null) {
+            writeGuideReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, LandmarkReference.Semantic.COVER.getName()), guideElement);
         }
     }
 
+    private static void ensureNavGuideReferenceWritten(Book book, Element guideElement)
+    {
+        if (!(book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.TOC).isEmpty())){
+            return;
+        }
+        Resource navPage = book.getEpub3NavResource();
+        if (navPage != null) {
+            writeGuideReference(new LandmarkReference(navPage, LandmarkReference.Semantic.TOC, LandmarkReference.Semantic.TOC.getName()), guideElement);
+        }
+    }
 
-    private static void writeGuideReference(GuideReference reference, Element guideElement)
+    private static void writeGuideReference(LandmarkReference reference, Element guideElement)
     {
         if (reference == null)
         {

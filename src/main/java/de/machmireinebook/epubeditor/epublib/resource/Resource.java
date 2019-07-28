@@ -146,7 +146,7 @@ public class Resource<T> implements ToStringConvertible
 	 * @param inputEncoding If the data is of a text type (html/css/etc) then it will use the given inputEncoding.
 	 */
 	public Resource(String id, byte[] data, String href, MediaType mediaType, String inputEncoding) {
-		this.id = id;
+		this.id = StringUtils.replace(id, " ", "_");
 		this.href.set(href);
 		this.originalHref = href;
 		this.mediaType.setValue(mediaType);

@@ -16,7 +16,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
 	 */
 	private static final long serialVersionUID = -316179702440631834L;
 
-    public enum Semantics
+    public enum Semantic
     {
         /**
          * the book cover(s), jacket information, etc.
@@ -67,7 +67,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
         private String name;
         private String description;
 
-        Semantics(String name, String description)
+        Semantic(String name, String description)
         {
             this.name = name;
             this.description = description;
@@ -83,10 +83,10 @@ public class LandmarkReference extends TitledResourceReference implements Serial
             return description;
         }
 
-        public static Semantics getByName(String name)
+        public static Semantic getByName(String name)
         {
-            Semantics result = null;
-            for (Semantics semantics : values())
+            Semantic result = null;
+            for (Semantic semantics : values())
             {
                 if (semantics.name.equalsIgnoreCase(name))
                 {
@@ -97,7 +97,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
         }
     }
 
-	private Semantics type;
+	private Semantic type;
 
 	public LandmarkReference(Resource resource) {
 		this(resource, null);
@@ -111,21 +111,21 @@ public class LandmarkReference extends TitledResourceReference implements Serial
 		this(resource, type, title, null);
 	}
 
-    public LandmarkReference(Resource resource, Semantics type, String title) {
+    public LandmarkReference(Resource resource, Semantic type, String title) {
         super(resource, title);
         this.type = type;
     }
 
 	public LandmarkReference(Resource resource, String type, String title, String fragmentId) {
         super(resource, title, fragmentId);
-		this.type = Semantics.getByName(type);
+		this.type = Semantic.getByName(type);
 	}
 
-	public Semantics getType() {
+	public Semantic getType() {
 		return type;
 	}
 
-	public void setType(Semantics type) {
+	public void setType(Semantic type) {
 		this.type = type;
 	}
 }

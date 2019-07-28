@@ -514,7 +514,7 @@ public class Book implements Serializable
             resources.add(coverPage);
         }
         if (isEpub3()) {
-            getLandmarks().addReference(new LandmarkReference(coverPage, LandmarkReference.Semantics.COVER, "Cover"));
+            getLandmarks().addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, "Cover"));
         } else {
             guide.setCoverPage(coverPage);
         }
@@ -632,9 +632,9 @@ public class Book implements Serializable
             {
                 result.remove(getEpub3NavResource().getHref());
             }
-            removeLandmarkEntries(result, LandmarkReference.Semantics.COPYRIGHT_PAGE);
-            removeLandmarkEntries(result, LandmarkReference.Semantics.COVER);
-            removeLandmarkEntries(result, LandmarkReference.Semantics.TITLE_PAGE);
+            removeLandmarkEntries(result, LandmarkReference.Semantic.COPYRIGHT_PAGE);
+            removeLandmarkEntries(result, LandmarkReference.Semantic.COVER);
+            removeLandmarkEntries(result, LandmarkReference.Semantic.TITLE_PAGE);
         }
         else //EPUB 2
         {
@@ -663,7 +663,7 @@ public class Book implements Serializable
         }
     }
 
-    private void removeLandmarkEntries(Map<String, Resource> result, LandmarkReference.Semantics semantic)
+    private void removeLandmarkEntries(Map<String, Resource> result, LandmarkReference.Semantic semantic)
     {
         List<LandmarkReference> references = getLandmarks().getLandmarkReferencesByType(semantic);
         if (!references.isEmpty())

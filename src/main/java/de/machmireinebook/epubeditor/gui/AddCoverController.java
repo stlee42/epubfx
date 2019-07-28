@@ -136,7 +136,7 @@ public class AddCoverController implements Initializable
         new CoverpageBookProcessor().processBook(book);
         Resource coverPage = null;
         if (book.isEpub3()) {
-            List<LandmarkReference> landmarks = book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantics.COVER);
+            List<LandmarkReference> landmarks = book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.COVER);
             if (!landmarks.isEmpty()) {
                 coverPage = landmarks.get(0).getResource();
             }

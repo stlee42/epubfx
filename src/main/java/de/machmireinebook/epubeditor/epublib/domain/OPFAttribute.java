@@ -6,7 +6,7 @@ package de.machmireinebook.epubeditor.epublib.domain;
 public enum OPFAttribute {
     uniqueIdentifier("unique-identifier"),
     idref,
-    name_attribute,
+    name_attribute("name"),
     content,
     type,
     href,

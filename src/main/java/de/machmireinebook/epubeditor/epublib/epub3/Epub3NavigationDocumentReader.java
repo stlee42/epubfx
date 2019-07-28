@@ -126,8 +126,8 @@ public class Epub3NavigationDocumentReader
                     }
 
                     String type = anchorElement.getAttributeValue("type", NAMESPACE_EPUB);
-                    LandmarkReference.Semantics semantic = LandmarkReference.Semantics.getByName(type);
-                    if (LandmarkReference.Semantics.COVER.equals(semantic))
+                    LandmarkReference.Semantic semantic = LandmarkReference.Semantic.getByName(type);
+                    if (LandmarkReference.Semantic.COVER.equals(semantic))
                     {
                         if (resource.getMediaType() == MediaType.XHTML)
                         {

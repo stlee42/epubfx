@@ -10,7 +10,7 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
  * Date: 01.09.2014
  * Time: 22:40
  */
-public class DefaultResourceFactory  implements ResourceFactory
+public class DefaultResourceFactory implements ResourceFactory
 {
     private static final Logger logger = Logger.getLogger(DefaultResourceFactory.class);
 

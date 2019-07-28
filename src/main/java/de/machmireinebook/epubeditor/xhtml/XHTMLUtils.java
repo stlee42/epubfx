@@ -51,9 +51,8 @@ public class XHTMLUtils
 
     public static final Map<CharSequence, CharSequence> BASIC_ESCAPE;
     static {
-        final Map<CharSequence, CharSequence> initialMap = new HashMap<>();
-        initialMap.put("\"", "&quot;"); // " - double-quote
-        BASIC_ESCAPE = Collections.unmodifiableMap(initialMap);
+        // " - double-quote
+        BASIC_ESCAPE = Map.of("\"", "&quot;");
     }
     public static final Map<CharSequence, CharSequence> BASIC_UNESCAPE;
     static {
@@ -234,7 +233,11 @@ public class XHTMLUtils
             }
         }
 
-        document.setDocType(Constants.DOCTYPE_XHTML.clone());
+        if (epubVersion.isEpub2()) {
+            document.setDocType(Constants.DOCTYPE_XHTML.clone());
+        } else {
+            document.setDocType(Constants.DOCTYPE_HTML.clone());
+        }
 
         ByteArrayOutputStream baos;
         try {

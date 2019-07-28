@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.epub3;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +30,11 @@ import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataPropertyValue;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.OpfDirAttribute;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.*;
+import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_DUBLIN_CORE;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_IBOOKS;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF_WITH_PREFIX;
 
 public class PackageDocumentEpub3MetadataWriter
 {
@@ -43,6 +48,13 @@ public class PackageDocumentEpub3MetadataWriter
         metadataElement = new Element(OPFTag.metadata.getName(), NAMESPACE_OPF);
         metadataElement.addNamespaceDeclaration(NAMESPACE_OPF_WITH_PREFIX);
         metadataElement.addNamespaceDeclaration(NAMESPACE_DUBLIN_CORE);
+        Metadata metadata = (Metadata) book.getMetadata();
+        for (MetadataProperty epub3MetaProperty : metadata.getEpub3MetaProperties()) {
+            if (epub3MetaProperty.getProperty().contains("ibooks")) {
+                metadataElement.addNamespaceDeclaration(NAMESPACE_IBOOKS);
+                break;
+            }
+        }
         root.addContent(metadataElement);
         this.book = book;
     }
@@ -118,7 +130,8 @@ public class PackageDocumentEpub3MetadataWriter
             modificationDate.setProperty(MetadataPropertyValue.dcterms_modified.getName());
             metadata.setModificationDate(modificationDate);
         }
-        modificationDate.setValue(DateTimeFormatter.ISO_DATE_TIME.format(LocalDateTime.now()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        modificationDate.setValue(formatter.format(ZonedDateTime.now(ZoneId.of("UTC"))));
         writeMetaElement(modificationDate);
 
         // write coverimage

@@ -41,4 +41,8 @@ public enum PredefinedPrefix
         }
         return null;
     }
+
+    public String asAttributeValue() {
+        return prefix + ": " + uri;
+    }
 }

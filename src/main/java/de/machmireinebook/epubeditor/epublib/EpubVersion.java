@@ -37,6 +37,11 @@ public enum EpubVersion
         return UNKNOWN;
     }
 
+    public boolean isEpub2()
+    {
+        return (this == EpubVersion.VERSION_2);
+    }
+
     public boolean isEpub3()
     {
         return (this == EpubVersion.VERSION_3

@@ -1,8 +1,11 @@
 package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +18,7 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceReference;
  */
 public class Landmarks implements Iterable<LandmarkReference>
 {
-    private List<LandmarkReference> references = new ArrayList<>();
+    private Map<LandmarkReference.Semantic, LandmarkReference> references = new HashMap<>();
     private String title;
 
     public String getTitle() {
@@ -26,8 +29,12 @@ public class Landmarks implements Iterable<LandmarkReference>
         this.title = title;
     }
 
+    public Collection<LandmarkReference> getReferences() {
+        return references.values();
+    }
+
     public ResourceReference addReference(LandmarkReference reference) {
-        this.references.add(reference);
+        this.references.put(reference.getType(), reference);
         return reference;
     }
 
@@ -37,9 +44,9 @@ public class Landmarks implements Iterable<LandmarkReference>
      * @param referenceType
      * @return A list of all referenceType that have the given referenceType (ignoring case).
      */
-    public List<LandmarkReference> getLandmarkReferencesByType(LandmarkReference.Semantics referenceType) {
+    public List<LandmarkReference> getLandmarkReferencesByType(LandmarkReference.Semantic referenceType) {
         List<LandmarkReference> result = new ArrayList<>();
-        for (LandmarkReference reference: references) {
+        for (LandmarkReference reference: references.values()) {
             if (referenceType.equals(reference.getType())) {
                 result.add(reference);
             }
@@ -50,6 +57,6 @@ public class Landmarks implements Iterable<LandmarkReference>
     @NotNull
     @Override
     public Iterator<LandmarkReference> iterator() {
-        return references.iterator();
+        return references.values().iterator();
     }
 }

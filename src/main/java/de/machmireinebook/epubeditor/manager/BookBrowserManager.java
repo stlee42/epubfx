@@ -928,7 +928,7 @@ public class BookBrowserManager
     public void refreshNcx()
     {
         book.refreshNcxResource();
-        editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.refreshEditorCode(book.getNcxResource());
     }
 
     private void sortSelectedItems()
