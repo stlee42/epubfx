@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 
 import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Layout;
@@ -115,9 +117,16 @@ public class EpubEditorConfiguration
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
         PreferencesManager preferencesManager =  BeanFactory.getInstance().getBean(PreferencesManager.class);
         //saved configuration
-        InputStream fis = EpubEditorConfiguration.class.getResourceAsStream("/application.xml");
+        String alluserProfileFolder = System.getenv().get("ALLUSERSPROFILE");
+        InputStream fis;
         try
         {
+            if (StringUtils.isNotEmpty(alluserProfileFolder)) {
+                String confFilePath = alluserProfileFolder + "/epubfx";
+                fis = new FileInputStream(confFilePath + "/application.xml");
+            } else {
+                fis = EpubEditorConfiguration.class.getResourceAsStream("/application.xml");
+            }
             configurationDocument = new SAXBuilder().build(fis);
             if (configurationDocument != null)
             {
@@ -518,9 +527,17 @@ public class EpubEditorConfiguration
             Optional<Element> preferencesElementOptional = preferencesManager.getPreferencesElement();
             preferencesElementOptional.ifPresent(root::addContent);
         }
+        String alluserProfileFolder = System.getenv().get("ALLUSERSPROFILE");
+        OutputStream os;
         try
         {
-            OutputStream os = new FileOutputStream(new File(EpubEditorConfiguration.class.getResource("/application.xml").getFile()));
+            if (StringUtils.isNotEmpty(alluserProfileFolder)) {
+                String confFilePath = alluserProfileFolder + "/epubfx";
+                os = new FileOutputStream(confFilePath + "/application.xml");
+            } else {
+                os = new FileOutputStream(new File(EpubEditorConfiguration.class.getResource("/application.xml").getFile()));
+            }
+
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();
             outputter.setFormat(xmlFormat);

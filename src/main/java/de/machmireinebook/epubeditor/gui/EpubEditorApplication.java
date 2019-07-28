@@ -29,15 +29,13 @@ import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
-import com.sun.net.httpserver.HttpServer;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.MainStage;
 import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
 import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
 
-import jfxtras.styles.jmetro8.JMetro;
+import com.sun.net.httpserver.HttpServer;
 
 public class EpubEditorApplication extends Application
 {
@@ -180,7 +178,6 @@ public class EpubEditorApplication extends Application
         initStage.setY(bounds.getMinY() + bounds.getHeight() / 2 - SPLASH_HEIGHT / 2.0);
         initStage.getIcons().add(applicationIcon);
         initStage.setTitle("SmoekerSchriever");
-        new JMetro(JMetro.Style.LIGHT).applyTheme(splashScene);
 
         initStage.show();
     }
