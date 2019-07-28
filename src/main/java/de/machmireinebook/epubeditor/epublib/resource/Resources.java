@@ -12,10 +12,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * All the resources that make up the book.
@@ -84,9 +84,13 @@ public class Resources implements Serializable {
 	 * @return a valid id
 	 */
 	private String makeValidId(String resourceId, Resource resource) {
-		if (StringUtils.isNotBlank(resourceId) && ! Character.isJavaIdentifierStart(resourceId.charAt(0))) {
+		if (StringUtils.isNotBlank(resourceId) && (!Character.isJavaIdentifierStart(resourceId.charAt(0))
+													|| resourceId.toLowerCase().startsWith("xml"))) {
 			resourceId = getResourceItemPrefix(resource) + resourceId;
 		}
+		resourceId = StringUtils.replace(resourceId, " ", "_");
+		resourceId = StringUtils.replace(resourceId, ":", "_");
+
 		return resourceId;
 	}
 	

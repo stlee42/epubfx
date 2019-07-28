@@ -610,14 +610,12 @@ public class MainController implements Initializable
         }
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public void addExistingFilesAction(ActionEvent actionEvent)
+    public void addExistingFilesAction()
     {
         addExistingFiles();
     }
 
-    public void addExistingFiles(TreeItem item)
-    {
+    public void addExistingFiles(TreeItem item) {
         addExistingFiles();
     }
 

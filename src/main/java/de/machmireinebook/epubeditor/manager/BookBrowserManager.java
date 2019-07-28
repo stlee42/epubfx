@@ -344,7 +344,7 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Bestehende Dateien hinzufügen...");
+        MenuItem item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
@@ -363,7 +363,7 @@ public class BookBrowserManager
         item.setOnAction(event -> addEmptyCssFile());
         menu.getItems().add(item);
 
-        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
@@ -371,7 +371,7 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Alles auswählen");
+        item = new MenuItem("Select all");
         item.setUserData(treeItem);
         item.setOnAction(event -> selectAll(cssItem));
         menu.getItems().add(item);
@@ -385,12 +385,12 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Add existing Files...");
+        MenuItem item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Add empty File");
+        item = new MenuItem("Add empty file");
         item.setUserData(treeItem);
         item.setOnAction(event -> addEmptyXHTMLFile(treeItem));
         menu.getItems().add(item);
