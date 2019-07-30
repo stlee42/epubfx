@@ -549,7 +549,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                         closeTagNameStartOffset = offset;
                         closeTagNameEndOffset = offset + span.getLength();
                         closeTagName = paragraph.substring(closeTagNameStartOffset, closeTagNameEndOffset);
-                        if (inspector.isTagFound(closeTagName))
+                        if (inspector.isTagFound(closeTagName) && openTagName.equals(closeTagName))
                         {
                             foundCloseTag = true;
                             closeTagNameStartPosition = getAbsolutePosition(paragraphIndex, closeTagNameStartOffset);

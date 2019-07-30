@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,7 +19,9 @@ import javax.inject.Singleton;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.SplitPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import org.apache.commons.collections4.list.SetUniqueList;
@@ -114,15 +117,23 @@ public class EpubEditorConfiguration
     public void readConfiguration()
     {
         MainController epubEditorMainController =  BeanFactory.getInstance().getBean(MainController.class);
+        StashableSplitPane leftDivider = epubEditorMainController.getLeftDivider();
+        StashableSplitPane rightDivider = epubEditorMainController.getRightDivider();
+        StashableSplitPane centerDivider = epubEditorMainController.getCenterDivider();
+
         ClipManager clipManager =  BeanFactory.getInstance().getBean(ClipManager.class);
         PreferencesManager preferencesManager =  BeanFactory.getInstance().getBean(PreferencesManager.class);
         //saved configuration
         String alluserProfileFolder = System.getenv().get("ALLUSERSPROFILE");
+
+        stageSizer.setStage(mainWindow);
+
         InputStream fis;
         try
         {
             if (StringUtils.isNotEmpty(alluserProfileFolder)) {
                 String confFilePath = alluserProfileFolder + "/epubfx";
+                Files.createDirectories(Paths.get(confFilePath));
                 fis = new FileInputStream(confFilePath + "/application.xml");
             } else {
                 fis = EpubEditorConfiguration.class.getResourceAsStream("/application.xml");
@@ -171,8 +182,6 @@ public class EpubEditorConfiguration
                             stageSizer.setHeight(Double.valueOf(mainWindoElement.getAttributeValue("height")));
                             stageSizer.setX(Double.valueOf(mainWindoElement.getAttributeValue("x")));
                             stageSizer.setY(Double.valueOf(mainWindoElement.getAttributeValue("y")));
-
-                            stageSizer.setStage(mainWindow);
                         }
 
                         Element visibilityElement = layoutElement.getChild("visibility");
@@ -181,9 +190,6 @@ public class EpubEditorConfiguration
                         boolean showToc = false;
                         boolean showValidationResults = false;
                         boolean showPreview = false;
-                        StashableSplitPane leftDivider = epubEditorMainController.getLeftDivider();
-                        StashableSplitPane rightDivider = epubEditorMainController.getRightDivider();
-                        StashableSplitPane centerDivider = epubEditorMainController.getCenterDivider();
 
                         if (visibilityElement != null)
                         {
@@ -278,8 +284,30 @@ public class EpubEditorConfiguration
         catch (JDOMException | IOException e)
         {
             logger.error("", e);
-            //im fehlerfall leeres Document erzeugen
+            //in case of error or no configuration file is found, create a new one with standard values
             configurationDocument = new Document(new Element("configuration"));
+            stageSizer.setMaximized(true);
+            //set to screensize
+            Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+            stageSizer.setWidth(screenBounds.getWidth());
+            stageSizer.setHeight(screenBounds.getHeight());
+            stageSizer.setX(0);
+            stageSizer.setY(0);
+
+            //as standard show book browser, editor (can't be hidden) and preview
+            leftDivider.setVisibility(0, true);
+            leftDivider.setVisibility(1, false);
+            centerDivider.setVisibility(1, false);
+            rightDivider.setVisibility(0, true);
+            rightDivider.setVisibility(1, false);
+
+            epubEditorMainController.getShowBookBrowserToggleButton().selectedProperty().set(true);
+            epubEditorMainController.getShowClipsToggleButton().selectedProperty().set(false);
+
+            epubEditorMainController.getShowPreviewToggleButton().selectedProperty().set(true);
+            epubEditorMainController.getShowTocToggleButton().selectedProperty().set(false);
+
+            epubEditorMainController.getShowValidationResultsToggleButton().selectedProperty().set(false);
         }
     }
 
@@ -533,6 +561,7 @@ public class EpubEditorConfiguration
         {
             if (StringUtils.isNotEmpty(alluserProfileFolder)) {
                 String confFilePath = alluserProfileFolder + "/epubfx";
+                Files.createDirectories(Paths.get(confFilePath));
                 os = new FileOutputStream(confFilePath + "/application.xml");
             } else {
                 os = new FileOutputStream(new File(EpubEditorConfiguration.class.getResource("/application.xml").getFile()));

@@ -137,9 +137,12 @@ public class PreviewManager
     }
 
     public void scrollTo(int line) {
+        logger.info("scrolling to line " + line);
         if (line > 0) {
-            webview.getEngine().executeScript("var list = document.getElementsByClassName(\"" + 
-                    EpubEditorConfiguration.LOCATION_CLASS_PREFIX + line + "\"); if (list[0]){list[0].scrollIntoView({ left: 0, block: 'start', behavior: 'smooth' })}");
+            String script = "var list = document.getElementsByClassName(\"" +
+                    EpubEditorConfiguration.LOCATION_CLASS_PREFIX + line + "\"); if (list[0]){list[0].scrollIntoView({ left: 0, block: 'start', behavior: 'smooth' })}";
+            logger.info("script to exceute: \n" + script);
+            webview.getEngine().executeScript(script);
         }
     }
 

@@ -61,6 +61,8 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 
+import com.pixelduke.control.Ribbon;
+
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -86,8 +88,6 @@ import de.machmireinebook.epubeditor.preferences.QuotationMark;
 import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
-import com.pixelduke.control.Ribbon;
 
 /**
  * User: mjungierek
@@ -1349,6 +1349,7 @@ public class MainController implements Initializable
 
     public void validateEpubButton() {
         validationManager.startValidationEpub(currentBookProperty.get().getPhysicalFileName());
+        getShowValidationResultsToggleButton().selectedProperty().set(true);
     }
 
     public void checkLinksButton() {
