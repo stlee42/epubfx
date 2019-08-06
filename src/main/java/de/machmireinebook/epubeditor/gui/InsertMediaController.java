@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -54,6 +55,8 @@ public class InsertMediaController implements Initializable, StandardController
 {
     private static final Logger logger = Logger.getLogger(InsertMediaController.class);
     @FXML
+    private ChoiceBox alignmentChoiceBox;
+    @FXML
     private CheckBox addBorderCheckBox;
     @FXML
     private TextField borderStyleTextField;
@@ -85,6 +88,10 @@ public class InsertMediaController implements Initializable, StandardController
     private ImageView imageView;
     @FXML
     private Label imageValuesLabel;
+
+    private static final int ALIGNMENT_LEFT = 0;
+    private static final int ALIGNMENT_CENTER = 1;
+    private static final int ALIGNMENT_RIGHT = 2;
 
     private Stage stage;
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
@@ -131,6 +138,7 @@ public class InsertMediaController implements Initializable, StandardController
             }
         });
         mediaTypeComboBox.getSelectionModel().select(1);
+        alignmentChoiceBox.getSelectionModel().select(1);
 
         captionTextField.disableProperty().bind(Bindings.not(withCaptionCheckBox.selectedProperty()));
         widthPixelTextField.disableProperty().bind(Bindings.not(fixWidthHeightRadioButton.selectedProperty()));
@@ -157,6 +165,7 @@ public class InsertMediaController implements Initializable, StandardController
         logger.info("insert media");
         try
         {
+            int alignment = alignmentChoiceBox.getSelectionModel().getSelectedIndex();
             String snippet;
             boolean isEpub3 = currentBookProperty.get().isEpub3();
             if (withCaptionCheckBox.isSelected())
@@ -201,11 +210,25 @@ public class InsertMediaController implements Initializable, StandardController
                     style += "max-width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
                 }
             }
-            if (StringUtils.isNotEmpty(style))
-            {
+            String containerStyle;
+            if (alignment == ALIGNMENT_LEFT) {
+                containerStyle = "float:left";
+            } else if (alignment == ALIGNMENT_RIGHT) {
+                containerStyle = "float:right";
+            } else {
+                containerStyle = style + " margin-right: auto; margin-left:auto";
+                style = "width: 100%";
+            }
+
+            if (StringUtils.isNotEmpty(style)) {
                 style = "style=\"" + style.trim() + "\" ";
             }
+            if (StringUtils.isNotEmpty(containerStyle)) {
+                containerStyle = "style=\"" + containerStyle.trim() + "\" ";
+            }
+
             snippet = StringUtils.replace(snippet, "${style}", style);
+            snippet = StringUtils.replace(snippet, "${container-style}", containerStyle);
 
             CodeEditor editor = editorManager.getCurrentEditor();
             Integer cursorPosition = editor.getAbsoluteCursorPosition();

@@ -3,8 +3,7 @@ package de.machmireinebook.epubeditor.preferences;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.dlsc.formsfx.model.util.TranslationService;
 import com.dlsc.preferencesfx.PreferencesFxEvent;
@@ -33,8 +32,7 @@ import com.dlsc.preferencesfx.view.UndoRedoBox;
  */
 public class EpubFxPreferences
 {
-    private static final Logger LOGGER =
-            LogManager.getLogger(EpubFxPreferences.class.getName());
+    private static final Logger logger = Logger.getLogger(EpubFxPreferences.class.getName());
 
     private PreferencesFxModel preferencesFxModel;
 

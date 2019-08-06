@@ -30,16 +30,19 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:11.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:11.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.controlsfx:controlsfx:11.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.dlsc.preferencesfx:preferencesfx-core:11.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.11.1" level="project" />
+    <orderEntry type="library" name="Maven: com.dlsc.preferencesfx:preferencesfx-core:11.3.2" level="project" />
     <orderEntry type="library" name="Maven: at.bestsolution.efxclipse.rt:org.eclipse.fx.ui.controls:3.3.0" level="project" />
     <orderEntry type="library" name="Maven: at.bestsolution.efxclipse.eclipse:com.google.guava:21.0.0" level="project" />
     <orderEntry type="library" name="Maven: at.bestsolution.efxclipse.rt:org.eclipse.fx.ui.panes:3.3.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
-    <orderEntry type="library" name="Maven: com.dlsc.formsfx:formsfx-core:10.3.0" level="project" />
-    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx-commons:9.1.2" level="project" />
-    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx-fontawesome:4.7.0-9.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" name="Maven: com.dlsc.formsfx:formsfx-core:11.3.2" level="project" />
+    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx-commons:11.0" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac:11.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac:11.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:11.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:mac:11.0.1" level="project" />
+    <orderEntry type="library" name="Maven: de.jensd:fontawesomefx-fontawesome:4.7.0-11" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
     <orderEntry type="library" name="Maven: at.bestsolution.efxclipse.rt:org.eclipse.fx.core:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: at.bestsolution.efxclipse.eclipse:javax.inject:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.pixelduke:fxribbon:1.2.1" level="project" />
@@ -153,7 +156,6 @@
     <orderEntry type="library" name="Maven: ua.net.nlp:morfologik-ukrainian-lt:4.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.helger:ph-css:5.0.4" level="project" />
     <orderEntry type="library" name="Maven: com.helger:ph-commons:8.6.3" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: org.apache.openwebbeans:openwebbeans-spi:2.0.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.openwebbeans:openwebbeans-impl:2.0.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xbean:xbean-finder-shaded:4.12" level="project" />

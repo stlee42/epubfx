@@ -30,6 +30,7 @@ import org.languagetool.Languages;
 
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
+import com.dlsc.preferencesfx.PreferencesFx;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
@@ -43,7 +44,7 @@ public class PreferencesManager
     private static final Logger logger = Logger.getLogger(PreferencesManager.class);
 
     private EpubFxPreferencesStorageHandler storageHandler;
-    private EpubFxPreferences preferencesFx;
+    private PreferencesFx preferencesFx;
 
     private ObjectProperty<StartupType> startupType = new SimpleObjectProperty<>(StartupType.MINIMAL_EBOOK);
     private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(
@@ -93,7 +94,7 @@ public class PreferencesManager
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
 
-        preferencesFx = EpubFxPreferences.of(storageHandler,
+        preferencesFx = PreferencesFx.of(storageHandler,
             Category.of("Application",
                     Group.of("Startup",
                             Setting.of("Open application with ", startupTypeControl, startupType),

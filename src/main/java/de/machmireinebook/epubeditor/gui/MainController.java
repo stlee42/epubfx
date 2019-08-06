@@ -98,7 +98,12 @@ import com.pixelduke.control.Ribbon;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
-
+    @FXML
+    private Button nonBreakingSpaceButton;
+    @FXML
+    private Button hrButton;
+    @FXML
+    private Button ellipsisButton;
     @FXML
     private Button editTocButton;
     @FXML
@@ -370,6 +375,10 @@ public class MainController implements Initializable
         centerButton.disableProperty().bind(isNoXhtmlEditorBinding);
         rightAlignButton.disableProperty().bind(isNoXhtmlEditorBinding);
         justifyButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        ellipsisButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        nonBreakingSpaceButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        hrButton.disableProperty().bind(isNoXhtmlEditorBinding);
+
         addFileButton.disableProperty().bind(currentBookProperty.isNull());
         addExistingFileButton.disableProperty().bind(currentBookProperty.isNull());
         addCSSFilesButton.disableProperty().bind(currentBookProperty.isNull());
@@ -961,6 +970,21 @@ public class MainController implements Initializable
     public void italicButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("i");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void nonBreakingSpaceButtonAction() {
+        editorTabManager.insertAtCursorPosition("&#160;");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void hrButtonAction() {
+        editorTabManager.insertAtCursorPosition("…");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void ellipsisButtonAction() {
+        editorTabManager.insertAtCursorPosition("…");
         currentBookProperty.get().setBookIsChanged(true);
     }
 

@@ -148,7 +148,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
         popOver.setTitle("Spell Check Result");
-        popOver.setPrefSize(300, USE_COMPUTED_SIZE);
+        popOver.setMinSize(1000, 300);
         popOverTextArea.setUseInitialStyleForInsertion(true);
         popOverTextArea.setEditable(false);
         popOverTextArea.setShowCaret(Caret.CaretVisibility.OFF);
@@ -457,8 +457,11 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
             logger.error("", e);
         }
     }
+    public Optional<XMLTagPair> findSurroundingTags(TagInspector inspector) {
+        return findSurroundingTags(inspector, false);
+    }
 
-    public Optional<XMLTagPair> findSurroundingTags(TagInspector inspector)
+    public Optional<XMLTagPair> findSurroundingTags(TagInspector inspector, boolean checkClosingTag)
     {
         XMLTagPair pair = null;
         int paragraphIndex = getCurrentParagraphIndex();
@@ -545,7 +548,8 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                         closeTagNameStartOffset = offset;
                         closeTagNameEndOffset = offset + span.getLength();
                         closeTagName = paragraph.substring(closeTagNameStartOffset, closeTagNameEndOffset);
-                        if (inspector.isTagFound(closeTagName))
+
+                        if (inspector.isTagFound(closeTagName) && (!checkClosingTag || openTagName.equals(closeTagName)))
                         {
                             foundCloseTag = true;
                             closeTagNameStartPosition = getAbsolutePosition(paragraphIndex, closeTagNameStartOffset);

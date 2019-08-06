@@ -25,9 +25,10 @@ This project is in early stage, but some functions are working (with possible bu
 - creating cover file by image
 - splitting files
 - renaming files
+- check of ebook with official epub checker (not configurable yet)
 
 ### Planned feature:
-- check of ebook with official epub checker
+
 - opening files in external applications (for example to edit images)
 - checking internal and external links
 - symbol table 
@@ -35,32 +36,54 @@ This project is in early stage, but some functions are working (with possible bu
 
 ## Build and Running
 
-Scripto needs Java 11 or higher to run. The application is build by maven. Currently you can the application only running in an ide (like eclipse, intellij) by starting the `EpubEditorStarter` class. 
+*SmoekerSchriever - epubfx* needs Java 11 or higher to run. The application is build by maven. Currently you can the application only running in an ide (like eclipse, intellij) by starting the `EpubEditorStarter` class. 
 
 I plan to include the maven javafx plugin for easier running the app.  
 
 ## Usage
 ### General Keys
-- CTRL-S: Saves the ebook
-- CTRL-F: Opens the search panel
-- CTRL-O: Opens an ebook
+- CTRL-S: saves the ebook
+- CTRL-F: opens the search panel
+- CTRL-O: opens an ebook
 
-### Editor Keys 
-- DEL: Delete forward
-- BACKSPACE: Delete back
+### In book browser
+#### Keys 
+- CTRL-C on file item in tree: copy the file name
+- CTRL-A: select all items
+- F2: rename file
+- DEL: delete file
+
+#### Mouse
+- double click: open file in editor (css, xml, xhtml)
+- right (secondary button) click: open context menu  
+
+### Editor 
+#### Keys 
+- DEL: delete forward
+- BACKSPACE: delete back
 - RETURN, ENTER: insert paragraph
 - TAB: insert tab or spaces (configurable how much spaces or tab character is used)
 - CTRL-DEL: delete next word
 - CTRL-BACKSPACE: delete previous word
-- CTRL-C: Copy selection 
-- CTRL-X: Cut out selection
-- CTRL-Y: Paste
+- CTRL-C: copy selection 
+- CTRL-X: cut out selection
+- CTRL-Y: paste
 - CTRL-Z: undo
 - CTRL-SHIFT-Z, CTRL-Y: redo
 
-### Mouse
-- Mouse double click: select word
-- Mouse triple click: select paragraph  
-- SHIFT-Mouse Click: Select text from current caret position to mouse click position
+#### Mouse
+- double click: select word
+- triple click: select paragraph  
+- SHIFT-Click: Select text from current caret position to mouse click position
+- right (secondary button) click: open context menu
+
+## Credits
+The following software and frameworks are used in *SmoekerSchriever - epubfx*:
+* Icons by [Icons8](https://icons8.com)
+* [RibbonFx](https://pixelduke.com/fxribbon/) as ui copmponent 
+* [languagetool](http://languagetool.org) for spell checking
+* [htmlcleaner](https://sourceforge.net/projects/htmlcleaner/) for repair and importing (x)html files
+* [PreferencesFX](https://github.com/dlsc-software-consulting-gmbh/PreferencesFX) for editing, storing and loading preferences
+
 
 

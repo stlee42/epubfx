@@ -773,7 +773,7 @@
                 </RibbonTab>
                 <RibbonTab text=" Layout">
                     <ribbonGroups>
-                        <RibbonGroup title="Format">
+                        <RibbonGroup title="Blocks">
                             <nodes>
                                 <Column>
                                     <Button fx:id="h1Button" mnemonicParsing="false" onAction="#h1ButtonAction" styleClass="letter-button" text="h1">
@@ -969,7 +969,7 @@
 
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Format">
+                        <RibbonGroup title="Text">
                             <nodes>
                                 <Column>
                                     <Button fx:id="boldButton" mnemonicParsing="false" onAction="#boldButtonAction">
@@ -993,6 +993,17 @@
                                                 <Image url="icons/icons8_Uppercase_96px.png"/>
                                             </ImageView>
                                         </graphic>
+                                    </Button>
+                                    <Button fx:id="nonBreakingSpaceButton" mnemonicParsing="false" onAction="#nonBreakingSpaceButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Add_White_Space_96px_1.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert non breaking space" />
+                                        </tooltip>
                                     </Button>
                                 </Column>
                                 <Column>
@@ -1018,6 +1029,17 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
+                                    <Button fx:id="hrButton" mnemonicParsing="false" onAction="#hrButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Horizontal_Line_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert horizontal line" />
+                                        </tooltip>
+                                    </Button>
                                 </Column>
                                 <Column>
                                     <Button fx:id="underlineButton" mnemonicParsing="false" onAction="#underlineButtonAction">
@@ -1030,6 +1052,19 @@
                                                 <Image url="icons/icons8_Underline_96px_1.png"/>
                                             </ImageView>
                                         </graphic>
+                                    </Button>
+                                    <Label>
+                                    </Label>
+                                    <Button fx:id="ellipsisButton" mnemonicParsing="false" onAction="#ellipsisButtonAction">
+                                        <graphic>
+                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Ellipsis_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert ellipsis character (three dots)" />
+                                        </tooltip>
                                     </Button>
                                 </Column>
                                 <Column>

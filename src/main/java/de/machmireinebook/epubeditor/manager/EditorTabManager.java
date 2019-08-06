@@ -548,7 +548,7 @@ public class EditorTabManager {
             if (mediaType.equals(MediaType.XHTML)) {
                 codeArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
                     logger.debug("caret position " + newValue);
-                    Optional<XMLTagPair> pairOptional = ((XhtmlRichTextCodeEditor)editor).findSurroundingTags(new XhtmlRichTextCodeEditor.HtmlLayoutTagInspector());
+                    Optional<XMLTagPair> pairOptional = ((XhtmlRichTextCodeEditor)editor).findSurroundingTags(new XhtmlRichTextCodeEditor.HtmlLayoutTagInspector(), true);
                     pairOptional.ifPresent(xmlTagPair -> currentLineProperty.set(xmlTagPair.getTagParagraphIndex() + 1));
                 });
             }

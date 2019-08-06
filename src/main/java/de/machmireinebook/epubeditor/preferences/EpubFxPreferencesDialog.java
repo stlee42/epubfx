@@ -10,8 +10,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.dlsc.preferencesfx.history.History;
 import com.dlsc.preferencesfx.history.view.HistoryDialog;
@@ -68,23 +68,23 @@ public class EpubFxPreferencesDialog extends DialogPane {
     }
 
     public void show(boolean modal) {
+        if (!modalityInitialised) {
+          // only set modality once to avoid exception:
+          // java.lang.IllegalStateException: Cannot set modality once stage has been set visible
+          Modality modality = modal ? Modality.APPLICATION_MODAL : Modality.NONE;
+          dialog.initModality(modality);
+            modalityInitialised = true;
+        }
+
         if(modal) {
-            if (!modalityInitialised) {
-                dialog.initModality(Modality.APPLICATION_MODAL);
-                modalityInitialised = true;
-            }
             dialog.showAndWait();
         } else {
-            if (!modalityInitialised) {
-                dialog.initModality(Modality.NONE);
-                modalityInitialised = true;
-            }
             dialog.show();
         }
     }
 
     private void layoutForm() {
-        dialog.setTitle("PreferencesFx");
+        dialog.setTitle("Preferences");
         dialog.setResizable(true);
         getButtonTypes().addAll(closeWindowBtnType, cancelBtnType);
         dialog.setDialogPane(this);

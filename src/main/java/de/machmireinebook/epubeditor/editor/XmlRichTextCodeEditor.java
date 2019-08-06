@@ -35,8 +35,10 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
 
     private static final Logger logger = Logger.getLogger(XmlRichTextCodeEditor.class);
 
-    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))"
-            + "|(?<COMMENT><!--[^<>]+-->)");
+    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))" +
+            "|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))" +
+            "|(?<ENTITY>(&(.*);))" +
+            "|(?<COMMENT><!--[^<>]+-->)");
     private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
     private static final int GROUP_OPEN_BRACKET = 2;
     private static final int GROUP_ELEMENT_NAME = 3;
@@ -85,6 +87,9 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
             spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
             if(matcher.group("COMMENT") != null) {
                 spansBuilder.add(Collections.singleton("comment"), matcher.end() - matcher.start());
+            }
+            else if(matcher.group("ENTITY") != null) {
+                spansBuilder.add(Collections.singleton("entity"), matcher.end() - matcher.start());
             }
             else
             {

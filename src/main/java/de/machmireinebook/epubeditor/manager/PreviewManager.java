@@ -141,7 +141,7 @@ public class PreviewManager
         if (line > 0) {
             String script = "var list = document.getElementsByClassName(\"" +
                     EpubEditorConfiguration.LOCATION_CLASS_PREFIX + line + "\"); if (list[0]){list[0].scrollIntoView({ left: 0, block: 'start', behavior: 'smooth' })}";
-            logger.info("script to exceute: \n" + script);
+            logger.info("script to execute: " + script);
             webview.getEngine().executeScript(script);
         }
     }

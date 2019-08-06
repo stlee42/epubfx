@@ -24,3 +24,7 @@
 .comment {
     -fx-fill: #008000;
 }
+
+.entity {
+    -fx-fill: #20999D;
+}
