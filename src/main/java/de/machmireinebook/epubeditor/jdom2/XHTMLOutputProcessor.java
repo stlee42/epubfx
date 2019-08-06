@@ -42,7 +42,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
             "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
     private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
-            "div", "blockquote", "table", "tr", "hr", "ul", "ol");
+            "div", "blockquote", "table", "tr", "hr", "ul", "ol", "figure");
     private static final List<String> neverExpand = Arrays.asList("br", "hr", "img");
 
     static {

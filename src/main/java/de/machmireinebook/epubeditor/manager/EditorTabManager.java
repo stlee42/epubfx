@@ -555,6 +555,13 @@ public class EditorTabManager {
         }
     }
 
+    public void closeTab(Resource resource) {
+        List<Tab> tabs =  tabPane.getTabs();
+        tabs.stream().filter(tab -> tab.getUserData() == resource)
+                .findFirst()
+                .ifPresent(tab -> tabPane.getTabs().remove(tab));
+    }
+
     public Resource getCurrentSearchableResource() {
         return currentSearchableResource.get();
     }
@@ -705,7 +712,7 @@ public class EditorTabManager {
         boolean result = false;
         if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
             XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
-            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName) || "html".equals(tagName));
+            Optional<XMLTagPair> optional = xhtmlCodeEditor.findSurroundingTags(tagName -> "head".equals(tagName) || "html".equals(tagName) || "body".equals(tagName) || "section".equals(tagName));
             if (optional.isPresent()) {
                 XMLTagPair pair = optional.get();
                 if ("head".equals(pair.getTagName()) || "html".equals(pair.getTagName()) || StringUtils.isEmpty(pair.getTagName())) {
@@ -736,7 +743,7 @@ public class EditorTabManager {
                     byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);
                     Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
-                    byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent);
+                    byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent, book.getVersion());
                     resource.setData(backPartXHTML);
 
                     int spineIndex = book.getSpine().getResourceIndex(oldResource);

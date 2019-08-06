@@ -165,11 +165,10 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                                         }
                                     }),
                                     consume(keyPressed(KeyCode.TAB), this::insertTab),
-                                    consume(keyPressed(KeyCode.TAB, KeyCombination.SHIFT_DOWN), this::insertTab)));
+                                    consume(keyPressed(KeyCode.TAB, KeyCombination.SHIFT_DOWN), this::shiftTabPressed)));
 
         codeArea.setOnKeyTyped(e -> {
             String character = e.getCharacter();
-            logger.info("typed character " + character);
             switch (character) {
                 case "{":
                     completePair("}");

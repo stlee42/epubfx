@@ -35,7 +35,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
         byte[] bytes = null;
         try
         {
-            HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
+            HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner(book.getVersion());
 
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
@@ -53,7 +53,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
     {
         try
         {
-            HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner();
+            HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner(book.getVersion());
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
             String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, book.getVersion());

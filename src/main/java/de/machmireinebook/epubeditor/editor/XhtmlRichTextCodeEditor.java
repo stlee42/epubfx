@@ -501,23 +501,19 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                 {
                     if ("tag-open-open".equals(style))
                     {
-                        logger.info("found open tag");
                         foundOpenOpen = true;
                     }
                     else if ("tag-open-close".equals(style))
                     {
-                        logger.info("found closing tag");
                         openTagEnd = offset + span.getLength();
                         foundOpenClose = true;
                     }
                     else if ("tag-close-open".equals(style))
                     {
-                        logger.info("found open tag");
                         foundCloseOpen = true;
                     }
                     else if ("tag-close-close".equals(style))
                     {
-                        logger.info("found closing tag");
                         foundCloseClose = true;
                     }
                 }
@@ -549,7 +545,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                         closeTagNameStartOffset = offset;
                         closeTagNameEndOffset = offset + span.getLength();
                         closeTagName = paragraph.substring(closeTagNameStartOffset, closeTagNameEndOffset);
-                        if (inspector.isTagFound(closeTagName) && openTagName.equals(closeTagName))
+                        if (inspector.isTagFound(closeTagName))
                         {
                             foundCloseTag = true;
                             closeTagNameStartPosition = getAbsolutePosition(paragraphIndex, closeTagNameStartOffset);

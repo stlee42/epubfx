@@ -61,8 +61,6 @@ import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 
-import com.pixelduke.control.Ribbon;
-
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -88,6 +86,8 @@ import de.machmireinebook.epubeditor.preferences.QuotationMark;
 import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
+import com.pixelduke.control.Ribbon;
 
 /**
  * User: mjungierek
@@ -312,16 +312,27 @@ public class MainController implements Initializable
             saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
             createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
             createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
-            if (newValue.getVersion() != null)
-            {
-                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - EPUB " + newValue.getVersion().asString() + " - SmoekerSchriever");
+            String stageTitle;
+            if (newValue.getVersion() != null) {
+                stageTitle = (newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                        + " - EPUB " + newValue.getVersion().asString() + " - SmoekerSchriever";
             }
             else
             {
-                stage.setTitle((newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - SmoekerSchriever");
+                stageTitle = (newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                        + " - SmoekerSchriever";
             }
+            stage.setTitle(stageTitle);
+            newValue.bookIsChangedProperty().addListener((observable1, oldValue1, newValue1) -> {
+                String currentTitle;
+                if (newValue1) {
+                    currentTitle = "* " + stageTitle;
+                } else {
+                    currentTitle =  stageTitle;
+                }
+                stage.setTitle(currentTitle);
+            });
+
             validateEpubButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentBookProperty.get().getPhysicalFileName() == null));
             validationResultsTableView.getItems().clear();
         });
@@ -630,39 +641,38 @@ public class MainController implements Initializable
             {
                 MediaType mediaType = MediaType.getByFileName(file.getName());
                 String href;
-                boolean addToSpine = false;
+                Book book = currentBookProperty.getValue();
                 if (MediaType.CSS.equals(mediaType))
                 {
                     href = "Styles/" + file.getName();
+                    Resource resource = book.addResourceFromFile(file, href, mediaType);
+                    book.getResources().getCssResources().add(resource);
                 }
                 else if (MediaType.XHTML.equals(mediaType) || MediaType.XML.equals(mediaType))
                 {
                     href = "Text/" + file.getName();
-                    addToSpine = true;
+                    book.addSpineResourceFromFile(file, href, mediaType);
                 }
                 else if (mediaType.isBitmapImage())
                 {
                     href = "Images/" + file.getName();
+                    Resource resource = book.addResourceFromFile(file, href, mediaType);
+                    book.getResources().getImageResources().add(resource);
                 }
                 else if (MediaType.JAVASCRIPT.equals(mediaType))
                 {
                     href = "Scripts/" + file.getName();
+                    book.addResourceFromFile(file, href, mediaType);
                 }
                 else if (mediaType.isFont())
                 {
                     href = "Fonts/" + file.getName();
+                    Resource resource = book.addResourceFromFile(file, href, mediaType);
+                    book.getResources().getFontResources().add(resource);
                 }
                 else
                 {
                     href = "Misc/" + file.getName();
-                }
-                Book book = currentBookProperty.getValue();
-                if (addToSpine)
-                {
-                    book.addSpineResourceFromFile(file, href, mediaType);
-                }
-                else
-                {
                     book.addResourceFromFile(file, href, mediaType);
                 }
             }

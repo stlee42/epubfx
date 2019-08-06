@@ -145,10 +145,10 @@ public class InsertMediaController implements Initializable, StandardController
     public void onOkAction(ActionEvent actionEvent)
     {
         ImageResource resource = tableView.getSelectionModel().getSelectedItem();
-        if (resource != null)
-        {
+        if (resource != null) {
             insertMediaFile(resource);
         }
+        captionTextField.setText("");
         stage.close();
     }
 
@@ -271,7 +271,9 @@ public class InsertMediaController implements Initializable, StandardController
     public void setStage(Stage stage)
     {
         this.stage = stage;
-        stage.setOnShown(event -> refresh());
+        stage.setOnShowing(event -> {
+            refresh();
+        });
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -149,10 +150,10 @@ public class InsertTableController implements Initializable, StandardController
         logger.info("insert table");
         try
         {
-            String tableSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table.html"), "UTF-8");
-            String columnHeaderSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-header.html"), "UTF-8");
-            String tableRowSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-row.html"), "UTF-8");
-            String tableColumnDataSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-data.html"), "UTF-8");
+            String tableSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table.html"), StandardCharsets.UTF_8);
+            String columnHeaderSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-header.html"), StandardCharsets.UTF_8);
+            String tableRowSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-row.html"), StandardCharsets.UTF_8);
+            String tableColumnDataSnippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/table-column-data.html"), StandardCharsets.UTF_8);
             tableColumnDataSnippet = tableColumnDataSnippet.replace("${cell-style}", "style=\"" + cellStyleTextField.getText() + "\"");
 
             if (headerCheckBox.isSelected()) {

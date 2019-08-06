@@ -81,7 +81,7 @@ public class XHTMLUtils
         String content = null;
         try
         {
-            HtmlCleaner cleaner = createHtmlCleaner();
+            HtmlCleaner cleaner = createHtmlCleaner(epubVersion);
 
             //wir probieren es erstmal mit UTF-8
             TagNode rootNode = cleaner.clean(new String(originalHtml, StandardCharsets.UTF_8));
@@ -111,7 +111,7 @@ public class XHTMLUtils
                                     if (!"UTF-8".equalsIgnoreCase(charsetContent))
                                     {
                                         byte[] recodedHTML = ResourceUtil.recode(charsetContent, "UTF-8", originalHtml);
-                                        HtmlCleaner cleaner2 = createHtmlCleaner();
+                                        HtmlCleaner cleaner2 = createHtmlCleaner(epubVersion);
                                         rootNode = cleaner2.clean(new String(recodedHTML, StandardCharsets.UTF_8));
                                         jdomDocument = new EpubJDomSerializer(cleaner2.getProperties(), false).createJDom(rootNode);
                                     }
@@ -132,7 +132,7 @@ public class XHTMLUtils
         return content;
     }
 
-    public static HtmlCleaner createHtmlCleaner()
+    public static HtmlCleaner createHtmlCleaner(EpubVersion epubVersion)
     {
         HtmlCleaner cleaner = new HtmlCleaner();
         CleanerProperties cleanerProperties = cleaner.getProperties();
@@ -146,6 +146,11 @@ public class XHTMLUtils
         cleanerProperties.setUseEmptyElementTags(false);
         cleanerProperties.setNamespacesAware(true);
         cleanerProperties.setUseCdataFor("script,");
+        if (epubVersion.isEpub2()) {
+            cleanerProperties.setHtmlVersion(4);
+        } else {
+            cleanerProperties.setHtmlVersion(5);
+        }
         cleanerProperties.setInvalidXmlAttributeNamePrefix("epubfx-");
         return cleaner;
     }
@@ -189,7 +194,7 @@ public class XHTMLUtils
         String content = null;
         try
         {
-            HtmlCleaner cleaner = createHtmlCleaner();
+            HtmlCleaner cleaner = createHtmlCleaner(epubVersion);
 
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
@@ -250,8 +255,8 @@ public class XHTMLUtils
         return baos.toByteArray();
     }
 
-    public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent) {
-        HtmlCleaner htmlCleaner = createHtmlCleaner();
+    public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent, EpubVersion epubVersion) {
+        HtmlCleaner htmlCleaner = createHtmlCleaner(epubVersion);
         ByteArrayOutputStream baos;
         try {
             TagNode rootNode = htmlCleaner.clean(new ByteArrayInputStream(data));
@@ -277,7 +282,7 @@ public class XHTMLUtils
             }
             jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
 
-            baos = outputXhtml(jdomDocument, false);
+            baos = outputXhtml(jdomDocument, true);
         }
         catch (IOException e) {
             logger.error("", e);

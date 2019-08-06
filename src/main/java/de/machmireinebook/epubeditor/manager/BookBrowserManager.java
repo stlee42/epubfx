@@ -281,6 +281,10 @@ public class BookBrowserManager
                 {
                     createImageItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
+                else if (isFontItem(item))
+                {
+                    createFontItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
                 else if (item.equals(textItem))
                 {
                     createXHTMLRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
@@ -292,6 +296,10 @@ public class BookBrowserManager
                 else if (item.equals(imagesItem))
                 {
                     createImagesRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
+                else if (item.equals(fontsItem))
+                {
+                    createFontsRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
             }
         });
@@ -339,6 +347,20 @@ public class BookBrowserManager
     }
 
     private ContextMenu createImagesRootContextMenu(TreeItem<Resource> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Add existing files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
+    private ContextMenu createFontsRootContextMenu(TreeItem<Resource> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -533,7 +555,7 @@ public class BookBrowserManager
             item.setOnAction(event -> openWithApplication(treeItem, application.getFileName()));
             menu.getItems().add(item);
         }
-        MenuItem item = new MenuItem("Anwendung konfigurieren...");
+        MenuItem item = new MenuItem("Configure Application...");
         item.setUserData(treeItem);
         item.setOnAction(event -> configureApplicationForOpenXHTML(treeItem));
         menu.getItems().add(item);
@@ -545,19 +567,19 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Löschen...");
+        MenuItem item = new MenuItem("Delete...");
         item.setUserData(treeItem);
         item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
-        item = new MenuItem("Umbenennen...");
+        item = new MenuItem("Rename...");
         item.setUserData(treeItem);
         item.setOnAction(event -> renameItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
         menu.getItems().add(item);
 
-        item = new MenuItem("Validieren");
+        item = new MenuItem("Validate");
         item.setUserData(treeItem);
         item.setOnAction(event -> validateCss(treeItem));
         menu.getItems().add(item);
@@ -565,11 +587,11 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        Menu openWithItem = new Menu("Öffnen mit");
+        Menu openWithItem = new Menu("Open with");
         menu.getItems().add(openWithItem);
         addCssOpenWithApplicationItems(openWithItem, treeItem);
 
-        item = new MenuItem("Speichern unter...");
+        item = new MenuItem("Save as...");
         item.setUserData(treeItem);
         item.setOnAction(event -> saveAs(treeItem));
         menu.getItems().add(item);
@@ -582,12 +604,12 @@ public class BookBrowserManager
         item.setOnAction(event -> addEmptyCssFile());
         menu.getItems().add(item);
 
-        item = new MenuItem("Kopie hinzufügen");
+        item = new MenuItem("Add copy");
         item.setUserData(treeItem);
         item.setOnAction(event -> addCopy(treeItem));
         menu.getItems().add(item);
 
-        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
@@ -595,7 +617,7 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Alles auswählen");
+        item = new MenuItem("Select all");
         item.setUserData(treeItem);
         item.setOnAction(event -> selectAll(cssItem));
         menu.getItems().add(item);
@@ -613,7 +635,7 @@ public class BookBrowserManager
             item.setOnAction(event -> openWithApplication(treeItem, application.getFileName()));
             menu.getItems().add(item);
         }
-        MenuItem item = new MenuItem("Weitere Anwendung konfigurieren...");
+        MenuItem item = new MenuItem("Configure Application...");
         item.setUserData(treeItem);
         item.setOnAction(event -> configureApplicationForOpenCSS(treeItem));
         menu.getItems().add(item);
@@ -625,30 +647,30 @@ public class BookBrowserManager
         menu.setAutoFix(true);
         menu.setAutoHide(true);
 
-        MenuItem item = new MenuItem("Löschen...");
+        MenuItem item = new MenuItem("Delete...");
         item.setUserData(treeItem);
         item.setOnAction(event -> deleteSelectedItems());
         item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         menu.getItems().add(item);
 
-        item = new MenuItem("Umbenennen...");
+        item = new MenuItem("Rename...");
         item.setUserData(treeItem);
         item.setOnAction(event -> renameItem(treeItem));
         item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
         menu.getItems().add(item);
 
-        Menu semantikItem = new Menu("Semantik hinzufügen...");
+        Menu semantikItem = new Menu("Add Semantic...");
         menu.getItems().add(semantikItem);
         addImageSemantikMenuItems(semantikItem, treeItem);
 
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        Menu openWithItem = new Menu("Öffnen mit");
+        Menu openWithItem = new Menu("Open with");
         menu.getItems().add(openWithItem);
         addImageOpenWithApplicationItems(openWithItem, treeItem);
 
-        item = new MenuItem("Speichern unter...");
+        item = new MenuItem("Save as...");
         item.setUserData(treeItem);
         item.setOnAction(event -> saveAs(treeItem));
         menu.getItems().add(item);
@@ -656,7 +678,45 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
-        item = new MenuItem("Bestehende Dateien hinzufügen...");
+        item = new MenuItem("Add existing files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
+    private ContextMenu createFontItemContextMenu(TreeItem<Resource> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Delete...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> deleteSelectedItems());
+        item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        menu.getItems().add(item);
+
+        item = new MenuItem("Rename...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> renameItem(treeItem));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
+        menu.getItems().add(item);
+
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Save as...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> saveAs(treeItem));
+        menu.getItems().add(item);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
         menu.getItems().add(item);
@@ -702,7 +762,7 @@ public class BookBrowserManager
             item.setOnAction(event -> openWithApplication(treeItem, application.getFileName()));
             menu.getItems().add(item);
         }
-        MenuItem item = new MenuItem("Configure another application ...");
+        MenuItem item = new MenuItem("Configure Application ...");
         item.setUserData(treeItem);
         item.setOnAction(event -> configureApplicationForOpenImage(treeItem));
         menu.getItems().add(item);
@@ -857,6 +917,11 @@ public class BookBrowserManager
         return item.getParent().equals(imagesItem);
     }
 
+    private boolean isFontItem(TreeItem<Resource> item)
+    {
+        return item.getParent().equals(fontsItem);
+    }
+
     public boolean isXmlItem(TreeItem<Resource> item)
     {
         return item.getParent().equals(rootItem) &&
@@ -891,6 +956,7 @@ public class BookBrowserManager
     {
         book.removeSpineResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.closeTab(treeItem.getValue());
         textItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
     }
@@ -899,6 +965,7 @@ public class BookBrowserManager
     {
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.closeTab(treeItem.getValue());
         cssItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
     }
@@ -907,6 +974,7 @@ public class BookBrowserManager
     {
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.closeTab(treeItem.getValue());
         imagesItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
     }
@@ -915,6 +983,7 @@ public class BookBrowserManager
     {
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.closeTab(treeItem.getValue());
         fontsItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
     }
