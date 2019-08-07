@@ -37,7 +37,7 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
 
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))" +
             "|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))" +
-            "|(?<ENTITY>(&(.*);))" +
+            "|(?<ENTITY>(&(.*?);))" +
             "|(?<COMMENT><!--[^<>]+-->)");
     private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
     private static final int GROUP_OPEN_BRACKET = 2;
@@ -133,7 +133,7 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
         logger.info("remove tags from selection");
         int selectionStartIndex = getSelectedRange().getStart();
         String selectedText = getSelection();
-        //regex ungreedy and single line, that only tags matches and line breaks are included in . token
+        //regex ungreedy (.*?) and single line (?s), that only tags matches and line breaks are included in . token
         String replacement = selectedText.replaceAll("(?s)<(.*?)>", "");
         replacement = replacement.replaceAll("(?s)</(.*?)>", "");
         replacement = replacement.replaceAll("(?s)<(.*?)/>", "");

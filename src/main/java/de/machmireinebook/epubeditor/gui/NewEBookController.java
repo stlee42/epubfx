@@ -223,8 +223,7 @@ public class NewEBookController implements StandardController
         {
             BookTemplate template = tableView.getSelectionModel().getSelectedItem();
             Book book = new EpubReader().readEpub(template.getPath().toFile());
-            book.setPhysicalFileName(null);
-            book.setBookIsChanged(true);
+            book.applyTemplate();
             currentBookProperty.set(book);
         }
         stage.close();

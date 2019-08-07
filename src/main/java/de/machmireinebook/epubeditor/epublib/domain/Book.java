@@ -860,5 +860,16 @@ public class Book implements Serializable
     {
         return landmarks;
     }
+
+    /**
+     * Changes or deletes some informations of the book, if it's used as template
+     */
+    public void applyTemplate() {
+        getMetadata().generateNewUuid();
+        refreshOpfResource();
+        refreshNcxResource();
+        setPhysicalFileName(null);
+        setBookIsChanged(true);
+    }
 }
 

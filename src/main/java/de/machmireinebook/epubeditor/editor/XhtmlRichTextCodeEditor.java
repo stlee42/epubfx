@@ -21,19 +21,27 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.IndexRange;
+import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 
 import org.controlsfx.control.PopOver;
-import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.StyleClassedTextArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyleSpan;
@@ -70,19 +78,25 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
     private static final Logger logger = Logger.getLogger(XhtmlRichTextCodeEditor.class);
 
     private static final Pattern INDENT = Pattern.compile("style\\s*=\\s*\"(.*)margin-left:([-.0-9]*)([^;]*)(;?)(.*)\\s*\"", Pattern.DOTALL);
-
     private static final String SPELLCHECK_CLASS_NAME = "spell-check-error";
     private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
     private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
     private static final String SPELLCHECK_INDIVIDUAL_CLASS_PREFIX = "spell-check-match-";
 
+    private static final int POPUP_TEXTFLOW_PADDING = 10;
+    private static final int POPUP_WRAPPING_WIDTH = 500;
+    private static final Font POPUP_NORMAL = Font.font("Source Code Pro", FontWeight.NORMAL, 12);
+    private static final Font POPUP_BOLD = Font.font("Source Code Pro", FontWeight.BOLD, 12);
+
+    private static final Pattern MESSAGE_SUGGESTION_PATTERN = Pattern.compile("(.*)<suggestion>(.*)</suggestion>(.*)", Pattern.DOTALL);
+    private static final Color COLOR_SUGGESTION = Color.web("#5871d4");
+
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
     private PopOver popOver = new PopOver();
-    private StyleClassedTextArea popOverTextArea = new StyleClassedTextArea();
     private Point2D popOverOpeningPosition;
 
     @Inject
-    private SpellcheckManager spellchecker;
+    private SpellcheckManager spellcheckManager;
 
     @FunctionalInterface
     public interface TagInspector
@@ -132,7 +146,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
 
         codeArea.multiPlainChanges()
                 .filter(plainTextChanges -> preferencesManager.isSpellcheck())
-                .successionEnds(Duration.ofMillis(durationHighlightingComputation))
+                .successionEnds(Duration.ofMillis(10))
                 .supplyTask(this::spellCheckAsync)
                 .awaitLatest(codeArea.multiPlainChanges())
                 .filterMap(tryTask -> {
@@ -148,13 +162,6 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
         popOver.setTitle("Spell Check Result");
-        popOver.setMinSize(1000, 300);
-        popOverTextArea.setUseInitialStyleForInsertion(true);
-        popOverTextArea.setEditable(false);
-        popOverTextArea.setShowCaret(Caret.CaretVisibility.OFF);
-        popOverTextArea.setWrapText(true);
-        popOverTextArea.getStylesheets().add(getClass().getResource("/editor-css/spellcheck-popover.css").toExternalForm());
-        popOver.setContentNode(popOverTextArea);
 
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
                 .filter(mouseEvent -> !popOver.isShowing())
@@ -165,30 +172,45 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                         return;
                     }
                     int index = event.getCharacterIndex();
-                    popOverTextArea.clear();
                     StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(index, index);
                     for (StyleSpan<Collection<String>> currentStyle : currentStyles) {
                         List<String> currentStyleNames = new ArrayList<>(currentStyle.getStyle());
                         for (String currentStyleName : currentStyleNames) {
                             if (currentStyleName.contains(SPELLCHECK_INDIVIDUAL_CLASS_PREFIX)) {
+
                                 logger.info("mouse is over text with spellcheck match " + currentStyleName);
                                 RuleMatch match = matchesToText.get(currentStyleName);
                                 logger.info("match " + match);
 
                                 String message = match.getMessage();
-                                popOverTextArea.appendText(message);
+                                List<Text> messageTexts = getMessageTexts(message, match);
 
                                 List<String> examples = match.getRule().getIncorrectExamples()
                                         .stream()
                                         .map(IncorrectExample::toString)
                                         .collect(Collectors.toList());
-                                popOverTextArea.appendText(StringUtils.join(examples, "\n"));
+                                List<Text> exampleTexts = getExampleTexts(examples);
 
                                 List<String> suggestions = match.getSuggestedReplacements();
-                                popOverTextArea.appendText(StringUtils.join(suggestions, "\n"));
+                                List<Text> suggestionTexts = getSuggestionTexts(suggestions, match);
+
+                                Separator separator = new Separator();
+                                TextFlow textFlow = new TextFlow();
+                                separator.prefWidthProperty().bind(Bindings.subtract(textFlow.widthProperty(), 2 * POPUP_TEXTFLOW_PADDING));
+                                textFlow.setPadding(new Insets(POPUP_TEXTFLOW_PADDING));
+
+                                List<Node> allChildren = new ArrayList<>();
+                                allChildren.addAll(messageTexts);
+                                allChildren.add(separator);
+                                allChildren.addAll(exampleTexts);
+                                allChildren.addAll(suggestionTexts);
+
+                                popOverOpeningPosition = event.getScreenPosition();
+                                textFlow.getChildren().clear();
+                                textFlow.getChildren().addAll(allChildren);
+                                popOver.setContentNode(textFlow);
                                 // dont use any x and y values of popover directly (like anchorY or anchorY), because its includes any
                                 // unknown offsets, bounds and so on
-                                popOverOpeningPosition = event.getScreenPosition();
                                 popOver.show(codeArea, event.getScreenPosition().getX(), event.getScreenPosition().getY());
                             }
                         }
@@ -198,16 +220,113 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                 .filter(mouseEvent -> popOver.isShowing())
                 .thenIgnoreFor(Duration.ofMillis(500))
                 .subscribe(event -> {
-                    if (popOver.isShowing()) { //do only anything if it's showing
+                    if (popOver.isShowing()) { //do only anything if it's visible
                         double popOverX = popOverOpeningPosition.getX();
                         double popOverY = popOverOpeningPosition.getY();
                         if (Math.abs(popOverX - event.getX()) > 20 || Math.abs(popOverY - event.getY()) > 20) {
                             popOver.hide();
-                            popOverTextArea.clear();
                         }
                     }
                 });
 
+    }
+
+    private List<Text> getMessageTexts(String message, RuleMatch match) {
+        List<Text> result = new ArrayList<>();
+        if (StringUtils.isNotEmpty(message) && message.contains("<suggestion>")) {
+            Matcher regexMatcher = MESSAGE_SUGGESTION_PATTERN.matcher(message);
+            if (regexMatcher.find()) {
+                String startGroup = regexMatcher.group(1);
+                result.add(getNormalText(startGroup));
+                if (regexMatcher.groupCount() > 1) {
+                    String suggestionGroup = regexMatcher.group(2);
+                    Text suggestionText = getColoredText(suggestionGroup, COLOR_SUGGESTION);
+                    suggestionText.setCursor(Cursor.HAND);
+                    suggestionText.setOnMouseClicked(event -> {
+                        logger.info("clicked on suggestion: " + suggestionGroup);
+                        getCodeArea().replaceText(match.getFromPos(), match.getToPos(), suggestionGroup);
+                        popOver.hide();
+                    });
+                    result.add(suggestionText);
+                }
+                if (regexMatcher.groupCount() > 2) {
+                    String endGroup = regexMatcher.group(3);
+                    result.add(getNormalText(endGroup));
+                }
+            }
+            result.add(getNormalText("\n\n"));
+        } else {
+            result.add(getNormalText(message + "\n\n"));
+        }
+        return result;
+    }
+
+    private List<Text> getExampleTexts(List<String> examples) {
+        List<Text> result = new ArrayList<>();
+        if (!examples.isEmpty()) {
+            result.add(getBoldText("Examples\n"));
+            for (String example : examples) {
+                String[] splitted = StringUtils.splitByWholeSeparator(example, "<marker>");
+                if (splitted.length == 1 && example.startsWith("<marker>")) {
+                    String[] splitted2 = StringUtils.splitByWholeSeparator(splitted[0], "</marker>");
+                    result.add(getColoredText(splitted2[0], Color.FIREBRICK));
+                    result.add(getNormalText(splitted2[1]));
+                } else if (splitted.length > 1) {
+                    String[] splitted2 = StringUtils.splitByWholeSeparator(splitted[1], "</marker>");
+                    result.add(getNormalText(splitted[0]));
+                    result.add(getColoredText(splitted2[0], Color.FIREBRICK));
+                    result.add(getNormalText(splitted2[1]));
+                } else {
+                    result.add(getNormalText(splitted[0]));
+                }
+                result.add(getNormalText("\n"));
+            }
+            result.add(getNormalText("\n"));
+        }
+        return result;
+    }
+
+    private List<Text> getSuggestionTexts(List<String> suggestions, RuleMatch match) {
+        List<Text> result = new ArrayList<>();
+        if (!suggestions.isEmpty()) {
+            result.add(getBoldText("Suggestions\n"));
+            for (String suggestion : suggestions) {
+                Text text = getColoredText(suggestion + "\n", COLOR_SUGGESTION);
+                text.setCursor(Cursor.HAND);
+                text.setOnMouseClicked(event -> {
+                    logger.info("clicked on suggestion: " + suggestion);
+                    getCodeArea().replaceText(match.getFromPos(), match.getToPos(), suggestion);
+                    popOver.hide();
+                });
+                result.add(text);
+            }
+        }
+        return result;
+    }
+
+    private Text getNormalText(String textValue) {
+        Text text = new Text();
+        text.setWrappingWidth(POPUP_WRAPPING_WIDTH);
+        text.setFont(POPUP_NORMAL);
+        text.setText(textValue);
+        return text;
+    }
+
+    private Text getBoldText(String textValue) {
+        Text text = new Text();
+        text.setWrappingWidth(POPUP_WRAPPING_WIDTH);
+        text.setFont(POPUP_BOLD);
+        text.setText(textValue);
+        return text;
+    }
+
+    private Text getColoredText(String textValue, Color color) {
+        Text text = new Text();
+        text.setWrappingWidth(POPUP_WRAPPING_WIDTH);
+        text.setFont(POPUP_NORMAL);
+        text.setText(textValue);
+        text.setFill(color);
+        return text;
     }
 
     @Override
@@ -330,7 +449,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         AnnotatedText annotatedText = makeAnnotatedText(text);
 
         try {
-            matches = spellchecker.check(annotatedText);
+            matches = spellcheckManager.check(annotatedText);
         }
         catch (IOException e) {
             logger.error("can't spell check text", e);

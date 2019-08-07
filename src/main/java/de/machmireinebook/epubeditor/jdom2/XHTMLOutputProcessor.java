@@ -152,10 +152,13 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                 else
                 {
                     write(out, " />");
-                    if ("br".equals(element.getQualifiedName()))
+                    if ("br".equals(element.getQualifiedName()))  //special case br, insert line break after to make a litte bit of wysiwyg
                     {
                         write(out, fstack.getLineSeparator());
                     }
+                }
+                if (emptyLineAfterElements.contains(element.getQualifiedName())) {
+                    insertEmptyLine(element, out);
                 }
                 // nothing more to do.
                 return;
@@ -232,19 +235,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 
                 if (emptyLineAfterElements.contains(element.getQualifiedName()))
                 {
-                    boolean isLast = false;
-                    if (parent != null)
-                    {
-                        List<Element> siblings = parent.getChildren();
-                        if (siblings.get(siblings.size() - 1).equals(element))
-                        {
-                            isLast = true;
-                        }
-                    }
-                    if (!isLast)
-                    {
-                        write(out, "\n");
-                    }
+                    insertEmptyLine(element, out);
                 }
             }
             finally
@@ -367,5 +358,17 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         write(out, "\"");
     }
 
-
+    private void insertEmptyLine(Element element, Writer out) throws IOException {
+        Element parent = element.getParentElement();
+        boolean isLast = false;
+        if (parent != null) {
+            List<Element> siblings = parent.getChildren();
+            if (siblings.get(siblings.size() - 1).equals(element)) {
+                isLast = true;
+            }
+        }
+        if (!isLast) {
+            write(out, "\n");
+        }
+    }
 }

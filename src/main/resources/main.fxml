@@ -785,7 +785,7 @@
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                        preserveRatio="true">
-                                                <Image url="icons/icons8_Get_Quote_96px.png"/>
+                                                <Image url="icons/double-quotes-open-close-german.png"/>
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
@@ -804,7 +804,7 @@
                                         <graphic>
                                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                        preserveRatio="true">
-                                                <Image url="icons/icons8_Get_Quote_96px.png"/>
+                                                <Image url="icons/single-quotes-open-close-german.png"/>
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
@@ -996,7 +996,7 @@
                                     </Button>
                                     <Button fx:id="nonBreakingSpaceButton" mnemonicParsing="false" onAction="#nonBreakingSpaceButtonAction">
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
                                                 <Image url="icons/icons8_Add_White_Space_96px_1.png"/>
                                             </ImageView>
@@ -1031,7 +1031,7 @@
                                     </Button>
                                     <Button fx:id="hrButton" mnemonicParsing="false" onAction="#hrButtonAction">
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
                                                 <Image url="icons/icons8_Horizontal_Line_96px.png"/>
                                             </ImageView>
@@ -1053,13 +1053,14 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Label>
+                                    <Label minHeight="26.0">
+                                        
                                     </Label>
                                     <Button fx:id="ellipsisButton" mnemonicParsing="false" onAction="#ellipsisButtonAction">
                                         <graphic>
-                                            <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
-                                                <Image url="icons/icons8_Ellipsis_96px.png"/>
+                                                <Image url="icons/ellipsis-bottom.png"/>
                                             </ImageView>
                                         </graphic>
                                         <tooltip>

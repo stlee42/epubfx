@@ -133,7 +133,7 @@ public class EditorTabManager {
     private boolean refreshAll = false;
 
 
-    public class ImageViewerPane extends ScrollPane implements Initializable {
+    public static class ImageViewerPane extends ScrollPane implements Initializable {
         @FXML
         private ImageView imageView;
         @FXML
@@ -142,7 +142,7 @@ public class EditorTabManager {
         private VBox vBox;
         private ImageResource imageResource;
 
-        public ImageViewerPane() {
+        ImageViewerPane() {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/image_view.fxml"), null, new JavaFXBuilderFactory(),
                     type -> BeanFactory.getInstance().getBean(type));
             loader.setRoot(this);
@@ -629,12 +629,16 @@ public class EditorTabManager {
         codeEditor.requestFocus();
     }
 
-    public void insertAtCursorPosition(String text) {
+    public void insertAtCursorPositionOrReplaceSelection(String text) {
         if (isInsertablePosition()) {
             CodeEditor editor = getCurrentEditor();
-            Integer cursorPosition = editor.getAbsoluteCursorPosition();
-            editor.insertAt(cursorPosition, text);
-            refreshPreview();
+            if(StringUtils.isNotEmpty(editor.getSelection())) {
+                editor.replaceSelection(text);
+            } else {
+                Integer cursorPosition = editor.getAbsoluteCursorPosition();
+                editor.insertAt(cursorPosition, text);
+                refreshPreview();
+            }
         }
     }
 

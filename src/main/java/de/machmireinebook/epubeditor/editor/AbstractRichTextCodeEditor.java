@@ -69,9 +69,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     private final ReadOnlyStringWrapper textInformation = new ReadOnlyStringWrapper(this, "textInformation");
     final PreferencesManager preferencesManager = BeanFactory.getInstance().getBean(PreferencesManager.class);
     protected MediaType mediaType;
-    /*package private*/ int durationHighlightingComputation = 10;
-    private boolean extendedKeyInputModeAltGrD;
-    private boolean extendedKeyInputModeAltGrUmlautA;
+    private int durationHighlightingComputation = 10;
 
     AbstractRichTextCodeEditor()
     {
@@ -123,47 +121,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         CodeArea codeArea = getCodeArea();
         Nodes.removeInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
         Nodes.addInputMap(codeArea, sequence(
-                                    consume(keyPressed(KeyCode.D, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN), keyEvent -> {
-                                        logger.info("switch to AltGr-D");
-                                        extendedKeyInputModeAltGrD = true;
-                                        keyEvent.consume();
-                                    }),
-                                    consume(keyPressed(KeyCode.X), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "„");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
-                                    consume(keyPressed(KeyCode.V), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "“");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
-                                    consume(keyPressed(KeyCode.B), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "”");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
-                                    consume(keyPressed(KeyCode.X, KeyCombination.SHIFT_DOWN), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "‚");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
-                                    consume(keyPressed(KeyCode.V, KeyCombination.SHIFT_DOWN), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "‘");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
-                                    consume(keyPressed(KeyCode.B, KeyCombination.SHIFT_DOWN), keyEvent -> {
-                                        if (extendedKeyInputModeAltGrD) {
-                                            insertAt(getAbsoluteCursorPosition(), "’");
-                                            extendedKeyInputModeAltGrD = false;
-                                        }
-                                    }),
                                     consume(keyPressed(KeyCode.TAB), this::insertTab),
                                     consume(keyPressed(KeyCode.TAB, KeyCombination.SHIFT_DOWN), this::shiftTabPressed)));
 

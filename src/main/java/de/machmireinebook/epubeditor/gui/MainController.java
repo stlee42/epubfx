@@ -960,7 +960,6 @@ public class MainController implements Initializable
         editorTabManager.surroundSelectionWithTag("blockquote");
     }
 
-    
     public void boldButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("b");
@@ -974,17 +973,17 @@ public class MainController implements Initializable
     }
 
     public void nonBreakingSpaceButtonAction() {
-        editorTabManager.insertAtCursorPosition("&#160;");
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("&#160;");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void hrButtonAction() {
-        editorTabManager.insertAtCursorPosition("…");
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("<hr />");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void ellipsisButtonAction() {
-        editorTabManager.insertAtCursorPosition("…");
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("…");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
@@ -1154,7 +1153,6 @@ public class MainController implements Initializable
     public void increaseIndentButtonAction()
     {
         editorTabManager.increaseIndent();
-
     }
 
     public void decreaseIndentButtonAction()
@@ -1387,5 +1385,5 @@ public class MainController implements Initializable
     }
 
     public void checkLinksButton() {
-}
+    }
 }
