@@ -1,6 +1,7 @@
-package de.machmireinebook.epubeditor.manager;
+package de.machmireinebook.epubeditor.spellcheck;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -11,8 +12,10 @@ import org.apache.log4j.Logger;
 
 import org.languagetool.JLanguageTool;
 import org.languagetool.ResultCache;
+import org.languagetool.UserConfig;
 import org.languagetool.markup.AnnotatedText;
 import org.languagetool.rules.CategoryIds;
+import org.languagetool.rules.Rule;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
@@ -31,9 +34,17 @@ public class SpellcheckManager {
 
     @PostConstruct
     public void init() {
-        langTool = new JLanguageTool(preferencesManager.getLanguageSpellSelection().getLanguage(), null, CACHE);
+        UserConfig config = new UserConfig(Collections.emptyList(), Collections.emptyMap(), 5);
+        langTool = new JLanguageTool(preferencesManager.getLanguageSpellSelection().getLanguage(), null, CACHE, config);
+        if (preferencesManager.isOnlyDictionaryBasedSpellCheck()) {
+            for (Rule rule : langTool.getAllRules()) {
+                if (!rule.isDictionaryBasedSpellingRule()) {
+                    langTool.disableRule(rule.getId());
+                }
+            }
+        }
         langTool.disableCategory(CategoryIds.TYPOGRAPHY);
-        langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
+        //langTool.disableCategory(CategoryIds.CONFUSED_WORDS);
         langTool.disableCategory(CategoryIds.REDUNDANCY);
         langTool.disableCategory(CategoryIds.STYLE);
         langTool.disableCategory(CategoryIds.GENDER_NEUTRALITY);
@@ -50,6 +61,12 @@ public class SpellcheckManager {
     }
 
     public List<RuleMatch> check(AnnotatedText text) throws IOException {
-        return langTool.check(text);
+        //using paragraph rules gives to much false positives if paragraph is not formatted in one single code area line
+        return langTool.check(text, true, JLanguageTool.ParagraphHandling.ONLYNONPARA);
+
+    }
+
+    public void shutdown() {
+        //langTool.shutdown();
     }
 }

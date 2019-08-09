@@ -33,6 +33,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
@@ -58,6 +59,7 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
 import de.machmireinebook.epubeditor.BeanFactory;
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.clips.ClipManager;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
@@ -127,6 +129,8 @@ public class EditorTabManager {
     private Provider<XmlRichTextCodeEditor> xmlEditorProvider;
     @Inject
     private Provider<CssRichTextCodeEditor> cssEditorProvider;
+    @Inject
+    private EpubEditorConfiguration configuration;
 
     private boolean openingEditorTab = false;
     private boolean refreshAllInProgress = false;
@@ -428,6 +432,7 @@ public class EditorTabManager {
 
     public void openFileInEditor(Resource resource, MediaType mediaType) throws IllegalArgumentException {
         if (!isTabAlreadyOpen(resource)) {
+            configuration.getMainWindow().getScene().setCursor(Cursor.WAIT);
             Tab tab = new Tab();
             tab.setClosable(true);
             if (resource == null) {
@@ -552,6 +557,7 @@ public class EditorTabManager {
                     pairOptional.ifPresent(xmlTagPair -> currentLineProperty.set(xmlTagPair.getTagParagraphIndex() + 1));
                 });
             }
+            configuration.getMainWindow().getScene().setCursor(Cursor.DEFAULT);
         }
     }
 

@@ -81,7 +81,7 @@ public class ImageResource extends Resource<Image>
         imageInfo.setInput(getInputStream()); // it can be InputStream or RandomAccessFile
         if (!imageInfo.check())
         {
-            logger.error("Not a supported image file format.");
+            logger.error("Not a supported image file format, href: " + getHref());
         }
     }
 

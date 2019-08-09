@@ -57,8 +57,8 @@ public class PreferencesManager
             "English"));
     private ObjectProperty<String> languageSelection = new SimpleObjectProperty<>("English");
 
-    // spellcheckProperty
     private final BooleanProperty spellcheck = new SimpleBooleanProperty(this, "spellcheck", true);
+    private final BooleanProperty onlyDictionaryBasedSpellCheck = new SimpleBooleanProperty(this, "onlyDictionaryBasedSpellCheck", true);
 
     private List<Language> languages = Languages.get();
     private ObservableList<PreferencesLanguageStorable> languageSpellItems = FXCollections.observableArrayList(languages
@@ -123,13 +123,15 @@ public class PreferencesManager
                     Group.of("UI",
                         Setting.of("UI Language", languageItems, languageSelection)
                     ),
-                    Group.of("Content",
-                        Setting.of("Spell Check", spellcheck),
+                    Group.of("Spell Check",
+                        Setting.of("Enable Spell Check", spellcheck),
                         Setting.of("Language for Spell Checking", languageSpellItems, languageSpellSelection),
-                        Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
-                        Setting.of("Headline of Table of Contents", headlineToc),
-                        Setting.of("Headline of Landmarks", landmarksToc)
-                    )
+                            Setting.of("Use only Dictionary base Spell Check", onlyDictionaryBasedSpellCheck)
+                    ),
+                    Group.of("Content",
+                            Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
+                            Setting.of("Headline of Table of Contents", headlineToc),
+                            Setting.of("Headline of Landmarks", landmarksToc))
             )
         ).saveSettings(true);
     }
@@ -267,6 +269,16 @@ public class PreferencesManager
         } else {
             return Optional.empty();
         }
+    }
+
+    public final BooleanProperty onlyDictionaryBasedSpellCheckProperty() {
+        return onlyDictionaryBasedSpellCheck;
+    }
+    public final boolean isOnlyDictionaryBasedSpellCheck() {
+        return onlyDictionaryBasedSpellCheck.get();
+    }
+    public final void setOnlyDictionaryBasedSpellCheck(boolean value) {
+        onlyDictionaryBasedSpellCheck.set(value);
     }
 
     public final BooleanProperty spellcheckProperty() {

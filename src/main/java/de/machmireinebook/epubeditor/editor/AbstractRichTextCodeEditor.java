@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.IntFunction;
 
 import javafx.application.Platform;
@@ -44,6 +43,7 @@ import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
+import static java.util.concurrent.Executors.newWorkStealingPool;
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 import static org.fxmisc.wellbehaved.event.InputMap.consume;
 import static org.fxmisc.wellbehaved.event.InputMap.sequence;
@@ -57,7 +57,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 {
     private static final Logger logger = Logger.getLogger(AbstractRichTextCodeEditor.class);
 
-    ExecutorService taskExecutor =  Executors.newWorkStealingPool(5);
+    ExecutorService taskExecutor = newWorkStealingPool();
+
 
     private CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
@@ -200,7 +201,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         return task;
     }
 
-    private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+    protected void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
         codeArea.setStyleSpans(0, highlighting);
     }
 

@@ -43,7 +43,10 @@ import org.apache.log4j.Logger;
 import org.controlsfx.control.PopOver;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.event.MouseOverTextEvent;
+import org.fxmisc.richtext.model.EditableStyledDocument;
 import org.fxmisc.richtext.model.Paragraph;
+import org.fxmisc.richtext.model.ReadOnlyStyledDocument;
+import org.fxmisc.richtext.model.Replacement;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.jdom2.Content;
@@ -61,11 +64,14 @@ import org.languagetool.markup.AnnotatedTextBuilder;
 import org.languagetool.rules.IncorrectExample;
 import org.languagetool.rules.RuleMatch;
 import org.reactfx.EventStreams;
+import org.reactfx.collection.LiveList;
+import org.reactfx.util.Tuple2;
+import org.reactfx.util.Tuples;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.manager.ElementPosition;
-import de.machmireinebook.epubeditor.manager.SpellcheckManager;
+import de.machmireinebook.epubeditor.spellcheck.SpellcheckManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -81,6 +87,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
     private static final String SPELLCHECK_CLASS_NAME = "spell-check-error";
     private static final String SPELLCHECK_HINT_CLASS_NAME = "spell-check-hint";
     private static final String SPELLCHECK_OTHER_CLASS_NAME = "spell-check-other";
+    private static final List<String> SPELLCHECK_CLASSES = Arrays.asList(SPELLCHECK_CLASS_NAME, SPELLCHECK_HINT_CLASS_NAME, SPELLCHECK_OTHER_CLASS_NAME);
     private static final String SPELLCHECK_INDIVIDUAL_CLASS_PREFIX = "spell-check-match-";
 
     private static final int POPUP_TEXTFLOW_PADDING = 10;
@@ -92,8 +99,11 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
     private static final Color COLOR_SUGGESTION = Color.web("#5871d4");
 
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
+    private List<RuleMatch> currentHighlightings = Collections.emptyList();
+    private List<RuleMatch> currentRuleMatches = Collections.emptyList();
     private PopOver popOver = new PopOver();
     private Point2D popOverOpeningPosition;
+    private double mouseMoveDifference;
 
     @Inject
     private SpellcheckManager spellcheckManager;
@@ -162,6 +172,9 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         //configure popover for spellcheck result messsages
         codeArea.setMouseOverTextDelay(Duration.ofMillis(500));
         popOver.setTitle("Spell Check Result");
+        //mouse hav to move the size of arrow and a little offset as security, so that user can reach the popup
+        // because in some edge cases the arrow is not at the opening position, and the user can't reacht the popup before the popup is closed
+        mouseMoveDifference = popOver.getCornerRadius() + popOver.getArrowIndent() + popOver.getArrowSize() + 10;
 
         EventStreams.eventsOf(codeArea, MouseOverTextEvent.MOUSE_OVER_TEXT_BEGIN)
                 .filter(mouseEvent -> !popOver.isShowing())
@@ -223,12 +236,14 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                     if (popOver.isShowing()) { //do only anything if it's visible
                         double popOverX = popOverOpeningPosition.getX();
                         double popOverY = popOverOpeningPosition.getY();
-                        if (Math.abs(popOverX - event.getX()) > 20 || Math.abs(popOverY - event.getY()) > 20) {
+                        double eventX = event.getScreenX();
+                        double eventY = event.getScreenY();
+                        if (Math.abs(popOverX - eventX) > mouseMoveDifference || Math.abs(popOverY - eventY) > mouseMoveDifference) {
+                            logger.debug("min. difference: " + mouseMoveDifference + ", x difference " + (popOverX - eventX) + ", y difference " + (popOverY - eventY));
                             popOver.hide();
                         }
                     }
                 });
-
     }
 
     private List<Text> getMessageTexts(String message, RuleMatch match) {
@@ -290,6 +305,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         List<Text> result = new ArrayList<>();
         if (!suggestions.isEmpty()) {
             result.add(getBoldText("Suggestions\n"));
+            suggestions = suggestions.size() > 5 ? suggestions.subList(0, 4) : suggestions;
             for (String suggestion : suggestions) {
                 Text text = getColoredText(suggestion + "\n", COLOR_SUGGESTION);
                 text.setCursor(Cursor.HAND);
@@ -459,21 +475,49 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         return matches;
     }
 
+    private Tuple2<Integer, List<RuleMatch>> partialSpellCheck() {
+        logger.info("starting partial spellcheck");
+        List<RuleMatch> matches = Collections.emptyList();
+        CodeArea codeArea = getCodeArea();
+        int firstPar = codeArea.firstVisibleParToAllParIndex();
+        logger.info("first visible par " + firstPar);
+        LiveList<Paragraph<Collection<String>, String, Collection<String>>> visibleParagraphs = codeArea.getVisibleParagraphs();
+        String text = visibleParagraphs.stream().map(Paragraph::getText).collect(Collectors.joining());
+        AnnotatedText annotatedText = makeAnnotatedText(text);
+
+        try {
+            matches = spellcheckManager.check(annotatedText);
+        }
+        catch (IOException e) {
+            logger.error("can't spell check text", e);
+        }
+        int offset = codeArea.getAbsolutePosition(firstPar, 0);
+        logger.info("partial spellcheck finished");
+        return Tuples.t(offset, matches);
+    }
+
     private AnnotatedText makeAnnotatedText(String xhtml) {
         AnnotatedTextBuilder builder = new AnnotatedTextBuilder();
         StringTokenizer tokenizer = new StringTokenizer(xhtml, "<>", true);
         boolean inMarkup = false;
+        boolean noTextToCheck = false;
         while (tokenizer.hasMoreTokens()) {
             String part = tokenizer.nextToken();
             if (part.startsWith("<")) {
-                builder.addMarkup(part);
                 inMarkup = true;
+                builder.addMarkup(part);
             } else if (part.startsWith(">")) {
                 inMarkup = false;
                 builder.addMarkup(part);
             } else {
                 if (inMarkup) {
                     builder.addMarkup(part);
+                    if (part.contains("style")) {
+                        noTextToCheck = true;
+                    }
+                } else if (noTextToCheck) {
+                    builder.addMarkup(part);
+                    noTextToCheck = false;
                 } else {
                     builder.addText(part);
                 }
@@ -482,9 +526,35 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         return builder.build();
     }
 
+    //special case, because do not overwrite the spellchecking styles
+    protected void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+        int currentPosition = 0;
+        List<Replacement<Collection<String>, String, Collection<String>>> replacements = new ArrayList<>();
+        for (StyleSpan<Collection<String>> styleSpan : highlighting) {
+            Collection<String> styles = styleSpan.getStyle();
+            if (!styles.isEmpty()) {
+                String text = getCodeArea().getText(currentPosition, currentPosition + styleSpan.getLength());
+                ReadOnlyStyledDocument<Collection<String>, String, Collection<String>> rosd = ReadOnlyStyledDocument.fromString(text, getCodeArea().getInitialParagraphStyle(), styles, getCodeArea().getSegOps());
+                Replacement<Collection<String>, String, Collection<String>> replacement = new Replacement<>(currentPosition, currentPosition + styleSpan.getLength(), rosd);
+                replacements.add(replacement);
+            }
+            currentPosition += styleSpan.getLength();
+        }
+        ((EditableStyledDocument<Collection<String>, String, Collection<String>>)getCodeArea().getDocument()).replaceMulti(replacements);
+    }
+
     @Override
     public void applySpellCheckResults(List<RuleMatch> matches) {
         logger.info("applying spellcheck result");
+        CodeArea codeArea = getCodeArea();
+        //remove the old spellcheck classes
+        StyleSpans<Collection<String>> styleSpansWithoutSpellcheckClasses = codeArea.getStyleSpans(0, codeArea.getLength()).mapStyles(styles -> {
+            styles.removeAll(SPELLCHECK_CLASSES);
+            return styles.stream().filter(s -> !s.contains(SPELLCHECK_INDIVIDUAL_CLASS_PREFIX)).collect(Collectors.toList());
+        });
+        codeArea.setStyleSpans(0, styleSpansWithoutSpellcheckClasses);
+
+        currentRuleMatches = matches;
         matchesToText.clear();
         int id = 1;
         for (RuleMatch match : matches) {
@@ -492,8 +562,8 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
             int end = match.getToPos();
             if (start > -1) {
                 int currentPosition = start;
-                end = Math.min(end, getCodeArea().getLength());
-                StyleSpans<Collection<String>> currentStyles = getCodeArea().getStyleSpans(start, end);
+                end = Math.min(end, codeArea.getLength());
+                StyleSpans<Collection<String>> currentStyles = codeArea.getStyleSpans(start, end);
                 for (StyleSpan<Collection<String>> currentStyle : currentStyles) {
                     List<String> currentStyleNames = new ArrayList<>(currentStyle.getStyle());
                     String cssClass;
@@ -507,7 +577,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
                     String individualCssClass = SPELLCHECK_INDIVIDUAL_CLASS_PREFIX + id++;
                     matchesToText.put(individualCssClass, match);
                     Collections.addAll(currentStyleNames, cssClass, individualCssClass);
-                    getCodeArea().setStyle(currentPosition, currentPosition + currentStyle.getLength(), currentStyleNames);
+                    codeArea.setStyle(currentPosition, currentPosition + currentStyle.getLength(), currentStyleNames);
                     currentPosition = currentPosition + currentStyle.getLength();
                 }
             }
@@ -734,5 +804,10 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
             content.detach();
         }
         return contentList;
+    }
+
+    public void shutdown() {
+        super.shutdown();
+        spellcheckManager.shutdown();
     }
 }

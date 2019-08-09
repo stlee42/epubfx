@@ -603,30 +603,32 @@ public class MainController implements Initializable
         File file = fileChooser.showOpenDialog(stage);
         if (file != null)
         {
-            stage.getScene().setCursor(Cursor.WAIT);
-            EpubReader reader = new EpubReader();
-            try
-            {
-                Book currentBook = reader.readEpub(file);
-                currentBookProperty.set(currentBook);
-                Platform.runLater(() ->
-                    configuration.getRecentFiles().add(0, file.toPath())
-                );
-                if (!currentBook.getSpine().isEmpty())
+            Platform.runLater(() -> {
+                stage.getScene().setCursor(Cursor.WAIT);
+                EpubReader reader = new EpubReader();
+                try
                 {
-                    Resource firstResource = currentBook.getSpine().getResource(0);
-                    editorTabManager.openFileInEditor(firstResource);
+                    Book currentBook = reader.readEpub(file);
+                    currentBookProperty.set(currentBook);
+                    Platform.runLater(() ->
+                        configuration.getRecentFiles().add(0, file.toPath())
+                    );
+                    if (!currentBook.getSpine().isEmpty())
+                    {
+                        Resource firstResource = currentBook.getSpine().getResource(0);
+                        editorTabManager.openFileInEditor(firstResource);
+                    }
                 }
-            }
-            catch (IOException | NavNotFoundException | OpfNotReadableException e)
-            {
-                logger.error("", e);
-                ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName() + ", cause: ");
-            }
-            finally
-            {
-                stage.getScene().setCursor(Cursor.DEFAULT);
-            }
+                catch (IOException | NavNotFoundException | OpfNotReadableException e)
+                {
+                    logger.error("", e);
+                    ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName() + ", cause: ");
+                }
+                finally
+                {
+                    stage.getScene().setCursor(Cursor.DEFAULT);
+                }
+            });
         }
     }
 

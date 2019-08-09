@@ -209,7 +209,7 @@ public class EpubFxPreferencesStorageHandler implements StorageHandler
         Element preferenceValueElement;
         AttributeElementFilter filter = new AttributeElementFilter(PREFERENCES_VALUE_ELEMENT_NAME, "breadcrumb", breadcrumb);
         IteratorIterable<Element> values = preferenceValuesElement.getDescendants(filter);
-        if (values.hasNext()) { //we take the first element if more than one are existing
+        if (values.hasNext()) { //we take the first element if more than one exists
             preferenceValueElement = values.next();
             AtomicReference<Object> result = new AtomicReference<>();
             preferenceValueElement.getContent().stream()
