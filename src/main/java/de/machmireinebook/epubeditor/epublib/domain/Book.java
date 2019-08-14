@@ -450,6 +450,53 @@ public class Book implements Serializable
         }
     }
 
+    public Resource addCopyOfResource(Resource resource) {
+        Resource newResource = (Resource) resource.clone();
+        MediaType mediaType = newResource.getMediaType();
+        String fileName = getNextStandardFileName(mediaType);
+        String href;
+        if (MediaType.CSS.equals(mediaType))
+        {
+            href = "Styles/" + fileName;
+            newResource.setHref(href);
+            addResource(newResource);
+            getResources().getCssResources().add(newResource);
+        }
+        else if (MediaType.XHTML.equals(mediaType) || MediaType.XML.equals(mediaType))
+        {
+            href = "Text/" + fileName;
+            newResource.setHref(href);
+            addSpineResource(newResource);
+        }
+        else if (mediaType.isBitmapImage())
+        {
+            href = "Images/" + fileName;
+            newResource.setHref(href);
+            addResource(newResource);
+            getResources().getImageResources().add(newResource);
+        }
+        else if (MediaType.JAVASCRIPT.equals(mediaType))
+        {
+            href = "Scripts/" + fileName;
+            newResource.setHref(href);
+            addResource(newResource);
+        }
+        else if (mediaType.isFont())
+        {
+            href = "Fonts/" + fileName;
+            newResource.setHref(href);
+            addResource(newResource);
+            getResources().getFontResources().add(newResource);
+        }
+        else
+        {
+            href = "Misc/" + fileName;
+            newResource.setHref(href);
+            addResource(newResource);
+        }
+        return newResource;
+    }
+
     /**
      * The collection of all images, chapters, sections, xhtml files, stylesheets, etc that make up the book.
      *

@@ -9,8 +9,8 @@ import javafx.scene.image.Image;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.util.ImageInfo;
 import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
+import de.machmireinebook.epubeditor.util.ImageInfo;
 
 /**
  * User: mjungierek
@@ -140,5 +140,11 @@ public class ImageResource extends Resource<Image>
             coverProperty = new SimpleBooleanProperty();
         }
         return coverProperty;
+    }
+
+    public Object clone() {
+        ImageResource resource = (ImageResource) super.clone();
+        calculateImageInfo();
+        return resource;
     }
 }

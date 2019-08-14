@@ -99,8 +99,6 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
     private static final Color COLOR_SUGGESTION = Color.web("#5871d4");
 
     private Map<String, RuleMatch> matchesToText = new HashMap<>();
-    private List<RuleMatch> currentHighlightings = Collections.emptyList();
-    private List<RuleMatch> currentRuleMatches = Collections.emptyList();
     private PopOver popOver = new PopOver();
     private Point2D popOverOpeningPosition;
     private double mouseMoveDifference;
@@ -305,7 +303,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
         List<Text> result = new ArrayList<>();
         if (!suggestions.isEmpty()) {
             result.add(getBoldText("Suggestions\n"));
-            suggestions = suggestions.size() > 5 ? suggestions.subList(0, 4) : suggestions;
+            suggestions = suggestions.size() > 5 ? suggestions.subList(0, 5) : suggestions;
             for (String suggestion : suggestions) {
                 Text text = getColoredText(suggestion + "\n", COLOR_SUGGESTION);
                 text.setCursor(Cursor.HAND);
@@ -353,11 +351,20 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
 
     public void surroundParagraphWithTag(String tagName) {
         Optional<XMLTagPair> optional = findSurroundingTags(new XhtmlRichTextCodeEditor.BlockTagInspector());
-        optional.ifPresent(pair -> {
+        optional.ifPresentOrElse(pair -> {
             logger.info("found xml block tag " + pair.getTagName());
             // replcae the closing tag first, otherwise the end index of paragraph is changed
             replaceRange(pair.getCloseTagRange(), tagName);
             replaceRange(pair.getOpenTagRange(), tagName);
+        }, () -> {
+            logger.info("no block tag found");
+            if(StringUtils.isNotEmpty(getSelection())) {
+                replaceSelection("<" + tagName + ">" + getSelection() + "</" + tagName + ">");
+            } else {
+                Integer cursorPosition = getAbsoluteCursorPosition();
+                insertAt(cursorPosition, "<" + tagName + "></" + tagName + ">");
+            }
+
         });
     }
 
@@ -553,8 +560,6 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
             return styles.stream().filter(s -> !s.contains(SPELLCHECK_INDIVIDUAL_CLASS_PREFIX)).collect(Collectors.toList());
         });
         codeArea.setStyleSpans(0, styleSpansWithoutSpellcheckClasses);
-
-        currentRuleMatches = matches;
         matchesToText.clear();
         int id = 1;
         for (RuleMatch match : matches) {

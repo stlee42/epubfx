@@ -44,7 +44,7 @@ public class Resources implements Serializable {
 	 * 
 	 * Fixes the resources id and href if necessary.
 	 * 
-	 * @param resource
+	 * @param resource the resource
 	 * @return the newly added resource
 	 */
 	public Resource add(Resource resource) {
@@ -56,20 +56,20 @@ public class Resources implements Serializable {
 
 	/**
 	 * Checks the id of the given resource and changes to a unique identifier if it isn't one already.
-	 * 
-	 * @param resource
+	 *
+	 * @param resource the resource
 	 */
 	public void fixResourceId(Resource resource) {
 		String  resourceId = resource.getId();
-		
+
 		// first try and create a unique id based on the resource's href
 		if (StringUtils.isBlank(resource.getId())) {
 			resourceId = StringUtils.substringBeforeLast(resource.getHref(), ".");
 			resourceId = StringUtils.substringAfterLast(resourceId, "/");
 		}
-		
+
 		resourceId = makeValidId(resourceId, resource);
-		
+
 		// check if the id is unique. if not: create one from scratch
 		if (StringUtils.isBlank(resourceId) || containsId(resourceId)) {
 			resourceId = createUniqueResourceId(resource);
@@ -79,8 +79,9 @@ public class Resources implements Serializable {
 
 	/**
 	 * Check if the id is a valid identifier. if not: prepend with valid identifier
-	 * 
-	 * @param resource
+	 * and replace some characters inside the id with underline
+	 *
+	 * @param resource the resource
 	 * @return a valid id
 	 */
 	private String makeValidId(String resourceId, Resource resource) {
@@ -88,12 +89,13 @@ public class Resources implements Serializable {
 													|| resourceId.toLowerCase().startsWith("xml"))) {
 			resourceId = getResourceItemPrefix(resource) + resourceId;
 		}
+		resourceId = StringUtils.replace(resourceId, "\t", "_");
 		resourceId = StringUtils.replace(resourceId, " ", "_");
 		resourceId = StringUtils.replace(resourceId, ":", "_");
 
 		return resourceId;
 	}
-	
+
 	private String getResourceItemPrefix(Resource resource) {
 		String result;
 		if (resource.getMediaType() != null  && resource.getMediaType().isBitmapImage()) {
@@ -103,7 +105,7 @@ public class Resources implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Creates a new resource id that is guaranteed to be unique for this set of Resources
 	 * 
@@ -559,4 +561,5 @@ public class Resources implements Serializable {
     {
         this.imageResources = imageResources;
     }
+
 }

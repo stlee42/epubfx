@@ -136,7 +136,6 @@ public class EditorTabManager {
     private boolean refreshAllInProgress = false;
     private boolean refreshAll = false;
 
-
     public static class ImageViewerPane extends ScrollPane implements Initializable {
         @FXML
         private ImageView imageView;
@@ -635,6 +634,22 @@ public class EditorTabManager {
         codeEditor.requestFocus();
     }
 
+    public void cutSelection() {
+        CodeEditor editor = getCurrentEditor();
+        editor.getCodeArea().cut();
+    }
+
+    public void copySelection() {
+        CodeEditor editor = getCurrentEditor();
+        editor.getCodeArea().copy();
+    }
+
+    public void pasteFromClipboard() {
+        CodeEditor editor = getCurrentEditor();
+        editor.getCodeArea().paste();
+    }
+
+
     public void insertAtCursorPositionOrReplaceSelection(String text) {
         if (isInsertablePosition()) {
             CodeEditor editor = getCurrentEditor();
@@ -643,8 +658,8 @@ public class EditorTabManager {
             } else {
                 Integer cursorPosition = editor.getAbsoluteCursorPosition();
                 editor.insertAt(cursorPosition, text);
-                refreshPreview();
             }
+            refreshPreview();
         }
     }
 

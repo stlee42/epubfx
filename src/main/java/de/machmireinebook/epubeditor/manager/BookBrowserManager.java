@@ -35,6 +35,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.effect.InnerShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
@@ -52,14 +53,15 @@ import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.resource.CSSResource;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.resource.CSSResource;
+import de.machmireinebook.epubeditor.epublib.resource.FontResource;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.JavascriptResource;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
-import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
@@ -82,6 +84,7 @@ public class BookBrowserManager
 
     private static final String CSS_FILE_ICON = "/icons/icons8_CSS_Filetype_96px.png";
     private static final String IMAGE_FILE_ICON = "/icons/icons8_Image_File_96px.png";
+    private static final String XHTML_FILE_ICON = "/icons/icons8_Code_File_96px.png";
 
     private TreeItem<Resource> textItem;
     private TreeItem<Resource> cssItem;
@@ -101,7 +104,7 @@ public class BookBrowserManager
     @Inject
     private EpubEditorConfiguration configuration;
 
-    private class FolderSymbolListener implements ChangeListener<Boolean>
+    private static class FolderSymbolListener implements ChangeListener<Boolean>
     {
         TreeItem<Resource> item;
 
@@ -128,6 +131,7 @@ public class BookBrowserManager
     {
         private final DataFormat OBJECT_DATA_FORMAT = new DataFormat("application/java-object");
 
+        @SuppressWarnings("unchecked")
         @Override
         public TreeCell<Resource> call(TreeView<Resource> resourceTreeView)
         {
@@ -678,6 +682,11 @@ public class BookBrowserManager
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
 
+        item = new MenuItem("Add copy");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> addCopy(treeItem));
+        menu.getItems().add(item);
+
         item = new MenuItem("Add existing files...");
         item.setUserData(treeItem);
         item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
@@ -782,7 +791,7 @@ public class BookBrowserManager
         for (SpineReference xhtmlResource : xhtmlResources)
         {
             TreeItem<Resource> xhtmlItem = new TreeItem<>(xhtmlResource.getResource());
-            xhtmlItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
+            xhtmlItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
             textItem.getChildren().add(xhtmlItem);
         }
 
@@ -800,22 +809,7 @@ public class BookBrowserManager
         for (Resource fontResource : fontResources)
         {
             TreeItem<Resource> item = new TreeItem<>(fontResource);
-            if (fontResource.getMediaType().isTTFFont())
-            {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_TTF_48px.png", 24));
-            }
-            else if (fontResource.getMediaType().isOpenTypeFont())
-            {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_OTF_48px.png", 24));
-            }
-            else if (fontResource.getMediaType().isWoffFont())
-            {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_WOFF_48px.png", 24));
-            }
-            else //default file icon
-            {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_File_48px.png", 24));
-            }
+            item.setGraphic(getFontIcon((FontResource) fontResource));
             fontsItem.getChildren().add(item);
         }
 
@@ -849,14 +843,14 @@ public class BookBrowserManager
 
         opfItem = new TreeItem<>();
         opfItem.valueProperty().bind(book.opfResourceProperty());
-        opfItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
+        opfItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
         rootItem.getChildren().add(opfItem);
 
         Resource ncxResource = book.getNcxResource();
         if (ncxResource != null) //in case of epub 3 it could be null
         {
             ncxItem = new TreeItem<>(ncxResource);
-            ncxItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
+            ncxItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
             rootItem.getChildren().add(ncxItem);
         }
 
@@ -869,6 +863,75 @@ public class BookBrowserManager
         else
         {
             treeView.getSelectionModel().select(textItem);
+        }
+
+        //TODO adding misc resources
+    }
+
+    private void addTreeItem(Resource resource) {
+        TreeItem<Resource> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+        int index;
+        TreeItem<Resource> treeItem = new TreeItem<>(resource);
+        if (resource.getMediaType() == MediaType.XHTML) {
+            index = textItem.getChildren().indexOf(selectedTreeItem);
+            treeItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
+            if (textItem.getChildren().size() > 0) {
+                textItem.getChildren().add(index + 1, treeItem);
+            } else {
+                textItem.getChildren().add(treeItem);
+            }
+        }
+        else if (resource.getMediaType() == MediaType.CSS) {
+            index = cssItem.getChildren().indexOf(selectedTreeItem);
+            treeItem.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
+            if (cssItem.getChildren().size() > 0) {
+                cssItem.getChildren().add(index + 1, treeItem);
+            } else {
+                cssItem.getChildren().add(treeItem);
+            }
+        }
+        else if (resource.getMediaType().isImage()) {
+            index = imagesItem.getChildren().indexOf(selectedTreeItem);
+            treeItem.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+            if (imagesItem.getChildren().size() > 0) {
+                imagesItem.getChildren().add(index + 1, treeItem);
+            } else {
+                imagesItem.getChildren().add(treeItem);
+            }
+        }
+        else if (resource.getMediaType().isFont()) {
+            index = fontsItem.getChildren().indexOf(selectedTreeItem);
+            treeItem.setGraphic(getFontIcon((FontResource) resource));
+            if (fontsItem.getChildren().size() > 0) {
+                fontsItem.getChildren().add(index + 1, treeItem);
+            } else {
+                fontsItem.getChildren().add(treeItem);
+            }
+        }
+        int selectionIndex = treeView.getSelectionModel().getSelectedIndex();
+        if (selectionIndex > -1) {
+            treeView.getSelectionModel().clearAndSelect(selectionIndex + 1);
+        } else {
+            treeView.getSelectionModel().select(treeItem);
+        }
+    }
+
+    private ImageView getFontIcon(FontResource fontResource) {
+        if (fontResource.getMediaType().isTTFFont())
+        {
+            return FXUtils.getIcon("/icons/icons8_TTF_48px.png", 24);
+        }
+        else if (fontResource.getMediaType().isOpenTypeFont())
+        {
+            return FXUtils.getIcon("/icons/icons8_OTF_48px.png", 24);
+        }
+        else if (fontResource.getMediaType().isWoffFont())
+        {
+            return FXUtils.getIcon("/icons/icons8_WOFF_48px.png", 24);
+        }
+        else //default file icon
+        {
+            return FXUtils.getIcon("/icons/icons8_File_48px.png", 24);
         }
     }
 
@@ -1033,24 +1096,13 @@ public class BookBrowserManager
             res = book.addResourceFromTemplate("/epub/template.xhtml", "Text/" + fileName);
         }
 
+        addTreeItem(res);
+
         int index = 0;
         if (treeItem != null)
         {
             index = textItem.getChildren().indexOf(treeItem);
         }
-        TreeItem<Resource> xhtmlItem = new TreeItem<>(res);
-        xhtmlItem.setGraphic(FXUtils.getIcon("/icons/icons8_Code_File_96px.png", 24));
-        if (textItem.getChildren().size() > 0)
-        {
-            textItem.getChildren().add(index + 1, xhtmlItem);
-            treeView.getSelectionModel().clearAndSelect(index + 2);
-        }
-        else
-        {
-            textItem.getChildren().add(xhtmlItem);
-            treeView.getSelectionModel().clearAndSelect(0);
-        }
-
         book.addSpineResource(res, index + 1);
         book.setBookIsChanged(true);
         editorManager.refreshEditorCode(book.getOpfResource());
@@ -1060,6 +1112,14 @@ public class BookBrowserManager
 
     private void addCopy(TreeItem<Resource> treeItem)
     {
+        Resource oldResource = treeItem.getValue();
+        Resource newResource = book.addCopyOfResource(oldResource);
+        book.setBookIsChanged(true);
+
+        addTreeItem(newResource);
+
+        editorManager.refreshEditorCode(book.getOpfResource());
+        editorManager.openFileInEditor(newResource);
     }
 
 
@@ -1292,9 +1352,7 @@ public class BookBrowserManager
         content = content.replace("${Title}", book.getTitle());
         res.setData(content.getBytes(StandardCharsets.UTF_8));
 
-        TreeItem<Resource> emptyItem = new TreeItem<>(res);
-        emptyItem.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
-        cssItem.getChildren().add(emptyItem);
+        addTreeItem(res);
 
         book.addResource(res);
         book.setBookIsChanged(true);

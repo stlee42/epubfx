@@ -39,10 +39,10 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
     private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
-            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span");
+            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span", "aside");
     private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
-            "div", "blockquote", "table", "tr", "hr", "ul", "ol", "figure", "hr");
+            "div", "blockquote", "table", "tr", "hr", "ul", "ol", "figure", "hr", "aside");
     private static final List<String> neverExpand = Arrays.asList("br", "hr", "img", "link", "meta");
 
     static {
@@ -301,7 +301,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                         {
                             text = StringUtils.stripStart(text, " ");
                         }
-                        else if (!walker.hasNext()) //den letzten Text innerhalb des Elements hinten trimmen
+                        if (!walker.hasNext()) //trim last text at the end, no else, beacuse it could be first and last
                         {
                             text = StringUtils.stripEnd(text, " ");
                         }
@@ -334,7 +334,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         {
             return;
         }
-        String replaced = str.replaceAll("\\s{2,}", " ");
+        String replaced = str.replaceAll("\\s{1,}", " ");
         write(out, replaced);
     }
 

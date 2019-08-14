@@ -388,10 +388,14 @@ public class MainController implements Initializable
         editTocButton.disableProperty().bind(currentBookProperty.isNull());
 
         saveButton.setDisable(true);
-        undoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canUndoProperty())));
-        redoButton.disableProperty().bind(isNoXhtmlEditorBinding.or(Bindings.not(editorTabManager.canRedoProperty())));
+        undoButton.disableProperty().bind(isNoEditorBinding.or(Bindings.not(editorTabManager.canUndoProperty())));
+        redoButton.disableProperty().bind(isNoEditorBinding.or(Bindings.not(editorTabManager.canRedoProperty())));
 
-        searchReplaceButton.disableProperty().bind(currentBookProperty.isNull().or(Bindings.isEmpty(epubFilesTabPane.getTabs())));
+        cutButton.disableProperty().bind(isNoEditorBinding);
+        copyButton.disableProperty().bind(isNoEditorBinding);
+        pasteButton.disableProperty().bind(isNoEditorBinding);
+
+        searchReplaceButton.disableProperty().bind(isNoEditorBinding);
 
         increaseIndentButton.disableProperty().bind(isNoXhtmlEditorBinding);
         decreaseIndentButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -664,7 +668,7 @@ public class MainController implements Initializable
                     href = "Text/" + file.getName();
                     book.addSpineResourceFromFile(file, href, mediaType);
                 }
-                else if (mediaType.isBitmapImage())
+                else if (mediaType.isImage())
                 {
                     href = "Images/" + file.getName();
                     Resource resource = book.addResourceFromFile(file, href, mediaType);
@@ -934,13 +938,13 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void paragraphButtonAction(ActionEvent actionEvent)
+    public void paragraphButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("p");
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void quotationMarksButtonAction(ActionEvent actionEvent)
+    public void quotationMarksButtonAction()
     {
         String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
         logger.info("select quotation mark " + selectedQuotationMark);
@@ -949,7 +953,7 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void singleQuotationMarksButtonAction(ActionEvent actionEvent)
+    public void singleQuotationMarksButtonAction()
     {
         String selectedQuotationMark = preferencesManager.getQuotationMarkSelection();
         logger.info("select quotation mark " + selectedQuotationMark);
@@ -960,6 +964,7 @@ public class MainController implements Initializable
 
     public void blockQuoteButtonAction() {
         editorTabManager.surroundSelectionWithTag("blockquote");
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void boldButtonAction()
@@ -1082,14 +1087,20 @@ public class MainController implements Initializable
 
     public void cutButtonAction()
     {
+        editorTabManager.cutSelection();
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void copyButtonAction()
     {
+        editorTabManager.copySelection();
+        //only copying text is not a change of the book
     }
 
     public void pasteButtonAction()
     {
+        editorTabManager.pasteFromClipboard();
+        currentBookProperty.get().setBookIsChanged(true);
     }
 
     public void searchReplaceButtonAction()

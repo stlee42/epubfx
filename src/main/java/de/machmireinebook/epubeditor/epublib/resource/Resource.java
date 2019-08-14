@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -28,7 +29,7 @@ import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
  * @author paul
  *
  */
-public class Resource<T> implements ToStringConvertible
+public class Resource<T> implements ToStringConvertible, Cloneable
 {
     private static final Logger logger = Logger.getLogger(Resource.class);
 
@@ -451,4 +452,19 @@ public class Resource<T> implements ToStringConvertible
         }
         setHref(getHref().replace(fileName, string));
     }
+
+	public Object clone() {
+		Resource resource = null;
+		try {
+			resource = (Resource) super.clone();
+			resource.setData(ObjectUtils.clone(getData()));
+			resource.href = new SimpleStringProperty(href.getValue());
+			resource.mediaType = new SimpleObjectProperty<>(mediaType.getValue());
+		}
+		catch (CloneNotSupportedException e) {
+			logger.error(e);
+		}
+		return resource;
+	}
+
 }
