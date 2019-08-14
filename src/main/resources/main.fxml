@@ -162,6 +162,26 @@
                                 </graphic>
 
                             </Button>
+                            <Separator orientation="VERTICAL" prefHeight="30.0"/>
+                            <Label>Device Width: </Label>
+                            <ComboBox fx:id="deviceWidthComboBox">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Kindle Touch: 600 Pixel"/>
+                                        <String fx:value="Kindle Paperwhite: 758 Pixel" />
+                                        <String fx:value="Kindle Paperwhite (Model 2015, 2018), Voyage, Oasis (Model 2016): 1072 Pixel" />
+                                        <String fx:value="Kindle Oasis (Model 2017): 1264 Pixel" />
+                                        <String fx:value="Tolino Shine, Tolino Vision, Tolino Vision 2: 1024 Pixel" />
+                                        <String fx:value="Tolino Shine 2 HD: 1448 Pixel" />
+                                    </FXCollections>
+                                </items>
+                                <tooltip>
+                                    <Tooltip styleClass="white-tooltip" text="Choose a Device so that its Width is used for the Preview" />
+                                </tooltip>
+                            </ComboBox>
+
+                            <Label fx:id="previewWidthLabel">Preview Width: </Label>
+
                         </ToolBar>
                         <WebView fx:id="previewWebview" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0"
                                  prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"

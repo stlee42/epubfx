@@ -23,6 +23,9 @@ public class InsertLinkController extends AbstractStandardController {
     private TextField targetTextField;
     @FXML
     private ListView targetsInBookListView;
+
+    private static StandardController instance;
+
     @Inject
     private EditorTabManager editorTabManager;
 
@@ -33,10 +36,15 @@ public class InsertLinkController extends AbstractStandardController {
         stage.setOnShown(event -> targetTextField.requestFocus());
     }
 
+    public static StandardController getInstance()
+    {
+        return instance;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+        instance = this;
     }
 
     public void onOkAction(ActionEvent actionEvent) {

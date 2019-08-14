@@ -12,6 +12,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,6 +37,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
@@ -321,9 +323,11 @@ public class BookBrowserManager
             {
                 logger.debug("Delete gedrückt");
                 deleteSelectedItems();
+            } else if (keyCode.equals(KeyCode.C) && event.isShortcutDown()) {
+                logger.debug("Ctrl-C pressed");
+                copyFileNameToClipboard();
             }
         });
-
 
         Resource textResource = new Resource("Text");
         textItem = new TreeItem<>(textResource);
@@ -1049,6 +1053,14 @@ public class BookBrowserManager
         editorManager.closeTab(treeItem.getValue());
         fontsItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
+    }
+
+    private void copyFileNameToClipboard() {
+        TreeItem<Resource> treeItem = treeView.getSelectionModel().getSelectedItem();
+        if (treeItem != null && textItem != treeItem && cssItem != treeItem && imagesItem != treeItem
+            && fontsItem != treeItem) {
+            Clipboard.getSystemClipboard().setContent(Collections.singletonMap(DataFormat.PLAIN_TEXT, treeItem.getValue().getFileName()));
+        }
     }
 
     public void refreshOpf()

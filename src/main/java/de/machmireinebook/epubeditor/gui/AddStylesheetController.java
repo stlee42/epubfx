@@ -1,6 +1,5 @@
 package de.machmireinebook.epubeditor.gui;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +48,6 @@ public class AddStylesheetController implements StandardController
 
     private Stage stage;
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
-    private List<Resource> xhtmlResources = new ArrayList<>();
     private Map<Element, Resource> headElements = new HashMap<>();
     private ObservableList<StylesheetResource> stylesheetResources = FXCollections.observableArrayList();
 
@@ -61,7 +59,7 @@ public class AddStylesheetController implements StandardController
         this.editorManager = editorManager;
     }
 
-    public class StylesheetResource
+    public static class StylesheetResource
     {
         private Resource stylesheet;
         private int totalCount;
@@ -103,12 +101,7 @@ public class AddStylesheetController implements StandardController
 
             StylesheetResource that = (StylesheetResource) o;
 
-            if (!stylesheet.equals(that.stylesheet))
-            {
-                return false;
-            }
-
-            return true;
+            return stylesheet.equals(that.stylesheet);
         }
 
         @Override
@@ -225,7 +218,6 @@ public class AddStylesheetController implements StandardController
 
     public void setXHTMLResources(List<Resource> resources)
     {
-        this.xhtmlResources = resources;
         headElements.clear();
         for (StylesheetResource stylesheetResource : stylesheetResources)
         {
@@ -280,7 +272,7 @@ public class AddStylesheetController implements StandardController
         }
     }
 
-    public void okAction(ActionEvent actionEvent) throws IOException
+    public void okAction(ActionEvent actionEvent)
     {
         for (Element headElement : headElements.keySet())
         {

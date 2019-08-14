@@ -99,6 +99,8 @@ public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
     @FXML
+    private Label previewWidthLabel;
+    @FXML
     private Button nonBreakingSpaceButton;
     @FXML
     private Button hrButton;
@@ -412,6 +414,7 @@ public class MainController implements Initializable
         createNcxButton.disableProperty().bind(currentBookProperty.isNull());
 
         cursorPosLabel.textProperty().bind(editorTabManager.cursorPosLabelProperty());
+        previewWidthLabel.textProperty().bind(Bindings.createStringBinding(() -> "Preview width: " + previewWebview.widthProperty().getValue(), previewWebview.widthProperty()));
 
         //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
         clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());

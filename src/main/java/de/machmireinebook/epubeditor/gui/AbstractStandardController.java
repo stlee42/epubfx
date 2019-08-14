@@ -17,7 +17,6 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 public class AbstractStandardController implements StandardController {
 
     protected Stage stage;
-    protected static StandardController instance;
     protected ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
 
     @Override
@@ -39,11 +38,6 @@ public class AbstractStandardController implements StandardController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        instance = this;
     }
 
-    public static StandardController getInstance()
-    {
-        return instance;
-    }
 }

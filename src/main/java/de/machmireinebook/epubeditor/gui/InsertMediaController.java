@@ -10,12 +10,9 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -37,9 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.editor.CodeEditor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
@@ -51,7 +47,7 @@ import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
  * Date: 18.08.2014
  * Time: 21:14
  */
-public class InsertMediaController implements Initializable, StandardController
+public class InsertMediaController extends AbstractStandardController
 {
     private static final Logger logger = Logger.getLogger(InsertMediaController.class);
     @FXML
@@ -93,20 +89,19 @@ public class InsertMediaController implements Initializable, StandardController
     private static final int ALIGNMENT_CENTER = 1;
     private static final int ALIGNMENT_RIGHT = 2;
 
-    private Stage stage;
-    private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
+    private static StandardController instance;
 
     @Inject
     private EditorTabManager editorManager;
     @Inject
     private MainController mainController;
 
-    private static InsertMediaController instance;
-
     @SuppressWarnings("unchecked")
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        super.initialize(location, resources);
+
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         TableColumn<ImageResource, String> tc = (TableColumn<ImageResource, String>) tableView.getColumns().get(0);
@@ -150,6 +145,11 @@ public class InsertMediaController implements Initializable, StandardController
         instance = this;
     }
 
+    public static StandardController getInstance()
+    {
+        return instance;
+    }
+
     public void onOkAction(ActionEvent actionEvent)
     {
         ImageResource resource = tableView.getSelectionModel().getSelectedItem();
@@ -191,7 +191,7 @@ public class InsertMediaController implements Initializable, StandardController
                     snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-single.html"), StandardCharsets.UTF_8);
                 }
             }
-            snippet = StringUtils.replace(snippet, "${url}", "/" + resource.getHref());
+            snippet = StringUtils.replace(snippet, "${url}", editorManager.getCurrentXHTMLResource().relativize(resource));
 
             String style = "";
             if (addBorderCheckBox.isSelected())
@@ -286,27 +286,12 @@ public class InsertMediaController implements Initializable, StandardController
         }
     }
 
-    public static InsertMediaController getInstance()
-    {
-        return instance;
-    }
-
     public void setStage(Stage stage)
     {
-        this.stage = stage;
+        super.setStage(stage);
         stage.setOnShowing(event -> {
             refresh();
         });
     }
 
-    @Override
-    public Stage getStage()
-    {
-        return stage;
-    }
-
-    public ObjectProperty<Book> currentBookProperty()
-    {
-        return currentBookProperty;
-    }
 }

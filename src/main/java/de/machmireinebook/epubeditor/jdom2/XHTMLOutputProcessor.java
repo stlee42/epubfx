@@ -37,8 +37,11 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 {
     private static final Logger logger = Logger.getLogger(XHTMLOutputProcessor.class);
 
-    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6", "th", "td", "a");
-    private static final List<String> removeBreaksInsideTextElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
+    /**
+     * Whitespacines inside element will be preserved, breaks removed, no break before and after inner elements like &lt;i&gt;
+     * inside &lt;p&gt;. For exception of this rule there is the map <code>insertBreakBeforeIfInElement</code>
+     */
+    private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
             "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span", "aside");
     private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -47,7 +50,9 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 
     static {
         List<String> inLiInsertBreak = Arrays.asList("ol", "ul");
+        List<String> inAsideInsertBreak = Arrays.asList("ol", "ul", "figure", "p", "div");
         insertBreakBeforeIfInElement.put("li", inLiInsertBreak);
+        insertBreakBeforeIfInElement.put("aside", inAsideInsertBreak);
     }
 
     private boolean escapeOutput = false;
@@ -95,27 +100,40 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         try
         {
             final List<Content> content = element.getContent();
-
+            String insertBreakAfter = null;
             Element parent = element.getParentElement();
             if (parent != null && insertBreakBeforeIfInElement.get(parent.getQualifiedName()) != null &&
                     insertBreakBeforeIfInElement.get(parent.getQualifiedName()).contains(element.getQualifiedName()))
             {
                 //if text before the element is not a break or the padding, write one
                 boolean insertBreak = true;
-                int ownIndex = parent.getContent().indexOf(element);
-                if (ownIndex == 0) { //padding with \r\n is already written by parent element
-                    insertBreak = false;
-                } else {
-                    Content previousContent = parent.getContent().get(ownIndex - 1);
-                    if (previousContent instanceof Text) {
-                        String previousText = ((Text) previousContent).getText();
-                        if (StringUtils.isBlank(previousText) && previousText.contains("\n")) {
-                            insertBreak = false;
+                if (!preserveElements.contains(parent.getQualifiedName())) {
+                    int ownIndex = parent.getContent().indexOf(element);
+                    if (ownIndex == 0) { //padding with \r\n is already written by parent element
+                        insertBreak = false;
+                    }
+                    else if (ownIndex > 0) {
+                        Content previousContent = parent.getContent().get(ownIndex - 1);
+                        if (previousContent instanceof Text) {
+                            String previousText = ((Text) previousContent).getText();
+                            if (StringUtils.isBlank(previousText) && previousText.contains("\n")) {
+                                insertBreak = false;
+                            }
                         }
                     }
                 }
                 if (insertBreak) {
+                    if (preserveElements.contains(parent.getQualifiedName())) {  //other elements should preserved and has no indent, but here we need
+                        fstack.pop();
+                        fstack.push();
+                        insertBreakAfter = fstack.getPadBetween();
+                    }
                     write(out, fstack.getPadBetween());
+                    if (preserveElements.contains(parent.getQualifiedName())) {  //remove indent because other elements should preserved
+                        fstack.setLevelEOL("");
+                        fstack.setLevelIndent("");
+                        fstack.setTextMode(Format.TextMode.PRESERVE);
+                    }
                 }
             }
 
@@ -157,6 +175,9 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                         write(out, fstack.getLineSeparator());
                     }
                 }
+                if (parent != null && preserveElements.contains(parent.getQualifiedName()) && StringUtils.isNotEmpty(insertBreakAfter)) {
+                    write(out, insertBreakAfter);
+                }
                 if (emptyLineAfterElements.contains(element.getQualifiedName())) {
                     insertEmptyLine(element, out);
                 }
@@ -183,8 +204,8 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
 
                 if (preserveElements.contains(element.getQualifiedName()))
                 {
-                    fstack.setLevelEOL(null);
-                    fstack.setLevelIndent(null);
+                    fstack.setLevelEOL("");
+                    fstack.setLevelIndent("");
                     fstack.setTextMode(Format.TextMode.PRESERVE);
                 }
 
@@ -215,7 +236,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                     textRaw(out, fstack.getPadBetween());
                 }
 
-                if (removeBreaksInsideTextElements.contains(element.getQualifiedName()))
+                if (preserveElements.contains(element.getQualifiedName()))
                 {
                     printContentRemoveBreaks(out, fstack, nstack, walker);
                 }
@@ -233,6 +254,9 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
                 write(out, element.getQualifiedName());
                 write(out, ">");
 
+                if (parent != null && preserveElements.contains(parent.getQualifiedName()) && StringUtils.isNotEmpty(insertBreakAfter)) {
+                    write(out, insertBreakAfter);
+                }
                 if (emptyLineAfterElements.contains(element.getQualifiedName()))
                 {
                     insertEmptyLine(element, out);
@@ -334,7 +358,7 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
         {
             return;
         }
-        String replaced = str.replaceAll("\\s{1,}", " ");
+        String replaced = str.replaceAll("\\s+", " ");
         write(out, replaced);
     }
 
