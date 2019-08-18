@@ -156,4 +156,8 @@ public class PreviewManager
     {
         webview.getEngine().load("about:blank");
     }
+
+    public void changePreviewWidth(double width) {
+        
+    }
 }

@@ -4,6 +4,7 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -21,6 +22,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.web.WebView?>
 <?import de.machmireinebook.epubeditor.javafx.StashableSplitPane?>
+<?import de.machmireinebook.epubeditor.preferences.ReaderDevice?>
 <?import com.pixelduke.control.Ribbon?>
 <?import com.pixelduke.control.ribbon.Column?>
 <?import com.pixelduke.control.ribbon.RibbonGroup?>
@@ -164,21 +166,23 @@
                             </Button>
                             <Separator orientation="VERTICAL" prefHeight="30.0"/>
                             <Label>Device Width: </Label>
-                            <ComboBox fx:id="deviceWidthComboBox">
+                            <ChoiceBox fx:id="deviceWidthComboBox" maxWidth="200">
                                 <items>
                                     <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="Kindle Touch: 600 Pixel"/>
-                                        <String fx:value="Kindle Paperwhite: 758 Pixel" />
-                                        <String fx:value="Kindle Paperwhite (Model 2015, 2018), Voyage, Oasis (Model 2016): 1072 Pixel" />
-                                        <String fx:value="Kindle Oasis (Model 2017): 1264 Pixel" />
-                                        <String fx:value="Tolino Shine, Tolino Vision, Tolino Vision 2: 1024 Pixel" />
-                                        <String fx:value="Tolino Shine 2 HD: 1448 Pixel" />
+                                        <ReaderDevice description="Responsive" width="600"/>
+                                        <Separator/>
+                                        <ReaderDevice description="Kindle Touch: 600 Pixel" width="600"/>
+                                        <ReaderDevice description="Kindle Paperwhite: 758 Pixel" width="758"/>
+                                        <ReaderDevice description="Kindle Paperwhite, Voyage, Oasis: 1072 Pixel" width="1072"/>
+                                        <ReaderDevice description="Kindle Oasis (Model 2017): 1264 Pixel" width="1264"/>
+                                        <ReaderDevice description="Tolino Shine, Vision, Vision 2: 1024 Pixel" width="1024"/>
+                                        <ReaderDevice description="Tolino Shine 2 HD: 1448 Pixel" width="1448"/>
                                     </FXCollections>
                                 </items>
                                 <tooltip>
                                     <Tooltip styleClass="white-tooltip" text="Choose a Device so that its Width is used for the Preview" />
                                 </tooltip>
-                            </ComboBox>
+                            </ChoiceBox>
 
                             <Label fx:id="previewWidthLabel">Preview Width: </Label>
 

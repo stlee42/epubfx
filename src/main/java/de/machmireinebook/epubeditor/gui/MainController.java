@@ -34,6 +34,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -83,6 +84,7 @@ import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
+import de.machmireinebook.epubeditor.preferences.ReaderDevice;
 import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -98,6 +100,8 @@ import com.pixelduke.control.Ribbon;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private ChoiceBox<ReaderDevice> deviceWidthComboBox;
     @FXML
     private Label previewWidthLabel;
     @FXML
@@ -517,6 +521,11 @@ public class MainController implements Initializable
         languageSpellComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> preferencesManager.languageSpellSelectionProperty().set(newValue));
 
         languageSpellComboBox.disableProperty().bind(preferencesManager.spellcheckProperty().not());
+
+        deviceWidthComboBox.getSelectionModel().select(0);
+        deviceWidthComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            previewManager.changePreviewWidth(newValue.getWidth());
+        });
     }
 
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
@@ -1322,26 +1331,6 @@ public class MainController implements Initializable
         bookBrowserManager.refreshOpf();
         bookBrowserManager.refreshNcx();
         currentBookProperty.get().setBookIsChanged(true);
-    }
-
-    public void replaceAction()
-    {
-    }
-
-    public void replaceAllAction()
-    {
-    }
-
-    public void findReplaceAction()
-    {
-    }
-
-    public void findBeforeAction()
-    {
-    }
-
-    public void findNextAction()
-    {
     }
 
     public void createNcxAction()
