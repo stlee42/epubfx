@@ -67,7 +67,7 @@ public class EpubEditorConfiguration
     private StageSizer stageSizer = new StageSizer();
 
     /**
-     * Use a SetUniqueList and not a set, because stes have no guaranteed order, but this is needed for recent list
+     * Use a SetUniqueList and not a set, because sets have no guaranteed order, but this is needed for recent list
      */
     private ObservableList<Path> recentFiles = FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>()));
 

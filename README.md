@@ -84,6 +84,8 @@ The following software and frameworks are used in *SmoekerSchriever - epubfx*:
 * [languagetool](http://languagetool.org) for spell checking
 * [htmlcleaner](https://sourceforge.net/projects/htmlcleaner/) for repair and importing (x)html files
 * [PreferencesFX](https://github.com/dlsc-software-consulting-gmbh/PreferencesFX) for editing, storing and loading preferences
+* [RichTextFx](https://github.com/FXMisc/RichTextFX) for code editing  
+* [ControlsFx](https://github.com/controlsfx/controlsfx) for some ui components
 
 
 

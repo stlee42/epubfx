@@ -15,9 +15,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import de.machmireinebook.epubeditor.gui.UIHelper;
-
 import org.apache.commons.lang3.BooleanUtils;
+
+import de.machmireinebook.epubeditor.gui.UIHelper;
 
 /**
  * User: mjungierek
@@ -44,17 +44,6 @@ public class MainStage extends Stage
         setScene(scene);
         //set icon of the application
         getIcons().add(applicationIcon);
-
-/*        widthProperty().addListener((observable, oldValue, newValue) -> {
-            VertriebMainController mainController = VertriebConfiguration.getInstance().getVertriebMainController();
-            Double diff = (double)newValue - (double)oldValue;
-            mainController.resizeActivePaneWidth(diff);
-        });
-        heightProperty().addListener((observable, oldValue, newValue) -> {
-            VertriebMainController mainController = VertriebConfiguration.getInstance().getVertriebMainController();
-            Double diff = (double)newValue - (double)oldValue;
-            mainController.resizeActivePaneHeight(diff);
-        });  */
 
         if (new File("application.properties").exists())
         {

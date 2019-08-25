@@ -1,5 +1,10 @@
 package de.machmireinebook.epubeditor.preferences;
 
+import java.util.Arrays;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 /**
  * @author Michail Jungierek
  */
@@ -19,5 +24,9 @@ public enum StartupType
     public String toString()
     {
         return description;
+    }
+
+    public static ObservableList<StartupType> asObservableList() {
+        return FXCollections.observableArrayList(Arrays.asList(StartupType.values()));
     }
 }

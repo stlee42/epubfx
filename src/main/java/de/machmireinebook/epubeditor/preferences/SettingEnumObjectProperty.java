@@ -32,16 +32,16 @@ public class SettingEnumObjectProperty<T> extends SimpleObjectProperty<T>
     @SuppressWarnings("unchecked")
     public void setValue(T value) {
         Object rawValue = value;
-        if (rawValue instanceof String)
-        {
+        if (rawValue instanceof String) {
             T enumValue;
-            try
-            {
+            try {
                 enumValue = (T) Enum.valueOf(enumClass, (String) rawValue);
             } catch (IllegalArgumentException e) {
                 enumValue = initialValue;
             }
             set(enumValue);
+        } else {
+            set(value);
         }
     }
 }

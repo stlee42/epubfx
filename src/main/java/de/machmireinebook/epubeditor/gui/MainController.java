@@ -85,11 +85,10 @@ import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 import de.machmireinebook.epubeditor.preferences.ReaderDevice;
+import de.machmireinebook.epubeditor.preferences.StartupType;
 import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
-
-import com.pixelduke.control.Ribbon;
 
 /**
  * User: mjungierek
@@ -100,6 +99,12 @@ import com.pixelduke.control.Ribbon;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Button halfCharacterButton;
+    @FXML
+    private Button quarterCharacterButton;
+    @FXML
+    private Button threeQuarterCharacterButton;
     @FXML
     private ChoiceBox<ReaderDevice> deviceWidthComboBox;
     @FXML
@@ -126,8 +131,6 @@ public class MainController implements Initializable
     private TableView<ValidationMessage> validationResultsTableView;
     @FXML
     private Button singleQuotationMarksButton;
-    @FXML
-    private Ribbon ribbon;
     @FXML
     private SplitPane mainDivider;
     @FXML
@@ -384,6 +387,9 @@ public class MainController implements Initializable
         ellipsisButton.disableProperty().bind(isNoXhtmlEditorBinding);
         nonBreakingSpaceButton.disableProperty().bind(isNoXhtmlEditorBinding);
         hrButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        halfCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        quarterCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        threeQuarterCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         addFileButton.disableProperty().bind(currentBookProperty.isNull());
         addExistingFileButton.disableProperty().bind(currentBookProperty.isNull());
@@ -528,6 +534,16 @@ public class MainController implements Initializable
         });
     }
 
+    public void initBook() {
+        List<Path> recentFiles = configuration.getRecentFiles();
+        if (preferencesManager.getStartupType() == StartupType.RECENT_EBOOK && !recentFiles.isEmpty()) {
+            openEpub(recentFiles.get(0).toFile());
+        } else {
+            newMinimalEpubAction();
+        }
+    }
+
+
     private void createRecentFilesMenuItems(ObservableList<Path> recentFiles)
     {
         openBookButton.getItems().clear();
@@ -540,23 +556,8 @@ public class MainController implements Initializable
             }
             MenuItem recentFileMenuItem = new MenuItem(recentFile.toString());
             recentFileMenuItem.setOnAction(event -> {
-                EpubReader reader = new EpubReader();
-                try
-                {
-                    File file = recentFile.toFile();
-                    Book currentBook = reader.readEpub(file);
-                    currentBookProperty.set(currentBook);
-                    if (!currentBook.getSpine().isEmpty())
-                    {
-                        Resource firstResource = currentBook.getSpine().getResource(0);
-                        editorTabManager.openFileInEditor(firstResource);
-                    }
-                }
-                catch (IOException e)
-                {
-                    logger.error("", e);
-                    ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file " + recentFile.toFile().getName());
-                }
+                File file = recentFile.toFile();
+                openEpub(file);
             });
             openBookButton.getItems().add(recentFileMenuItem);
             recentFilesMenuItems.add(recentFileMenuItem);
@@ -575,11 +576,12 @@ public class MainController implements Initializable
         });
 
         stage.getScene().setOnKeyPressed(event -> {
-            if ((event.isControlDown() || event.isShortcutDown()) && event.getCode().equals(KeyCode.F))
-            {
+            if ((event.isControlDown() || event.isShortcutDown()) && event.getCode().equals(KeyCode.F)) {
                 logger.debug("Ctrl-F Pressed");
                 searchReplaceButton.setSelected(true);
                 searchReplaceButtonAction();
+            } else if (event.getCode().equals(KeyCode.F3)) {
+                searchAnchorPane.findNextAction();
             }
         });
 
@@ -619,33 +621,40 @@ public class MainController implements Initializable
         File file = fileChooser.showOpenDialog(stage);
         if (file != null)
         {
-            Platform.runLater(() -> {
-                stage.getScene().setCursor(Cursor.WAIT);
-                EpubReader reader = new EpubReader();
-                try
-                {
-                    Book currentBook = reader.readEpub(file);
-                    currentBookProperty.set(currentBook);
-                    Platform.runLater(() ->
-                        configuration.getRecentFiles().add(0, file.toPath())
-                    );
-                    if (!currentBook.getSpine().isEmpty())
-                    {
-                        Resource firstResource = currentBook.getSpine().getResource(0);
-                        editorTabManager.openFileInEditor(firstResource);
-                    }
-                }
-                catch (IOException | NavNotFoundException | OpfNotReadableException e)
-                {
-                    logger.error("", e);
-                    ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName() + ", cause: ");
-                }
-                finally
-                {
-                    stage.getScene().setCursor(Cursor.DEFAULT);
-                }
-            });
+            openEpub(file);
         }
+    }
+
+    private void openEpub(File file) {
+        Platform.runLater(() -> {
+            stage.getScene().setCursor(Cursor.WAIT);
+            EpubReader reader = new EpubReader();
+            try
+            {
+                Book currentBook = reader.readEpub(file);
+                currentBookProperty.set(currentBook);
+                Platform.runLater(() -> {
+                    List<Path> recentFiles = configuration.getRecentFiles();
+                    recentFiles.remove(file.toPath());
+                    recentFiles.add(0, file.toPath());
+                }
+                );
+                if (!currentBook.getSpine().isEmpty())
+                {
+                    Resource firstResource = currentBook.getSpine().getResource(0);
+                    editorTabManager.openFileInEditor(firstResource);
+                }
+            }
+            catch (IOException | NavNotFoundException | OpfNotReadableException e)
+            {
+                logger.error("", e);
+                ExceptionDialog.showAndWait(e, stage, "Open ebook", "Can't open ebook file: " + file.getName() + ", cause: ");
+            }
+            finally
+            {
+                stage.getScene().setCursor(Cursor.DEFAULT);
+            }
+        });
     }
 
     public void addExistingFilesAction()
@@ -1005,6 +1014,23 @@ public class MainController implements Initializable
         editorTabManager.insertAtCursorPositionOrReplaceSelection("…");
         currentBookProperty.get().setBookIsChanged(true);
     }
+
+    public void halfCharacterButtonAction() {
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("½");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+
+    public void quarterCharacterButtonAction() {
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("¼");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
+    public void threeQuarterCharacterButtonAction() {
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("¾");
+        currentBookProperty.get().setBookIsChanged(true);
+    }
+
 
     public void orderedListButtonAction()
     {

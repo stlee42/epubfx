@@ -129,7 +129,7 @@ public class EpubEditorApplication extends Application
                 configuration.readConfiguration();
                 MainController controller =  BeanFactory.getInstance().getBean(MainController.class);
                 controller.setStage(mainStage);
-                controller.newMinimalEpubAction();
+                controller.initBook();
                 epubHttpHandler.bookProperty().bind(controller.currentBookProperty());
             });
 

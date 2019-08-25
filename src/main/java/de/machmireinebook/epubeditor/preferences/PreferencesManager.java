@@ -46,9 +46,9 @@ public class PreferencesManager
     private EpubFxPreferencesStorageHandler storageHandler;
     private PreferencesFx preferencesFx;
 
-    private ObjectProperty<StartupType> startupType = new SimpleObjectProperty<>(StartupType.MINIMAL_EBOOK);
-    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(
-            new RadioButtonControl<>());
+    private ObjectProperty<StartupType> startupTypeSelection = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
+    private ObservableList<StartupType> startupTypes = StartupType.asObservableList();
+/*    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(StartupType.asListProperty(), startupTypeSelection);//.render(new RadioButtonControl<>());     */
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
@@ -62,7 +62,8 @@ public class PreferencesManager
 
     private List<Language> languages = Languages.get();
     private ObservableList<PreferencesLanguageStorable> languageSpellItems = FXCollections.observableArrayList(languages
-            .stream().map(PreferencesLanguageStorable::new)
+            .stream()
+            .map(PreferencesLanguageStorable::new)
             .collect(Collectors.toList()));
     private ObjectProperty<PreferencesLanguageStorable> languageSpellSelection = new SimpleObjectProperty<>(PreferencesLanguageStorable.of(Languages.getLanguageForLocale(Locale.GERMANY)));
 
@@ -97,7 +98,7 @@ public class PreferencesManager
         preferencesFx = PreferencesFx.of(storageHandler,
             Category.of("Application",
                     Group.of("Startup",
-                            Setting.of("Open application with ", startupTypeControl, startupType),
+                            Setting.of("Open application with ", startupTypes, startupTypeSelection),
                             Setting.of("Version of new ebook", versionControl, version)
                     )
             ),
@@ -134,131 +135,13 @@ public class PreferencesManager
                             Setting.of("Headline of Landmarks", landmarksToc))
             )
         ).saveSettings(true);
+        startupTypeSelection.addListener((observable, oldValue, newValue) -> logger.info("startup type changed to " + newValue.toString()));
+        languageSpellSelection.addListener((observable, oldValue, newValue) -> logger.info("languageSpellSelection changed to " + newValue));
     }
 
     public void showPreferencesDialog()
     {
         preferencesFx.show(true);
-    }
-
-    public String getHeadlineToc()
-    {
-        return headlineToc.get();
-    }
-
-    public StringProperty headlineTocProperty()
-    {
-        return headlineToc;
-    }
-
-    public void setHeadlineToc(String headlineToc)
-    {
-        this.headlineToc.set(headlineToc);
-    }
-
-    public String getLanguageSelection()
-    {
-        return languageSelection.get();
-    }
-
-    public ObjectProperty<String> languageSelectionProperty()
-    {
-        return languageSelection;
-    }
-
-    public void setLanguageSelection(String languageSelection)
-    {
-        this.languageSelection.set(languageSelection);
-    }
-
-    public String getQuotationMarkSelection()
-    {
-        return quotationMarkSelection.get();
-    }
-
-    public ObjectProperty<String> quotationMarkSelectionProperty()
-    {
-        return quotationMarkSelection;
-    }
-
-    public void setQuotationMarkSelection(String quotationMarkSelection)
-    {
-        this.quotationMarkSelection.set(quotationMarkSelection);
-    }
-
-    public PreferencesLanguageStorable getLanguageSpellSelection()
-    {
-        return languageSpellSelection.get();
-    }
-
-    public ObjectProperty<PreferencesLanguageStorable> languageSpellSelectionProperty()
-    {
-        return languageSpellSelection;
-    }
-
-    public void setLanguageSpellSelection(PreferencesLanguageStorable languageSpellSelection)
-    {
-        this.languageSpellSelection.set(languageSpellSelection);
-    }
-
-    public double getVersion()
-    {
-        return version.get();
-    }
-
-    public DoubleProperty versionProperty()
-    {
-        return version;
-    }
-
-    public ReferenceType getReferenceType()
-    {
-        return referenceType.get();
-    }
-
-    public ObjectProperty<ReferenceType> referenceTypeProperty()
-    {
-        return referenceType;
-    }
-
-    public boolean isGenerateNCX()
-    {
-        return generateNCX.get();
-    }
-
-    public BooleanProperty generateNCXProperty()
-    {
-        return generateNCX;
-    }
-
-    public TocPosition getTocPosition()
-    {
-        return tocPosition.get();
-    }
-
-    public ObjectProperty<TocPosition> tocPositionProperty()
-    {
-        return tocPosition;
-    }
-
-    public boolean isGenerateHtmlToc()
-    {
-        return generateHtmlToc.get();
-    }
-
-    public BooleanProperty generateHtmlTocProperty()
-    {
-        return generateHtmlToc;
-    }
-
-    public String getLandmarksToc()
-    {
-        return landmarksToc.get();
-    }
-
-    public StringProperty landmarksTocProperty()
-    {
-        return landmarksToc;
     }
 
     public Optional<Element> getPreferencesElement()
@@ -269,6 +152,109 @@ public class PreferencesManager
         } else {
             return Optional.empty();
         }
+    }
+
+    public String getHeadlineToc()
+    {
+        return headlineToc.get();
+    }
+    public StringProperty headlineTocProperty()
+    {
+        return headlineToc;
+    }
+    public void setHeadlineToc(String headlineToc)
+    {
+        this.headlineToc.set(headlineToc);
+    }
+
+    public String getLanguageSelection()
+    {
+        return languageSelection.get();
+    }
+    public ObjectProperty<String> languageSelectionProperty()
+    {
+        return languageSelection;
+    }
+    public void setLanguageSelection(String languageSelection)
+    {
+        this.languageSelection.set(languageSelection);
+    }
+
+    public String getQuotationMarkSelection()
+    {
+        return quotationMarkSelection.get();
+    }
+    public ObjectProperty<String> quotationMarkSelectionProperty()
+    {
+        return quotationMarkSelection;
+    }
+    public void setQuotationMarkSelection(String quotationMarkSelection) {
+        this.quotationMarkSelection.set(quotationMarkSelection);
+    }
+
+    public PreferencesLanguageStorable getLanguageSpellSelection()
+    {
+        return languageSpellSelection.get();
+    }
+    public ObjectProperty<PreferencesLanguageStorable> languageSpellSelectionProperty() {
+        return languageSpellSelection;
+    }
+    public void setLanguageSpellSelection(PreferencesLanguageStorable languageSpellSelection) {
+        this.languageSpellSelection.set(languageSpellSelection);
+    }
+
+    public double getVersion()
+    {
+        return version.get();
+    }
+    public DoubleProperty versionProperty()
+    {
+        return version;
+    }
+
+    public ReferenceType getReferenceType()
+    {
+        return referenceType.get();
+    }
+    public ObjectProperty<ReferenceType> referenceTypeProperty()
+    {
+        return referenceType;
+    }
+
+    public boolean isGenerateNCX()
+    {
+        return generateNCX.get();
+    }
+    public BooleanProperty generateNCXProperty()
+    {
+        return generateNCX;
+    }
+
+    public TocPosition getTocPosition()
+    {
+        return tocPosition.get();
+    }
+    public ObjectProperty<TocPosition> tocPositionProperty()
+    {
+        return tocPosition;
+    }
+
+    public boolean isGenerateHtmlToc()
+    {
+        return generateHtmlToc.get();
+    }
+    public BooleanProperty generateHtmlTocProperty()
+    {
+        return generateHtmlToc;
+    }
+
+    public String getLandmarksToc()
+    {
+        return landmarksToc.get();
+    }
+    public StringProperty landmarksTocProperty()
+    {
+        return landmarksToc;
     }
 
     public final BooleanProperty onlyDictionaryBasedSpellCheckProperty() {
@@ -315,4 +301,13 @@ public class PreferencesManager
         tabSizeProperty.set(value);
     }
 
+    public final ObjectProperty<StartupType> startupTypeProperty() {
+        return startupTypeSelection;
+    }
+    public final StartupType getStartupType() {
+        return startupTypeSelection.get();
+    }
+    public final void setStartupType(StartupType startupType) {
+        this.startupTypeSelection.set(startupType);
+    }
 }

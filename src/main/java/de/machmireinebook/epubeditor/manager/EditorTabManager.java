@@ -575,7 +575,7 @@ public class EditorTabManager {
         return currentSearchableResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentXHTMLResource() {
+    public XHTMLResource getCurrentXHTMLResource() {
         return currentXHTMLResource.get();
     }
 
@@ -660,6 +660,7 @@ public class EditorTabManager {
                 editor.insertAt(cursorPosition, text);
             }
             refreshPreview();
+            currentEditor.get().requestFocus();
         }
     }
 
@@ -677,7 +678,7 @@ public class EditorTabManager {
             editor.insertAt(cursorPosition, text);
             editor.setAbsoluteCursorPosition(cursorPosition + moveCaretIndex);
             refreshPreview();
-            editor.requestFocus();
+            currentEditor.get().requestFocus();
         }
     }
 
