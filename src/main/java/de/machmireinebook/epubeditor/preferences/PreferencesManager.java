@@ -48,7 +48,7 @@ public class PreferencesManager
 
     private ObjectProperty<StartupType> startupTypeSelection = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
     private ObservableList<StartupType> startupTypes = StartupType.asObservableList();
-/*    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(StartupType.asListProperty(), startupTypeSelection);//.render(new RadioButtonControl<>());     */
+private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(new RadioButtonControl<>());
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
