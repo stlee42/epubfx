@@ -3,6 +3,7 @@ package de.machmireinebook.epubeditor.editor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,7 @@ import org.fxmisc.wellbehaved.event.Nodes;
 import org.languagetool.rules.RuleMatch;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.xhtml.XmlUtils;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 
@@ -133,10 +135,7 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
         logger.info("remove tags from selection");
         int selectionStartIndex = getSelectedRange().getStart();
         String selectedText = getSelection();
-        //regex ungreedy (.*?) and single line (?s), that only tags matches and line breaks are included in . token
-        String replacement = selectedText.replaceAll("(?s)<(.*?)>", "");
-        replacement = replacement.replaceAll("(?s)</(.*?)>", "");
-        replacement = replacement.replaceAll("(?s)<(.*?)/>", "");
+        String replacement = XmlUtils.removeTags(selectedText);
         replaceSelection(replacement);
         select(selectionStartIndex, selectionStartIndex + replacement.length());
     }
@@ -145,14 +144,17 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
         logger.info("insert closing tag for last opened tag");
         String text = getCodeArea().subDocument(0, getAbsoluteCursorPosition()).getText();
         Matcher matcher = XML_TAG.matcher(text);
+        Stack<String> openTagsStack = new Stack<>();
         while (matcher.find()) {
-            if(matcher.group("COMMENT") != null) {
-
-            } else if(matcher.group("ELEMENTOPEN") != null) {
-
+            if(matcher.group("ELEMENTOPEN") != null) {
+                String elementOpen = matcher.group("ELEMENTOPEN");
+                openTagsStack.push(elementOpen);
             } else if(matcher.group("ELEMENTCLOSE") != null) {
-
+                openTagsStack.pop();
             }
+        }
+        if (!openTagsStack.empty()) {
+            insertAt(getAbsoluteCursorPosition(), openTagsStack.pop());
         }
     }
 

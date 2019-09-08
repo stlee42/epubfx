@@ -41,6 +41,7 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
 import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
+import de.machmireinebook.epubeditor.xhtml.XmlUtils;
 
 /**
  * User: mjungierek
@@ -128,6 +129,7 @@ public class InsertMediaController extends AbstractStandardController
                 {
                     ImageResource resource = tableView.getSelectionModel().getSelectedItem();
                     insertMediaFile(resource);
+                    captionTextField.setText("");
                     stage.close();
                 }
             }
@@ -178,7 +180,15 @@ public class InsertMediaController extends AbstractStandardController
                 {
                     snippet = IOUtils.toString(getClass().getResourceAsStream("/epub/snippets/image-div.html"), StandardCharsets.UTF_8);
                 }
-                snippet = StringUtils.replace(snippet, "${caption}", captionTextField.getText());
+                String text = captionTextField.getText();
+                String altText = "";
+                if (StringUtils.isNotEmpty(text)) {
+                    altText = XmlUtils.removeTags(text);
+                    altText = StringUtils.replace(altText, "&amp;", "");
+                    altText = StringUtils.replace(altText, "&", "");
+                }
+                snippet = StringUtils.replace(snippet, "${alt}", altText);
+                snippet = StringUtils.replace(snippet, "${caption}", text);
             }
             else
             {
