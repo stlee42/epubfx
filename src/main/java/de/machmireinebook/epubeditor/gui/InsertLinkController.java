@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor.gui;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
@@ -18,6 +19,10 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.util.IteratorIterable;
 
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.jdom2.AttributeFilter;
 import de.machmireinebook.epubeditor.manager.EditorTabManager;
@@ -37,6 +42,8 @@ public class InsertLinkController extends AbstractStandardController {
 
     @Inject
     private EditorTabManager editorTabManager;
+    @Inject
+    private MainController mainController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,14 +52,13 @@ public class InsertLinkController extends AbstractStandardController {
         targetsInBookListView.setOnMouseClicked(event ->
         {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
+                String selectedText = targetsInBookListView.getSelectionModel().getSelectedItem();
+                targetTextField.setText(selectedText);
                 if (event.getClickCount() == 2) {
-                    String selectedText = targetsInBookListView.getSelectionModel().getSelectedItem();
-                    targetTextField.setText(selectedText);
+                    onOkAction();
                 }
             }
         });
-
-
         instance = this;
     }
 
@@ -68,17 +74,39 @@ public class InsertLinkController extends AbstractStandardController {
 
     private void refresh() {
         ObservableList<String> targets = FXCollections.observableArrayList();
-        XHTMLResource resource = editorTabManager.getCurrentXHTMLResource();
+        //first add the targets inside the current file
+        XHTMLResource currentResource = editorTabManager.getCurrentXHTMLResource();
+        targets.addAll(getTargetsInResource(currentResource, false));
+        //now all other files from
+        Book book = mainController.getCurrentBook();
+        List<SpineReference> references = book.getSpine().getSpineReferences();
+        for (SpineReference reference : references) {
+            Resource resource = reference.getResource();
+            if (resource == currentResource || resource.getMediaType() != MediaType.XHTML) {
+                continue;
+            }
+            targets.add(resource.getFileName());
+            targets.addAll(getTargetsInResource((XHTMLResource) resource, true));
+        }
+        targetsInBookListView.setItems(targets);
+    }
+
+    private ObservableList<String> getTargetsInResource(XHTMLResource resource, boolean withResourceName) {
+        ObservableList<String> targets = FXCollections.observableArrayList();
         Document document = resource.asNativeFormat();
         Element root = document.getRootElement();
         if (root != null) {
             IteratorIterable<Element> elementsWithId = root.getDescendants(new AttributeFilter("id"));
             for (Element element : elementsWithId) {
                 String id = element.getAttributeValue("id");
-                targets.add("#" + id);
+                if (withResourceName) {
+                    targets.add(resource.getFileName() + "#" + id);
+                } else {
+                    targets.add("#" + id);
+                }
             }
         }
-        targetsInBookListView.setItems(targets);
+        return targets;
     }
 
     public static StandardController getInstance()
@@ -87,7 +115,7 @@ public class InsertLinkController extends AbstractStandardController {
     }
 
 
-    public void onOkAction(ActionEvent actionEvent) {
+    public void onOkAction() {
         if (editorTabManager.currentEditorIsXHTML()) {
             editorTabManager.surroundSelection("<a href=\"" + targetTextField.getText() + "\">", "</a>");
         }
