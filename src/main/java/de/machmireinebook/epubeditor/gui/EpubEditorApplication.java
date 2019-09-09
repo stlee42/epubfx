@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.inject.spi.BeanManager;
 
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -56,17 +57,19 @@ public class EpubEditorApplication extends Application
     @Override
     public void init()
     {
-        ImageView splash = new ImageView(new Image(getClass().getResourceAsStream("/rocket.png")));
+        SvgImageLoaderFactory.install();
+        applicationIcon = new Image(getClass().getResourceAsStream("/icons/application-icon.svg"), 128, 128, true, true);
+
+        ImageView splash = new ImageView(applicationIcon);
         loadProgress = new ProgressBar();
         loadProgress.setPrefWidth(SPLASH_WIDTH - 20);
-        progressText = new Label("Starte epub4mmee ...");
+        progressText = new Label("Starting SmoekerSchriever ...");
         splashLayout = new VBox();
         splashLayout.getChildren().addAll(splash, loadProgress, progressText);
         splash.setStyle("fx-margin: auto;");
         progressText.setAlignment(Pos.CENTER);
         splashLayout.setStyle("-fx-padding: 5; -fx-background-color: white; -fx-border-width:5; -fx-border-color: #B3204D;");
         splashLayout.setEffect(new DropShadow());
-        applicationIcon = new Image(getClass().getResourceAsStream("/rocket.png"));
     }
 
     @Override

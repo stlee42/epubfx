@@ -75,7 +75,7 @@ I plan to include the maven javafx plugin for easier running the app.
 - CTRL-Y: paste
 - CTRL-Z: undo
 - CTRL-SHIFT-Z, CTRL-Y: redo
-
+s
 #### Mouse
 - double click: select word
 - triple click: select paragraph  
@@ -84,6 +84,7 @@ I plan to include the maven javafx plugin for easier running the app.
 
 ## Credits
 The following software and frameworks are used in *SmoekerSchriever - epubfx*:
+* Application icon: Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a>
 * Icons by [Icons8](https://icons8.com)
 * [RibbonFx](https://pixelduke.com/fxribbon/) as ui copmponent 
 * [languagetool](http://languagetool.org) for spell checking
