@@ -12,13 +12,14 @@ This project is in early stage, but some functions are working (with possible bu
 
 - book browser
 - Creating of ebooks by free configurable templates (put only a epub file into a folder, the system find it and the user can choose this epub as template)
-- HTML-Editor with syntax highlighting and undo/redo
-- CSS-Editor with syntax highlighting and undo/redo
+- HTML editor with syntax highlighting and undo/redo
+- CSS editor with syntax highlighting and undo/redo
 - auto completion of [, {, ( and " with the second part of it
 - spell check
 - Applying text snippets and text snippets editor  
 - inserting images and other media into book using configurable templates 
 - inserting tables using configurable templates
+- inserting links to internal and external targets
 - Preview of xhtml file
 - basic search function
 - creating toc ncx (epub 2) and nav (epub 3)
@@ -29,7 +30,7 @@ This project is in early stage, but some functions are working (with possible bu
 
 ### Planned feature:
 
-- opening files in external applications (for example to edit images)
+- opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
 - checking internal and external links
 - symbol table 
 - europatastatur like inserting of symbols (adaption of key codes of the project https://www.europatastatur.de/)
@@ -61,10 +62,14 @@ I plan to include the maven javafx plugin for easier running the app.
 #### Keys 
 - DEL: delete forward
 - BACKSPACE: delete back
-- RETURN, ENTER: insert paragraph
+- RETURN, ENTER: insert paragraph (not html paragraph <p></p>)
 - TAB: insert tab or spaces (configurable how much spaces or tab character is used)
+
 - CTRL-DEL: delete next word
 - CTRL-BACKSPACE: delete previous word
+ 
+- CTRL-I: wrap selected text with i-tag <i></i>
+
 - CTRL-C: copy selection 
 - CTRL-X: cut out selection
 - CTRL-Y: paste
