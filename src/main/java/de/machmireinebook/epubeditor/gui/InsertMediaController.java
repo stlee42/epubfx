@@ -186,6 +186,8 @@ public class InsertMediaController extends AbstractStandardController
                     altText = XmlUtils.removeTags(text);
                     altText = StringUtils.replace(altText, "&amp;", "");
                     altText = StringUtils.replace(altText, "&", "");
+                    altText = StringUtils.replace(altText, "\"", "");
+                    altText = StringUtils.replace(altText, "\'", "");
                 }
                 snippet = StringUtils.replace(snippet, "${alt}", altText);
                 snippet = StringUtils.replace(snippet, "${caption}", text);

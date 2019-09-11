@@ -29,8 +29,10 @@ import org.languagetool.Language;
 import org.languagetool.Languages;
 
 import com.dlsc.formsfx.model.structure.Field;
+import com.dlsc.formsfx.model.structure.IntegerField;
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.PreferencesFx;
+import com.dlsc.preferencesfx.formsfx.view.controls.SimpleIntegerControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
@@ -90,6 +92,8 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     // useTabProperty
     private final BooleanProperty useTabProperty = new SimpleBooleanProperty(this, "useTab");
     private final IntegerProperty tabSizeProperty = new SimpleIntegerProperty(this, "tabSize", 4);
+    private final IntegerProperty fontSizeProperty = new SimpleIntegerProperty(this, "fontSize", 12);
+    private final IntegerField fontSizeControl = Field.ofIntegerType(fontSizeProperty).render(new SimpleIntegerControl());
 
     public void init(Element preferencesRootElement)
     {
@@ -115,11 +119,14 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
                     )
             ),
             Category.of("Editor",
-                        Group.of("Tabs and Indents",
-                                Setting.of("Use Tab Characters", useTabProperty),
-                                Setting.of("Tab Size", tabSizeProperty)
-                        )
+                    Group.of("Font",
+                            Setting.of("Font Size", fontSizeControl, fontSizeProperty)
                     ),
+                    Group.of("Tabs and Indents",
+                            Setting.of("Use Tab Characters", useTabProperty),
+                            Setting.of("Tab Size", tabSizeProperty)
+                    )
+                ),
             Category.of("Language specific Settings",
                     Group.of("UI",
                         Setting.of("UI Language", languageItems, languageSelection)
@@ -299,6 +306,16 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     }
     public final void setTabSize(int value) {
         tabSizeProperty.set(value);
+    }
+
+    public final IntegerProperty fontSizeProperty() {
+        return fontSizeProperty;
+    }
+    public final int getFontSize() {
+        return fontSizeProperty.get();
+    }
+    public final void setFontSize(int value) {
+        fontSizeProperty.set(value);
     }
 
     public final ObjectProperty<StartupType> startupTypeProperty() {

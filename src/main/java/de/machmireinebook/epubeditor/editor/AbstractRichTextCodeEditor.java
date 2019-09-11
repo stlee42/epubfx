@@ -157,6 +157,8 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                 codeArea.requestFocus();
             }
         });
+
+        preferencesManager.fontSizeProperty().addListener((observable, oldValue, newValue) -> codeArea.setStyle("-fx-font-size:" + newValue));
     }
 
     @Override
