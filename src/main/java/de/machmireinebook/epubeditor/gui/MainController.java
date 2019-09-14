@@ -556,6 +556,7 @@ public class MainController implements Initializable
             }
             MenuItem recentFileMenuItem = new MenuItem(recentFile.toString());
             recentFileMenuItem.setOnAction(event -> {
+                checkBeforeCloseBook();
                 File file = recentFile.toFile();
                 openEpub(file);
             });
@@ -620,8 +621,7 @@ public class MainController implements Initializable
         fileChooser.getExtensionFilters().removeAll();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("EPUB File", "*.epub"));
         File file = fileChooser.showOpenDialog(stage);
-        if (file != null)
-        {
+        if (file != null) {
             openEpub(file);
         }
     }
@@ -837,10 +837,10 @@ public class MainController implements Initializable
         {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initOwner(stage);
-            alert.setTitle("epub4mmee beenden");
+            alert.setTitle("ebook is changed");
             alert.getDialogPane().setHeader(null);
             alert.getDialogPane().setHeaderText(null);
-            alert.setContentText("The ebook was changed, save the changes before closing?");
+            alert.setContentText("The ebook was changed, save the changes before?");
             alert.getDialogPane().getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
             Optional<ButtonType> choosedButton = alert.showAndWait();
             choosedButton.ifPresent(buttonType -> {

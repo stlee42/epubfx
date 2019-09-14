@@ -28,21 +28,23 @@ import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
-import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
 import de.machmireinebook.epubeditor.epublib.epub2.NCXDocument;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.manager.TemplateManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.TocPosition;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
-import static de.machmireinebook.epubeditor.epublib.Constants.*;
+import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC_CLASS_NAMES;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_EPUB;
+import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_XHTML;
 
 /**
  * Created by Michail Jungierek
@@ -287,6 +289,7 @@ public class TocGenerator
         Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
         Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
+        Element originalHeadElement = null; //but try to use the original head beacus the title, styles etc.
         if (navResource == null)
         {
             //set here with empty data, will at the end replaced by the created document
@@ -302,6 +305,13 @@ public class TocGenerator
                 book.addSpineResource(navResource);
                 book.getSpine().setTocResource(navResource);
             }
+        } else {
+            Document originalNavDoc = ((XHTMLResource)navResource).asNativeFormat();
+            Element orignialRoot = originalNavDoc.getRootElement();
+            if (orignialRoot != null) {
+                originalHeadElement = orignialRoot.getChild("head");
+                orignialRoot.removeContent(originalHeadElement);
+            }
         }
 
         TocGeneratorResult result = new TocGeneratorResult(navResource, resourcesToRewrite);
@@ -310,16 +320,22 @@ public class TocGenerator
 
         Attribute langAttribute = root.getAttribute("lang", Namespace.XML_NAMESPACE);
         setLanguage(book, langAttribute, root);
+
         Element headElement = root.getChild("head", NAMESPACE_XHTML);
-        if (headElement != null)
-        {
-            Element titleElement = headElement.getChild("title", NAMESPACE_XHTML);
-            if (titleElement == null)
+        if (originalHeadElement != null) {
+            root.removeContent(headElement);
+            root.setContent(0, originalHeadElement);
+        } else {
+            if (headElement != null)
             {
-                titleElement = new Element("title", NAMESPACE_XHTML);
-                headElement.addContent(titleElement);
+                Element titleElement = headElement.getChild("title", NAMESPACE_XHTML);
+                if (titleElement == null)
+                {
+                    titleElement = new Element("title", NAMESPACE_XHTML);
+                    headElement.addContent(titleElement);
+                }
+                titleElement.setText(book.getTitle());
             }
-            titleElement.setText(book.getTitle());
         }
 
         Element bodyElement = root.getChild("body", NAMESPACE_XHTML);
@@ -340,7 +356,7 @@ public class TocGenerator
                 }
                 else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSepcificationName()))
                 {
-                    generateLandmarks(navElement);
+                    generateLandmarks(navResource, navElement);
                 }
             }
         }
@@ -422,9 +438,9 @@ public class TocGenerator
         }
     }
 
-    private void generateLandmarks(Element navElement)
+    private void generateLandmarks(Resource navResource, Element navElement)
     {
-        //insert per default the titlepage, copyright page and cover
+        //insert per default the toc, and try to find outside of nav titlepage, copyright page and cover
         Book book = getBook();
         Landmarks landmarks = book.getLandmarks();
 
@@ -440,8 +456,15 @@ public class TocGenerator
         navElement.addContent(olElement);
 
         if (landmarks.isEmpty()) {
+            //insert the toc             
+            //<a epub:type="toc" href="#toc">Inhaltsverzeichnis</a>
+            LandmarkReference tocReference = new LandmarkReference(navResource, LandmarkReference.Semantic.COVER, preferencesManager.getHeadlineToc());
+            landmarks.addReference(tocReference);
+
             Resource coverPage = book.getCoverPage();
-            landmarks.addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, "Cover"));
+            if (coverPage != null) {
+                landmarks.addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, LandmarkReference.Semantic.COVER.getDescription()));
+            }
         }
 
         for (LandmarkReference landmark : landmarks) {
