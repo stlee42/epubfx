@@ -119,7 +119,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         });
 
         //setup special keys
-        CodeArea codeArea = getCodeArea();
         Nodes.removeInputMap(codeArea, consume(keyPressed(KeyCode.TAB), this::insertTab));
         Nodes.addInputMap(codeArea, sequence(
                                     consume(keyPressed(KeyCode.TAB), this::insertTab),
@@ -158,6 +157,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
             }
         });
 
+        codeArea.setStyle("-fx-font-size:" + preferencesManager.fontSizeProperty().getValue());
         preferencesManager.fontSizeProperty().addListener((observable, oldValue, newValue) -> codeArea.setStyle("-fx-font-size:" + newValue));
     }
 

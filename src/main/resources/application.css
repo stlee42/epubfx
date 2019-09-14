@@ -75,14 +75,14 @@
 .ribbon-group .ribbon-group-content
 {
     -fx-alignment: TOP_CENTER;
-    -fx-padding: 16px 10px 16px 0;
+    -fx-padding: 16px 0 16px 0;
 }
 
 .ribbon-group .ribbon-group-content > .column
 {
     -fx-padding: 0 0 0 0;
-    -fx-spacing: 6;
 }
+
 .ribbon-group .button:hover, .ribbon-group .button:hover:focused:selected, .ribbon-group .button:hover:selected, .ribbon-group .button:hover:focused,
 .ribbon-group .split-menu-button:focused:pressed:focused:armed, ribbon-group .toggle-button,
 .ribbon-group .toggle-button:hover,
@@ -123,11 +123,7 @@
     -fx-text-fill:black;
 }
 
-.ribbon-group-content > .column
-{
-    -fx-padding: 16px 10px 16px 0px;
-    -fx-spacing: 6;
-}
+
 
 .split-pane.no-divider *.split-pane-divider {
     -fx-padding: 0 1 0 1;

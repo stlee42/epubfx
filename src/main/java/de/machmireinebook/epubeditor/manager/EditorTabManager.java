@@ -814,6 +814,7 @@ public class EditorTabManager {
             CodeEditor xhtmlCodeEditor = currentEditor.getValue();
             if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null) {
                 currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                currentXHTMLResource.get().prepareWebViewDocument(book.getVersion());
             }
         }
         needsRefresh.setValue(true);

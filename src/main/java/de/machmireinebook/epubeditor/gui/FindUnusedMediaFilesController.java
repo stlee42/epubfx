@@ -5,5 +5,5 @@ package de.machmireinebook.epubeditor.gui;
  * Date: 12.09.2019
  * Time: 20:45
  */
-public class FindUnusedMediaFilesController {
+public class FindUnusedMediaFilesController extends AbstractStandardController {
 }

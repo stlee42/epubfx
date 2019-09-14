@@ -14,20 +14,18 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
  * Date: 13.07.2019
  * Time: 11:25
  */
-public class AbstractStandardController implements StandardController {
+public abstract class AbstractStandardController implements StandardController {
 
     protected Stage stage;
     protected ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
 
     @Override
-    public void setStage(Stage stage)
-    {
+    public void setStage(Stage stage) {
         this.stage = stage;
     }
 
     @Override
-    public Stage getStage()
-    {
+    public Stage getStage() {
         return stage;
     }
 
@@ -36,8 +34,6 @@ public class AbstractStandardController implements StandardController {
         return currentBookProperty;
     }
 
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
-
 }

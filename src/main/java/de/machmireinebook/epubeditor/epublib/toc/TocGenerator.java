@@ -382,6 +382,7 @@ public class TocGenerator
             tocHeadline = toc.getTocTitle();
         } else {
             tocHeadline = preferencesManager.getHeadlineToc();
+            toc.setTocTitle(tocHeadline);
         }
         h1Element.setText(tocHeadline);
 
@@ -428,11 +429,20 @@ public class TocGenerator
         Landmarks landmarks = book.getLandmarks();
 
         Element titleElement = new Element("h1");
+        if (StringUtils.isEmpty(landmarks.getTitle())) {
+            landmarks.setTitle(preferencesManager.getHeadlineLandmarks());
+        }
+
         titleElement.setText(landmarks.getTitle());
         navElement.addContent(titleElement);
 
         Element olElement = new Element("ol");
         navElement.addContent(olElement);
+
+        if (landmarks.isEmpty()) {
+            Resource coverPage = book.getCoverPage();
+            landmarks.addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, "Cover"));
+        }
 
         for (LandmarkReference landmark : landmarks) {
             Element liElement = new Element("li");

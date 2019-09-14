@@ -359,6 +359,7 @@ public class GenerateTocController implements StandardController
             bookBrowserManager.refreshBookBrowser();
             editorTabManager.refreshEditorCode(result.getTocResource());
             editorTabManager.refreshPreview();
+            currentBook.get().setBookIsChanged(true);
         }
         catch (IOException | JDOMException e)
         {

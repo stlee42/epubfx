@@ -216,10 +216,12 @@ public class InsertMediaController extends AbstractStandardController
             }
             else if(flexibleWidthRadioButton.isSelected())
             {
-                style += "width:" + percentWidthTextField.getText() +"%; ";
+                //max-width will be ignored by amazon, because this the physical width of the image set as width of the figure,
+                // otherwise amazon creates funny effects
+                style += "max-width:" + percentWidthTextField.getText() +"%; ";
                 if (maxPhysicalWidthCheckBox.isSelected())
                 {
-                    style += "max-width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
+                    style += "width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
                 }
             }
             String containerStyle;
@@ -228,7 +230,7 @@ public class InsertMediaController extends AbstractStandardController
             } else if (alignment == ALIGNMENT_RIGHT) {
                 containerStyle = "float:right";
             } else {
-                containerStyle = style + " margin-right: auto; margin-left:auto";
+                containerStyle = style + "margin-right: auto; margin-left:auto";
                 style = "width: 100%";
             }
 

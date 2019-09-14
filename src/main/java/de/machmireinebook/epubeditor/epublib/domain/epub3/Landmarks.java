@@ -59,4 +59,8 @@ public class Landmarks implements Iterable<LandmarkReference>
     public Iterator<LandmarkReference> iterator() {
         return references.values().iterator();
     }
+
+    public boolean isEmpty() {
+        return references.isEmpty();
+    }
 }

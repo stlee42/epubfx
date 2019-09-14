@@ -53,7 +53,7 @@ public class PreferencesManager
 private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(new RadioButtonControl<>());
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
-    private StringProperty landmarksToc = new SimpleStringProperty("Landmarks");
+    private StringProperty headlineLandmarks = new SimpleStringProperty("Landmarks");
 
     private ObservableList<String> languageItems = FXCollections.observableArrayList(Collections.singletonList(
             "English"));
@@ -139,7 +139,7 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
                     Group.of("Content",
                             Setting.of("Type of Quotation Marks", quotationMarkItems, quotationMarkSelection),
                             Setting.of("Headline of Table of Contents", headlineToc),
-                            Setting.of("Headline of Landmarks", landmarksToc))
+                            Setting.of("Headline of Landmarks", headlineLandmarks))
             )
         ).saveSettings(true);
         startupTypeSelection.addListener((observable, oldValue, newValue) -> logger.info("startup type changed to " + newValue.toString()));
@@ -255,13 +255,12 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
         return generateHtmlToc;
     }
 
-    public String getLandmarksToc()
-    {
-        return landmarksToc.get();
+    public String getHeadlineLandmarks() {
+        return headlineLandmarks.get();
     }
-    public StringProperty landmarksTocProperty()
+    public StringProperty headlineLandmarksProperty()
     {
-        return landmarksToc;
+        return headlineLandmarks;
     }
 
     public final BooleanProperty onlyDictionaryBasedSpellCheckProperty() {

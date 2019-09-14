@@ -38,7 +38,7 @@ public class InsertLinkController extends AbstractStandardController {
     @FXML
     private ListView<String> targetsInBookListView;
 
-    private static StandardController instance;
+    private static InsertLinkController instance;
 
     @Inject
     private EditorTabManager editorTabManager;
