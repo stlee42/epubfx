@@ -290,27 +290,24 @@ public class TocGenerator
 
         Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
         Element originalHeadElement = null; //but try to use the original head beacus the title, styles etc.
-        if (navResource == null)
-        {
+        if (navResource == null) {
             //set here with empty data, will at the end replaced by the created document
             navResource = new XHTMLResource(new byte[]{}, "Text/nav.xhtml");
-            if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null)
-            {
+            if (preferencesManager.getTocPosition().equals(TocPosition.AFTER_COVER) && book.getCoverPage() != null) {
                 int index = book.getSpine().getResourceIndex(book.getCoverPage());
                 book.addSpineResource(navResource, index);
-            }
-            else //if no cover or other setting put new toc at the end
-            {
+            } else {//if no cover or other setting put new toc at the end
+
                 //add to spine and set as toc resource beacuse its xhtml too
                 book.addSpineResource(navResource);
                 book.getSpine().setTocResource(navResource);
             }
         } else {
             Document originalNavDoc = ((XHTMLResource)navResource).asNativeFormat();
-            Element orignialRoot = originalNavDoc.getRootElement();
-            if (orignialRoot != null) {
-                originalHeadElement = orignialRoot.getChild("head");
-                orignialRoot.removeContent(originalHeadElement);
+            Element originalRoot = originalNavDoc.getRootElement();
+            if (originalRoot != null) {
+                originalHeadElement = originalRoot.getChild("head", NAMESPACE_XHTML);
+                originalHeadElement.detach();
             }
         }
 
@@ -458,7 +455,7 @@ public class TocGenerator
         if (landmarks.isEmpty()) {
             //insert the toc             
             //<a epub:type="toc" href="#toc">Inhaltsverzeichnis</a>
-            LandmarkReference tocReference = new LandmarkReference(navResource, LandmarkReference.Semantic.COVER, preferencesManager.getHeadlineToc());
+            LandmarkReference tocReference = new LandmarkReference(navResource, LandmarkReference.Semantic.TOC, preferencesManager.getHeadlineToc());
             landmarks.addReference(tocReference);
 
             Resource coverPage = book.getCoverPage();
@@ -476,6 +473,7 @@ public class TocGenerator
             
             ahrefElement.setAttribute("type", landmark.getType().getName(), NAMESPACE_EPUB);
             ahrefElement.setAttribute("href", landmark.getCompleteHref());
+            ahrefElement.setText(landmark.getTitle());
         }
     }
 
