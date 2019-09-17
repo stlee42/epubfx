@@ -4,6 +4,7 @@ import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.prefs.Preferences;
 
@@ -234,9 +235,47 @@ public class EpubFxPreferencesStorageHandler implements StorageHandler
     }
 
     @Override
+    public <T> T loadObject(String breadcrumb, Class<T> type, T defaultObject) {
+        Element preferenceValuesElement = preferencesElement.getChild(PREFERENCES_VALUES_ELEMENT_NAME);
+        if (preferenceValuesElement == null) {
+            return defaultObject;
+        }
+        Element preferenceValueElement;
+        AttributeElementFilter filter = new AttributeElementFilter(PREFERENCES_VALUE_ELEMENT_NAME, "breadcrumb", breadcrumb);
+        IteratorIterable<Element> values = preferenceValuesElement.getDescendants(filter);
+        if (values.hasNext()) { //we take the first element if more than one exists
+            preferenceValueElement = values.next();
+            AtomicReference<T> result = new AtomicReference<>();
+            preferenceValueElement.getContent().stream()
+                    .filter(content -> content.getCType() == Content.CType.CDATA)
+                    .map(content -> (CDATA)content)
+                    .findFirst()
+                    .ifPresent(cdata -> {
+                        T storedObject;
+                        if (Arrays.asList(type.getInterfaces()).contains(SelfStorable.class)) {
+                            storedObject = (T)((SelfStorable)defaultObject).getNewInstance();
+                            ((SelfStorable)storedObject).readFromStorage(cdata.getText());
+                        } else {
+                            ByteArrayInputStream bis = new ByteArrayInputStream(cdata.getText().getBytes(StandardCharsets.UTF_8));
+                            XMLDecoder decoder = new XMLDecoder(bis);
+                            storedObject = (T)decoder.readObject();
+                        }
+                        result.set(storedObject);
+                    });
+            return result.get();
+        }
+        return defaultObject;
+    }
+
+    @Override
     public ObservableList loadObservableList(String breadcrumb, ObservableList defaultObservableList)
     {
         return (ObservableList)loadObject(breadcrumb, defaultObservableList);
+    }
+
+    @Override
+    public <T> ObservableList<T> loadObservableList(String breadcrumb, Class<T> type, ObservableList<T> defaultObservableList) {
+        return (ObservableList<T>)loadObject(breadcrumb, defaultObservableList);
     }
 
     @Override

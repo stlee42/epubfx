@@ -1,5 +1,6 @@
 package de.machmireinebook.epubeditor.preferences;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.binding.Bindings;
 
 import org.apache.log4j.Logger;
 
@@ -48,9 +50,16 @@ public class PreferencesManager
     private EpubFxPreferencesStorageHandler storageHandler;
     private PreferencesFx preferencesFx;
 
-    private ObjectProperty<StartupType> startupTypeSelection = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
-    private ObservableList<StartupType> startupTypes = StartupType.asObservableList();
-private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(new RadioButtonControl<>());
+    private ObjectProperty<StartupType> defaultStartupType = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
+    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(new RadioButtonControl<>());
+
+    private DoubleProperty version = new SimpleDoubleProperty(2.0);
+    private SingleSelectionField<Double> versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
+            new RadioButtonControl<>());
+
+    private ObjectProperty<File> fileTemplateProperty = new SimpleObjectProperty<>();
+    private Setting fileTemplateSetting = Setting.of("Template", fileTemplateProperty, false);
+
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty headlineLandmarks = new SimpleStringProperty("Landmarks");
@@ -70,14 +79,13 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     private ObjectProperty<PreferencesLanguageStorable> languageSpellSelection = new SimpleObjectProperty<>(PreferencesLanguageStorable.of(Languages.getLanguageForLocale(Locale.GERMANY)));
 
     private ObservableList<String> quotationMarkItems = FXCollections.observableArrayList(Arrays.asList(
-            QuotationMark.ENGLISH.getDescription(), QuotationMark.GERMAN.getDescription(), QuotationMark.GERMAN_GUILLEMETS.getDescription(),
+            QuotationMark.ENGLISH.getDescription(),
+            QuotationMark.GERMAN.getDescription(),
+            QuotationMark.GERMAN_GUILLEMETS.getDescription(),
             QuotationMark.FRENCH.getDescription())
     );
     private ObjectProperty<String> quotationMarkSelection = new SimpleObjectProperty<>(QuotationMark.GERMAN.getDescription());
 
-    private DoubleProperty version = new SimpleDoubleProperty(2.0);
-    private SingleSelectionField<Double> versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
-            new RadioButtonControl<>());
 
     private ObjectProperty<ReferenceType> referenceType = new SettingEnumObjectProperty<>(ReferenceType.FOOTNOTE, ReferenceType.class);
     private SingleSelectionField<ReferenceType> referenceTypeControl = Field.ofSingleSelectionType(Arrays.asList(ReferenceType.values()), 0).render(
@@ -92,6 +100,7 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     // useTabProperty
     private final BooleanProperty useTabProperty = new SimpleBooleanProperty(this, "useTab");
     private final IntegerProperty tabSizeProperty = new SimpleIntegerProperty(this, "tabSize", 4);
+    private final IntegerField tabSizeControl = Field.ofIntegerType(tabSizeProperty).span(6).render(new SimpleIntegerControl());
     private final IntegerProperty fontSizeProperty = new SimpleIntegerProperty(this, "fontSize", 12);
     private final IntegerField fontSizeControl = Field.ofIntegerType(fontSizeProperty).render(new SimpleIntegerControl());
 
@@ -99,11 +108,17 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
 
+        versionControl.editableProperty().bind(Bindings.equal(startupTypeControl.selectionProperty(), StartupType.MINIMAL_EBOOK));
+        ((Field)fileTemplateSetting.getElement()).editableProperty().bind(Bindings.equal(startupTypeControl.selectionProperty(), StartupType.EBOOK_TEMPLATE));
+
+        tabSizeControl.editableProperty().bind(useTabProperty.not());
+
         preferencesFx = PreferencesFx.of(storageHandler,
             Category.of("Application",
                     Group.of("Startup",
-                            Setting.of("Open application with ", startupTypes, startupTypeSelection),
-                            Setting.of("Version of new ebook", versionControl, version)
+                            Setting.of("Open application with ", startupTypeControl, defaultStartupType),
+                            Setting.of("Version of new ebook", versionControl, version),
+                            fileTemplateSetting
                     )
             ),
             Category.of("Book",
@@ -124,7 +139,7 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
                     ),
                     Group.of("Tabs and Indents",
                             Setting.of("Use Tab Characters", useTabProperty),
-                            Setting.of("Tab Size", tabSizeProperty)
+                            Setting.of("Tab Size", tabSizeControl, tabSizeProperty)
                     )
                 ),
             Category.of("Language specific Settings",
@@ -142,8 +157,6 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
                             Setting.of("Headline of Landmarks", headlineLandmarks))
             )
         ).saveSettings(true);
-        startupTypeSelection.addListener((observable, oldValue, newValue) -> logger.info("startup type changed to " + newValue.toString()));
-        languageSpellSelection.addListener((observable, oldValue, newValue) -> logger.info("languageSpellSelection changed to " + newValue));
     }
 
     public void showPreferencesDialog()
@@ -318,12 +331,12 @@ private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSel
     }
 
     public final ObjectProperty<StartupType> startupTypeProperty() {
-        return startupTypeSelection;
+        return startupTypeControl.selectionProperty();
     }
     public final StartupType getStartupType() {
-        return startupTypeSelection.get();
+        return startupTypeControl.selectionProperty().get();
     }
     public final void setStartupType(StartupType startupType) {
-        this.startupTypeSelection.set(startupType);
+        this.startupTypeControl.selectionProperty().set(startupType);
     }
 }
