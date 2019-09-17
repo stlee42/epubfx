@@ -624,6 +624,7 @@ public class EditorTabManager {
                 else if (selectedEditor.getMediaType().equals(MediaType.XML)) {
                     currentXMLResource.set(resource);
                 }
+                selectedEditor.requestFocus();
             }
         });
     }
@@ -660,7 +661,7 @@ public class EditorTabManager {
                 editor.insertAt(cursorPosition, text);
             }
             refreshPreview();
-            currentEditor.get().requestFocus();
+            editor.requestFocus();
         }
     }
 
@@ -672,19 +673,20 @@ public class EditorTabManager {
      * @param moveCaretIndex difference of the current position to that the caret should be moved
      */
     public void insertAtCursorPosition(String text, int moveCaretIndex) {
-        if (isInsertablePosition() && currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            CodeEditor editor = getCurrentEditor();
-            Integer cursorPosition = editor.getAbsoluteCursorPosition();
-            editor.insertAt(cursorPosition, text);
-            editor.setAbsoluteCursorPosition(cursorPosition + moveCaretIndex);
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (isInsertablePosition() && codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            Integer cursorPosition = codeEditor.getAbsoluteCursorPosition();
+            codeEditor.insertAt(cursorPosition, text);
+            codeEditor.setAbsoluteCursorPosition(cursorPosition + moveCaretIndex);
             refreshPreview();
-            currentEditor.get().requestFocus();
+            codeEditor.requestFocus();
         }
     }
 
     public void surroundParagraphWithTag(String tagName) {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) codeEditor;
             xhtmlCodeEditor.surroundParagraphWithTag(tagName);
             refreshPreview();
             xhtmlCodeEditor.requestFocus();
@@ -692,8 +694,9 @@ public class EditorTabManager {
     }
 
     public void insertStyle(String styleName, String value) {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) codeEditor;
             xhtmlCodeEditor.insertStyle(styleName, value);
             refreshPreview();
             xhtmlCodeEditor.requestFocus();
@@ -701,37 +704,41 @@ public class EditorTabManager {
     }
 
     public void surroundSelectionWithTag(String tagName) {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            String selection = currentEditor.get().getSelection();
-            currentEditor.get().replaceSelection("<" + tagName + ">" + selection + "</" + tagName + ">");
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            String selection = codeEditor.getSelection();
+            codeEditor.replaceSelection("<" + tagName + ">" + selection + "</" + tagName + ">");
             refreshPreview();
-            currentEditor.get().requestFocus();
+            codeEditor.requestFocus();
         }
     }
 
     public void surroundSelection(String start, String end) {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            String selection = currentEditor.get().getSelection();
-            currentEditor.get().replaceSelection(start + selection + end);
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            String selection = codeEditor.getSelection();
+            codeEditor.replaceSelection(start + selection + end);
             refreshPreview();
-            currentEditor.get().requestFocus();
+            codeEditor.requestFocus();
         }
     }
 
     public void increaseIndent() {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) codeEditor;
             xhtmlCodeEditor.increaseIndent();
         }
-        currentEditor.get().requestFocus();
+        codeEditor.requestFocus();
     }
 
     public void decreaseIndent() {
-        if (currentEditor.getValue().getMediaType().equals(MediaType.XHTML)) {
-            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) currentEditor.getValue();
+        CodeEditor codeEditor = currentEditor.getValue();
+        if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
+            XhtmlRichTextCodeEditor xhtmlCodeEditor = (XhtmlRichTextCodeEditor) codeEditor;
             xhtmlCodeEditor.decreaseIndent();
         }
-        currentEditor.get().requestFocus();
+        codeEditor.requestFocus();
     }
 
     public boolean splitXHTMLFile() {
@@ -797,7 +804,7 @@ public class EditorTabManager {
         Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
         String uppercaseText = StringUtils.upperCase(selectedText, spellcheckLocale);
         codeEditor.replaceSelection(uppercaseText);
-        currentEditor.get().requestFocus();
+        codeEditor.requestFocus();
     }
 
     public void toLowerCase() {
@@ -806,7 +813,7 @@ public class EditorTabManager {
         Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
         String lowercaseText = StringUtils.lowerCase(selectedText, spellcheckLocale);
         codeEditor.replaceSelection(lowercaseText);
-        currentEditor.get().requestFocus();
+        codeEditor.requestFocus();
     }
 
     public void refreshPreview() {
@@ -853,7 +860,7 @@ public class EditorTabManager {
     }
 
     public CodeEditor getCurrentEditor() {
-        return currentEditor.get();
+        return currentEditor.getValue();
     }
 
     public ObjectProperty<CodeEditor> currentEditorProperty() {

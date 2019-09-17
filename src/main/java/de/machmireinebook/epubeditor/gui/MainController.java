@@ -530,6 +530,8 @@ public class MainController implements Initializable
 
         deviceWidthComboBox.getSelectionModel().select(0);
         deviceWidthComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            List<SplitPane.Divider> dividers = getMainDivider().getDividers();
+            dividers.get(1).setPosition(newValue.getWidth());
             previewManager.changePreviewWidth(newValue.getWidth());
         });
     }

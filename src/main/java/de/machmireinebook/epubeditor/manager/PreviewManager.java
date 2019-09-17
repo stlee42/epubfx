@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.gui.MainController;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -158,6 +159,6 @@ public class PreviewManager
     }
 
     public void changePreviewWidth(double width) {
-        
+
     }
 }
