@@ -15,7 +15,6 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
  * This contrasts with the Table of Contents sections which is an index into the Book's sections.
  *
  * @author paul
- * @see nl.siegmann.epublib.domain.TableOfContents
  */
 public class Spine implements Serializable
 {
@@ -23,6 +22,9 @@ public class Spine implements Serializable
      *
      */
     private static final long serialVersionUID = 3878483958947357246L;
+    /**
+     * not available in epub3
+     */
     private Resource tocResource;
     private List<SpineReference> spineReferences;
 

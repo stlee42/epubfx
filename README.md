@@ -64,12 +64,9 @@ I plan to include the maven javafx plugin for easier running the app.
 - BACKSPACE: delete back
 - RETURN, ENTER: insert paragraph (not html paragraph `<p></p>`)
 - TAB: insert tab or spaces (configurable how much spaces or tab character is used)
-
 - CTRL-DEL: delete next word
 - CTRL-BACKSPACE: delete previous word
- 
 - CTRL-I: wrap selected text with i-tag `<i></i>`
-
 - CTRL-C: copy selection 
 - CTRL-X: cut out selection
 - CTRL-Y: paste
@@ -92,7 +89,7 @@ The following software and frameworks are used in *SmoekerSchriever - epubfx*:
 * [PreferencesFX](https://github.com/dlsc-software-consulting-gmbh/PreferencesFX) for editing, storing and loading preferences
 * [RichTextFx](https://github.com/FXMisc/RichTextFX) for code editing  
 * [ControlsFx](https://github.com/controlsfx/controlsfx) for some ui components
-* [JDOM 2] (http://jdom.org/) for parsing and output xml
+* [JDOM 2](http://jdom.org/) for parsing and output xml
 
 
 

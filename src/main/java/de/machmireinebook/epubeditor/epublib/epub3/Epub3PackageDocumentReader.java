@@ -1,6 +1,5 @@
 package de.machmireinebook.epubeditor.epublib.epub3;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -8,30 +7,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.machmireinebook.epubeditor.epublib.resource.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
-import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
-import de.machmireinebook.epubeditor.epublib.resource.Resources;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
-import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
-import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -58,7 +52,6 @@ public class Epub3PackageDocumentReader
             logger.error("no nav in epub");
             throw new NavNotFoundException("epub contains no nav resource");
         }
-        book.setEpub3NavResource(navResource);
         Epub3NavigationDocumentReader.readNavElements(navResource, book, resources);
 
         // Books sometimes use non-identifier ids. We map these here to legal ones
@@ -73,17 +66,15 @@ public class Epub3PackageDocumentReader
         book.setSpine(readSpine(root, book, idMapping));
     }
 
-    public static void read(Resource packageResource, Book book)
-            throws IOException, JDOMException
+    public static void read(XMLResource packageResource, Book book)
     {
-        Document packageDocument = ResourceUtil.getAsDocument(packageResource);
+        Document packageDocument = packageResource.asNativeFormat();
         Element root = packageDocument.getRootElement();
         EpubVersion version = EpubVersion.getByString(root.getAttributeValue("version"));
         book.setVersion(version);
 
         //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
         XHTMLResource resource = Epub3NavigationDocumentReader.read(root, book.getResources());
-        book.setEpub3NavResource(resource);
         Epub3NavigationDocumentReader.readNavElements(resource, book, book.getResources());
 
         // Books sometimes use non-identifier ids. We map these here to legal ones
@@ -216,12 +207,12 @@ public class Epub3PackageDocumentReader
             return generateSpineFromResources(book);
         }
         Spine result = new Spine();
-        result.setTocResource(book.getEpub3NavResource());
         //for compatibility it's possible that a ncx toc is included in epub, read it into
         String epub2TocId = spineElement.getAttributeValue(OPFAttribute.toc.getName());
         if (StringUtils.isNotEmpty(epub2TocId)) {
             Resource ncxResource = resources.getByIdOrHref(epub2TocId);
             book.setNcxResource(ncxResource);
+            result.setTocResource(ncxResource);
         }
         List<Element> spineItems = spineElement.getChildren(OPFTag.itemref.getName(), NAMESPACE_OPF);
         List<SpineReference> spineReferences = new ArrayList<>(spineItems.size());

@@ -365,6 +365,12 @@ public class Book implements Serializable
         }
     }
 
+    public void replaceHrefInXhtmlResources(String oldHref, String newHref) {
+        for (Resource resource : getResources().getResourcesByMediaType(MediaType.XHTML)) {
+//            String data = resource.asString();
+        }
+    }
+
     public String getNextStandardFileName(MediaType mediaType)
     {
         int lastNumber = 0;
@@ -895,6 +901,9 @@ public class Book implements Serializable
 
             //refresh ncx
             refreshNcxResource();
+
+            //replacing href in other xhtml files
+            replaceHrefInXhtmlResources(oldValue, newValue);
         }
         else if(resource.getMediaType().isBitmapImage())
         {

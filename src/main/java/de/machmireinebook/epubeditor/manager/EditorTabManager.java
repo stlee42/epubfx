@@ -525,7 +525,7 @@ public class EditorTabManager {
                                 currentXMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
                                 if (((XMLResource) resource).isValidXML() && MediaType.OPF.equals(resource.getMediaType())) {
                                     if (book.isEpub3()) {
-                                        Epub3PackageDocumentReader.read(resource, book);
+                                        Epub3PackageDocumentReader.read((XMLResource)resource, book);
                                     }
                                     else {
                                         PackageDocumentReader.read(resource, book);
@@ -799,7 +799,7 @@ public class EditorTabManager {
     }
 
     public void toUpperCase() {
-        CodeEditor codeEditor = currentEditor.get();
+        CodeEditor codeEditor = currentEditor.getValue();
         String selectedText = codeEditor.getSelection();
         Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
         String uppercaseText = StringUtils.upperCase(selectedText, spellcheckLocale);
@@ -808,7 +808,7 @@ public class EditorTabManager {
     }
 
     public void toLowerCase() {
-        CodeEditor codeEditor = currentEditor.get();
+        CodeEditor codeEditor = currentEditor.getValue();
         String selectedText = codeEditor.getSelection();
         Locale spellcheckLocale = preferencesManager.getLanguageSpellSelection().getLanguage().getLocaleWithCountryAndVariant();
         String lowercaseText = StringUtils.lowerCase(selectedText, spellcheckLocale);
@@ -881,7 +881,7 @@ public class EditorTabManager {
         refreshAllInProgress = true;
         //refresh was executed, and after execution avoid firing listener, will be reseted by listener
         refreshAll = true;
-        CodeEditor previousCodeEditior = currentEditor.get();
+        CodeEditor previousCodeEditor = currentEditor.get();
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
             Resource resource = (Resource) tab.getUserData();
@@ -892,7 +892,7 @@ public class EditorTabManager {
                 editor.scrollTo(0);
             }
         }
-        currentEditor.set(previousCodeEditior);
+        currentEditor.set(previousCodeEditor);
         refreshAllInProgress = false;
     }
 
