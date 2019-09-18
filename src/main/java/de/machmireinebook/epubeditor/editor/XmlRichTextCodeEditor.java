@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +50,8 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
     private static final int GROUP_ATTRIBUTE_NAME = 1;
     private static final int GROUP_EQUAL_SYMBOL = 2;
     private static final int GROUP_ATTRIBUTE_VALUE = 3;
+
+    private static final Pattern ELEMENT_NAME = Pattern.compile("<(\\w*?)(\\h*?)((\\w|=|\")*?)>");
 
 
     public XmlRichTextCodeEditor() {
@@ -146,15 +149,16 @@ public class XmlRichTextCodeEditor extends AbstractRichTextCodeEditor {
         Matcher matcher = XML_TAG.matcher(text);
         Stack<String> openTagsStack = new Stack<>();
         while (matcher.find()) {
-            if(matcher.group("ELEMENTOPEN") != null) {
-                String elementOpen = matcher.group("ELEMENTOPEN");
+            if(matcher.group("ELEMENTOPEN") != null && !matcher.group(GROUP_ATTRIBUTES_SECTION).endsWith("/")) {
+                String elementOpen = matcher.group(GROUP_ELEMENT_NAME);
                 openTagsStack.push(elementOpen);
             } else if(matcher.group("ELEMENTCLOSE") != null) {
                 openTagsStack.pop();
             }
         }
         if (!openTagsStack.empty()) {
-            insertAt(getAbsoluteCursorPosition(), openTagsStack.pop());
+            String openTag = openTagsStack.pop();
+            insertAt(getAbsoluteCursorPosition(), "</" + openTag + ">");
         }
     }
 
