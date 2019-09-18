@@ -284,7 +284,7 @@ public class TocGenerator
         Book book = getBook();
         book.setBookIsChanged(true);
         book.getTableOfContents().setTocReferences(tocEntries);
-        Resource navResource = book.getSpine().getTocResource();
+        Resource navResource = book.getEpub3NavResource();
 
         Map<Resource, Document> resourcesToRewrite = new HashMap<>();
 
@@ -298,9 +298,8 @@ public class TocGenerator
                 book.addSpineResource(navResource, index);
             } else {//if no cover or other setting put new toc at the end
 
-                //add to spine and set as toc resource beacuse its xhtml too
+                //add to spine because its xhtml too
                 book.addSpineResource(navResource);
-                book.getSpine().setTocResource(navResource);
             }
         } else {
             Document originalNavDoc = ((XHTMLResource)navResource).asNativeFormat();
@@ -347,11 +346,11 @@ public class TocGenerator
             for (Element navElement : navElements)
             {
                 navElement.getChildren().clear();
-                if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.toc.getSepcificationName()))
+                if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.toc.getSpecificationName()))
                 {
                     generateToc(tocEntries, navElement, result);
                 }
-                else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSepcificationName()))
+                else if (navElement.getAttributeValue("type", NAMESPACE_EPUB).equals(EpubType.landmarks.getSpecificationName()))
                 {
                     generateLandmarks(navResource, navElement);
                 }

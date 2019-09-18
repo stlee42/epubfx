@@ -40,6 +40,7 @@ import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.Resources;
+import de.machmireinebook.epubeditor.epublib.resource.TextResource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -113,7 +114,6 @@ public class Book implements Serializable
         Resource navResource = book.addResourceFromTemplate("/epub/nav.xhtml", "Text/nav.xhtml", false);
         navResource.setProperties(ManifestItemProperties.nav.getName());
         book.setEpub3NavResource(navResource);
-        book.getSpine().setTocResource(navResource);
         book.getSpine().addResource(navResource);
         book.addResource(navResource, false);
 
@@ -210,35 +210,6 @@ public class Book implements Serializable
         res.setData(content);
         res.setMediaType(mediaType);
         return res;
-    }
-
-    /**
-     * Adds the resource to the table of contents of the book as a child section of the given parentSection
-     *
-     * @param parentSection
-     * @param sectionTitle
-     * @param resource
-     * @return The table of contents
-     */
-    public TocEntry addSection(TocEntry parentSection, String sectionTitle,
-                               Resource resource)
-    {
-        getResources().add(resource);
-        if (spine.findFirstResourceById(resource.getId()) < 0)
-        {
-            spine.addSpineReference(new SpineReference(resource), null);
-        }
-        return parentSection.addChildSection(new TocEntry(sectionTitle, resource));
-    }
-
-    public void generateSpineFromTableOfContents()
-    {
-        Spine spine = new Spine(tableOfContents);
-
-        // in case the tocResource was already found and assigned
-        spine.setTocResource(this.spine.getTocResource());
-
-        this.spine = spine;
     }
 
     /**
@@ -367,7 +338,14 @@ public class Book implements Serializable
 
     public void replaceHrefInXhtmlResources(String oldHref, String newHref) {
         for (Resource resource : getResources().getResourcesByMediaType(MediaType.XHTML)) {
-//            String data = resource.asString();
+            String text = ((TextResource)resource).asString();
+            text = text.replaceAll(oldHref, newHref);
+            try {
+                resource.setData(text.getBytes(resource.getInputEncoding()));
+            }
+            catch (UnsupportedEncodingException e) {
+                logger.error(e);
+            }
         }
     }
 
@@ -568,9 +546,9 @@ public class Book implements Serializable
         }
         if (isEpub3()) {
             getLandmarks().addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, "Cover"));
-        } else {
-            guide.setCoverPage(coverPage);
         }
+        //also in epub3 as compatibility
+        guide.setCoverPage(coverPage);
     }
 
     /**

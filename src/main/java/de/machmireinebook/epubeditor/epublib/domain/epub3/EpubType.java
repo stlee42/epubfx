@@ -115,7 +115,7 @@ public enum EpubType
         this.sepcificationName = name;
     }
 
-    public String getSepcificationName()
+    public String getSpecificationName()
     {
         return sepcificationName;
     }

@@ -110,7 +110,7 @@ public class EpubReader
     private Resource processPackageResource(String packageResourceHref, Book book, Resources resources)
     {
         Resource packageResource = resources.remove(packageResourceHref);
-        Document packageDocument = null;
+        Document packageDocument;
         try {
             packageDocument = ResourceUtil.getAsDocument(packageResource);
             Element root = packageDocument.getRootElement();

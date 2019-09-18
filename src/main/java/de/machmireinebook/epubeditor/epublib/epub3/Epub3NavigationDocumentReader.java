@@ -39,7 +39,16 @@ public class Epub3NavigationDocumentReader
 {
     private static final Logger logger = Logger.getLogger(Epub3NavigationDocumentReader.class);
 
-    public static XHTMLResource read(Element packageRootElement, Resources resources)
+    private Book book;
+    private XHTMLResource navResource;
+    private Resources resources;
+
+    public Epub3NavigationDocumentReader(Book book, Resources resources) {
+        this.book = book;
+        this.resources = resources;
+    }
+
+    public Optional<XHTMLResource> read(Element packageRootElement)
     {
         Element manifestElement = packageRootElement.getChild(OPFTag.manifest.name(), NAMESPACE_OPF);
         List<Element> manifestElements = manifestElement.getChildren("item", NAMESPACE_OPF);
@@ -77,10 +86,10 @@ public class Epub3NavigationDocumentReader
                 }
             }
         }
-        return resource;
+        return Optional.ofNullable(resource);
     }
 
-    public static void readNavElements(XHTMLResource navResource, Book book, Resources resources)
+    public void readNavElements(XHTMLResource navResource)
     {
         Document doc = navResource.asNativeFormat();
         Element root = doc.getRootElement();
@@ -91,19 +100,19 @@ public class Epub3NavigationDocumentReader
             for (Element navElement : navElements)
             {
                 String type = navElement.getAttributeValue("type", NAMESPACE_EPUB);
-                if (EpubType.toc.getSepcificationName().equals(type))
+                if (EpubType.toc.getSpecificationName().equals(type))
                 {
-                    readToc(book, navElement, resources);
+                    readToc(navElement);
                 }
-                else if (EpubType.landmarks.getSepcificationName().equals(type))
+                else if (EpubType.landmarks.getSpecificationName().equals(type))
                 {
-                    readLandmarks(book, navElement, resources);
+                    readLandmarks(navElement);
                 }
             }
         }
     }
 
-    private static void readLandmarks(Book book, Element navElement, Resources resources)
+    private void readLandmarks(Element navElement)
     {
         Landmarks landmarks = book.getLandmarks();
         String title = navElement.getChildText("h1");
@@ -141,7 +150,7 @@ public class Epub3NavigationDocumentReader
         }
     }
 
-    private static void readToc(Book book, Element navElement, Resources resources)
+    private void readToc(Element navElement)
     {
         TableOfContents tableOfContents = new TableOfContents();
         Element h1Element = navElement.getChild("h1", NAMESPACE_XHTML);
@@ -153,12 +162,12 @@ public class Epub3NavigationDocumentReader
         Element olElement = navElement.getChild("ol", NAMESPACE_XHTML);
         if (olElement != null)
         {
-            tableOfContents.setTocReferences(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML), book, resources));
+            tableOfContents.setTocReferences(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML)));
         }
         book.setTableOfContents(tableOfContents);
     }
 
-    private static List<TocEntry<? extends TocEntry, Document>> readNavReferences(List<Element> liElements, Book book, Resources resources)
+    private List<TocEntry<? extends TocEntry, Document>> readNavReferences(List<Element> liElements)
     {
         if (liElements == null)
         {
@@ -167,13 +176,13 @@ public class Epub3NavigationDocumentReader
         List<TocEntry<?, Document>> result = new ArrayList<>(liElements.size());
         for (Element liElement : liElements)
         {
-            Optional<TocEntry<? extends TocEntry, Document>> tocReferenceOptional = readTOCReference(liElement, book, resources);
+            Optional<TocEntry<? extends TocEntry, Document>> tocReferenceOptional = readTOCReference(liElement);
             tocReferenceOptional.ifPresent(result::add);
         }
         return result;
     }
 
-    private static Optional<TocEntry<? extends TocEntry, Document>> readTOCReference(Element liElement, Book book, Resources resources)
+    private Optional<TocEntry<? extends TocEntry, Document>> readTOCReference(Element liElement)
     {
         Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
         String label = "";
@@ -203,23 +212,8 @@ public class Epub3NavigationDocumentReader
         Element olElement = liElement.getChild("ol", NAMESPACE_XHTML);
         if (olElement != null)
         {
-            result.setChildren(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML), book, resources));
+            result.setChildren(readNavReferences(olElement.getChildren("li", NAMESPACE_XHTML)));
         }
         return Optional.of(result);
-    }
-
-    private static String readNavReference(Element liElement)
-    {
-        Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
-        String result = anchorElement.getAttributeValue("href");
-        try
-        {
-            result = URLDecoder.decode(result, Constants.CHARACTER_ENCODING);
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            //never happens
-        }
-        return result;
     }
 }

@@ -175,9 +175,8 @@ public class Resource<T> implements ToStringConvertible, Cloneable
 		return data;
 	}
 
-    public T asNativeFormat()
-    {
-        return null;
+    public T asNativeFormat() {
+        throw new UnsupportedOperationException();
     }
 
 	/**

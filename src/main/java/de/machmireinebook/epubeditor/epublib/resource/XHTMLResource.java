@@ -17,7 +17,7 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
  * Date: 01.09.2014
  * Time: 18:50
  */
-public class XHTMLResource extends Resource<Document>
+public class XHTMLResource extends XMLResource
 {
     private static final Logger logger = Logger.getLogger(XHTMLResource.class);
 

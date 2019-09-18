@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import de.machmireinebook.epubeditor.epublib.resource.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -17,7 +17,6 @@ import org.jdom2.Element;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
@@ -25,7 +24,13 @@ import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.domain.OPFValue;
 import de.machmireinebook.epubeditor.epublib.domain.Spine;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata;
+import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.CHARACTER_ENCODING;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
@@ -47,12 +52,14 @@ public class Epub3PackageDocumentReader
         resources = fixHrefs(packageHref, resources);
 
         //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
-        XHTMLResource navResource = Epub3NavigationDocumentReader.read(root, resources);
-        if (navResource == null) {
+        Epub3NavigationDocumentReader navigationDocumentReader = new Epub3NavigationDocumentReader(book, resources);
+        Optional<XHTMLResource> navResourceOptional = navigationDocumentReader.read(root);
+        XHTMLResource navResource = navResourceOptional.orElseThrow(() -> {
             logger.error("no nav in epub");
-            throw new NavNotFoundException("epub contains no nav resource");
-        }
-        Epub3NavigationDocumentReader.readNavElements(navResource, book, resources);
+            return new NavNotFoundException("epub contains no nav resource");
+        });
+        book.setEpub3NavResource(navResource);
+        navigationDocumentReader.readNavElements(navResource);
 
         // Books sometimes use non-identifier ids. We map these here to legal ones
         Map<String, String> idMapping = new HashMap<>();
@@ -74,8 +81,14 @@ public class Epub3PackageDocumentReader
         book.setVersion(version);
 
         //bei epub 3 ist der guide nicht mehr vorhanden, etwas ähnliches findet sich mit den landmarks im navigation document
-        XHTMLResource resource = Epub3NavigationDocumentReader.read(root, book.getResources());
-        Epub3NavigationDocumentReader.readNavElements(resource, book, book.getResources());
+        Epub3NavigationDocumentReader navigationDocumentReader = new Epub3NavigationDocumentReader(book, book.getResources());
+        Optional<XHTMLResource> navResourceOptional = navigationDocumentReader.read(root);
+        XHTMLResource navResource = navResourceOptional.orElseThrow(() -> {
+            logger.error("no nav in epub");
+            return new NavNotFoundException("epub contains no nav resource");
+        });
+        book.setEpub3NavResource(navResource);
+        navigationDocumentReader.readNavElements(navResource);
 
         // Books sometimes use non-identifier ids. We map these here to legal ones
         Map<String, String> idMapping = new HashMap<>();
