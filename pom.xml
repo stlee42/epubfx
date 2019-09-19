@@ -54,32 +54,32 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>11.0.2</version>
+            <version>13</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -119,8 +119,13 @@
         </dependency>
         <dependency>
             <groupId>de.jensd</groupId>
-            <artifactId>fontawesomefx</artifactId>
-            <version>8.9</version>
+            <artifactId>fontawesomefx-commons</artifactId>
+            <version>11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-11</version>
         </dependency>
 
         <!-- epub / html / xml / css -->
@@ -241,7 +246,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
+            <version>17.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -276,9 +281,16 @@
     <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.3</version>
         <configuration>
             <mainClass>de.machmireinebook.epubeditor.EpubEditorStarter</mainClass>
+            <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>
+            <options>
+                <option>--add-exports</option>
+                <option>javafx.graphics/com.sun.javafx.iio=javafxsvg</option>
+                <option>--add-exports</option>
+                <option>javafx.graphics/com.sun.javafx.iio.common=javafxsvg</option>
+            </options>
         </configuration>
     </plugin>
     </plugins>
