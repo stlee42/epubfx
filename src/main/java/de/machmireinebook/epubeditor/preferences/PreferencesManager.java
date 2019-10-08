@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -114,12 +115,14 @@ public class PreferencesManager
         tabSizeControl.editableProperty().bind(useTabProperty.not());
 
         preferencesFx = PreferencesFx.of(storageHandler,
-            Category.of("Application",
+            Category.of("Application").subCategories(
+                Category.of("General",
                     Group.of("Startup",
                             Setting.of("Open application with ", startupTypeControl, defaultStartupType),
                             Setting.of("Version of new ebook", versionControl, version),
                             fileTemplateSetting
                     )
+                )
             ),
             Category.of("Book",
                     Group.of("EPUB 2",
@@ -157,6 +160,7 @@ public class PreferencesManager
                             Setting.of("Headline of Landmarks", headlineLandmarks))
             )
         ).saveSettings(true);
+
     }
 
     public void showPreferencesDialog()
