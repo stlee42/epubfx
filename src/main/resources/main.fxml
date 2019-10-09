@@ -850,7 +850,7 @@
                                 </Button>
                             </nodes>
                         </RibbonGroup>
-                        <RibbonGroup title="Parts">
+                        <RibbonGroup title="Files">
                             <nodes>
                                 <Button fx:id="addCoverButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#addCoverAction" text="Add Cover" wrapText="true">
                                     <tooltip>
@@ -860,6 +860,17 @@
                                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
                                                    preserveRatio="true">
                                             <Image url="icons/icons8_Image_File_96px.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="removeUnusedMediaFilesButton" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeUnusedMediaFilesAction" text="Remove Unused Media Files" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Finds and shows unused media files for removing it" />
+                                    </tooltip>
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/icons8_remove_image_96px.png"/>
                                         </ImageView>
                                     </graphic>
                                 </Button>

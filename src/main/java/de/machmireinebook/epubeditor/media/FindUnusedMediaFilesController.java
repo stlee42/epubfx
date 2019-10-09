@@ -1,6 +1,7 @@
 package de.machmireinebook.epubeditor.media;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -15,6 +16,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
@@ -41,6 +44,8 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
         super.initialize(location, resources);
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        Label placeholderLabel = new Label("No unused media files found");
+        tableView.setPlaceholder(placeholderLabel);
 
         TableColumn<ImageResource, String> tc = (TableColumn<ImageResource, String>)tableView.getColumns().get(0);
         tc.setCellValueFactory(new PropertyValueFactory<>("href"));
@@ -69,37 +74,46 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
         });
     }
 
-    public void refresh()
+    private void refresh()
     {
-        List<ImageResource> imageResources = new ArrayList<>();
+        List<ImageResource> unusedResources = new ArrayList<>();
         List<Resource> resources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
+        List<Resource> xhtmlResources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
+                MediaType.XHTML,
+                MediaType.CSS});
         for (Resource resource : resources)
         {
-            if (notUsed((ImageResource)resource)) {
-                imageResources.add((ImageResource) resource);
+            if (notUsed((ImageResource)resource, xhtmlResources)) {
+                unusedResources.add((ImageResource) resource);
             }
         }
-        imageResources.sort(new ResourceFilenameComparator());
-        tableView.setItems(FXCollections.observableList(imageResources));
+        unusedResources.sort(new ResourceFilenameComparator());
+        tableView.setItems(FXCollections.observableList(unusedResources));
         tableView.getSelectionModel().select(0);
     }
 
-    private boolean notUsed(ImageResource imageResource) {
-        return false;
+    private boolean notUsed(ImageResource imageResource, List<Resource> xhtmlResources) {
+        for (Resource xhtmlResource : xhtmlResources) {
+            String text = StringUtils.toEncodedString(xhtmlResource.getData(), StandardCharsets.UTF_8);
+            if (text.contains(imageResource.convertToString())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void onOkAction(ActionEvent actionEvent) {
 
-
+        stage.close();
     }
 
     public void onCancelAction(ActionEvent actionEvent) {
 
-
+        stage.close();
     }
 
     private void refreshImageView(ImageResource resource)
