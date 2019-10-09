@@ -480,12 +480,6 @@ public class EditorTabManager {
                     openingEditorTab = true;
                     editor.setCode(code);
                     editor.clearUndoHistory();
-                    editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
-                    ((AnchorPane) editor).widthProperty().addListener((observable15, oldValue14, newValue14) -> editor.setCodeEditorSize(newValue14.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20));
-                    ((AnchorPane) editor).heightProperty().addListener((observable12, oldValue1, newValue1) -> editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue1.doubleValue() - 20));
-                    editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, ((AnchorPane) editor).getHeight() - 20);
-                    ((AnchorPane) editor).widthProperty().addListener((observable13, oldValue12, newValue12) -> editor.setCodeEditorSize(newValue12.doubleValue() - 20, ((AnchorPane) editor).getHeight() - 20));
-                    ((AnchorPane) editor).heightProperty().addListener((observable14, oldValue13, newValue13) -> editor.setCodeEditorSize(((AnchorPane) editor).getWidth() - 20, newValue13.doubleValue() - 20));
                     editor.scrollTo(EditorPosition.START);
                     editor.setAbsoluteCursorPosition(0);
                     editor.requestFocus();

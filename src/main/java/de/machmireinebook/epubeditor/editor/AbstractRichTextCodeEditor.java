@@ -332,12 +332,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void setCodeEditorSize(double width, double height)
-    {
-
-    }
-
-    @Override
     public String getSelection()
     {
         return codeArea.getSelectedText();

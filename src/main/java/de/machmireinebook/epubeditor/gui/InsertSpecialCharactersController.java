@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
@@ -49,5 +50,13 @@ public class InsertSpecialCharactersController implements StandardController
     public ObjectProperty<Book> currentBookProperty()
     {
         return currentBook;
+    }
+
+    public void onOkAction(ActionEvent actionEvent) {
+
+    }
+
+    public void onCancelAction(ActionEvent actionEvent) {
+
     }
 }
