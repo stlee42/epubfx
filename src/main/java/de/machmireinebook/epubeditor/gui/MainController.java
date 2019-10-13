@@ -60,6 +60,7 @@ import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.media.FindUnusedMediaFilesController;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.BeanFactory;
@@ -100,6 +101,8 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Button removeUnusedMediaFilesButton;
     @FXML
     private Button halfCharacterButton;
     @FXML
@@ -269,10 +272,6 @@ public class MainController implements Initializable
     @FXML
     private ComboBox<PreferencesLanguageStorable> languageSpellComboBox;
 
-    private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
-    private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
-    private Stage stage;
-
     @Inject
     private BookBrowserManager bookBrowserManager;
     @Inject
@@ -294,11 +293,17 @@ public class MainController implements Initializable
     @Inject
     private ValidationManager validationManager;
 
+    private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
+    private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
+    private Stage stage;
+    private StandardControllerFactory standardControllerFactory;
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         bookBrowserManager.setTreeView(epubStructureTreeView);
         bookBrowserManager.setEditorManager(editorTabManager);
+        bookBrowserManager.currentBookProperty().bind(currentBookProperty);
 
         epubFilesTabPane.getTabs().clear();
         epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
@@ -312,10 +317,14 @@ public class MainController implements Initializable
         tocGenerator.bookProperty().bind(currentBookProperty);
         validationManager.bookProperty().bind(currentBookProperty);
 
+        standardControllerFactory = StandardControllerFactory.builder()
+                .currentBookProperty(currentBookProperty)
+                .stage(stage)
+                .build();
+
         currentBookProperty.addListener((observable, oldValue, newValue) -> {
             epubFilesTabPane.getTabs().clear();
 
-            bookBrowserManager.setBook(newValue);
             editorTabManager.reset();
             editorTabManager.setBook(newValue);
             previewManager.reset();
@@ -360,6 +369,7 @@ public class MainController implements Initializable
                 .and(editorTabManager.currentXMLResourceProperty().isNull());
 
         addCoverButton.disableProperty().bind(currentBookProperty.isNull());
+        removeUnusedMediaFilesButton.disableProperty().bind(currentBookProperty.isNull());
         editMetadataButton.disableProperty().bind(currentBookProperty.isNull());
 
         h1Button.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -607,7 +617,7 @@ public class MainController implements Initializable
     @SuppressWarnings("UnusedParameters")
     public void newEpubAction(ActionEvent actionEvent)
     {
-        Stage windowStage = createStandardController("/new_ebook.fxml", NewEBookController.class);
+        Stage windowStage = standardControllerFactory.createStandardController("/new_ebook.fxml", NewEBookController.class);
         NewEBookController controller = NewEBookController.getInstance();
 
         //ausnahmsweise die currentBookProperty bidirectional binden, damit das Programm das neue Buch mitbekommt
@@ -1165,7 +1175,7 @@ public class MainController implements Initializable
     {
         if (editorTabManager.isInsertablePosition())
         {
-            createAndOpenStandardController("/insert_media.fxml", InsertMediaController.class);
+            standardControllerFactory.createAndOpenStandardController("/insert_media.fxml", InsertMediaController.class);
         }
         else
         {
@@ -1180,7 +1190,7 @@ public class MainController implements Initializable
 
     public void clipEditorAction()
     {
-        createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
+        standardControllerFactory.createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
     }
 
 
@@ -1190,7 +1200,7 @@ public class MainController implements Initializable
 
     public void createTocAction()
     {
-        Stage stage = createStandardController("/create_toc.fxml", GenerateTocController.class);
+        Stage stage = standardControllerFactory.createStandardController("/create_toc.fxml", GenerateTocController.class);
         GenerateTocController controller = GenerateTocController.getInstance();
         controller.setEditMode(false);
         stage.show();
@@ -1198,7 +1208,7 @@ public class MainController implements Initializable
 
     public void editTocAction()
     {
-        Stage stage = createStandardController("/create_toc.fxml", GenerateTocController.class);
+        Stage stage = standardControllerFactory.createStandardController("/create_toc.fxml", GenerateTocController.class);
         GenerateTocController controller = GenerateTocController.getInstance();
         controller.setEditMode(true);
         stage.show();
@@ -1215,14 +1225,10 @@ public class MainController implements Initializable
         editorTabManager.decreaseIndent();
     }
 
-    public void insertTableButtonAction()
-    {
-        if (editorTabManager.isInsertablePosition())
-        {
-            createAndOpenStandardController("/insert-table.fxml", InsertTableController.class);
-        }
-        else
-        {
+    public void insertTableButtonAction() {
+        if (editorTabManager.isInsertablePosition()) {
+            standardControllerFactory.createAndOpenStandardController("/insert-table.fxml", InsertTableController.class);
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Insert not possible");
             alert.getDialogPane().setHeader(null);
@@ -1230,59 +1236,6 @@ public class MainController implements Initializable
             alert.setContentText("Can't insert table on this position. This is only available within the body of the document.");
             alert.showAndWait();
         }
-    }
-
-    private void createAndOpenStandardController(String fxmlFile, Class<? extends StandardController> controllerClass)
-    {
-        Stage windowStage = createStandardController(fxmlFile, controllerClass);
-        windowStage.show();
-    }
-
-    public Stage createStandardController(String fxmlFile, Class<? extends StandardController> controllerClass)
-    {
-        Method staticMethod;
-        StandardController controller;
-        try
-        {
-            staticMethod = controllerClass.getMethod("getInstance");
-            controller = (StandardController) staticMethod.invoke(controllerClass);
-        }
-        catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
-        {
-            logger.error("", e);
-            return null;
-        }
-
-        Stage windowStage = null;
-        if (controller == null)
-        {
-            try
-            {
-                windowStage = new Stage(StageStyle.UTILITY);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile), null, new JavaFXBuilderFactory(),
-                        type -> BeanFactory.getInstance().getBean(type));
-
-                Pane root = loader.load();
-                Scene scene = new Scene(root);
-                windowStage.setScene(scene);
-                windowStage.initOwner(stage);
-                windowStage.initModality(Modality.APPLICATION_MODAL);
-
-                controller = (StandardController) staticMethod.invoke(controllerClass);
-                controller.currentBookProperty().bind(currentBookProperty);
-                controller.setStage(windowStage);
-            }
-            catch (IOException | IllegalAccessException | InvocationTargetException e)
-            {
-                logger.error("", e);
-            }
-        }
-        else
-        {
-            windowStage = controller.getStage();
-        }
-        return windowStage;
     }
 
     public void newMinimalEpubAction()
@@ -1363,8 +1316,7 @@ public class MainController implements Initializable
         currentBookProperty.get().setBookIsChanged(true);
     }
 
-    public void createNcxAction()
-    {
+    public void createNcxAction() {
         TocGenerator.TocGeneratorResult result = tocGenerator.createNcxFromNav();
         Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
 
@@ -1379,19 +1331,14 @@ public class MainController implements Initializable
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void createHtmlTocAction()
-    {
+    public void createHtmlTocAction() {
 
     }
 
-    public void insertLinkAction()
-    {
-        if (editorTabManager.isInsertablePosition())
-        {
-            createAndOpenStandardController("/insert-link.fxml", InsertLinkController.class);
-        }
-        else
-        {
+    public void insertLinkAction() {
+        if (editorTabManager.isInsertablePosition()) {
+            standardControllerFactory.createAndOpenStandardController("/insert-link.fxml", InsertLinkController.class);
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Insert not possible");
             alert.getDialogPane().setHeader(null);
@@ -1420,5 +1367,9 @@ public class MainController implements Initializable
     }
 
     public void checkLinksButton() {
+    }
+
+    public void removeUnusedMediaFilesAction(ActionEvent actionEvent) {
+        standardControllerFactory.createAndOpenStandardController("/find-unused-media-files.fxml", FindUnusedMediaFilesController.class);
     }
 }

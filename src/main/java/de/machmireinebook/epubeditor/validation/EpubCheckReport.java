@@ -164,7 +164,7 @@ public class EpubCheckReport implements Report
     @Override
     public void message(Message message, EPUBLocation epubLocation, Object... args)
     {
-        messages.add(new ValidationMessage(message.getSeverity().toString(), epubLocation.getPath(), epubLocation.getLine(), epubLocation.getLine(), message.getMessage(args)));
+        messages.add(new ValidationMessage(message.getSeverity().toString(), epubLocation.getPath(), epubLocation.getLine(), epubLocation.getColumn(), message.getMessage(args)));
     }
 
     @Override

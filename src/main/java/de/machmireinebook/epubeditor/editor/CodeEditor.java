@@ -29,7 +29,6 @@ public interface CodeEditor
     MediaType getMediaType();
 
     void setContextMenu(ContextMenu contextMenu);
-    void setCodeEditorSize(double width, double height);
     ObjectProperty<Worker.State> stateProperty();
     void requestFocus();
 

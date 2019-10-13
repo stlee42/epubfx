@@ -15,11 +15,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -69,6 +72,7 @@ import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AddStylesheetController;
 import de.machmireinebook.epubeditor.gui.MainController;
+import de.machmireinebook.epubeditor.gui.StandardControllerFactory;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
 
@@ -94,17 +98,34 @@ public class BookBrowserManager
     private TreeItem<Resource> fontsItem;
     private TreeItem<Resource> rootItem;
 
-    private Book book;
     private TreeView<Resource> treeView;
     private EditorTabManager editorManager;
     private TreeItem<Resource> ncxItem;
     private TreeItem<Resource> opfItem;
 
-    @Inject
-    private Provider<MainController> mainControllerProvider;
+    private final ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>(this, "currentBook");
+    private StandardControllerFactory standardControllerFactory;
 
     @Inject
+    private Provider<MainController> mainControllerProvider;
+    @Inject
     private EpubEditorConfiguration configuration;
+
+    @PostConstruct
+    public void init() {
+        currentBookProperty.addListener((observableValue, book, newBook) -> {
+            if (newBook != null) {
+                refreshBookBrowser();
+                if (newBook.getSpine() != null) {
+                    selectTextItem(newBook.getSpine().getResource(0));
+                }
+            }
+        });
+        standardControllerFactory = StandardControllerFactory.builder()
+                .currentBookProperty(currentBookProperty)
+                .stage(configuration.getMainWindow())
+                .build();
+    }
 
     private static class FolderSymbolListener implements ChangeListener<Boolean>
     {
@@ -180,6 +201,7 @@ public class BookBrowserManager
                     textItem.getChildren().add(index, draggedItem);
                     treeView.getSelectionModel().select(draggedItem);
                     //noch im spine moven
+                    Book book = currentBookProperty().getValue();
                     book.getSpine().moveSpineReference(draggedItem.getValue(), treeCell.getItem());
 
                     treeView.getSelectionModel().clearSelection();
@@ -314,6 +336,7 @@ public class BookBrowserManager
             logger.info("editing end for new value " + event.getNewValue());
             editorManager.refreshAll();
             editorManager.refreshPreview();
+            Book book = currentBookProperty().getValue();
             book.setBookIsChanged(true);
         });
 
@@ -523,6 +546,7 @@ public class BookBrowserManager
 
     private void addSemanticsMenuItems(Menu menu, TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         GuideReference.Semantics[] semantics = GuideReference.Semantics.values();
         Resource resource = treeItem.getValue();
         Guide guide = book.getGuide();
@@ -671,7 +695,7 @@ public class BookBrowserManager
 
         Menu semantikItem = new Menu("Add Semantic...");
         menu.getItems().add(semantikItem);
-        addImageSemantikMenuItems(semantikItem, treeItem);
+        addImageSemanticMenuItems(semantikItem, treeItem);
 
         item = new SeparatorMenuItem();
         menu.getItems().add(item);
@@ -739,8 +763,9 @@ public class BookBrowserManager
         return menu;
     }
 
-    private void addImageSemantikMenuItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addImageSemanticMenuItems(Menu menu, TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         ImageResource resource = (ImageResource)treeItem.getValue();
         CheckMenuItem item = new CheckMenuItem("Cover Image");
         if (resource.coverProperty().getValue())
@@ -785,6 +810,8 @@ public class BookBrowserManager
 
     public void refreshBookBrowser()
     {
+        Book book = currentBookProperty().getValue();
+
         textItem.getChildren().clear();
         cssItem.getChildren().clear();
         imagesItem.getChildren().clear();
@@ -964,13 +991,6 @@ public class BookBrowserManager
         this.editorManager = editorManager;
     }
 
-    public void setBook(Book book)
-    {
-        this.book = book;
-        refreshBookBrowser();
-        selectTextItem(book.getSpine().getResource(0));
-    }
-
     public boolean isTextItem(TreeItem<Resource> item)
     {
         return item.getParent().equals(textItem);
@@ -1023,6 +1043,7 @@ public class BookBrowserManager
 
     private void deleteXHTMLItem(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         book.removeSpineResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
         editorManager.closeTab(treeItem.getValue());
@@ -1032,6 +1053,7 @@ public class BookBrowserManager
 
     private void deleteCssItem(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
         editorManager.closeTab(treeItem.getValue());
@@ -1041,6 +1063,7 @@ public class BookBrowserManager
 
     private void deleteImageItem(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
         editorManager.closeTab(treeItem.getValue());
@@ -1050,6 +1073,7 @@ public class BookBrowserManager
 
     private void deleteFontItem(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
         editorManager.closeTab(treeItem.getValue());
@@ -1067,12 +1091,14 @@ public class BookBrowserManager
 
     public void refreshOpf()
     {
+        Book book = currentBookProperty().getValue();
         book.refreshOpfResource();
         editorManager.refreshEditorCode(book.getOpfResource());
     }
 
     public void refreshNcx()
     {
+        Book book = currentBookProperty().getValue();
         book.refreshNcxResource();
         editorManager.refreshEditorCode(book.getNcxResource());
     }
@@ -1099,6 +1125,7 @@ public class BookBrowserManager
 
     public void addEmptyXHTMLFile(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         String fileName = book.getNextStandardFileName(MediaType.XHTML);
         Resource res;
         if (book.isEpub3() && book.isFixedLayout())
@@ -1126,6 +1153,7 @@ public class BookBrowserManager
 
     private void addCopy(TreeItem<Resource> treeItem)
     {
+        Book book = currentBookProperty().getValue();
         Resource oldResource = treeItem.getValue();
         Resource newResource = book.addCopyOfResource(oldResource);
         book.setBookIsChanged(true);
@@ -1153,6 +1181,7 @@ public class BookBrowserManager
             if (((XHTMLResource)selectedItem.getValue()).isValidXML())
             {
                 resources.add(selectedItem.getValue());
+                Book book = currentBookProperty().getValue();
                 book.setBookIsChanged(true);
             }
             else
@@ -1164,7 +1193,7 @@ public class BookBrowserManager
 
         if (allAreValid)
         {
-            Stage stylesheetWindow = mainControllerProvider.get().createStandardController("/add_stylesheet.fxml", AddStylesheetController.class);
+            Stage stylesheetWindow = standardControllerFactory.createStandardController("/add_stylesheet.fxml", AddStylesheetController.class);
             AddStylesheetController controller = AddStylesheetController.getInstance();
             controller.setEditorManager(editorManager);
             controller.setXHTMLResources(resources);
@@ -1225,7 +1254,7 @@ public class BookBrowserManager
                             // are lost or discarded.
                             if (kind == StandardWatchEventKinds.ENTRY_MODIFY)
                             {
-                                WatchEvent<Path> ev = (WatchEvent<Path>)event;
+                                WatchEvent<Path> ev = (WatchEvent<Path>) event;
                                 Path filename = ev.context();
                                 logger.info("getting modify event for file " + filename);
                                 Platform.runLater(() -> {
@@ -1247,6 +1276,7 @@ public class BookBrowserManager
                                         {
                                             editorManager.refreshImageViewer(resource);
                                         }
+                                        Book book = currentBookProperty().getValue();
                                         book.setBookIsChanged(true);
                                     }
                                     catch (IOException e)
@@ -1298,6 +1328,7 @@ public class BookBrowserManager
 
     private void addSemanticsToXHTMLFile(TreeItem<Resource> treeItem, GuideReference.Semantics semantic)
     {
+        Book book = currentBookProperty().getValue();
         //hat der schon eine andere Semantik, die dann entfernen
         Resource resource = treeItem.getValue();
         Guide guide = book.getGuide();
@@ -1325,6 +1356,7 @@ public class BookBrowserManager
 
     private void removeSemanticsFromXHTMLFile(TreeItem<Resource> treeItem, GuideReference.Semantics semantic)
     {
+        Book book = currentBookProperty().getValue();
         Resource resource = treeItem.getValue();
         Guide guide = book.getGuide();
         List<GuideReference> typeReferences = guide.getGuideReferencesByType(semantic);
@@ -1360,6 +1392,7 @@ public class BookBrowserManager
 
     public void addEmptyCssFile()
     {
+        Book book = currentBookProperty().getValue();
         String fileName = book.getNextStandardFileName(MediaType.CSS);
         Resource res = book.addResourceFromTemplate("/epub/template.css", "Styles/" + fileName);
         String content = new String(res.getData(), StandardCharsets.UTF_8);
@@ -1395,6 +1428,10 @@ public class BookBrowserManager
     {
 
 
+    }
+
+    public final ObjectProperty<Book> currentBookProperty() {
+        return currentBookProperty;
     }
 
 }

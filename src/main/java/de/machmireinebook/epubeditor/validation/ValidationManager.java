@@ -25,6 +25,7 @@ import javafx.scene.input.MouseButton;
 
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.editor.EditorPosition;
 import org.controlsfx.dialog.ExceptionDialog;
 
 import com.adobe.epubcheck.api.EpubCheck;
@@ -108,6 +109,8 @@ public class ValidationManager {
                 }
                 if (resource != null) {
                     editorTabManager.openFileInEditor(resource);
+                    EditorPosition pos = new EditorPosition(message.getLine(), message.getColumn());
+                    editorTabManager.scrollTo(pos);
                 } else {
                     Alert alert = new Alert(Alert.AlertType.NONE);
                     alert.initOwner(tableView.getScene().getWindow());
