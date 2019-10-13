@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -379,8 +380,6 @@ public class EditorTabManager {
     }
 
     public void openImageFile(Resource resource) {
-        Tab tab = new Tab();
-        tab.setClosable(true);
         if (resource == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(tabPane.getScene().getWindow());
@@ -392,7 +391,10 @@ public class EditorTabManager {
 
             return;
         }
+        Tab tab = new Tab();
+        tab.setClosable(true);
         tab.setText(resource.getFileName());
+        tab.setContextMenu(createTabContextMenu(tab));
 
         ImageResource imageResource = (ImageResource) resource;
         ImageViewerPane pane = new ImageViewerPane();
@@ -410,6 +412,30 @@ public class EditorTabManager {
         tab.setUserData(resource);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
+    }
+
+    private ContextMenu createTabContextMenu(Tab tab) {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getStyleClass().add("context-menu");
+        contextMenu.setAutoFix(true);
+        contextMenu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Close");
+        item.setOnAction(e -> tabPane.getTabs().remove(tab));
+        contextMenu.getItems().add(item);
+
+        MenuItem item2 = new MenuItem("Close All");
+        item2.setOnAction(e -> tabPane.getTabs().removeAll(tabPane.getTabs()));
+        contextMenu.getItems().add(item2);
+
+        MenuItem item3 = new MenuItem("Close Others");
+        item3.setOnAction(e -> {
+            List<Tab> removed = tabPane.getTabs().stream().filter(tabToTest -> tabToTest != tab).collect(Collectors.toList());
+            tabPane.getTabs().removeAll(removed);
+        });
+        contextMenu.getItems().add(item2);
+
+        return contextMenu;
     }
 
 

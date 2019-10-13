@@ -123,6 +123,11 @@ public class XHTMLUtils
                 }
             }
 
+            if (epubVersion.isEpub2()) {
+                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
+            } else {
+                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
+            }
             content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IOException | IllegalAddException e)
@@ -198,6 +203,11 @@ public class XHTMLUtils
 
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
+            if (epubVersion.isEpub2()) {
+                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
+            } else {
+                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
+            }
             content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IllegalAddException e)
@@ -280,9 +290,13 @@ public class XHTMLUtils
                     element.setNamespace(Constants.NAMESPACE_XHTML);
                 }
             }
-            jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
+            if (epubVersion.isEpub2()) {
+                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
+            } else {
+                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
+            }
 
-            baos = outputXhtml(jdomDocument, true);
+            baos = outputXhtml(jdomDocument, false);
         }
         catch (IOException e) {
             logger.error("", e);
