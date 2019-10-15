@@ -6,9 +6,16 @@ import java.util.ResourceBundle;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
+import de.jensd.fx.glyphs.GlyphIcons;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.javafx.cells.TextGridCell;
+import org.controlsfx.control.GridCell;
+import org.controlsfx.control.GridView;
+import org.controlsfx.control.cell.ColorGridCell;
 
 /**
  * User: Michail Jungierek
@@ -18,6 +25,7 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 public class InsertSpecialCharactersController implements StandardController
 {
 
+    public GridView<String> gridView;
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
 
@@ -31,6 +39,22 @@ public class InsertSpecialCharactersController implements StandardController
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        gridView.setVerticalCellSpacing(5);
+        gridView.setHorizontalCellSpacing(5);
+
+        gridView.setCellFactory(gridView -> new TextGridCell());
+        gridView.getItems().add("‚");
+        gridView.getItems().add("‘");
+        gridView.getItems().add("’");
+        gridView.getItems().add("„");
+        gridView.getItems().add("“");
+        gridView.getItems().add("”");
+        gridView.getItems().add("‹");
+        gridView.getItems().add("›");
+        gridView.getItems().add("«");
+        gridView.getItems().add("»");
+        gridView.getItems().add("‘");
+        gridView.getItems().add("„");
         instance = this;
     }
 

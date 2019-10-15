@@ -1186,14 +1186,13 @@ public class MainController implements Initializable
         }
     }
 
-    public void clipEditorAction()
-    {
+    public void clipEditorAction() {
         standardControllerFactory.createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
     }
 
 
-    public void insertSpecialCharacterAction()
-    {
+    public void insertSpecialCharacterAction() {
+        standardControllerFactory.createAndOpenStandardController("/insert-special-characters.fxml", InsertSpecialCharactersController.class);
     }
 
     public void createTocAction()
