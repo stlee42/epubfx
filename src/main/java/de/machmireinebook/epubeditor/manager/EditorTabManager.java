@@ -30,6 +30,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -47,6 +48,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -55,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.wellbehaved.event.Nodes;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -86,6 +91,9 @@ import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
+import static org.fxmisc.wellbehaved.event.InputMap.consume;
+import static org.fxmisc.wellbehaved.event.InputMap.sequence;
 
 /**
  * User: mjungierek
@@ -294,6 +302,40 @@ public class EditorTabManager {
         contextMenuCSS.getItems().add(formatCSSMultipleLinesItem);
     }
 
+    public void setTabPane(TabPane tabPane) {
+        this.tabPane = tabPane;
+
+        tabPane.getTabs().clear();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            Resource resource;
+            if (newValue != null && newValue.getContent() instanceof CodeEditor) {
+                CodeEditor selectedEditor = (CodeEditor) newValue.getContent();
+                resource = (Resource) newValue.getUserData();
+                currentSearchableResource.set(resource);
+                currentEditor.setValue(selectedEditor);
+
+                if (selectedEditor.getMediaType().equals(MediaType.XHTML) && resource instanceof XHTMLResource) {
+                    currentXHTMLResource.set((XHTMLResource) resource);
+                    currentLineProperty.set(selectedEditor.getCodeArea().getCurrentParagraph());
+                }
+                else if (selectedEditor.getMediaType().equals(MediaType.CSS) && resource instanceof CSSResource) {
+                    currentCssResource.set((CSSResource) resource);
+                }
+                else if (selectedEditor.getMediaType().equals(MediaType.XML)) {
+                    currentXMLResource.set(resource);
+                }
+                selectedEditor.requestFocus();
+            }
+        });
+        //key mapping for tab handling
+        Nodes.addInputMap(tabPane, sequence(
+                consume(keyPressed(KeyCode.RIGHT, KeyCombination.ALT_DOWN), this::altRightPressed),
+                consume(keyPressed(KeyCode.LEFT, KeyCombination.ALT_DOWN), this::altLeftPressed)));
+    }
+
     @PreDestroy
     public void shutdown() {
         logger.info("pre destroy");
@@ -304,6 +346,15 @@ public class EditorTabManager {
             }
         }
     }
+
+    private void altRightPressed(KeyEvent event) {
+        tabPane.getSelectionModel().selectNext();
+    }
+
+    private void altLeftPressed(KeyEvent event) {
+        tabPane.getSelectionModel().selectPrevious();
+    }
+
 
     private void writeClipMenuItemChildren(TreeItem<Clip> parentTreeItem, Menu parentMenu) {
         List<TreeItem<Clip>> children = parentTreeItem.getChildren();
@@ -430,10 +481,12 @@ public class EditorTabManager {
 
         MenuItem item3 = new MenuItem("Close Others");
         item3.setOnAction(e -> {
-            List<Tab> removed = tabPane.getTabs().stream().filter(tabToTest -> tabToTest != tab).collect(Collectors.toList());
+            List<Tab> removed = tabPane.getTabs().stream()
+                    .filter(tabToTest -> tabToTest != tab)
+                    .collect(Collectors.toList());
             tabPane.getTabs().removeAll(removed);
         });
-        contextMenu.getItems().add(item2);
+        contextMenu.getItems().add(item3);
 
         return contextMenu;
     }
@@ -475,6 +528,7 @@ public class EditorTabManager {
             resource.hrefProperty().addListener((observable, oldValue, newValue) -> {
                 tab.setText(resource.getFileName());
             });
+            tab.setContextMenu(createTabContextMenu(tab));
 
             CodeEditor editor;
             if (mediaType.equals(MediaType.CSS)) {
@@ -621,32 +675,6 @@ public class EditorTabManager {
 
     public BooleanProperty needsRefreshProperty() {
         return needsRefresh;
-    }
-
-    public void setTabPane(TabPane tabPane) {
-        this.tabPane = tabPane;
-
-        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Resource resource;
-            if (newValue != null && newValue.getContent() instanceof CodeEditor) {
-                CodeEditor selectedEditor = (CodeEditor) newValue.getContent();
-                resource = (Resource) newValue.getUserData();
-                currentSearchableResource.set(resource);
-                currentEditor.setValue(selectedEditor);
-
-                if (selectedEditor.getMediaType().equals(MediaType.XHTML) && resource instanceof XHTMLResource) {
-                    currentXHTMLResource.set((XHTMLResource) resource);
-                    currentLineProperty.set(selectedEditor.getCodeArea().getCurrentParagraph());
-                }
-                else if (selectedEditor.getMediaType().equals(MediaType.CSS) && resource instanceof CSSResource) {
-                    currentCssResource.set((CSSResource) resource);
-                }
-                else if (selectedEditor.getMediaType().equals(MediaType.XML)) {
-                    currentXMLResource.set(resource);
-                }
-                selectedEditor.requestFocus();
-            }
-        });
     }
 
     public void scrollTo(EditorPosition position) {

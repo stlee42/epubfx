@@ -305,8 +305,6 @@ public class MainController implements Initializable
         bookBrowserManager.setEditorManager(editorTabManager);
         bookBrowserManager.currentBookProperty().bind(currentBookProperty);
 
-        epubFilesTabPane.getTabs().clear();
-        epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         editorTabManager.setTabPane(epubFilesTabPane);
 
         previewManager.setWebview(previewWebview);
