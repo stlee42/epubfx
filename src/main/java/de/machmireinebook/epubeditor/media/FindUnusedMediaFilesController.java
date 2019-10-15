@@ -123,7 +123,8 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
         List<ImageResource> resources = tableView.getItems();
         for (ImageResource resource : resources) {
             Book book = currentBookProperty.getValue();
-            book.removeSpineResource(resource);
+            book.removeResource(resource);
+            editorTabManager.refreshEditorCode(book.getOpfResource());
             editorTabManager.closeTab(resource);
         }
         bookBrowserManager.refreshBookBrowser();
