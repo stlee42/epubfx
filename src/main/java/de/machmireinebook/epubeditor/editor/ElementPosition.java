@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.manager;
+package de.machmireinebook.epubeditor.editor;
 
 /**
  * User: mjungierek

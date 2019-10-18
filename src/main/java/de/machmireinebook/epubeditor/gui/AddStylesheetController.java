@@ -33,7 +33,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**

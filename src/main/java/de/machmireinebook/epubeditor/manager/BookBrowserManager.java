@@ -57,6 +57,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.Guide;
 import de.machmireinebook.epubeditor.epublib.domain.GuideReference;

@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.manager;
+package de.machmireinebook.epubeditor.preview;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -7,7 +7,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.gui.MainController;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
+
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -15,6 +16,7 @@ import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.editor.ElementPosition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

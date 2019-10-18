@@ -12,7 +12,31 @@
 
 <?import org.controlsfx.control.GridView?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.InsertSpecialCharactersController">
-    <GridView fx:id="gridView" layoutX="7.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+    <TabPane prefHeight="279.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="100.0"
+             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" tabDragPolicy="FIXED" >
+        <Tab text="General and Latin">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewSymbols" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Greek">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewGreek" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Math">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewMath" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+    </TabPane>
+
     <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="20.0">
             <Label layoutX="396.0" layoutY="301.0" text="Unicode Name:" />
             <Label fx:id="unicodeNameLabel" />

@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;

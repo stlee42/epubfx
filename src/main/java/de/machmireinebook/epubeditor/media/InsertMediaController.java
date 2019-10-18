@@ -43,7 +43,7 @@ import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.gui.StandardController;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
 import de.machmireinebook.epubeditor.xhtml.XmlUtils;
 

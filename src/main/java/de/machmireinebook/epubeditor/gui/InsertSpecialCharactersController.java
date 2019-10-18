@@ -10,22 +10,15 @@ import javax.inject.Inject;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
-import de.jensd.fx.glyphs.GlyphIcons;
-import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.javafx.cells.TextGridCell;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import org.controlsfx.control.GridCell;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import org.controlsfx.control.GridView;
-import org.controlsfx.control.cell.ColorGridCell;
 
 /**
  * User: Michail Jungierek
@@ -35,9 +28,16 @@ import org.controlsfx.control.cell.ColorGridCell;
 public class InsertSpecialCharactersController implements StandardController
 {
 
-    public GridView<String> gridView;
-    public Label unicodeNameLabel;
-    public TextField htmlCodeTextField;
+    @FXML
+    private GridView<String> gridViewSymbols;
+    @FXML
+    private Label unicodeNameLabel;
+    @FXML
+    private TextField htmlCodeTextField;
+    @FXML
+    private GridView<String> gridViewGreek;
+    @FXML
+    private GridView<String> gridViewMath;
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
 
@@ -47,11 +47,24 @@ public class InsertSpecialCharactersController implements StandardController
     private EditorTabManager editorTabManager;
 
     private static InsertSpecialCharactersController instance;
-    private static final List<String> CHARACTERS = Arrays.asList("‚","‘","’","„","“","”","‹","›","«","»","—","–","§","¶","†","‡",
-            "&amp;","&lt;","&gt;","©","®","™","←","→","•","·","°",
-            "±","−","×","÷","¼","½","¾","¡","¨","´","¸","ˆ","˜","À","Á","Â","Ã","Ä","Å","Æ","Ç","È","É","Ê","Ë","Ì","Í",
+    private static final List<String> GENERAL_SYMBOLS = Arrays.asList("‚","‘","’","„","“","”","‹","›","«","»","—","–","§","¶","†","‡",
+            "&","<",">","©","®","™","←","→","•","·","°",
+            "±","−","×","÷","¼","½","¾","¡","¨","´","¸","ˆ","˜","¥",
+            //latin letters
+            "À","Á","Â","Ã","Ä","Å","Æ","Ç","È","É","Ê","Ë","Ì","Í",
             "Î","Ï","Ð","Ñ","Ò","Ó","Ô","Õ","Ö","Ø","Œ","Š","Ù","Ú","Û","Ü","Ý","Ÿ","Þ","ß","à","á","â","ã","ä","å","æ",
-            "ç","è","é","ê","ë","ì","í","î","ï","ð","ñ","ò","ó","ô","õ","ö","ø","œ","š","ù","ú","û","ü","ý","ÿ","þ","ª","º","∞");
+            "ç","è","é","ê","ë","ì","í","î","ï","ð","ñ","ò","ó","ô","õ","ö","ø","œ","š","ù","ú","û","ü","ý","ÿ","þ","ª","º"
+    );
+
+    private static final List<String> GREEK_LETTERS = Arrays.asList("Α","α","Β","β","Χ","χ","Δ","δ","Ε","ε","Η","η","Γ",
+            "γ","Ι","ι","Κ","κ","Λ","λ","Μ","μ","Ν","ν","Ω","ω","Ο","ο","Φ","φ","π","″","′","Ψ","ψ","Ρ","ρ","Σ","σ","Τ",
+            "τ","Θ","θ","Υ","υ","Ξ","ξ","Ζ","ζ");
+
+    private static final List<String> MATH_SYMBOLS = Arrays.asList("∞","ℵ","∧","∨","∩","∪","≅","↵","¤","⇓","⇑","↓","↑",
+        "∅","≡","∃","ƒ","∀","⁄","⇔","↔","ℑ","∫","∈","⇐","⇒","〈","〉","⌈","⌉","≤","≥","⌊","⌋",
+        "∗","◊","¯","∇","≠","∋","¬","∉","⊄","‾","⊕","⊗","∂","‰","⊥","ϖ","∏","∝","√","ℜ","⋅","ς","∼","⊂","⊃","⊆","⊇",
+        "∑","¹","²","³","∴","ϑ","ϒ","℘"
+    );
 
     public static InsertSpecialCharactersController getInstance()
     {
@@ -62,11 +75,18 @@ public class InsertSpecialCharactersController implements StandardController
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        initGridView(gridViewSymbols, GENERAL_SYMBOLS);
+        initGridView(gridViewGreek, GREEK_LETTERS);
+        initGridView(gridViewMath, MATH_SYMBOLS);
+
+        instance = this;
+    }
+
+    private void initGridView(GridView<String> gridView, List<String> symbolList) {
         gridView.setVerticalCellSpacing(5);
         gridView.setHorizontalCellSpacing(5);
-
-        gridView.setCellFactory(gridView -> {
-            TextGridCell gridCell =new TextGridCell();
+        gridView.setCellFactory(grid -> {
+            TextGridCell gridCell = new TextGridCell();
             gridCell.setOnMouseClicked(mouseEvent -> {
                 currentCharacter = gridCell.getText();
                 int codePoint = Character.codePointAt(currentCharacter, 0);
@@ -75,8 +95,7 @@ public class InsertSpecialCharactersController implements StandardController
             });
             return gridCell;
         });
-        gridView.getItems().addAll(CHARACTERS);
-        instance = this;
+        gridView.getItems().addAll(symbolList);
     }
 
     @Override

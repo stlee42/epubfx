@@ -20,7 +20,6 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlgraphics.image.codec.util.ImageEncodeParam;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -31,7 +30,7 @@ import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AbstractStandardController;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 
 /**
  * User: Michail Jungierek
