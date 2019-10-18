@@ -105,11 +105,14 @@ public class InsertSpecialCharactersController implements StandardController
                 unicodeNameLabel.setText(Character.getName(codePoint));
                 htmlCodeTextField.setText("&#" + codePoint + ";");
 
-                gridCell.setRectangleFill(Color.DODGERBLUE);
+                gridCell.setRectangleFill(Color.LIGHTSKYBLUE);
                 if (selectedGridCell != null) {
                     selectedGridCell.setRectangleFill(Color.WHITE);
                 }
                 selectedGridCell = gridCell;
+                if (mouseEvent.getClickCount() == 2) {
+                    editorTabManager.insertAtCursorPositionOrReplaceSelection(currentCharacter, true);
+                }
             });
 
             return gridCell;
@@ -136,7 +139,7 @@ public class InsertSpecialCharactersController implements StandardController
     }
 
     public void onOkAction(ActionEvent actionEvent) {
-        editorTabManager.insertAtCursorPositionOrReplaceSelection(currentCharacter);
+        editorTabManager.insertAtCursorPositionOrReplaceSelection(currentCharacter, true);
         //dialog stays open to insert more values
     }
 

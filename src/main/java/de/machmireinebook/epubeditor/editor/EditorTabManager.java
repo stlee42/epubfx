@@ -685,9 +685,12 @@ public class EditorTabManager {
         editor.getCodeArea().paste();
     }
 
-
     public void insertAtCursorPositionOrReplaceSelection(String text) {
-        if (isInsertablePosition()) {
+        insertAtCursorPositionOrReplaceSelection(text, false);
+    }
+
+    public void insertAtCursorPositionOrReplaceSelection(String text, boolean ignoreCursorPosition) {
+        if (isInsertablePosition() || ignoreCursorPosition) {
             CodeEditor editor = getCurrentEditor();
             if(StringUtils.isNotEmpty(editor.getSelection())) {
                 editor.replaceSelection(text);
