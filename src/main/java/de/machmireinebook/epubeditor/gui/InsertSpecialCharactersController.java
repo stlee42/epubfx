@@ -13,11 +13,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.javafx.cells.TextGridCell;
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
+import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
 /**
@@ -38,9 +41,12 @@ public class InsertSpecialCharactersController implements StandardController
     private GridView<String> gridViewGreek;
     @FXML
     private GridView<String> gridViewMath;
+    @FXML
+    private GridView<String> gridViewUnits;
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
 
+    private TextGridCell selectedGridCell;
     private String currentCharacter;
 
     @Inject
@@ -48,8 +54,8 @@ public class InsertSpecialCharactersController implements StandardController
 
     private static InsertSpecialCharactersController instance;
     private static final List<String> GENERAL_SYMBOLS = Arrays.asList("‚","‘","’","„","“","”","‹","›","«","»","—","–","§","¶","†","‡",
-            "&","<",">","©","®","™","←","→","•","·","°",
-            "±","−","×","÷","¼","½","¾","¡","¨","´","¸","ˆ","˜","¥",
+            "&","<",">","©","®","™","←","→","•","·","…",
+            "¿","¡","¨","´","¸","ˆ","˜",
             //latin letters
             "À","Á","Â","Ã","Ä","Å","Æ","Ç","È","É","Ê","Ë","Ì","Í",
             "Î","Ï","Ð","Ñ","Ò","Ó","Ô","Õ","Ö","Ø","Œ","Š","Ù","Ú","Û","Ü","Ý","Ÿ","Þ","ß","à","á","â","ã","ä","å","æ",
@@ -60,10 +66,15 @@ public class InsertSpecialCharactersController implements StandardController
             "γ","Ι","ι","Κ","κ","Λ","λ","Μ","μ","Ν","ν","Ω","ω","Ο","ο","Φ","φ","π","″","′","Ψ","ψ","Ρ","ρ","Σ","σ","Τ",
             "τ","Θ","θ","Υ","υ","Ξ","ξ","Ζ","ζ");
 
-    private static final List<String> MATH_SYMBOLS = Arrays.asList("∞","ℵ","∧","∨","∩","∪","≅","↵","¤","⇓","⇑","↓","↑",
+    //  ,
+    private static final List<String> MATH_SYMBOLS = Arrays.asList("±","−","×","÷","¼","½","¾","⅓","⅔","⅛","⅜","⅝","⅞",
+            "∞","ℵ","∧","∨","∩","∪","≅","↵","⇓","⇑","↓","↑",
         "∅","≡","∃","ƒ","∀","⁄","⇔","↔","ℑ","∫","∈","⇐","⇒","〈","〉","⌈","⌉","≤","≥","⌊","⌋",
         "∗","◊","¯","∇","≠","∋","¬","∉","⊄","‾","⊕","⊗","∂","‰","⊥","ϖ","∏","∝","√","ℜ","⋅","ς","∼","⊂","⊃","⊆","⊇",
         "∑","¹","²","³","∴","ϑ","ϒ","℘"
+    );
+
+    private static final List<String> UNIT_AND_CURRENCY_SIGNS = Arrays.asList("°", "′", "″","µ","¤","¥","¢","£","€"
     );
 
     public static InsertSpecialCharactersController getInstance()
@@ -78,6 +89,7 @@ public class InsertSpecialCharactersController implements StandardController
         initGridView(gridViewSymbols, GENERAL_SYMBOLS);
         initGridView(gridViewGreek, GREEK_LETTERS);
         initGridView(gridViewMath, MATH_SYMBOLS);
+        initGridView(gridViewUnits, UNIT_AND_CURRENCY_SIGNS);
 
         instance = this;
     }
@@ -92,7 +104,14 @@ public class InsertSpecialCharactersController implements StandardController
                 int codePoint = Character.codePointAt(currentCharacter, 0);
                 unicodeNameLabel.setText(Character.getName(codePoint));
                 htmlCodeTextField.setText("&#" + codePoint + ";");
+
+                gridCell.setRectangleFill(Color.DODGERBLUE);
+                if (selectedGridCell != null) {
+                    selectedGridCell.setRectangleFill(Color.WHITE);
+                }
+                selectedGridCell = gridCell;
             });
+
             return gridCell;
         });
         gridView.getItems().addAll(symbolList);

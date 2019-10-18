@@ -26,8 +26,11 @@
  */
 package de.machmireinebook.epubeditor.javafx.cells;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -76,5 +79,9 @@ public class TextGridCell extends GridCell<String> {
             setText(item);
         }
 
+    }
+
+    public void setRectangleFill(Paint paint) {
+        rect.setFill(paint);
     }
 }

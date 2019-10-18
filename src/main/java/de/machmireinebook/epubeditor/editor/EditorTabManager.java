@@ -375,13 +375,9 @@ public class EditorTabManager {
     }
 
     private void beautifyCSS(String type) {
-
-
     }
 
     private void openInExternalBrowser(ObjectProperty<CodeEditor> currentEditor) {
-
-
     }
 
     private void repairHTML() {

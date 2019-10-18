@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 
 <?import org.controlsfx.control.GridView?>
+<?import javafx.scene.control.Tooltip?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.InsertSpecialCharactersController">
     <TabPane prefHeight="279.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="100.0"
              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" tabDragPolicy="FIXED" >
@@ -22,6 +23,9 @@
             </AnchorPane>
         </Tab>
         <Tab text="Greek">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Greek Alphabet" />
+            </tooltip>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <GridView fx:id="gridViewGreek" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
@@ -29,8 +33,21 @@
             </AnchorPane>
         </Tab>
         <Tab text="Math">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Mathematical Symbols" />
+            </tooltip>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                 <GridView fx:id="gridViewMath" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Units">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Measurement and Currency Unit Symbols" />
+            </tooltip>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewUnits" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                           AnchorPane.topAnchor="0.0"/>
             </AnchorPane>
