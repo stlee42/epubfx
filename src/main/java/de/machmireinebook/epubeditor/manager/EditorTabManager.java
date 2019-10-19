@@ -17,7 +17,6 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -47,7 +46,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 import org.apache.commons.io.Charsets;
@@ -58,6 +56,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.reactfx.value.Var;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -104,7 +103,7 @@ public class EditorTabManager {
     private ReadOnlyObjectWrapper<XHTMLResource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<CSSResource> currentCssResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<Resource> currentXMLResource = new ReadOnlyObjectWrapper<>();
-    private BooleanProperty needsRefresh = new SimpleBooleanProperty(false);
+    private Var<Boolean> needsRefresh = Var.newSimpleVar(false);
     private SimpleBooleanProperty currentEditorIsXHTML = new SimpleBooleanProperty();
     private SimpleBooleanProperty canUndo = new SimpleBooleanProperty();
     private SimpleBooleanProperty canRedo = new SimpleBooleanProperty();
@@ -619,7 +618,7 @@ public class EditorTabManager {
         return currentXMLResource.getReadOnlyProperty();
     }
 
-    public BooleanProperty needsRefreshProperty() {
+    public Var<Boolean> needsRefreshProperty() {
         return needsRefresh;
     }
 
@@ -837,15 +836,30 @@ public class EditorTabManager {
     }
 
     public void refreshPreview() {
-        if (currentEditorIsXHTML.get()) {
+        if (currentEditorIsXHTML.getValue()) {
             CodeEditor xhtmlCodeEditor = currentEditor.getValue();
-            if (xhtmlCodeEditor != null && currentXHTMLResource.get() != null) {
-                currentXHTMLResource.get().setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
-                currentXHTMLResource.get().prepareWebViewDocument(book.getVersion());
+            XHTMLResource xhtmlResource = currentXHTMLResource.getValue();
+            if (xhtmlCodeEditor != null && xhtmlResource != null) {
+                xhtmlResource.setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                xhtmlResource.prepareWebViewDocument(book.getVersion());
             }
         }
         needsRefresh.setValue(true);
         needsRefresh.setValue(false);
+    }
+
+    public void totalRefreshPreview() {
+        if (currentEditorIsXHTML.getValue()) {
+            CodeEditor xhtmlCodeEditor = currentEditor.getValue();
+            XHTMLResource xhtmlResource = currentXHTMLResource.getValue();
+            if (xhtmlCodeEditor != null && xhtmlResource != null) {
+                xhtmlResource.setData(xhtmlCodeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                xhtmlResource.prepareWebViewDocument(book.getVersion());
+            }
+            //trigger total refresh
+            currentXHTMLResource.setValue(null);
+            currentXHTMLResource.setValue(xhtmlResource);
+        }
     }
 
     public void reset() {

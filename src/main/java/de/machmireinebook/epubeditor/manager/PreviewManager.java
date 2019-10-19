@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.gui.MainController;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -49,8 +48,7 @@ public class PreviewManager
         editorManager.currentXHTMLResourceProperty().addListener((observable, oldValue, newValue) -> refreshWebView(newValue));
         editorManager.needsRefreshProperty().addListener((observable, oldValue, newValue) ->
         {
-            if (newValue)
-            {
+            if (newValue) {
                 logger.info("getting reload event from needs refresh property");
                 webview.getEngine().reload();
             }
@@ -75,7 +73,7 @@ public class PreviewManager
 
     private void refreshWebView(Resource resource)
     {
-        if (isVisible)
+        if (isVisible && resource != null)
         {
             WebEngine engine = webview.getEngine();
             engine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) ->
