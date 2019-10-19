@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 
 /**

@@ -70,7 +70,6 @@ import org.reactfx.util.Tuples;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.manager.ElementPosition;
 import de.machmireinebook.epubeditor.spellcheck.SpellcheckManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 

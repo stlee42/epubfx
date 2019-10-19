@@ -1,3 +1,31 @@
+@font-face {
+    font-family: "Source Code Pro";
+    font-weight:normal;
+    font-style:normal;
+    src: url('../fonts/SourceCodePro-Regular.ttf');
+}
+
+@font-face {
+    font-family: "Source Code Pro";
+    font-weight:normal;
+    font-style:italic;
+    src: url('../fonts/SourceCodePro-Italic.ttf');
+}
+
+@font-face {
+    font-family: "Source Code Pro";
+    font-weight:bold;
+    font-style:italic;
+    src: url('../fonts/SourceCodePro-BoldItalic.ttf');
+}
+
+@font-face {
+    font-family: "Source Code Pro";
+    font-weight:bold;
+    font-style:normal;
+    src: url('../fonts/SourceCodePro-Bold.ttf');
+}
+
 .code-area {
     -fx-font-family: "Source Code Pro", Consolas, monospace;
 }

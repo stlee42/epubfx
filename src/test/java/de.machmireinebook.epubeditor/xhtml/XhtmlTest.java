@@ -19,8 +19,8 @@ import org.junit.jupiter.api.Test;
 import com.sun.net.httpserver.HttpServer;
 
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
-import de.machmireinebook.epubeditor.httpserver.EpubHttpHandler;
-import de.machmireinebook.epubeditor.httpserver.ResourceHttpHandler;
+import de.machmireinebook.epubeditor.preview.EpubHttpHandler;
+import de.machmireinebook.epubeditor.preview.ResourceHttpHandler;
 
 /**
  * @author Michail Jungierek, CGI

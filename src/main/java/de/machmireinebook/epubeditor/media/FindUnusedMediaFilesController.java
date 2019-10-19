@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
@@ -19,12 +21,16 @@ import javafx.stage.Stage;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.Resources;
 import de.machmireinebook.epubeditor.epublib.util.ResourceFilenameComparator;
 import de.machmireinebook.epubeditor.gui.AbstractStandardController;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 
 /**
  * User: Michail Jungierek
@@ -35,6 +41,11 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
     public TableView<ImageResource> tableView;
     public ImageView imageView;
     public Label imageValuesLabel;
+
+    @Inject
+    private BookBrowserManager bookBrowserManager;
+    @Inject
+    private EditorTabManager editorTabManager;
 
     private static FindUnusedMediaFilesController instance;
 
@@ -77,15 +88,16 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
     private void refresh()
     {
         List<ImageResource> unusedResources = new ArrayList<>();
-        List<Resource> resources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
+        Resources resources = currentBookProperty.getValue().getResources();
+        List<Resource> imagesResources = resources.getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        List<Resource> xhtmlResources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
+        List<Resource> xhtmlResources = resources.getResourcesByMediaTypes(new MediaType[]{
                 MediaType.XHTML,
                 MediaType.CSS});
-        for (Resource resource : resources)
+        for (Resource resource : imagesResources)
         {
             if (notUsed((ImageResource)resource, xhtmlResources)) {
                 unusedResources.add((ImageResource) resource);
@@ -107,7 +119,14 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
     }
 
     public void onOkAction(ActionEvent actionEvent) {
-
+        List<ImageResource> resources = tableView.getItems();
+        for (ImageResource resource : resources) {
+            Book book = currentBookProperty.getValue();
+            book.removeResource(resource);
+            editorTabManager.refreshEditorCode(book.getOpfResource());
+            editorTabManager.closeTab(resource);
+        }
+        bookBrowserManager.refreshBookBrowser();
         stage.close();
     }
 

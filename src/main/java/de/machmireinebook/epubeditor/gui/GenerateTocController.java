@@ -48,7 +48,7 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.toc.EditableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;

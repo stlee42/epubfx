@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.httpserver;
+package de.machmireinebook.epubeditor.preview;
 
 import java.io.IOException;
 import java.io.InputStream;

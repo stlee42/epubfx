@@ -3,8 +3,6 @@ package de.machmireinebook.epubeditor.gui;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -78,8 +76,8 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
-import de.machmireinebook.epubeditor.manager.PreviewManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
+import de.machmireinebook.epubeditor.preview.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
 import de.machmireinebook.epubeditor.media.InsertMediaController;
@@ -305,8 +303,6 @@ public class MainController implements Initializable
         bookBrowserManager.setEditorManager(editorTabManager);
         bookBrowserManager.currentBookProperty().bind(currentBookProperty);
 
-        epubFilesTabPane.getTabs().clear();
-        epubFilesTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         editorTabManager.setTabPane(epubFilesTabPane);
 
         previewManager.setWebview(previewWebview);
@@ -1188,14 +1184,13 @@ public class MainController implements Initializable
         }
     }
 
-    public void clipEditorAction()
-    {
+    public void clipEditorAction() {
         standardControllerFactory.createAndOpenStandardController("/clip_editor.fxml", ClipEditorController.class);
     }
 
 
-    public void insertSpecialCharacterAction()
-    {
+    public void insertSpecialCharacterAction() {
+        standardControllerFactory.createAndOpenStandardController("/insert-special-characters.fxml", InsertSpecialCharactersController.class);
     }
 
     public void createTocAction()

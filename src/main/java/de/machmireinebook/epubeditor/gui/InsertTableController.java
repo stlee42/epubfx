@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 
 import com.helger.css.propertyvalue.CCSSValue;
 

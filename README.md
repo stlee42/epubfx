@@ -28,11 +28,11 @@ This project is in early stage, but some functions are working (with possible bu
 - renaming files
 - check of ebook with official epub checker (not configurable yet)
 - opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
+- insert special symbols via dialog (typographical signs, special latin letters, greek alphabet, mathematical symbols, measurement unit signs)
 
 ### Planned feature:
 - configuration for external applications
 - checking internal and external links
-- symbol table 
 - europatastatur like inserting of symbols (adaption of key codes of the project https://www.europatastatur.de/)
 
 ## Build and Running
@@ -72,7 +72,11 @@ I plan to include the maven javafx plugin for easier running the app.
 - CTRL-Y: paste
 - CTRL-Z: undo
 - CTRL-SHIFT-Z, CTRL-Y: redo
-s
+
+Tabs:
+- ALT-RIGHT: next tab
+- ALT-RIGHT: previous tab 
+
 #### Mouse
 - double click: select word
 - triple click: select paragraph  

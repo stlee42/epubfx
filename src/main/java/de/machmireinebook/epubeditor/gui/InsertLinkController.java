@@ -25,7 +25,7 @@ import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.jdom2.AttributeFilter;
-import de.machmireinebook.epubeditor.manager.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 
 /**
  * User: Michail Jungierek

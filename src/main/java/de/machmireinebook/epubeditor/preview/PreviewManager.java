@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.manager;
+package de.machmireinebook.epubeditor.preview;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -7,6 +7,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
+
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -14,6 +16,7 @@ import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.editor.ElementPosition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -90,37 +93,30 @@ public class PreviewManager
                             {
                                 Deque<ElementPosition> positions = new ArrayDeque<>();
                                 Element currentElement = ((Element)evt.getTarget());
-                                Element parent = (Element)currentElement.getParentNode();
-                                while(parent != null)
-                                {
-                                    NodeList children;
-                                    if (StringUtils.isNotEmpty(currentElement.getNamespaceURI()))
-                                    {
-                                        children = parent.getElementsByTagNameNS(currentElement.getNamespaceURI(), currentElement.getNodeName());
-                                    }
-                                    else
-                                    {
-                                        children = parent.getElementsByTagName(currentElement.getNodeName());
-                                    }
-                                    for (int i = 0; i < children.getLength(); i++)
-                                    {
-                                        if (children.item(i) == currentElement)
-                                        {
-                                            ElementPosition position = new ElementPosition(currentElement.getNodeName(), i, currentElement.getNamespaceURI());
-                                            positions.push(position);
+                                if (currentElement.getParentNode() instanceof Element) {
+                                    Element parent = (Element) currentElement.getParentNode();
+                                    while (parent != null) {
+                                        NodeList children;
+                                        if (StringUtils.isNotEmpty(currentElement.getNamespaceURI())) {
+                                            children = parent.getElementsByTagNameNS(currentElement.getNamespaceURI(), currentElement.getNodeName());
+                                        } else {
+                                            children = parent.getElementsByTagName(currentElement.getNodeName());
+                                        }
+                                        for (int i = 0; i < children.getLength(); i++) {
+                                            if (children.item(i) == currentElement) {
+                                                ElementPosition position = new ElementPosition(currentElement.getNodeName(), i, currentElement.getNamespaceURI());
+                                                positions.push(position);
+                                            }
+                                        }
+                                        currentElement = parent;
+                                        if (currentElement.getParentNode() instanceof Element) {
+                                            parent = (Element) currentElement.getParentNode();
+                                        } else {
+                                            parent = null;
                                         }
                                     }
-                                    currentElement = parent;
-                                    if (currentElement.getParentNode() instanceof Element)
-                                    {
-                                        parent = (Element) currentElement.getParentNode();
-                                    }
-                                    else
-                                    {
-                                        parent = null;
-                                    }
+                                    editorManager.scrollTo(positions);
                                 }
-                                editorManager.scrollTo(positions);
                             }
                             else
                             {

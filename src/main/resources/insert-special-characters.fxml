@@ -11,39 +11,59 @@
 <?import javafx.scene.layout.HBox?>
 
 <?import org.controlsfx.control.GridView?>
+<?import javafx.scene.control.Tooltip?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.InsertSpecialCharactersController">
-   <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-      <children>
-         <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />
-         <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Cancel" />
-      </children>
-   </HBox>
-   <TabPane prefHeight="279.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
-     <tabs>
-       <Tab text="Symbols">
-         <content>
-             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                 
-             </AnchorPane>
-         </content>
-       </Tab>
-       <!--Tab text="Special Characters">
-         <content>
-           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                     <TableView layoutX="7.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                       <columns>
-                            <TableColumn prefWidth="75.0" text="Character" />
-                            <TableColumn prefWidth="303.0" text="Description" />
-                            <TableColumn prefWidth="75.0" text="HTML Code" />
-                       </columns>
-                     </TableView>
-                  </children>
-               </AnchorPane>
-         </content>
-       </Tab-->
-     </tabs>
-   </TabPane>
-   <Label layoutX="396.0" layoutY="301.0" text="HTML Code" />
-   <TextField layoutX="473.0" layoutY="297.0" prefHeight="25.0" prefWidth="115.0" />
+    <TabPane prefHeight="279.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="100.0"
+             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" tabDragPolicy="FIXED" >
+        <Tab text="General and Latin">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewSymbols" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Greek">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Greek Alphabet" />
+            </tooltip>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewGreek" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Math">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Mathematical Symbols" />
+            </tooltip>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewMath" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+        <Tab text="Units">
+            <tooltip>
+                <Tooltip styleClass="white-tooltip" text="Measurement and Currency Unit Symbols" />
+            </tooltip>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <GridView fx:id="gridViewUnits" layoutX="7.0" prefHeight="200.0" prefWidth="200.0"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </Tab>
+    </TabPane>
+
+    <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="20.0">
+            <Label layoutX="396.0" layoutY="301.0" text="Unicode Name:" />
+            <Label fx:id="unicodeNameLabel" />
+            <Label layoutX="396.0" layoutY="301.0" text="HTML Code" />
+            <TextField fx:id="htmlCodeTextField" layoutX="473.0" layoutY="297.0" prefHeight="25.0" prefWidth="115.0" />
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <children>
+            <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Insert" />
+            <Button mnemonicParsing="false" onAction="#onCancelAction" prefWidth="75.0" text="Close" />
+        </children>
+    </HBox>
 </AnchorPane>

@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.httpserver;
+package de.machmireinebook.epubeditor.preview;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +30,6 @@ public class ResourceHttpHandler implements HttpHandler
         httpExchange.getRequestHeaders();
         InputStream body = httpExchange.getRequestBody();
         body.close();
-        Headers headers = httpExchange.getResponseHeaders();
         if ("GET".equals(command))
         {
             InputStream is = ResourceHttpHandler.class.getResourceAsStream(requestURI.toString());
