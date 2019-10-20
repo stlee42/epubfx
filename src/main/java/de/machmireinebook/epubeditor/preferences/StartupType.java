@@ -2,8 +2,9 @@ package de.machmireinebook.epubeditor.preferences;
 
 import java.util.Arrays;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  * @author Michail Jungierek
@@ -26,7 +27,7 @@ public enum StartupType
         return description;
     }
 
-    public static ObservableList<StartupType> asObservableList() {
-        return FXCollections.observableArrayList(Arrays.asList(StartupType.values()));
+    public static ListProperty<StartupType> asListProperty() {
+        return new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(StartupType.values())));
     }
 }

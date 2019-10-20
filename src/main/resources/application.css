@@ -1,3 +1,10 @@
+@font-face {
+    font-family: "Source Code Pro";
+    font-weight:bold;
+    font-style:normal;
+    src: url('fonts/SourceCodePro-Bold.ttf');
+}
+
 .tooltip .white-tooltip {
     -fx-background-color:white;
     -fx-color-label-visible: true;
@@ -30,7 +37,28 @@
 .ribbon-group .button.letter-button
 {
     -fx-font-size: 1.5em;
-    -fx-min-width: 50;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+}
+
+.ribbon-group .button.colored-letter-button
+{
+    -fx-font-size: 16;
+    -fx-pref-width: 32;
+    -fx-pref-height: 32;
+}
+
+.ribbon-group .button.colored-letter-button .text {
+    -fx-fill: #9C27B0;                            
+    -fx-font-family: "Source Code Pro";
+    -fx-font-weight: bold;
+    -fx-font-size: 20.0;
+}
+
+.ribbon-group .button.square-button
+{
+    -fx-min-width: 32;
+    -fx-min-height: 32;
 }
 
 .ribbon-group .split-menu-button, .ribbon-group .toggle-button, .ribbon-group .menu-button

@@ -10,20 +10,19 @@ import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.beans.binding.Bindings;
 
 import org.apache.log4j.Logger;
 
@@ -51,16 +50,18 @@ public class PreferencesManager
     private EpubFxPreferencesStorageHandler storageHandler;
     private PreferencesFx preferencesFx;
 
-    private ObjectProperty<StartupType> defaultStartupType = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
-    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(Arrays.asList(StartupType.values()), 0).render(new RadioButtonControl<>());
+    //template for other setings including the getter and setter below
+    private ObjectProperty<StartupType> startupTypeSelection = new SettingEnumObjectProperty<>(StartupType.MINIMAL_EBOOK, StartupType.class);
+    private ListProperty<StartupType> startupTypes = StartupType.asListProperty();
+    private SingleSelectionField<StartupType> startupTypeControl = Field.ofSingleSelectionType(startupTypes, startupTypeSelection).render(new RadioButtonControl<>());
 
-    private DoubleProperty version = new SimpleDoubleProperty(2.0);
-    private SingleSelectionField<Double> versionControl = Field.ofSingleSelectionType(Arrays.asList(2.0, 3.2), 0).render(
+    private ObjectProperty<Double> versionSelection = new SimpleObjectProperty<>(2.0);
+    private ListProperty<Double> versions = new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(2.0, 3.2)));
+    private SingleSelectionField<Double> versionControl = Field.ofSingleSelectionType(versions, versionSelection).render(
             new RadioButtonControl<>());
 
-    private ObjectProperty<File> fileTemplateProperty = new SimpleObjectProperty<>();
-    private Setting fileTemplateSetting = Setting.of("Template", fileTemplateProperty, false);
-
+    private ObjectProperty<File> fileTemplateSelection = new SimpleObjectProperty<>();
+    private Setting fileTemplateSetting = Setting.of("Template", fileTemplateSelection, false);
 
     private StringProperty headlineToc = new SimpleStringProperty("Contents");
     private StringProperty headlineLandmarks = new SimpleStringProperty("Landmarks");
@@ -118,8 +119,8 @@ public class PreferencesManager
             Category.of("Application").subCategories(
                 Category.of("General",
                     Group.of("Startup",
-                            Setting.of("Open application with ", startupTypeControl, defaultStartupType),
-                            Setting.of("Version of new ebook", versionControl, version),
+                            Setting.of("Open application with ", startupTypeControl, startupTypeSelection),
+                            Setting.of("Version of new ebook", versionControl, versionSelection),
                             fileTemplateSetting
                     )
                 )
@@ -227,13 +228,16 @@ public class PreferencesManager
         this.languageSpellSelection.set(languageSpellSelection);
     }
 
-    public double getVersion()
+    public double getVersionSelection()
     {
-        return version.get();
+        return versionSelection.getValue();
     }
-    public DoubleProperty versionProperty()
+    public ObjectProperty<Double> versionSelectionProperty()
     {
-        return version;
+        return versionSelection;
+    }
+    public void setVersionSelection(double versionSelection) {
+        this.versionSelection.setValue(versionSelection);
     }
 
     public ReferenceType getReferenceType()
@@ -335,12 +339,12 @@ public class PreferencesManager
     }
 
     public final ObjectProperty<StartupType> startupTypeProperty() {
-        return startupTypeControl.selectionProperty();
+        return startupTypeSelection;
     }
     public final StartupType getStartupType() {
-        return startupTypeControl.selectionProperty().get();
+        return startupTypeSelection.getValue();
     }
     public final void setStartupType(StartupType startupType) {
-        this.startupTypeControl.selectionProperty().set(startupType);
+        this.startupTypeSelection.setValue(startupType);
     }
 }

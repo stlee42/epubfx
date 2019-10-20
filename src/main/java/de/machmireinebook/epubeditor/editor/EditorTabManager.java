@@ -55,7 +55,6 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.wellbehaved.event.Nodes;
 import org.jdom2.Content;
@@ -67,7 +66,6 @@ import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.clips.ClipManager;
-import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -80,8 +78,10 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceDataException;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
+import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
+
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
 import static org.fxmisc.wellbehaved.event.InputMap.consume;
 import static org.fxmisc.wellbehaved.event.InputMap.sequence;
@@ -227,6 +227,12 @@ public class EditorTabManager {
         });
         contextMenuXHTML.getItems().add(clipsItem);
         contextMenuXHTML.getItems().add(separatorItem);
+
+        MenuItem itemFormatHTML = new MenuItem("Format HTML");
+        itemFormatHTML.setOnAction(e -> {
+            formatHtml();
+        });
+        contextMenuXHTML.getItems().add(itemFormatHTML);
 
         MenuItem itemRepairHTML = new MenuItem("Repair and format HTML");
         itemRepairHTML.setOnAction(e -> {
@@ -378,6 +384,22 @@ public class EditorTabManager {
     }
 
     private void openInExternalBrowser(ObjectProperty<CodeEditor> currentEditor) {
+    }
+
+    private void formatHtml() {
+        logger.info("beautifying html");
+        CodeEditor editor = currentEditor.getValue();
+        Integer currentCursorPosition = editor.getAbsoluteCursorPosition();
+        String code = editor.getCode();
+        if (currentEditorIsXHTML.get()) {
+            Resource resource = currentXHTMLResource.get();
+            code = formatAsXHTML(code);
+            resource.setData(code.getBytes(StandardCharsets.UTF_8));
+        }
+        editor.setCode(code);
+        editor.setAbsoluteCursorPosition(currentCursorPosition);
+        editor.scrollTo(currentCursorPosition);
+        book.setBookIsChanged(true);
     }
 
     private void repairHTML() {
@@ -920,9 +942,15 @@ public class EditorTabManager {
         return currentEditor;
     }
 
-    public String formatAsXHTML(String xhtml) throws IOException, JDOMException {
-        Document document = XHTMLUtils.parseXHTMLDocument(xhtml);
-        return XHTMLUtils.outputXHTMLDocumentAsString(document, true, EpubVersion.VERSION_2);
+    public String formatAsXHTML(String xhtml) {
+        Document document = null;
+        try {
+            document = XHTMLUtils.parseXHTMLDocument(xhtml);
+        }
+        catch (IOException | JDOMException e) {
+            logger.error(e);
+        }
+        return XHTMLUtils.outputXHTMLDocumentAsString(document, false, book.getVersion());
     }
 
     public String repairXHTML(String xhtml) {
