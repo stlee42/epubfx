@@ -96,14 +96,18 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
         Optional<SearchManager.SearchResult> result = searchManager.findNext(searchStringTextField.getText(), editorManager.getCurrentSearchableResource(), cursorIndex, params);
-        result.ifPresent((searchResult) ->
-                {
-                    int fromIndex = searchResult.getBegin();
-                    int toIndex = searchResult.getEnd();
-                    editor.select(fromIndex, toIndex);
-                    String selectedText = editor.getSelection();
-                    logger.info("search result position: " + fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
+        result.ifPresent((searchResult) -> {
+                CodeEditor usedEditor = editor;
+                if (searchResult.getResource() != editorManager.getCurrentSearchableResource()) {
+                    editorManager.openFileInEditor(searchResult.getResource());
+                    usedEditor = editorManager.getCurrentEditor();
                 }
+                int fromIndex = searchResult.getBegin();
+                int toIndex = searchResult.getEnd();
+                usedEditor.select(fromIndex, toIndex);
+                String selectedText = usedEditor.getSelection();
+                logger.info("search result position: " + fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
+            }
         );
     }
 
@@ -116,8 +120,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
         Optional<SearchManager.SearchResult> result = searchManager.findNext(searchStringTextField.getText(), editorManager.getCurrentSearchableResource(), cursorIndex, params);
-        result.ifPresent((searchResult) ->
-            {
+        result.ifPresent((searchResult) -> {
                 int fromIndex = searchResult.getBegin();
                 int toIndex = searchResult.getEnd();
                 editor.select(fromIndex, toIndex);

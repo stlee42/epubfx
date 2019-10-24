@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -169,18 +170,16 @@ public class AddStylesheetController implements StandardController
             stylesheetResources.clear();
             if (newValue != null)
             {
-                List<Resource> cssResources = newValue.getResources().getResourcesByMediaType(MediaType.CSS);
-                for (Resource cssResource : cssResources)
-                {
+                List<Resource> cssResources = newValue.getResources().getCssResources();
+                for (Resource cssResource : cssResources) {
                     StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
                     stylesheetResources.add(stylesheetResource);
                 }
 
-                newValue.getResources().getResourcesMap().addListener((MapChangeListener<String, Resource>) change -> {
+                newValue.getResources().getCssResources().addListener((ListChangeListener<Resource>) change -> {
                     stylesheetResources.clear();
-                    List<Resource> cssResources1 = currentBookProperty.get().getResources().getResourcesByMediaType(MediaType.CSS);
-                    for (Resource cssResource : cssResources1)
-                    {
+                    List<Resource> cssResources1 = currentBookProperty.getValue().getResources().getCssResources();
+                    for (Resource cssResource : cssResources1) {
                         StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
                         stylesheetResources.add(stylesheetResource);
                     }

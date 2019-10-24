@@ -691,8 +691,7 @@ public class MainController implements Initializable
                 if (MediaType.CSS.equals(mediaType))
                 {
                     href = "Styles/" + file.getName();
-                    Resource resource = book.addResourceFromFile(file, href, mediaType);
-                    book.getResources().getCssResources().add(resource);
+                    book.addResourceFromFile(file, href, mediaType);
                 }
                 else if (MediaType.XHTML.equals(mediaType) || MediaType.XML.equals(mediaType))
                 {
@@ -702,8 +701,7 @@ public class MainController implements Initializable
                 else if (mediaType.isImage())
                 {
                     href = "Images/" + file.getName();
-                    Resource resource = book.addResourceFromFile(file, href, mediaType);
-                    book.getResources().getImageResources().add(resource);
+                    book.addResourceFromFile(file, href, mediaType);
                 }
                 else if (MediaType.JAVASCRIPT.equals(mediaType))
                 {
@@ -713,8 +711,7 @@ public class MainController implements Initializable
                 else if (mediaType.isFont())
                 {
                     href = "Fonts/" + file.getName();
-                    Resource resource = book.addResourceFromFile(file, href, mediaType);
-                    book.getResources().getFontResources().add(resource);
+                    book.addResourceFromFile(file, href, mediaType);
                 }
                 else
                 {

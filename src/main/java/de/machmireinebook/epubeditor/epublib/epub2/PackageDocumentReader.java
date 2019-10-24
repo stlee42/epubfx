@@ -131,18 +131,6 @@ public class PackageDocumentReader
             resource.setProperties(properties);
 
             result.add(resource);
-            if (resource.getMediaType() == MediaType.CSS)
-            {
-                result.getCssResources().add(resource);
-            }
-            else if (resource.getMediaType().isFont())
-            {
-                result.getFontResources().add(resource);
-            }
-            else if (resource.getMediaType().isImage())
-            {
-                result.getImageResources().add(resource);
-            }
             idMapping.put(id, resource.getId());
         }
         return result;

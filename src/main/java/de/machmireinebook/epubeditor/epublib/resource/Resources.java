@@ -8,14 +8,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
+import org.apache.commons.collections4.OrderedMap;
+import org.apache.commons.collections4.list.UnmodifiableList;
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import org.checkerframework.checker.units.qual.K;
 
 /**
  * All the resources that make up the book.
@@ -33,8 +39,8 @@ public class Resources implements Serializable {
 	private static final String IMAGE_PREFIX = "image_";
 	private static final String ITEM_PREFIX = "item_";
 	private int lastId = 1;
-	
-	private ObservableMap<String, Resource> resources = FXCollections.observableMap(new HashMap<>());
+
+	private OrderedMap<String, Resource> resources = new ListOrderedMap<>();
 	private ObservableList<Resource> cssResources = FXCollections.observableList(new ArrayList<>());
     private ObservableList<Resource> fontResources = FXCollections.observableList(new ArrayList<>());
     private ObservableList<Resource> imageResources = FXCollections.observableList(new ArrayList<>());
@@ -51,6 +57,13 @@ public class Resources implements Serializable {
 		fixResourceHref(resource);
 		fixResourceId(resource);
 		this.resources.put(resource.getHref(), resource);
+		if (resource.getMediaType() == MediaType.CSS && !cssResources.contains(resource)) {
+			cssResources.add(resource);
+		} else if (resource.getMediaType().isImage() && !imageResources.contains(resource)) {
+			imageResources.add(resource);
+		} else if (resource.getMediaType().isFont() && !fontResources.contains(resource)) {
+			fontResources.add(resource);
+		}
 		return resource;
 	}
 
@@ -109,7 +122,7 @@ public class Resources implements Serializable {
 	/**
 	 * Creates a new resource id that is guaranteed to be unique for this set of Resources
 	 * 
-	 * @param resource
+	 * @param resource the resource for which a unique id should be created
 	 * @return a new resource id that is guaranteed to be unique for this set of Resources
 	 */
 	private String createUniqueResourceId(Resource resource) {
@@ -147,7 +160,7 @@ public class Resources implements Serializable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the resource with the given id.
 	 * 
@@ -173,12 +186,21 @@ public class Resources implements Serializable {
 	 * @return the removed resource, null if not found
 	 */
 	public Resource remove(String href) {
-		return resources.remove(href);
+		Resource resource = resources.remove(href);
+		if (resource != null) {
+			cssResources.remove(resource);
+			fontResources.remove(resource);
+			imageResources.remove(resource);
+		}
+		return resource;
 	}
 
-    public Resource remove(Resource resource)
-    {
-        return resources.remove(resource.getHref());
+    public Resource remove(Resource resource) {
+		resources.remove(resource.getHref());
+		cssResources.remove(resource);
+		fontResources.remove(resource);
+		imageResources.remove(resource);
+		return resource;
     }
 
 	private void fixResourceHref(Resource resource) {
@@ -226,7 +248,7 @@ public class Resources implements Serializable {
 	 * 
 	 * @return The resources that make up this book.
 	 */
-    public ObservableMap<String, Resource> getResourcesMap()
+    public Map<String, Resource> getResourcesMap()
     {
         return resources;
     }
@@ -247,37 +269,16 @@ public class Resources implements Serializable {
     }
 	
 	/**
-	 * Sets the collection of Resources to the given collection of resources
-	 * 
-	 * @param resources
-	 */
-	public void set(Collection<Resource> resources) {
-		this.resources.clear();
-		addAll(resources);
-	}
-	
-	/**
 	 * Adds all resources from the given Collection of resources to the existing collection.
 	 * 
 	 * @param resources
 	 */
 	public void addAll(Collection<Resource> resources) {
 		for(Resource resource: resources) {
-			fixResourceHref(resource);
-			this.resources.put(resource.getHref(), resource);
+			add(resource);
 		}
 	}
 
-	/**
-	 * Sets the collection of Resources to the given collection of resources
-	 * 
-	 * @param resources A map with as keys the resources href and as values the Resources
-	 */
-	public void set(Map<String, Resource> resources) {
-		this.resources = FXCollections.observableMap(new HashMap<>(resources));
-	}
-	
-	
 	/**
 	 * First tries to find a resource with as id the given idOrHref, if that 
 	 * fails it tries to find one with the idOrHref as href.
@@ -532,34 +533,15 @@ public class Resources implements Serializable {
         return new String(array, 0, size - 1);  // lose trailing separator
     }
 
-    public ObservableList<Resource> getCssResources()
-    {
+    public ObservableList<Resource> getCssResources() {
         return cssResources;
     }
 
-    public void setCssResources(ObservableList<Resource> cssResources)
-    {
-        this.cssResources = cssResources;
-    }
-
-    public ObservableList<Resource> getFontResources()
-    {
+    public ObservableList<Resource> getFontResources() {
         return fontResources;
     }
 
-    public void setFontResources(ObservableList<Resource> fontResources)
-    {
-        this.fontResources = fontResources;
-    }
-
-    public ObservableList<Resource> getImageResources()
-    {
+    public ObservableList<Resource> getImageResources() {
         return imageResources;
     }
-
-    public void setImageResources(ObservableList<Resource> imageResources)
-    {
-        this.imageResources = imageResources;
-    }
-
 }

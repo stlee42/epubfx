@@ -190,8 +190,7 @@ public class Spine implements Serializable
      */
     public int getResourceIndex(Resource currentResource)
     {
-        if (currentResource == null)
-        {
+        if (currentResource == null) {
             return -1;
         }
         return getResourceIndex(currentResource.getHref());

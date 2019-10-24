@@ -392,8 +392,7 @@ public class Book implements Serializable
 
     public void setResources(Resources resources)
     {
-        resources.getResourcesMap().values().forEach(resource -> resource.hrefProperty().addListener((observable, oldValue, newValue) ->
-        {
+        resources.getResourcesMap().values().forEach(resource -> resource.hrefProperty().addListener((observable, oldValue, newValue) -> {
             renameResource(resource, oldValue, newValue);
         }));
         this.resources = resources;
@@ -444,7 +443,6 @@ public class Book implements Serializable
             href = "Styles/" + fileName;
             newResource.setHref(href);
             addResource(newResource);
-            getResources().getCssResources().add(newResource);
         }
         else if (MediaType.XHTML.equals(mediaType) || MediaType.XML.equals(mediaType))
         {
@@ -457,7 +455,6 @@ public class Book implements Serializable
             href = "Images/" + fileName;
             newResource.setHref(href);
             addResource(newResource);
-            getResources().getImageResources().add(newResource);
         }
         else if (MediaType.JAVASCRIPT.equals(mediaType))
         {
@@ -470,7 +467,6 @@ public class Book implements Serializable
             href = "Fonts/" + fileName;
             newResource.setHref(href);
             addResource(newResource);
-            getResources().getFontResources().add(newResource);
         }
         else
         {

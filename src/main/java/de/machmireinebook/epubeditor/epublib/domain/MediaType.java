@@ -67,10 +67,6 @@ public enum MediaType implements Serializable
 
     UNKNWON_MEDIATYPE("", "", DefaultResourceFactory.getInstance());
 
-    public boolean isBitmapImage()
-    {
-        return this.equals(JPG) || this.equals(PNG) || this.equals(GIF);
-    }
 
     public boolean isXML()
     {
@@ -82,13 +78,11 @@ public enum MediaType implements Serializable
         return isTTFFont() || isOpenTypeFont() ||  isWoffFont();
     }
 
-    public boolean isTTFFont()
-    {
+    public boolean isTTFFont() {
         return this.equals(TTF) || this.equals(TTF_1) ||  this.equals(TTF_2) || this.equals(TTF_RFC_8081) || this.equals(TTF_SINCE_3_2) || this.equals(TTF_2_SINCE_3_2);
     }
 
-    public boolean isOpenTypeFont()
-    {
+    public boolean isOpenTypeFont() {
         return this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(OPENTYPE_RFC_8081);
     }
 
@@ -100,6 +94,11 @@ public enum MediaType implements Serializable
     public boolean isImage()
     {
         return this.equals(JPG) || this.equals(PNG) || this.equals(GIF) || this.equals(SVG);
+    }
+
+    public boolean isBitmapImage()
+    {
+        return this.equals(JPG) || this.equals(PNG) || this.equals(GIF);
     }
 
     /**

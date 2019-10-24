@@ -829,7 +829,7 @@ public class BookBrowserManager
             textItem.getChildren().add(xhtmlItem);
         }
 
-        List<Resource> cssResources = book.getResources().getResourcesByMediaType(MediaType.CSS);
+        List<Resource> cssResources = book.getResources().getCssResources();
         cssResources.sort(new ResourceFilenameComparator());
         for (Resource cssResource : cssResources)
         {
@@ -847,11 +847,7 @@ public class BookBrowserManager
             fontsItem.getChildren().add(item);
         }
 
-        List<Resource> imageResources = book.getResources().getResourcesByMediaTypes(new MediaType[]{
-                MediaType.GIF,
-                MediaType.PNG,
-                MediaType.SVG,
-                MediaType.JPG});
+        List<Resource> imageResources = book.getResources().getImageResources();
         imageResources.sort(new ResourceFilenameComparator());
         for (Resource imageResource : imageResources)
         {
