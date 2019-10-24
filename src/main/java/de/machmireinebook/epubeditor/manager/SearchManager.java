@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import com.eaio.stringsearch.BoyerMooreHorspool;
 
 import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
@@ -163,13 +164,36 @@ public class SearchManager
                 logger.error("", e);
             }
         }
-        if (position > -1)
-        {
+
+        if (position > -1) {
             int length = queryString.length();
             result = Optional.of(new SearchResult(position, position + length, currentResource));
         }
-        else
-        {
+        else if (params.getRegion() == SearchRegion.ALL_RESOURCES) {
+            Book book = currentBook.getValue();
+            Optional<Resource> resourceOptional = book.getResources().getAll().stream()
+                    .dropWhile(resource -> resource != currentResource)
+                    .filter(resource -> resource == currentResource)
+                    .findFirst();
+
+            if (resourceOptional.isPresent()) {
+                result = findNext(queryString, resourceOptional.get(), 0, params);
+            } else {
+                result = Optional.empty();
+            }
+        }
+        else if (params.getRegion() == SearchRegion.ALL_XHTML_REOURCES) {
+            Book book = currentBook.getValue();
+            int index = book.getSpine().getResourceIndex(currentResource);
+            if (index + 1 < book.getSpine().getSpineReferences().size()) {
+                SpineReference reference = book.getSpine().getSpineReferences().get(index + 1);
+                Resource resource = reference.getResource();
+                result = findNext(queryString, resource, 0, params);
+            } else {
+                result = Optional.empty();
+            }
+        }
+        else {
             result = Optional.empty();
         }
         return result;
