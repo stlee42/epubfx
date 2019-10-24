@@ -59,7 +59,6 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
     ExecutorService taskExecutor = newWorkStealingPool();
 
-
     private CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
     private BooleanProperty canRedo = new SimpleBooleanProperty();

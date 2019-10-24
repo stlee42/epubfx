@@ -97,18 +97,25 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
         Optional<SearchManager.SearchResult> result = searchManager.findNext(searchStringTextField.getText(), editorManager.getCurrentSearchableResource(), cursorIndex, params);
         result.ifPresent((searchResult) -> {
-                CodeEditor usedEditor = editor;
                 if (searchResult.getResource() != editorManager.getCurrentSearchableResource()) {
                     editorManager.openFileInEditor(searchResult.getResource());
-                    usedEditor = editorManager.getCurrentEditor();
+                    CodeEditor newEditor = editorManager.getCurrentEditor();
+                    newEditor.stateProperty().addListener((observable, oldValue, newValue) -> {
+                        selectSearchResult(newEditor, searchResult);
+                    });
+                } else {
+                    selectSearchResult(editor, searchResult);
                 }
-                int fromIndex = searchResult.getBegin();
-                int toIndex = searchResult.getEnd();
-                usedEditor.select(fromIndex, toIndex);
-                String selectedText = usedEditor.getSelection();
-                logger.info("search result position: " + fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
             }
         );
+    }
+
+    private void selectSearchResult(CodeEditor usedEditor, SearchManager.SearchResult searchResult) {
+        int fromIndex = searchResult.getBegin();
+        int toIndex = searchResult.getEnd();
+        usedEditor.select(fromIndex, toIndex);
+        String selectedText = usedEditor.getSelection();
+        logger.info("search result position: " + fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
     }
 
     public void replaceNextAction()

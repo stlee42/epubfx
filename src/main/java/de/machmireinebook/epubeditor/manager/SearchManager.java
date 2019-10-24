@@ -172,8 +172,8 @@ public class SearchManager
         else if (params.getRegion() == SearchRegion.ALL_RESOURCES) {
             Book book = currentBook.getValue();
             Optional<Resource> resourceOptional = book.getResources().getAll().stream()
-                    .dropWhile(resource -> resource != currentResource)
-                    .filter(resource -> resource == currentResource)
+                    .dropWhile(resource -> resource != currentResource) //drop all resources before current resource
+                    .filter(resource -> resource != currentResource) //remain all resources after the current resource
                     .findFirst();
 
             if (resourceOptional.isPresent()) {
