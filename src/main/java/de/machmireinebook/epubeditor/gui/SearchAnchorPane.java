@@ -102,7 +102,6 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                     CodeEditor newEditor = editorManager.getCurrentEditor();
                     newEditor.stateProperty().addListener((observable, oldValue, newValue) -> {
                         selectSearchResult(newEditor, searchResult);
-                        newEditor.requestFocus();
                     });
                 } else {
                     selectSearchResult(editor, searchResult);
@@ -117,6 +116,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
         usedEditor.select(fromIndex, toIndex);
         String selectedText = usedEditor.getSelection();
         usedEditor.scrollTo(fromIndex);
+        usedEditor.requestFocus();
         logger.info("search result position: " + fromIndex + ", toIndex, "  + toIndex + ", selected Text: " + selectedText);
     }
 
