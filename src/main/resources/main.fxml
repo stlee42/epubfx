@@ -790,6 +790,17 @@
                                         </ImageView>
                                     </graphic>
                                 </Button>
+                                <Button fx:id="setHtmtlTitleButton" contentDisplay="TOP" mnemonicParsing="false" onAction="#setHtmtlTitleAction" text="Set Htmtl Title" wrapText="true">
+                                    <tooltip>
+                                        <Tooltip styleClass="white-tooltip" text="Sets the title in all html files" />
+                                    </tooltip>
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                                   preserveRatio="true">
+                                            <Image url="icons/title_tag.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
                             </nodes>
                         </RibbonGroup>
                         <RibbonGroup title="Table of Contents">

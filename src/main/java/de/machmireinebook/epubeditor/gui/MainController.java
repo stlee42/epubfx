@@ -41,6 +41,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -58,12 +59,12 @@ import javafx.stage.StageStyle;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.media.FindUnusedMediaFilesController;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.OpfNotReadableException;
@@ -73,19 +74,20 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.epub2.EpubReader;
 import de.machmireinebook.epubeditor.epublib.epub2.EpubWriter;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.javafx.StashableSplitPane;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
-import de.machmireinebook.epubeditor.preview.PreviewManager;
 import de.machmireinebook.epubeditor.manager.SearchManager;
 import de.machmireinebook.epubeditor.manager.TOCViewManager;
+import de.machmireinebook.epubeditor.media.FindUnusedMediaFilesController;
 import de.machmireinebook.epubeditor.media.InsertMediaController;
 import de.machmireinebook.epubeditor.preferences.PreferencesLanguageStorable;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 import de.machmireinebook.epubeditor.preferences.QuotationMark;
 import de.machmireinebook.epubeditor.preferences.ReaderDevice;
 import de.machmireinebook.epubeditor.preferences.StartupType;
+import de.machmireinebook.epubeditor.preview.PreviewManager;
 import de.machmireinebook.epubeditor.validation.ValidationManager;
 import de.machmireinebook.epubeditor.validation.ValidationMessage;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
@@ -99,6 +101,8 @@ import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
+    @FXML
+    private Button setHtmtlTitleButton;
     @FXML
     private Button removeUnusedMediaFilesButton;
     @FXML
@@ -405,6 +409,7 @@ public class MainController implements Initializable
         generateUuidButton.disableProperty().bind(currentBookProperty.isNull());
         createTocButton.disableProperty().bind(currentBookProperty.isNull());
         editTocButton.disableProperty().bind(currentBookProperty.isNull());
+        setHtmtlTitleButton.disableProperty().bind(currentBookProperty.isNull());
 
         saveButton.setDisable(true);
         undoButton.disableProperty().bind(isNoEditorBinding.or(Bindings.not(editorTabManager.canUndoProperty())));
@@ -1361,7 +1366,18 @@ public class MainController implements Initializable
     public void checkLinksButton() {
     }
 
-    public void removeUnusedMediaFilesAction(ActionEvent actionEvent) {
+    public void removeUnusedMediaFilesAction() {
         standardControllerFactory.createAndOpenStandardController("/find-unused-media-files.fxml", FindUnusedMediaFilesController.class);
+    }
+
+    public void setHtmtlTitleAction() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setHeaderText(null);
+        dialog.setTitle("Html Title");
+        dialog.setContentText("Html Title to set");
+        Optional<String> titleOptional = dialog.showAndWait();
+        titleOptional.ifPresent(title -> getCurrentBook().getSpine().getSpineReferences().stream()
+                .map(spineReference -> (XHTMLResource)spineReference.getResource())
+                .forEach(xhtmlResource -> xhtmlResource.setHtmlTitle(title)));
     }
 }
