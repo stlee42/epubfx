@@ -21,11 +21,12 @@ This project is in early stage, but some functions are working (with possible bu
 - inserting tables using configurable templates
 - inserting links to internal and external targets
 - Preview of xhtml file
-- basic search function
+- basic search function (currently working: search and replace in current file, search in current file, all files, all html files (only forward searching available))
 - creating toc ncx (epub 2) and nav (epub 3)
 - creating cover file by image
 - splitting files
 - renaming files
+- setting title of all xhtml file
 - check of ebook with official epub checker (not configurable yet)
 - opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
 - insert special symbols via dialog (typographical signs, special latin letters, greek alphabet, mathematical symbols, measurement unit signs)
@@ -94,6 +95,7 @@ The following software and frameworks are used in *SmoekerSchriever - epubfx*:
 * [RichTextFx](https://github.com/FXMisc/RichTextFX) for code editing  
 * [ControlsFx](https://github.com/controlsfx/controlsfx) for some ui components
 * [JDOM 2](http://jdom.org/) for parsing and output xml
+* [Blitz ebook framework](https://github.com/FriendsOfEpub/Blitz) generated css as part of templates, in future maybe support for creating book specific css per blitz and less compiler 
 
 
 
