@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import de.machmireinebook.epubeditor.epublib.Constants;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -106,20 +107,18 @@ public class XHTMLResource extends XMLResource
         return webViewPreparedData;
     }
 
-    public void setHtmlTitle(String title) {
+    public void setHtmlTitle(String title, EpubVersion version) {
         Document document = asNativeFormat();
-        Element root = document.getRootElement();
-        if (root != null) {
-            Element htmlElement = root.getChild("html");
-            if (htmlElement != null) {
-                Element headElement = htmlElement.getChild("head");
-                if (headElement != null) {
-                    Element titleElement = headElement.getChild("title");
-                    if (titleElement != null) {
-                        titleElement.setText(title);
-                    }
+        Element htmlElement = document.getRootElement();
+        if (htmlElement != null) {
+            Element headElement = htmlElement.getChild("head", Constants.NAMESPACE_XHTML);
+            if (headElement != null) {
+                Element titleElement = headElement.getChild("title", Constants.NAMESPACE_XHTML);
+                if (titleElement != null) {
+                    titleElement.setText(title);
                 }
-            }                        
+            }
         }
+        setData(XHTMLUtils.outputXHTMLDocument(document, version));
     }
 }

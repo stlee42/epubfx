@@ -1375,9 +1375,13 @@ public class MainController implements Initializable
         dialog.setHeaderText(null);
         dialog.setTitle("Html Title");
         dialog.setContentText("Html Title to set");
+        dialog.initOwner(stage);
         Optional<String> titleOptional = dialog.showAndWait();
-        titleOptional.ifPresent(title -> getCurrentBook().getSpine().getSpineReferences().stream()
+        titleOptional.ifPresent(title -> {
+            getCurrentBook().getSpine().getSpineReferences().stream()
                 .map(spineReference -> (XHTMLResource)spineReference.getResource())
-                .forEach(xhtmlResource -> xhtmlResource.setHtmlTitle(title)));
+                .forEach(xhtmlResource -> xhtmlResource.setHtmlTitle(title, getCurrentBook().getVersion()));
+            editorTabManager.refreshAll();
+        });
     }
 }
