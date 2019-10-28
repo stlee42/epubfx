@@ -1382,6 +1382,7 @@ public class MainController implements Initializable
                 .map(spineReference -> (XHTMLResource)spineReference.getResource())
                 .forEach(xhtmlResource -> xhtmlResource.setHtmlTitle(title, getCurrentBook().getVersion()));
             editorTabManager.refreshAll();
+            getCurrentBook().setBookIsChanged(true);
         });
     }
 }
