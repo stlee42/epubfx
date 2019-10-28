@@ -9,19 +9,19 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
-import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
-import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+
+import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * Generates an epub file. Not thread-safe, single use object.
@@ -54,7 +54,7 @@ public class EpubWriter
             writeContainer(resultStream);
             if (!book.isEpub3()) {
                 initTOCResource(book);
-            }
+            } 
             writeResources(book, resultStream);
             writePackageDocument(book, resultStream);
         }

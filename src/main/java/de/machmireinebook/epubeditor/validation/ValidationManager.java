@@ -25,17 +25,17 @@ import javafx.scene.input.MouseButton;
 
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.editor.EditorPosition;
 import org.controlsfx.dialog.ExceptionDialog;
 
-import com.adobe.epubcheck.api.EpubCheck;
-
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.EditorPosition;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
+
+import com.adobe.epubcheck.api.EpubCheck;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 
 /**
  * User: Michail Jungierek
@@ -170,7 +170,7 @@ public class ValidationManager {
             EpubCheck check = new EpubCheck(epubFile, report);
             check.validate();
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             logger.error("", e);
             throw e;

@@ -135,9 +135,9 @@
 
         <!-- epub / html / xml / css -->
         <dependency>
-            <groupId>org.idpf</groupId>
+            <groupId>org.w3c</groupId>
             <artifactId>epubcheck</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
