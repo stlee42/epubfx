@@ -81,7 +81,7 @@ public class EpubWriter
                 book.getResources().remove(currentTocResource.getHref());
             }
             book.getSpine().setTocResource(tocResource);
-            book.getResources().add(tocResource);
+            book.getResources().put(tocResource);
         }
         catch (Exception e)
         {

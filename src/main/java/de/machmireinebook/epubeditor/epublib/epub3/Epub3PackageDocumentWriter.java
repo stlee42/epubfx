@@ -29,8 +29,6 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.BOOK_ID_ID;
-import static de.machmireinebook.epubeditor.epublib.Constants.DEFAULT_NCX_HREF;
-import static de.machmireinebook.epubeditor.epublib.Constants.DEFAULT_NCX_ID;
 import static de.machmireinebook.epubeditor.epublib.Constants.NAMESPACE_OPF;
 
 
@@ -114,7 +112,9 @@ public class Epub3PackageDocumentWriter
     {
         Element spineElement = new Element(OPFTag.spine.getName(), NAMESPACE_OPF);
         //set toc ncx as attribute for compatibility with epub 2
-        spineElement.setAttribute(OPFAttribute.toc.getName(), book.getNcxResource().getId());
+        if (book.getNcxResource() != null) {
+            spineElement.setAttribute(OPFAttribute.toc.getName(), book.getNcxResource().getId());
+        }
         root.addContent(spineElement);
 
         if (book.getCoverPage() != null // there is a cover page
@@ -135,16 +135,10 @@ public class Epub3PackageDocumentWriter
         Element manifestElement = new Element(OPFTag.manifest.getName(), NAMESPACE_OPF);
         root.addContent(manifestElement);
 
-        Element ncxItemElement = new Element(OPFTag.item.getName(), NAMESPACE_OPF.getURI());
-        ncxItemElement.setAttribute(OPFAttribute.id.getName(), DEFAULT_NCX_ID);
-        ncxItemElement.setAttribute(OPFAttribute.href.getName(), DEFAULT_NCX_HREF);
-        ncxItemElement.setAttribute(OPFAttribute.media_type.getName(), MediaType.NCX.getName());
-        manifestElement.addContent(ncxItemElement);
-
         List<Resource> allResources = getAllResourcesSortById(book);
         for(Resource resource: allResources)
         {
-			writeItem(book, resource, manifestElement);
+			writeItem(resource, manifestElement);
 		}
     }
 
@@ -158,10 +152,9 @@ public class Epub3PackageDocumentWriter
     /**
      * Writes a resources as an item element
      */
-    private static void writeItem(Book book, Resource resource, Element manifestElement)
+    private static void writeItem(Resource resource, Element manifestElement)
     {
-        if (resource == null || (resource.getMediaType() == MediaType.NCX
-                        && book.getSpine().getTocResource() != null))
+        if (resource == null)
         {
             return;
         }

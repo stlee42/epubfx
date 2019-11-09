@@ -4,24 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
 import org.apache.commons.collections4.OrderedMap;
-import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import org.checkerframework.checker.units.qual.K;
 
 /**
  * All the resources that make up the book.
@@ -53,7 +47,7 @@ public class Resources implements Serializable {
 	 * @param resource the resource
 	 * @return the newly added resource
 	 */
-	public Resource add(Resource resource) {
+	public Resource put(Resource resource) {
 		fixResourceHref(resource);
 		fixResourceId(resource);
 		this.resources.put(resource.getHref(), resource);
@@ -275,7 +269,7 @@ public class Resources implements Serializable {
 	 */
 	public void addAll(Collection<Resource> resources) {
 		for(Resource resource: resources) {
-			add(resource);
+			put(resource);
 		}
 	}
 

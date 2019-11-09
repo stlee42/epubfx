@@ -1317,15 +1317,16 @@ public class MainController implements Initializable
         TocGenerator.TocGeneratorResult result = tocGenerator.createNcxFromNav();
         Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
 
+        Book book = getCurrentBook();
         for (Resource resource : allResourcesToRewrite.keySet())
         {
-            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), getCurrentBook().getVersion()));
+            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), book.getVersion()));
             editorTabManager.refreshEditorCode(resource);
         }
 
         bookBrowserManager.refreshBookBrowser();
         editorTabManager.refreshEditorCode(result.getTocResource());
-        getCurrentBook().setBookIsChanged(true);
+        book.setBookIsChanged(true);
     }
 
     public void createHtmlTocAction() {

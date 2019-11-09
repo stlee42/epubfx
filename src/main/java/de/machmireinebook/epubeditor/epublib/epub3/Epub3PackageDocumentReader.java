@@ -149,7 +149,7 @@ public class Epub3PackageDocumentReader
             String mediaOverlay = itemElement.getAttributeValue(ManifestItemAttribute.media_overlay.getName());
             resource.setMediaOverlay(mediaOverlay);
 
-            result.add(resource);
+            result.put(resource);
             idMapping.put(id, resource.getId());
         }
         return result;

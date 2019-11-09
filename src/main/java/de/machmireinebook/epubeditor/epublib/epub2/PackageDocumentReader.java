@@ -130,7 +130,7 @@ public class PackageDocumentReader
             String properties = itemElement.getAttributeValue(OPFAttribute.properties.getName());
             resource.setProperties(properties);
 
-            result.add(resource);
+            result.put(resource);
             idMapping.put(id, resource.getId());
         }
         return result;

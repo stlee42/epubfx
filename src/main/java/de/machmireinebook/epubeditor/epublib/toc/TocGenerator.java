@@ -486,6 +486,12 @@ public class TocGenerator
 
         Resource ncxResource = NCXDocument.createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getTableOfContents());
         book.setNcxResource(ncxResource);
+        book.getSpine().setTocResource(ncxResource);
+        //in epub3 it will not be recreated at saving the book as for epub2, because this overwrite the old one in resources
+        if (book.getVersion().isEpub3()) {
+            book.getResources().put(ncxResource);
+        }
+        book.refreshOpfResource();
 
         TocGeneratorResult result = new TocGeneratorResult(ncxResource, resourcesToRewrite);
         generateNcxResourcesToRewrite(tocEntries, result);

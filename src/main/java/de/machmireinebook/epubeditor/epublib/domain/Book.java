@@ -221,7 +221,7 @@ public class Book implements Serializable
      */
     public TocEntry addSection(String title, Resource resource)
     {
-        getResources().add(resource);
+        getResources().put(resource);
         TocEntry tocReference = tableOfContents.addTOCReference(new TocEntry(title, resource));
         if (spine.findFirstResourceById(resource.getId()) < 0)
         {
@@ -237,7 +237,7 @@ public class Book implements Serializable
 
     public SpineReference addSpineResource(Resource resource, Integer index)
     {
-        getResources().add(resource);
+        getResources().put(resource);
         SpineReference ref = null;
         if (spine.findFirstResourceById(resource.getId()) < 0)
         {
@@ -426,7 +426,7 @@ public class Book implements Serializable
                 }
             });
         }
-        resources.add(resource);
+        resources.put(resource);
         if (refreshOpf)
         {
             refreshOpfResource();
@@ -538,7 +538,7 @@ public class Book implements Serializable
         }
         if (!resources.containsByHref(coverPage.getHref()))
         {
-            resources.add(coverPage);
+            resources.put(coverPage);
         }
         if (isEpub3()) {
             getLandmarks().addReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, "Cover"));
@@ -575,7 +575,7 @@ public class Book implements Serializable
         }
         if (!resources.containsByHref(coverImage.getHref()))
         {
-            resources.add(coverImage);
+            resources.put(coverImage);
         }
         this.coverImage = coverImage;
     }
@@ -828,7 +828,7 @@ public class Book implements Serializable
     public void renameResource(Resource resource, String oldValue, String newValue)
     {
         Resource oldResource = resources.remove(oldValue); //unter altem namen löschen
-        Resource newResource = resources.add(resource); //unter neuem wieder hinzufügen
+        Resource newResource = resources.put(resource); //unter neuem wieder hinzufügen
 
         if (MediaType.CSS.equals(resource.getMediaType()))
         {

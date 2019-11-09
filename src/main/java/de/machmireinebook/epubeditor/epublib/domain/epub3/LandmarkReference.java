@@ -1,6 +1,9 @@
 package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.TitledResourceReference;
@@ -32,7 +35,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
          */
         INDEX("index", "Index"),
         GLOSSARY("glossary", "Glossar"),
-        ACKNOWLEDGEMENTS("acknowledgements", "Danksagung"),
+        ACKNOWLEDGEMENTS("acknowledgements", "Danksagung", "acknowledgments"),
         BIBLIOGRAPHY("bibliography", "Bibliografie"),
         COLOPHON("colophon", "Kolophon"),
         COPYRIGHT_PAGE("copyright-page", "Impressum"),
@@ -66,11 +69,13 @@ public class LandmarkReference extends TitledResourceReference implements Serial
 
         private String name;
         private String description;
+        private List<String> alternativeNames = new ArrayList<>();
 
-        Semantic(String name, String description)
+        Semantic(String name, String description, String... alternativeNames)
         {
             this.name = name;
             this.description = description;
+            this.alternativeNames.addAll(Arrays.asList(alternativeNames));
         }
 
         public String getName()
@@ -88,8 +93,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
             Semantic result = null;
             for (Semantic semantics : values())
             {
-                if (semantics.name.equalsIgnoreCase(name))
-                {
+                if (semantics.name.equalsIgnoreCase(name) || semantics.alternativeNames.contains(name.toLowerCase())) {
                     result = semantics;
                 }
             }

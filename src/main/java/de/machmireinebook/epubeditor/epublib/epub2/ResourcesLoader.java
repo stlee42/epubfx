@@ -32,7 +32,7 @@ public class ResourcesLoader {
 			if (resource.getMediaType() == MediaType.XHTML) {
 				resource.setInputEncoding(defaultHtmlEncoding);
 			}
-			result.add(resource);
+			result.put(resource);
 		}
 		return result;
 	}
