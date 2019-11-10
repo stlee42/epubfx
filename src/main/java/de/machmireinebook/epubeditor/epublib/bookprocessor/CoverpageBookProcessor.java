@@ -33,7 +33,7 @@ public class CoverpageBookProcessor implements BookProcessor
     public static int MAX_COVER_IMAGE_SIZE = 1000;
     private static final Logger log = Logger.getLogger(CoverpageBookProcessor.class);
     public static final String DEFAULT_COVER_PAGE_ID = "cover";
-    public static final String DEFAULT_COVER_PAGE_HREF = "Text/cover.html";
+    public static final String DEFAULT_COVER_PAGE_HREF = "Text/cover.xhtml";
     public static final String DEFAULT_COVER_IMAGE_ID = "cover-image";
     public static final String DEFAULT_COVER_IMAGE_HREF = "Images/cover.jpg";
 
@@ -176,7 +176,7 @@ public class CoverpageBookProcessor implements BookProcessor
                 "<body>\n" +
                 "  <div class=\"sgc-1\">\n" +
                 "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" viewBox=\"0 0 " + (long)width + " " + (long)height + "\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n" +
-                "      <image width=\"" + (long)width + "\" height=\"" + (long)height + "\"  xlink:href=\"/" + StringEscapeUtils.escapeHtml4(imageHref) + "\"></image>\n" +
+                "      <image width=\"" + (long)width + "\" height=\"" + (long)height + "\"  xlink:href=\"../" + StringEscapeUtils.escapeHtml4(imageHref) + "\"></image>\n" +
                 "    </svg>\n" +
                 "  </div>\n" +
                 "</body>\n" +

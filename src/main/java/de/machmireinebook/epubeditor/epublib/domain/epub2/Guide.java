@@ -1,4 +1,4 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.domain.epub2;
 
 import java.io.Serializable;
 import java.util.ArrayList;

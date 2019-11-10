@@ -62,6 +62,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
          * A page of content (e.g. "Chapter 1")
          */
         TEXT("text", "Text"),
+        BODYMATTER("bodymatter", "Start reading"),
         /**
          * human-readable page with title, author, publisher, and other metadata
          */
@@ -95,6 +96,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
             {
                 if (semantics.name.equalsIgnoreCase(name) || semantics.alternativeNames.contains(name.toLowerCase())) {
                     result = semantics;
+                    return result;
                 }
             }
             return result;
