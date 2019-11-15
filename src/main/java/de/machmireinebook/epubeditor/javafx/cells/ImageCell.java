@@ -38,7 +38,11 @@ public class ImageCell<S> extends TableCell<S, Image>
         }
         if (width != null)
         {
-            imageview.setFitWidth(width);
+            if (item != null && width > item.getWidth()) {
+                imageview.setFitWidth(item.getWidth());
+            } else {
+                imageview.setFitWidth(width);
+            }             
         }
         else
         {

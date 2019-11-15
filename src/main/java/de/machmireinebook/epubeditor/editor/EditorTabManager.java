@@ -133,6 +133,7 @@ public class EditorTabManager {
     private EpubEditorConfiguration configuration;
 
     private boolean openingEditorTab = false;
+    private boolean suppressNextScheduledRefresh = false;
     private boolean refreshAllInProgress = false;
     private boolean refreshAll = false;
 
@@ -560,8 +561,6 @@ public class EditorTabManager {
 
             tab.setContent((Node) editor);
             tab.setUserData(resource);
-            tabPane.getTabs().add(tab);
-            tabPane.getSelectionModel().select(tab);
 
             final String code = StringUtils.toEncodedString(resource.getData(), Charsets.toCharset(resource.getInputEncoding()));
             editor.stateProperty().addListener((observable, oldValue, newValue) -> {
@@ -573,6 +572,9 @@ public class EditorTabManager {
                     editor.setAbsoluteCursorPosition(0);
                     editor.requestFocus();
                     openingEditorTab = false;
+                    //openeing tab after code is set
+                    tabPane.getTabs().add(tab);
+                    tabPane.getSelectionModel().select(tab);
                 }
             });
 
@@ -597,8 +599,8 @@ public class EditorTabManager {
                         }
                         CodeEditor codeEditor = currentEditor.getValue();
                         if (codeEditor.getMediaType().equals(MediaType.XHTML)) {
-                            currentXHTMLResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
-                            currentXHTMLResource.get().prepareWebViewDocument(book.getVersion());
+                            currentXHTMLResource.getValue().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
+                            currentXHTMLResource.getValue().prepareWebViewDocument(book.getVersion());
                         }
                         else if (codeEditor.getMediaType().equals(MediaType.CSS)) {
                             currentCssResource.get().setData(codeEditor.getCode().getBytes(StandardCharsets.UTF_8));
@@ -625,10 +627,13 @@ public class EditorTabManager {
             codeArea.multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(1000))
                     .subscribe(plainTextChanges -> {
-                        logger.info("scheduled refresh task, one second after last change");
+                        if (suppressNextScheduledRefresh) {
+                            suppressNextScheduledRefresh = false;
+                            return;
+                        }
+                        logger.info("scheduled refresh task, one second after last change, resource: " + resource.getFileName());
                         Platform.runLater(() -> {
                             needsRefresh.setValue(true);
-                            needsRefresh.setValue(false);
                         });
                     });
             //snychronise caret position with web view
@@ -639,6 +644,7 @@ public class EditorTabManager {
                     pairOptional.ifPresent(xmlTagPair -> currentLineProperty.set(xmlTagPair.getTagParagraphIndex() + 1));
                 });
             }
+
             configuration.getMainWindow().getScene().setCursor(Cursor.DEFAULT);
         }
     }
@@ -845,8 +851,6 @@ public class EditorTabManager {
 
                     bookBrowserManager.refreshBookBrowser();
                     currentXHTMLResource.set((XHTMLResource) resource);
-                    needsRefresh.setValue(true);
-                    needsRefresh.setValue(false);
                 }
                 catch (IOException | JDOMException | ResourceDataException e) {
                     logger.error("", e);
@@ -886,7 +890,6 @@ public class EditorTabManager {
             }
         }
         needsRefresh.setValue(true);
-        needsRefresh.setValue(false);
     }
 
     public void totalRefreshPreview() {
@@ -988,6 +991,7 @@ public class EditorTabManager {
                 editor.setAbsoluteCursorPosition(0);
             }
         }
+        suppressNextScheduledRefresh = true;
         openingEditorTab = false;
     }
 

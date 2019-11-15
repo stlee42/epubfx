@@ -7,8 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
-
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -16,13 +14,14 @@ import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.editor.ElementPosition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventTarget;
 
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
+import de.machmireinebook.epubeditor.editor.ElementPosition;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
@@ -54,6 +53,7 @@ public class PreviewManager
             if (newValue) {
                 logger.info("getting reload event from needs refresh property");
                 webview.getEngine().reload();
+                editorManager.needsRefreshProperty().setValue(false);
             }
         });
 

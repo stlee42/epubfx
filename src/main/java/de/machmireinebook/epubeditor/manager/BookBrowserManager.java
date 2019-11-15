@@ -335,7 +335,8 @@ public class BookBrowserManager
         
         treeView.setOnEditCommit(event -> {
             logger.info("editing end for new value " + event.getNewValue());
-            editorManager.refreshAll();
+            Resource resource = event.getNewValue();
+            editorManager.refreshEditorCode(resource);
             editorManager.totalRefreshPreview();
             Book book = currentBookProperty().getValue();
             book.setBookIsChanged(true);
