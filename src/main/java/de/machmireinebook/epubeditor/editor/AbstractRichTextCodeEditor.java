@@ -221,15 +221,17 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
     }
 
     @Override
-    public void undo()
-    {
+    public void undo() {
+        int cursorPosition = getAbsoluteCursorPosition();
         codeArea.undo();
+        setAbsoluteCursorPosition(cursorPosition);
     }
 
     @Override
-    public void redo()
-    {
+    public void redo() {
+        int cursorPosition = getAbsoluteCursorPosition();
         codeArea.redo();
+        setAbsoluteCursorPosition(cursorPosition);
     }
 
     @Override
