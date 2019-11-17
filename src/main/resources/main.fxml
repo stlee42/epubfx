@@ -568,15 +568,15 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="nonBreakingSpaceButton" mnemonicParsing="false" onAction="#nonBreakingSpaceButtonAction" styleClass="square-button">
+                                    <Button fx:id="brButton" mnemonicParsing="false" onAction="#brButtonAction" styleClass="square-button">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
-                                                <Image url="icons/icons8_Add_White_Space_96px_1.png"/>
+                                                <Image url="icons/icons8_Down_Left_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Insert non breaking space" />
+                                            <Tooltip styleClass="white-tooltip" text="Insert html break &lt;br/&gt;" />
                                         </tooltip>
                                     </Button>
                                 </Column>
@@ -592,15 +592,15 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="hrButton" mnemonicParsing="false" onAction="#hrButtonAction" styleClass="square-button">
+                                    <Button fx:id="nonBreakingSpaceButton" mnemonicParsing="false" onAction="#nonBreakingSpaceButtonAction" styleClass="square-button">
                                         <graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
-                                                <Image url="icons/icons8_Horizontal_Line_96px.png"/>
+                                                <Image url="icons/icons8_Add_White_Space_96px_1.png"/>
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Insert horizontal line" />
+                                            <Tooltip styleClass="white-tooltip" text="Insert non breaking space" />
                                         </tooltip>
                                     </Button>
                                 </Column>
@@ -613,6 +613,30 @@
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
                                                 <Image url="icons/icons8_Underline_96px_1.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                    </Button>
+                                    <Button fx:id="hrButton" mnemonicParsing="false" onAction="#hrButtonAction" styleClass="square-button">
+                                        <graphic>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Horizontal_Line_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert horizontal line &lt;hr/&gt;" />
+                                        </tooltip>
+                                    </Button>
+                                </Column>
+                                <Column>
+                                    <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction" styleClass="square-button">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with strike through tags &lt;s&gt;&lt;/s&gt;" />
+                                        </tooltip>
+                                        <graphic>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Strikethrough_96px.png"/>
                                             </ImageView>
                                         </graphic>
                                     </Button>
@@ -629,24 +653,6 @@
                                     </Button>
                                 </Column>
                                 <Column>
-                                    <Button fx:id="strikeButton" mnemonicParsing="false" onAction="#strikeButtonAction" styleClass="square-button">
-                                        <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Surround the selection with strike through tags &lt;s&gt;&lt;/s&gt;" />
-                                        </tooltip>
-                                        <graphic>
-                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
-                                                       preserveRatio="true">
-                                                <Image url="icons/icons8_Strikethrough_96px.png"/>
-                                            </ImageView>
-                                        </graphic>
-                                    </Button>
-                                    <Button fx:id="halfCharacterButton" mnemonicParsing="false" onAction="#halfCharacterButtonAction" styleClass="letter-button" text="½">
-                                        <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Insert the character for a half" />
-                                        </tooltip>
-                                    </Button>
-                                </Column>
-                                <Column>
                                     <Button fx:id="subscriptButton" mnemonicParsing="false" onAction="#subscriptButtonAction" styleClass="square-button">
                                         <tooltip>
                                             <Tooltip styleClass="white-tooltip" text="Surround the selection with subscript tags &lt;sub&gt;&lt;/sub&gt;" />
@@ -658,9 +664,9 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="quarterCharacterButton" mnemonicParsing="false" onAction="#quarterCharacterButtonAction" styleClass="letter-button" text="¼">
+                                    <Button fx:id="halfCharacterButton" mnemonicParsing="false" onAction="#halfCharacterButtonAction" styleClass="letter-button" text="½">
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Insert the character for a quarter" />
+                                            <Tooltip styleClass="white-tooltip" text="Insert the character for a half" />
                                         </tooltip>
                                     </Button>
                                 </Column>
@@ -676,9 +682,9 @@
                                             </ImageView>
                                         </graphic>
                                     </Button>
-                                    <Button fx:id="threeQuarterCharacterButton" mnemonicParsing="false" onAction="#threeQuarterCharacterButtonAction" styleClass="letter-button" text="¾">
+                                    <Button fx:id="quarterCharacterButton" mnemonicParsing="false" onAction="#quarterCharacterButtonAction" styleClass="letter-button" text="¼">
                                         <tooltip>
-                                            <Tooltip styleClass="white-tooltip" text="Insert the character for three quarter" />
+                                            <Tooltip styleClass="white-tooltip" text="Insert the character for a quarter" />
                                         </tooltip>
                                     </Button>
                                 </Column>
@@ -693,6 +699,11 @@
                                                 <Image url="icons/icons8_Uppercase_96px.png"/>
                                             </ImageView>
                                         </graphic>
+                                    </Button>
+                                    <Button fx:id="threeQuarterCharacterButton" mnemonicParsing="false" onAction="#threeQuarterCharacterButtonAction" styleClass="letter-button" text="¾">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip" text="Insert the character for three quarter" />
+                                        </tooltip>
                                     </Button>
                                 </Column>
                                 <Column>

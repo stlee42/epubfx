@@ -116,6 +116,8 @@ public class MainController implements Initializable
     @FXML
     private Label previewWidthLabel;
     @FXML
+    private Button brButton;
+    @FXML
     private Button nonBreakingSpaceButton;
     @FXML
     private Button hrButton;
@@ -299,6 +301,7 @@ public class MainController implements Initializable
     private List<MenuItem> recentFilesMenuItems = new ArrayList<>();
     private Stage stage;
     private StandardControllerFactory standardControllerFactory;
+    private Path lastFilePath;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -396,6 +399,7 @@ public class MainController implements Initializable
         rightAlignButton.disableProperty().bind(isNoXhtmlEditorBinding);
         justifyButton.disableProperty().bind(isNoXhtmlEditorBinding);
         ellipsisButton.disableProperty().bind(isNoXhtmlEditorBinding);
+        brButton.disableProperty().bind(isNoXhtmlEditorBinding);
         nonBreakingSpaceButton.disableProperty().bind(isNoXhtmlEditorBinding);
         hrButton.disableProperty().bind(isNoXhtmlEditorBinding);
         halfCharacterButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -607,7 +611,7 @@ public class MainController implements Initializable
 
     public Book getCurrentBook()
     {
-        return currentBookProperty.get();
+        return currentBookProperty.getValue();
     }
 
     public ObjectProperty<Book> currentBookProperty()
@@ -685,11 +689,15 @@ public class MainController implements Initializable
     {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose Files to Insert");
+        if (lastFilePath != null) {
+            chooser.setInitialDirectory(lastFilePath.toFile());
+        }
         List<File> files = chooser.showOpenMultipleDialog(stage);
         if (files != null)
         {
             for (File file : files)
             {
+                lastFilePath = file.toPath().getParent();
                 MediaType mediaType = MediaType.getByFileName(file.getName());
                 String href;
                 Book book = currentBookProperty.getValue();
@@ -938,43 +946,43 @@ public class MainController implements Initializable
     public void h1ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h1");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void h2ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h2");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void h3ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h3");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void h4ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h4");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void h5ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h5");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void h6ButtonAction(ActionEvent actionEvent)
     {
         editorTabManager.surroundParagraphWithTag("h6");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void paragraphButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("p");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void quotationMarksButtonAction()
@@ -983,7 +991,7 @@ public class MainController implements Initializable
         logger.info("select quotation mark " + selectedQuotationMark);
         QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
         editorTabManager.surroundSelection(quotationMark.getLeft(), quotationMark.getRight());
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void singleQuotationMarksButtonAction()
@@ -992,55 +1000,60 @@ public class MainController implements Initializable
         logger.info("select quotation mark " + selectedQuotationMark);
         QuotationMark quotationMark = QuotationMark.findByDescription(selectedQuotationMark);
         editorTabManager.surroundSelection(quotationMark.getSingleLeft(), quotationMark.getSingleRight());
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void blockQuoteButtonAction() {
         editorTabManager.surroundSelectionWithTag("blockquote");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void boldButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("b");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void italicButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("i");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
+    }
+
+    public void brButtonAction(ActionEvent actionEvent) {
+        editorTabManager.insertAtCursorPositionOrReplaceSelection("<br />");
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void nonBreakingSpaceButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("&#160;");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void hrButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("<hr />");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void ellipsisButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("…");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void halfCharacterButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("½");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
 
     public void quarterCharacterButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("¼");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void threeQuarterCharacterButtonAction() {
         editorTabManager.insertAtCursorPositionOrReplaceSelection("¾");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
 
@@ -1066,60 +1079,60 @@ public class MainController implements Initializable
 
         String olString = "<" + tagName + ">\n" + tab + "<li></li>\n</" + tagName + ">";
         editorTabManager.insertAtCursorPosition(olString, 9 + tabOffset);
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void underlineButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("u");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void strikeButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("s");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void subscriptButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("sub");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void superscriptButtonAction()
     {
         editorTabManager.surroundSelectionWithTag("sup");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void alignLeftButtonAction()
     {
         editorTabManager.insertStyle("text-align", "left");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void centerButtonAction()
     {
         editorTabManager.insertStyle("text-align", "center");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void rightAlignButtonAction()
     {
         editorTabManager.insertStyle("text-align", "right");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void justifyButtonAction()
     {
         editorTabManager.insertStyle("text-align", "justify");
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void undoButtonAction()
     {
-        CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
+        CodeEditor currentEditor = editorTabManager.getCurrentEditor();
         if (currentEditor != null)
         {
             currentEditor.undo();
@@ -1128,7 +1141,7 @@ public class MainController implements Initializable
 
     public void redoButtonAction()
     {
-        CodeEditor currentEditor = editorTabManager.currentEditorProperty().get();
+        CodeEditor currentEditor = editorTabManager.getCurrentEditor();
         if (currentEditor != null)
         {
             currentEditor.redo();
@@ -1138,7 +1151,7 @@ public class MainController implements Initializable
     public void cutButtonAction()
     {
         editorTabManager.cutSelection();
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void copyButtonAction()
@@ -1150,7 +1163,7 @@ public class MainController implements Initializable
     public void pasteButtonAction()
     {
         editorTabManager.pasteFromClipboard();
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void searchReplaceButtonAction()
@@ -1165,7 +1178,7 @@ public class MainController implements Initializable
         boolean success = editorTabManager.splitXHTMLFile();
         if (success)
         {
-            currentBookProperty.get().setBookIsChanged(true);
+            getCurrentBook().setBookIsChanged(true);
         }
     }
 
@@ -1215,11 +1228,13 @@ public class MainController implements Initializable
     public void increaseIndentButtonAction()
     {
         editorTabManager.increaseIndent();
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void decreaseIndentButtonAction()
     {
         editorTabManager.decreaseIndent();
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void insertTableButtonAction() {
@@ -1239,7 +1254,7 @@ public class MainController implements Initializable
     {
         Book minimalBook = Book.createMinimalBook();
         currentBookProperty.set(minimalBook);
-        currentBookProperty.get().setBookIsChanged(false);
+        getCurrentBook().setBookIsChanged(false);
     }
 
     public void previewZoomIn()
@@ -1310,7 +1325,7 @@ public class MainController implements Initializable
         book.getMetadata().generateNewUuid();
         bookBrowserManager.refreshOpf();
         bookBrowserManager.refreshNcx();
-        currentBookProperty.get().setBookIsChanged(true);
+        getCurrentBook().setBookIsChanged(true);
     }
 
     public void createNcxAction() {

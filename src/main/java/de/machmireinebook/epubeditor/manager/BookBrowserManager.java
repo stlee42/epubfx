@@ -97,6 +97,7 @@ public class BookBrowserManager
     private TreeItem<Resource> cssItem;
     private TreeItem<Resource> imagesItem;
     private TreeItem<Resource> fontsItem;
+    private TreeItem<Resource> miscContentItem;
     private TreeItem<Resource> rootItem;
 
     private TreeView<Resource> treeView;
@@ -982,6 +983,39 @@ public class BookBrowserManager
                 break;
             }
         }
+    }
+
+    public void selectTreeItem(Resource resource)
+    {
+        if (resource == null) {
+            return;
+        }
+        boolean found = findAndSelectChildItem(cssItem, resource);
+        if (!found) {
+            found = findAndSelectChildItem(textItem, resource);
+        }
+        if (!found) {
+            found = findAndSelectChildItem(cssItem, resource);
+        }
+        if (!found) {
+            found = findAndSelectChildItem(fontsItem, resource);
+        }
+        if (!found) {
+            findAndSelectChildItem(miscContentItem, resource);
+        }
+    }
+
+    private boolean findAndSelectChildItem(TreeItem<Resource> parent, Resource resource) {
+        List<TreeItem<Resource>> childrenItems = parent.getChildren();
+        for (TreeItem<Resource> item : childrenItems) {
+            if (item.getValue().equals(resource)) {
+                parent.setExpanded(true);
+                treeView.getSelectionModel().clearSelection();
+                treeView.getSelectionModel().select(item);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setEditorManager(EditorTabManager editorManager)

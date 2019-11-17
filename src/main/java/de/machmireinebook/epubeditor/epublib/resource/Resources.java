@@ -38,6 +38,7 @@ public class Resources implements Serializable {
 	private ObservableList<Resource> cssResources = FXCollections.observableList(new ArrayList<>());
     private ObservableList<Resource> fontResources = FXCollections.observableList(new ArrayList<>());
     private ObservableList<Resource> imageResources = FXCollections.observableList(new ArrayList<>());
+	private ObservableList<Resource> miscResources = FXCollections.observableList(new ArrayList<>());
 
 	/**
 	 * Adds a resource to the resources.
@@ -57,6 +58,9 @@ public class Resources implements Serializable {
 			imageResources.add(resource);
 		} else if (resource.getMediaType().isFont() && !fontResources.contains(resource)) {
 			fontResources.add(resource);
+		} else if (resource.getMediaType() != MediaType.XHTML && resource.getMediaType() != MediaType.OPF
+				&& resource.getMediaType() != MediaType.NCX) {
+		 	miscResources.add(resource);
 		}
 		return resource;
 	}
@@ -185,6 +189,7 @@ public class Resources implements Serializable {
 			cssResources.remove(resource);
 			fontResources.remove(resource);
 			imageResources.remove(resource);
+			miscResources.remove(resource);
 		}
 		return resource;
 	}
@@ -194,6 +199,7 @@ public class Resources implements Serializable {
 		cssResources.remove(resource);
 		fontResources.remove(resource);
 		imageResources.remove(resource);
+		miscResources.remove(resource);
 		return resource;
     }
 
@@ -538,4 +544,8 @@ public class Resources implements Serializable {
     public ObservableList<Resource> getImageResources() {
         return imageResources;
     }
+
+	public ObservableList<Resource> getMiscResources() {
+		return miscResources;
+	}
 }

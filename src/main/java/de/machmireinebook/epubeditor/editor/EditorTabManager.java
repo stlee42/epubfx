@@ -498,6 +498,15 @@ public class EditorTabManager {
         });
         contextMenu.getItems().add(item3);
 
+        SeparatorMenuItem separatorItem = new SeparatorMenuItem();
+        contextMenu.getItems().add(separatorItem);
+
+        MenuItem item4 = new MenuItem("Show in Book browser");
+        item4.setOnAction(e -> {
+            bookBrowserManager.selectTreeItem((Resource) tab.getUserData());
+        });
+        contextMenu.getItems().add(item4);
+
         return contextMenu;
     }
 
@@ -589,10 +598,13 @@ public class EditorTabManager {
             codeArea.multiPlainChanges()
                     .successionEnds(java.time.Duration.ofMillis(500))
                     .subscribe(plainTextChanges -> {
-                        logger.info("subscribing eventstream");
+                        logger.info("eventstream arrived");
                         //the openingEditorTab and refreshAllInProgress shows that a code change is in progress, dont reset it here,
                         // the other two that code changes are done, reset that the next changes are executed
                         if (openingEditorTab || refreshAllInProgress || editor.isChangingCode()  || refreshAll) {
+                            logger.info("ignoring event possible reasons, openingEditorTab: " + openingEditorTab
+                                    + ", refreshAllInProgress: " + refreshAllInProgress + ",  editor.isChangingCode(): " +  editor.isChangingCode()
+                                    + ", refreshAll: " + refreshAll);
                             editor.resetChangingCode();
                             refreshAll = false;
                             return;
@@ -629,6 +641,7 @@ public class EditorTabManager {
                     .subscribe(plainTextChanges -> {
                         if (suppressNextScheduledRefresh) {
                             suppressNextScheduledRefresh = false;
+                            logger.info("suppressNextScheduledRefresh");
                             return;
                         }
                         logger.info("scheduled refresh task, one second after last change, resource: " + resource.getFileName());
@@ -991,7 +1004,9 @@ public class EditorTabManager {
                 editor.setAbsoluteCursorPosition(0);
             }
         }
-        suppressNextScheduledRefresh = true;
+        if (resourceToUpdate.getMediaType() == MediaType.XHTML) {
+            suppressNextScheduledRefresh = true;
+        }
         openingEditorTab = false;
     }
 
