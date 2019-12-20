@@ -76,7 +76,7 @@ public class Book implements Serializable
     private Resource appleDisplayOptions;
 
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
-    private Path physicalFileName;
+    private ObjectProperty<Path> physicalFileNameProperty = new SimpleObjectProperty<>(this, "physicalFileName");
 
     public Book()
     {
@@ -797,14 +797,18 @@ public class Book implements Serializable
         this.opfResource.set(opfResource);
     }
 
+    public ObjectProperty<Path> physicalFileNameProperty() {
+        return physicalFileNameProperty;
+    }
+
     public Path getPhysicalFileName()
     {
-        return physicalFileName;
+        return physicalFileNameProperty.getValue();
     }
 
     public void setPhysicalFileName(Path physicalFileName)
     {
-        this.physicalFileName = physicalFileName;
+        this.physicalFileNameProperty.setValue(physicalFileName);
     }
 
     public int getFixedLayoutWidth()

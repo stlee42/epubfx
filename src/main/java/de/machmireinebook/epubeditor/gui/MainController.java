@@ -60,6 +60,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import org.jdom2.Document;
+import org.jetbrains.annotations.NotNull;
 
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
@@ -325,32 +326,25 @@ public class MainController implements Initializable
                 .stage(stage)
                 .build();
 
-        currentBookProperty.addListener((observable, oldValue, newValue) -> {
+        currentBookProperty.addListener((observable, oldValue, newBook) -> {
             epubFilesTabPane.getTabs().clear();
 
             editorTabManager.reset();
-            editorTabManager.setBook(newValue);
+            editorTabManager.setBook(newBook);
             previewManager.reset();
             saveButton.disableProperty().unbind();
             createHtmlTocButton.disableProperty().unbind();
             createNcxButton.disableProperty().unbind();
             validateEpubButton.disableProperty().unbind();
 
-            saveButton.disableProperty().bind(newValue.bookIsChangedProperty().not());
+            saveButton.disableProperty().bind(newBook.bookIsChangedProperty().not());
             createHtmlTocButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2).not());
             createNcxButton.disableProperty().bind(Bindings.equal(currentBookProperty.get().versionProperty(), EpubVersion.VERSION_2));
-            String stageTitle;
-            if (newValue.getVersion() != null) {
-                stageTitle = (newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - EPUB " + newValue.getVersion().asString() + " - SmoekerSchriever";
-            }
-            else
-            {
-                stageTitle = (newValue.getPhysicalFileName() != null ? newValue.getPhysicalFileName().getFileName().toString() : "empty.epub")
-                        + " - SmoekerSchriever";
-            }
-            stage.setTitle(stageTitle);
-            newValue.bookIsChangedProperty().addListener((observable1, oldValue1, newValue1) -> {
+
+            newBook.physicalFileNameProperty().addListener((physicalFileNameProperty, oldFileName, newFileName) -> setStageTitle(newBook));
+            String stageTitle = setStageTitle(newBook);
+
+            newBook.bookIsChangedProperty().addListener((observable1, oldValue1, newValue1) -> {
                 String currentTitle;
                 if (newValue1) {
                     currentTitle = "* " + stageTitle;
@@ -550,6 +544,21 @@ public class MainController implements Initializable
             dividers.get(1).setPosition(newValue.getWidth());
             previewManager.changePreviewWidth(newValue.getWidth());
         });
+    }
+
+    @NotNull
+    private String setStageTitle(Book book) {
+        String stageTitle;
+        if (book.getVersion() != null) {
+            stageTitle = (book.getPhysicalFileName() != null ? book.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                    + " - EPUB " + book.getVersion().asString() + " - SmoekerSchriever";
+        }
+        else {
+            stageTitle = (book.getPhysicalFileName() != null ? book.getPhysicalFileName().getFileName().toString() : "empty.epub")
+                    + " - SmoekerSchriever";
+        }
+        stage.setTitle(stageTitle);
+        return stageTitle;
     }
 
     public void initBook() {
