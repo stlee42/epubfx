@@ -12,13 +12,13 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import org.apache.log4j.Logger;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /**
  * User: mjungierek
@@ -46,7 +46,7 @@ public class EpubHttpHandler implements HttpHandler
             String uri = requestURI.toString();
             uri = URLDecoder.decode(uri, StandardCharsets.UTF_8);
             uri = uri.replaceFirst("/", "");
-            Resource resource = book.get().getResources().getByHref(uri);
+            Resource<?> resource = book.get().getResources().getByHref(uri);
             if (resource != null)
             {
                 MediaType mediaType = resource.getMediaType();

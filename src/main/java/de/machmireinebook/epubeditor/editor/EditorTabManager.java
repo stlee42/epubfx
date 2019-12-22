@@ -846,7 +846,7 @@ public class EditorTabManager {
                     List<Content> originalHeadContent = xhtmlCodeEditor.getHeadContent();
 
                     byte[] frontPart = originalCode.substring(0, index).getBytes(StandardCharsets.UTF_8);
-                    Resource oldResource = currentXHTMLResource.getValue();
+                    Resource<?> oldResource = currentXHTMLResource.getValue();
                     oldResource.setData(frontPart);
                     HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                     processor.processResource(oldResource, book);
@@ -854,7 +854,7 @@ public class EditorTabManager {
 
                     byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);
-                    Resource resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
+                    Resource<?> resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
                     byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent, book.getVersion());
                     resource.setData(backPartXHTML);
 

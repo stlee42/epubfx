@@ -18,7 +18,9 @@
           <root url="jar://$MODULE_DIR$/lib/richtextfx-fat-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../RichTextFX/richtextfx/src/main/java" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:13" level="project" />

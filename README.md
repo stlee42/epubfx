@@ -86,9 +86,9 @@ Tabs:
 
 ## Credits
 The following software and frameworks are used in *SmoekerSchriever - epubfx*:
-* Application icon: Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/"             title="Flaticon">www.flaticon.com</a>
+* Application icon: Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
 * Icons by [Icons8](https://icons8.com)
-* [RibbonFx](https://pixelduke.com/fxribbon/) as ui copmponent 
+* [RibbonFx](https://pixelduke.com/fxribbon/) as ui component 
 * [languagetool](http://languagetool.org) for spell checking
 * [htmlcleaner](https://sourceforge.net/projects/htmlcleaner/) for repair and importing (x)html files
 * [PreferencesFX](https://github.com/dlsc-software-consulting-gmbh/PreferencesFX) for editing, storing and loading preferences

@@ -26,6 +26,34 @@
     src: url('../fonts/SourceCodePro-Bold.ttf');
 }
 
+@font-face {
+    font-family: "Victor Mono";
+    font-weight:normal;
+    font-style:normal;
+    src: url('../fonts/VictorMono-Regular.otf');
+}
+
+@font-face {
+    font-family: "Victor Mono";
+    font-weight:normal;
+    font-style:italic;
+    src: url('../fonts/VictorMono-Oblique.otf');
+}
+
+@font-face {
+    font-family: "Victor Mono";
+    font-weight:bold;
+    font-style:italic;
+    src: url('../fonts/VictorMono-BoldOblique.otf');
+}
+
+@font-face {
+    font-family: "Victor Mono";
+    font-weight:bold;
+    font-style:normal;
+    src: url('../fonts/VictorMono-Bold.otf');
+}
+
 .code-area {
     -fx-font-family: "Source Code Pro", Consolas, monospace;
 }

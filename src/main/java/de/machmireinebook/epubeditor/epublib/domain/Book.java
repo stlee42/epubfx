@@ -239,6 +239,7 @@ public class Book implements Serializable
 
     public SpineReference addSpineResource(Resource resource, Integer index)
     {
+        resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
         getResources().put(resource);
         SpineReference ref = null;
         if (spine.findFirstResourceById(resource.getId()) < 0)
@@ -402,12 +403,12 @@ public class Book implements Serializable
     }
 
 
-    public void addResource(Resource resource)
+    public void addResource(Resource<?> resource)
     {
         addResource(resource, true);
     }
 
-    public void addResource(Resource resource, boolean refreshOpf)
+    public void addResource(Resource<?> resource, boolean refreshOpf)
     {
         resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
 
@@ -831,10 +832,10 @@ public class Book implements Serializable
         this.fixedLayoutHeight = fixedLayoutHeight;
     }
 
-    public void renameResource(Resource resource, String oldValue, String newValue)
+    public void renameResource(Resource<?> resource, String oldValue, String newValue)
     {
-        Resource oldResource = resources.remove(oldValue); //unter altem namen löschen
-        Resource newResource = resources.put(resource); //unter neuem wieder hinzufügen
+        Resource<?> oldResource = resources.remove(oldValue); //unter altem namen löschen
+        Resource<?> newResource = resources.put(resource); //unter neuem wieder hinzufügen
 
         if (MediaType.CSS.equals(resource.getMediaType()))
         {
