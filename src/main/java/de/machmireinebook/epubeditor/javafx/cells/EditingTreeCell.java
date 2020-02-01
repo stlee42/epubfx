@@ -48,7 +48,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
             return;
         }
         super.startEdit();
-        if(textField == null )
+        if(textField == null)
         {
             createTextField();
         }

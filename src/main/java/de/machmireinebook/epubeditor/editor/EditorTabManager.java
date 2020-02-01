@@ -99,10 +99,10 @@ public class EditorTabManager {
     private ObjectProperty<CodeEditor> currentEditor = new SimpleObjectProperty<>();
     //getrennte Verwaltung der current resource für html und css, da der Previewer auf der html property lauscht und
     // wenn ein css bearbeitet wird, das letzte html-doument weiterhin im previewer angezeigt werden soll
-    private ReadOnlyObjectWrapper<Resource> currentSearchableResource = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<Resource<?>> currentSearchableResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<XHTMLResource> currentXHTMLResource = new ReadOnlyObjectWrapper<>();
     private ReadOnlyObjectWrapper<CSSResource> currentCssResource = new ReadOnlyObjectWrapper<>();
-    private ReadOnlyObjectWrapper<Resource> currentXMLResource = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<Resource<?>> currentXMLResource = new ReadOnlyObjectWrapper<>();
     private Var<Boolean> needsRefresh = Var.newSimpleVar(false);
     private SimpleBooleanProperty currentEditorIsXHTML = new SimpleBooleanProperty();
     private SimpleBooleanProperty canUndo = new SimpleBooleanProperty();
@@ -230,29 +230,21 @@ public class EditorTabManager {
         contextMenuXHTML.getItems().add(separatorItem);
 
         MenuItem itemFormatHTML = new MenuItem("Format HTML");
-        itemFormatHTML.setOnAction(e -> {
-            formatHtml();
-        });
+        itemFormatHTML.setOnAction(e -> formatHtml());
         contextMenuXHTML.getItems().add(itemFormatHTML);
 
         MenuItem itemRepairHTML = new MenuItem("Repair and format HTML");
-        itemRepairHTML.setOnAction(e -> {
-            repairHTML();
-        });
+        itemRepairHTML.setOnAction(e -> repairHTML());
         contextMenuXHTML.getItems().add(itemRepairHTML);
 
         MenuItem itemUnescapeHTML = new MenuItem("Unescape HTML");
-        itemUnescapeHTML.setOnAction(e -> {
-            unescapeHTML();
-        });
+        itemUnescapeHTML.setOnAction(e -> unescapeHTML());
         contextMenuXHTML.getItems().add(itemUnescapeHTML);
 
         contextMenuXHTML.getItems().add(separatorItem);
 
         MenuItem openInExternalBrowserItem = new MenuItem("Open in external Browser");
-        openInExternalBrowserItem.setOnAction(e -> {
-            openInExternalBrowser(currentEditor);
-        });
+        openInExternalBrowserItem.setOnAction(e -> openInExternalBrowser(currentEditor));
         contextMenuXHTML.getItems().add(openInExternalBrowserItem);
 
         //XML menu
@@ -662,18 +654,18 @@ public class EditorTabManager {
         }
     }
 
-    public void closeTab(Resource resource) {
+    public void closeTab(Resource<?> resource) {
         List<Tab> tabs =  tabPane.getTabs();
         tabs.stream().filter(tab -> tab.getUserData() == resource)
                 .findFirst()
                 .ifPresent(tab -> tabPane.getTabs().remove(tab));
     }
 
-    public Resource getCurrentSearchableResource() {
+    public Resource<?> getCurrentSearchableResource() {
         return currentSearchableResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentSearchableResourceProperty() {
+    public ReadOnlyObjectProperty<Resource<?>> currentSearchableResourceProperty() {
         return currentSearchableResource.getReadOnlyProperty();
     }
 
@@ -685,7 +677,7 @@ public class EditorTabManager {
         return currentXHTMLResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentCssResource() {
+    public Resource<?> getCurrentCssResource() {
         return currentCssResource.get();
     }
 
@@ -693,11 +685,11 @@ public class EditorTabManager {
         return currentCssResource.getReadOnlyProperty();
     }
 
-    public Resource getCurrentXMLResource() {
+    public Resource<?> getCurrentXMLResource() {
         return currentXMLResource.get();
     }
 
-    public ReadOnlyObjectProperty<Resource> currentXMLResourceProperty() {
+    public ReadOnlyObjectProperty<Resource<?>> currentXMLResourceProperty() {
         return currentXMLResource.getReadOnlyProperty();
     }
 
@@ -981,7 +973,7 @@ public class EditorTabManager {
         CodeEditor previousCodeEditor = currentEditor.get();
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            Resource resource = (Resource) tab.getUserData();
+            Resource<?> resource = (Resource<?>) tab.getUserData();
             if (tab.getContent() instanceof CodeEditor) {
                 CodeEditor editor = (CodeEditor) tab.getContent();
                 currentEditor.setValue(editor);
@@ -993,11 +985,11 @@ public class EditorTabManager {
         refreshAllInProgress = false;
     }
 
-    public void refreshEditorCode(Resource resourceToUpdate) {
+    public void refreshEditorCode(Resource<?> resourceToUpdate) {
         openingEditorTab = true;
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            Resource resource = (Resource) tab.getUserData();
+            Resource<?> resource = (Resource<?>) tab.getUserData();
             if (resourceToUpdate.equals(resource)) {
                 CodeEditor editor = (CodeEditor) tab.getContent();
                 editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
@@ -1010,10 +1002,10 @@ public class EditorTabManager {
         openingEditorTab = false;
     }
 
-    public void refreshImageViewer(Resource resourceToUpdate) {
+    public void refreshImageViewer(Resource<?> resourceToUpdate) {
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
-            Resource resource = (Resource) tab.getUserData();
+            Resource<?> resource = (Resource<?>) tab.getUserData();
             if (resourceToUpdate.equals(resource)) {
                 ImageResource imageResource = (ImageResource) resourceToUpdate;
                 logger.info("refreshing image resource");

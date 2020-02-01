@@ -34,11 +34,11 @@ public class Resources implements Serializable {
 	private static final String ITEM_PREFIX = "item_";
 	private int lastId = 1;
 
-	private OrderedMap<String, Resource> resources = new ListOrderedMap<>();
-	private ObservableList<Resource> cssResources = FXCollections.observableList(new ArrayList<>());
-    private ObservableList<Resource> fontResources = FXCollections.observableList(new ArrayList<>());
-    private ObservableList<Resource> imageResources = FXCollections.observableList(new ArrayList<>());
-	private ObservableList<Resource> miscResources = FXCollections.observableList(new ArrayList<>());
+	private OrderedMap<String, Resource<?>> resources = new ListOrderedMap<>();
+	private ObservableList<Resource<?>> cssResources = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<Resource<?>> fontResources = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<Resource<?>> imageResources = FXCollections.observableList(new ArrayList<>());
+	private ObservableList<Resource<?>> miscResources = FXCollections.observableList(new ArrayList<>());
 
 	/**
 	 * Adds a resource to the resources.
@@ -248,12 +248,12 @@ public class Resources implements Serializable {
 	 * 
 	 * @return The resources that make up this book.
 	 */
-    public Map<String, Resource> getResourcesMap()
+    public Map<String, Resource<?>> getResourcesMap()
     {
         return resources;
     }
 
-    public Collection<Resource> getAll() {
+    public Collection<Resource<?>> getAll() {
 		return resources.values();
 	}
 	
@@ -368,7 +368,7 @@ public class Resources implements Serializable {
 	 * @param mediaType
 	 * @return the first resource (random order) with the give mediatype.
 	 */
-	public Resource findFirstResourceByMediaType(MediaType mediaType) {
+	public Resource<?> findFirstResourceByMediaType(MediaType mediaType) {
 		return findFirstResourceByMediaType(resources.values(), mediaType);
 	}
 	
@@ -380,8 +380,8 @@ public class Resources implements Serializable {
 	 * @param mediaType
 	 * @return the first resource (random order) with the give mediatype.
 	 */
-	public static Resource findFirstResourceByMediaType(Collection<Resource> resources, MediaType mediaType) {
-		for (Resource resource: resources) {
+	public static Resource<?> findFirstResourceByMediaType(Collection<Resource<?>> resources, MediaType mediaType) {
+		for (Resource<?> resource: resources) {
 			if (resource.getMediaType() == mediaType) {
 				return resource;
 			}
@@ -395,12 +395,12 @@ public class Resources implements Serializable {
 	 * @param mediaType
 	 * @return All resources that have the given MediaType.
 	 */
-	public List<Resource> getResourcesByMediaType(MediaType mediaType) {
-		List<Resource> result = new ArrayList<>();
+	public List<Resource<?>> getResourcesByMediaType(MediaType mediaType) {
+		List<Resource<?>> result = new ArrayList<>();
 		if (mediaType == null) {
 			return result;
 		}
-		for (Resource resource: getAll()) {
+		for (Resource<?> resource: getAll()) {
 			if (resource.getMediaType() == mediaType) {
 				result.add(resource);
 			}
@@ -414,8 +414,8 @@ public class Resources implements Serializable {
 	 * @param mediaTypes
 	 * @return All Resources that match any of the given list of MediaTypes
 	 */
-	public List<Resource> getResourcesByMediaTypes(MediaType[] mediaTypes) {
-		List<Resource> result = new ArrayList<>();
+	public List<Resource<?>> getResourcesByMediaTypes(MediaType[] mediaTypes) {
+		List<Resource<?>> result = new ArrayList<>();
 		if (mediaTypes == null) {
 			return result;
 		}
@@ -423,7 +423,7 @@ public class Resources implements Serializable {
 		// this is the fastest way of doing this according to 
 		// http://stackoverflow.com/questions/1128723/in-java-how-can-i-test-if-an-array-contains-a-certain-value
 		List<MediaType> mediaTypesList = Arrays.asList(mediaTypes);
-		for (Resource resource: getAll()) {
+		for (Resource<?> resource: getAll()) {
 			if (mediaTypesList.contains(resource.getMediaType())) {
 				result.add(resource);
 			}
@@ -533,19 +533,19 @@ public class Resources implements Serializable {
         return new String(array, 0, size - 1);  // lose trailing separator
     }
 
-    public ObservableList<Resource> getCssResources() {
+    public ObservableList<Resource<?>> getCssResources() {
         return cssResources;
     }
 
-    public ObservableList<Resource> getFontResources() {
+    public ObservableList<Resource<?>> getFontResources() {
         return fontResources;
     }
 
-    public ObservableList<Resource> getImageResources() {
+    public ObservableList<Resource<?>> getImageResources() {
         return imageResources;
     }
 
-	public ObservableList<Resource> getMiscResources() {
+	public ObservableList<Resource<?>> getMiscResources() {
 		return miscResources;
 	}
 }

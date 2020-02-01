@@ -20,6 +20,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 public class XMLResource extends Resource<Document> implements TextResource
 {
     private static final Logger logger = Logger.getLogger(XMLResource.class);
+
     public XMLResource()
     {
     }

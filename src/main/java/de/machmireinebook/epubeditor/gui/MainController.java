@@ -259,7 +259,7 @@ public class MainController implements Initializable
     @FXML
     private AnchorPane statusAnchorPane;
     @FXML
-    private TreeView<Resource> epubStructureTreeView;
+    private TreeView<Resource<?>> epubStructureTreeView;
     @FXML
     private Button createHtmlTocButton;
     @FXML

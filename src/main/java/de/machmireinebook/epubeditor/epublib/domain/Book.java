@@ -63,8 +63,8 @@ public class Book implements Serializable
     private TableOfContents tableOfContents = new TableOfContents();
     private Guide guide = new Guide();
     private Landmarks landmarks = new Landmarks();
-    private ObjectProperty<Resource> opfResource = new SimpleObjectProperty<>();
-    private Resource ncxResource;
+    private ObjectProperty<Resource<?>> opfResource = new SimpleObjectProperty<>();
+    private Resource<?> ncxResource;
     private ImageResource coverImage;
 
     // versionProperty
@@ -72,8 +72,8 @@ public class Book implements Serializable
     private boolean isFixedLayout = false;
     private int fixedLayoutWidth;
     private int fixedLayoutHeight;
-    private Resource epub3NavResource;
-    private Resource appleDisplayOptions;
+    private Resource<?> epub3NavResource;
+    private Resource<?> appleDisplayOptions;
 
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
     private ObjectProperty<Path> physicalFileNameProperty = new SimpleObjectProperty<>(this, "physicalFileName");
@@ -90,15 +90,15 @@ public class Book implements Serializable
 
         book.setMetadata(new Metadata());
 
-        Resource ncxResource = NCXDocument.createNCXResource(book);
+        Resource<?> ncxResource = NCXDocument.createNCXResource(book);
         book.setNcxResource(ncxResource);
         book.getSpine().setTocResource(ncxResource);
         book.addResource(ncxResource, false);
 
-        Resource opfResource = PackageDocumentWriter.createOPFResource(book);
+        Resource<?> opfResource = PackageDocumentWriter.createOPFResource(book);
         book.setOpfResource(opfResource);
 
-        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
+        Resource<?> textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
         book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
@@ -113,36 +113,36 @@ public class Book implements Serializable
 
         book.setMetadata(new de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata());
 
-        Resource navResource = book.addResourceFromTemplate("/epub/nav.xhtml", "Text/nav.xhtml", false);
+        Resource<?> navResource = book.addResourceFromTemplate("/epub/nav.xhtml", "Text/nav.xhtml", false);
         navResource.setProperties(ManifestItemProperties.nav.getName());
         book.setEpub3NavResource(navResource);
         book.getSpine().addResource(navResource);
         book.addResource(navResource, false);
 
         //for compatibility create a toc ncx too
-        Resource ncxResource = NCXDocument.createNCXResource(book);
+        Resource<?> ncxResource = NCXDocument.createNCXResource(book);
         book.setNcxResource(ncxResource);
         book.addResource(ncxResource, false);
 
-        Resource textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
+        Resource<?> textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
         book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
 
-        Resource opfResource = Epub3PackageDocumentWriter.createOPFResource(book);
+        Resource<?> opfResource = Epub3PackageDocumentWriter.createOPFResource(book);
         book.setOpfResource(opfResource);
 
         return book;
     }
 
-    public Resource addResourceFromTemplate(String templateFileName, String href) {
+    public Resource<?> addResourceFromTemplate(String templateFileName, String href) {
         return addResourceFromTemplate(templateFileName, href, true);
     }
 
-    public Resource addResourceFromTemplate(String templateFileName, String href, boolean refreshOpf)
+    public Resource<?> addResourceFromTemplate(String templateFileName, String href, boolean refreshOpf)
     {
         File file = new File(Book.class.getResource(templateFileName).getFile());
-        Resource res = createResourceFromFile(file, href, MediaType.getByFileName(href));
+        Resource<?> res = createResourceFromFile(file, href, MediaType.getByFileName(href));
         addResource(res, refreshOpf);
         if (MediaType.XHTML.equals(res.getMediaType()))
         {
@@ -165,24 +165,24 @@ public class Book implements Serializable
         return res;
     }
 
-    public Resource addResourceFromFile(File file, String href, MediaType mediaType)
+    public Resource<?> addResourceFromFile(File file, String href, MediaType mediaType)
     {
-        Resource res = createResourceFromFile(file, href, mediaType);
+        Resource<?> res = createResourceFromFile(file, href, mediaType);
         addResource(res);
         return res;
     }
 
-    public Resource addSpineResourceFromFile(File file, String href, MediaType mediaType)
+    public Resource<?> addSpineResourceFromFile(File file, String href, MediaType mediaType)
     {
-        Resource res = createResourceFromFile(file, href, mediaType);
+        Resource<?> res = createResourceFromFile(file, href, mediaType);
         res = XHTMLUtils.fromHtml(res, getVersion());
         addSpineResource(res);
         return res;
     }
 
-    public Resource createResourceFromFile(File file, String href, MediaType mediaType)
+    public Resource<?> createResourceFromFile(File file, String href, MediaType mediaType)
     {
-        Resource res = mediaType.getResourceFactory().createResource(href);
+        Resource<?> res = mediaType.getResourceFactory().createResource(href);
         logger.info("reading file " + file.getName() + " for adding as resource");
         byte[] content = null;
         InputStream is = null;
@@ -221,7 +221,7 @@ public class Book implements Serializable
      * @param resource
      * @return The table of contents
      */
-    public TocEntry addSection(String title, Resource resource)
+    public TocEntry addSection(String title, Resource<?> resource)
     {
         getResources().put(resource);
         TocEntry tocReference = tableOfContents.addTOCReference(new TocEntry(title, resource));
@@ -232,12 +232,12 @@ public class Book implements Serializable
         return tocReference;
     }
 
-    public SpineReference addSpineResource(Resource resource)
+    public SpineReference addSpineResource(Resource<?> resource)
     {
         return addSpineResource(resource, null);
     }
 
-    public SpineReference addSpineResource(Resource resource, Integer index)
+    public SpineReference addSpineResource(Resource<?> resource, Integer index)
     {
         resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
         getResources().put(resource);
@@ -250,15 +250,15 @@ public class Book implements Serializable
         return ref;
     }
 
-    public void removeResource(Resource resource)
+    public void removeResource(Resource<?> resource)
     {
         getResources().remove(resource);
         if (resource.getMediaType().equals(MediaType.CSS))
         {
             String cssFileName = resource.getFileName();
             //aus allen XHTML-Dateien entfernen
-            List<Resource> xhtmlResources = getResources().getResourcesByMediaType(MediaType.XHTML);
-            for (Resource xhtmlResource : xhtmlResources)
+            List<Resource<?>> xhtmlResources = getResources().getResourcesByMediaType(MediaType.XHTML);
+            for (Resource<?> xhtmlResource : xhtmlResources)
             {
                 Document document = ((XHTMLResource) xhtmlResource).asNativeFormat();
                 if (document != null)
@@ -607,9 +607,9 @@ public class Book implements Serializable
      *
      * @return All Resources of the Book that can be reached via the Spine, the TableOfContents or the Guide.
      */
-    public List<Resource> getContents()
+    public List<Resource<?>> getContents()
     {
-        Map<String, Resource> result = new LinkedHashMap<>();
+        Map<String, Resource<?>> result = new LinkedHashMap<>();
         addToContentsResult(getCoverPage(), result);
 
         for (SpineReference spineReference : getSpine().getSpineReferences())
@@ -617,7 +617,7 @@ public class Book implements Serializable
             addToContentsResult(spineReference.getResource(), result);
         }
 
-        for (Resource resource : getTableOfContents().getAllUniqueResources())
+        for (Resource<?> resource : getTableOfContents().getAllUniqueResources())
         {
             addToContentsResult(resource, result);
         }
@@ -642,16 +642,16 @@ public class Book implements Serializable
      *
      * @return All Resources of the Book that can be reached via the Spine, the TableOfContents.
      */
-    public List<Resource> getReadableContents()
+    public List<Resource<?>> getReadableContents()
     {
-        Map<String, Resource> result = new LinkedHashMap<>();
+        Map<String, Resource<?>> result = new LinkedHashMap<>();
 
         for (SpineReference spineReference : getSpine().getSpineReferences())
         {
             addToContentsResult(spineReference.getResource(), result);
         }
 
-        for (Resource resource : getTableOfContents().getAllUniqueResources())
+        for (Resource<?> resource : getTableOfContents().getAllUniqueResources())
         {
             addToContentsResult(resource, result);
         }
@@ -681,7 +681,7 @@ public class Book implements Serializable
         return new ArrayList<>(result.values());
     }
 
-    private void removeGuideEntries(Map<String, Resource> result, GuideReference.Semantics semantic)
+    private void removeGuideEntries(Map<String, Resource<?>> result, GuideReference.Semantics semantic)
     {
         List<GuideReference> references = getGuide().getGuideReferencesByType(semantic);
         if (!references.isEmpty())
@@ -693,7 +693,7 @@ public class Book implements Serializable
         }
     }
 
-    private void removeLandmarkEntries(Map<String, Resource> result, LandmarkReference.Semantic semantic)
+    private void removeLandmarkEntries(Map<String, Resource<?>> result, LandmarkReference.Semantic semantic)
     {
         List<LandmarkReference> references = getLandmarks().getLandmarkReferencesByType(semantic);
         if (!references.isEmpty())
@@ -705,7 +705,7 @@ public class Book implements Serializable
         }
     }
 
-    private static void addToContentsResult(Resource resource, Map<String, Resource> allReachableResources)
+    private static void addToContentsResult(Resource<?> resource, Map<String, Resource<?>> allReachableResources)
     {
         if (resource != null && (!allReachableResources.containsKey(resource.getHref())))
         {
@@ -713,12 +713,12 @@ public class Book implements Serializable
         }
     }
 
-    public void setNcxResource(Resource ncxResource)
+    public void setNcxResource(Resource<?> ncxResource)
     {
         this.ncxResource = ncxResource;
     }
 
-    public Resource getNcxResource()
+    public Resource<?> getNcxResource()
     {
         return ncxResource;
     }
@@ -788,7 +788,7 @@ public class Book implements Serializable
         return opfResource.get();
     }
 
-    public ObjectProperty<Resource> opfResourceProperty()
+    public ObjectProperty<Resource<?>> opfResourceProperty()
     {
         return opfResource;
     }
@@ -840,7 +840,7 @@ public class Book implements Serializable
         if (MediaType.CSS.equals(resource.getMediaType()))
         {
             //css umbenannt, erstmal alle XHTMLs durchsuchen
-            List<Resource> xhtmlResources = resources.getResourcesByMediaType(MediaType.XHTML);
+            List<Resource<?>> xhtmlResources = resources.getResourcesByMediaType(MediaType.XHTML);
             Path resourcePath = resource.getHrefAsPath();
             int index = StringUtils.lastIndexOf(oldValue, "/");
             String oldFileName = oldValue;
@@ -856,7 +856,7 @@ public class Book implements Serializable
                 newFileName = newValue.substring(index + 1);
             }
 
-            for (Resource xhtmlResource : xhtmlResources)
+            for (Resource<?> xhtmlResource : xhtmlResources)
             {
                 Document document = ((XHTMLResource)xhtmlResource).asNativeFormat();
                 Path relativePath = xhtmlResource.getHrefAsPath().relativize(resourcePath);

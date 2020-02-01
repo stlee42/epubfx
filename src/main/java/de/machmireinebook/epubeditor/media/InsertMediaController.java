@@ -275,12 +275,12 @@ public class InsertMediaController extends AbstractStandardController
     public void refresh()
     {
         List<ImageResource> imageResources = new ArrayList<>();
-        List<Resource> resources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
+        List<Resource<?>> resources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        for (Resource resource : resources)
+        for (Resource<?> resource : resources)
         {
             imageResources.add((ImageResource)resource);
         }

@@ -156,8 +156,12 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
             }
         });
 
+        /*codeArea.setStyle("-fx-font-family:" + preferencesManager.fontSelectionProperty().getValue());
+        preferencesManager.fontSelectionProperty().addListener((observable, oldValue, newValue) -> codeArea.setStyle("-fx-font-family:" +  newValue));*/
+
         codeArea.setStyle("-fx-font-size:" + preferencesManager.fontSizeProperty().getValue());
         preferencesManager.fontSizeProperty().addListener((observable, oldValue, newValue) -> codeArea.setStyle("-fx-font-size:" + newValue));
+
     }
 
     @Override

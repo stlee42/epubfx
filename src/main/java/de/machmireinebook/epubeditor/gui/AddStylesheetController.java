@@ -13,7 +13,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.TableColumn;
@@ -28,13 +27,12 @@ import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 /**
@@ -170,16 +168,16 @@ public class AddStylesheetController implements StandardController
             stylesheetResources.clear();
             if (newValue != null)
             {
-                List<Resource> cssResources = newValue.getResources().getCssResources();
-                for (Resource cssResource : cssResources) {
+                List<Resource<?>> cssResources = newValue.getResources().getCssResources();
+                for (Resource<?> cssResource : cssResources) {
                     StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
                     stylesheetResources.add(stylesheetResource);
                 }
 
-                newValue.getResources().getCssResources().addListener((ListChangeListener<Resource>) change -> {
+                newValue.getResources().getCssResources().addListener((ListChangeListener<Resource<?>>) change -> {
                     stylesheetResources.clear();
-                    List<Resource> cssResources1 = currentBookProperty.getValue().getResources().getCssResources();
-                    for (Resource cssResource : cssResources1) {
+                    List<Resource<?>> cssResources1 = currentBookProperty.getValue().getResources().getCssResources();
+                    for (Resource<?> cssResource : cssResources1) {
                         StylesheetResource stylesheetResource = new StylesheetResource(cssResource);
                         stylesheetResources.add(stylesheetResource);
                     }
@@ -215,7 +213,7 @@ public class AddStylesheetController implements StandardController
         return instance;
     }
 
-    public void setXHTMLResources(List<Resource> resources)
+    public void setXHTMLResources(List<Resource<?>> resources)
     {
         headElements.clear();
         for (StylesheetResource stylesheetResource : stylesheetResources)
@@ -223,7 +221,7 @@ public class AddStylesheetController implements StandardController
             stylesheetResource.setTotalCount(resources.size());
             stylesheetResource.resetCount();
         }
-        for (Resource resource : resources)
+        for (Resource<?> resource : resources)
         {
             Document document = ((XHTMLResource)resource).asNativeFormat();
             Element root = document.getRootElement();

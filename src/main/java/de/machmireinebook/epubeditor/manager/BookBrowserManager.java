@@ -93,17 +93,17 @@ public class BookBrowserManager
     private static final String IMAGE_FILE_ICON = "/icons/icons8_Image_File_96px.png";
     private static final String XHTML_FILE_ICON = "/icons/icons8_Code_File_96px.png";
 
-    private TreeItem<Resource> textItem;
-    private TreeItem<Resource> cssItem;
-    private TreeItem<Resource> imagesItem;
-    private TreeItem<Resource> fontsItem;
-    private TreeItem<Resource> miscContentItem;
-    private TreeItem<Resource> rootItem;
+    private TreeItem<Resource<?>> textItem;
+    private TreeItem<Resource<?>> cssItem;
+    private TreeItem<Resource<?>> imagesItem;
+    private TreeItem<Resource<?>> fontsItem;
+    private TreeItem<Resource<?>> miscContentItem;
+    private TreeItem<Resource<?>> rootItem;
 
-    private TreeView<Resource> treeView;
+    private TreeView<Resource<?>> treeView;
     private EditorTabManager editorManager;
-    private TreeItem<Resource> ncxItem;
-    private TreeItem<Resource> opfItem;
+    private TreeItem<Resource<?>> ncxItem;
+    private TreeItem<Resource<?>> opfItem;
 
     private final ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>(this, "currentBook");
     private StandardControllerFactory standardControllerFactory;
@@ -131,9 +131,9 @@ public class BookBrowserManager
 
     private static class FolderSymbolListener implements ChangeListener<Boolean>
     {
-        TreeItem<Resource> item;
+        TreeItem<Resource<?>> item;
 
-        private FolderSymbolListener(TreeItem<Resource> item)
+        private FolderSymbolListener(TreeItem<Resource<?>> item)
         {
             this.item = item;
         }
@@ -152,15 +152,13 @@ public class BookBrowserManager
         }
     }
 
-    public class BookBrowserTreeCellFactory implements Callback<TreeView<Resource>, TreeCell<Resource>>
+    public class BookBrowserTreeCellFactory implements Callback<TreeView<Resource<?>>, TreeCell<Resource<?>>>
     {
-        private final DataFormat OBJECT_DATA_FORMAT = new DataFormat("application/java-object");
-
         @SuppressWarnings("unchecked")
         @Override
-        public TreeCell<Resource> call(TreeView<Resource> resourceTreeView)
+        public TreeCell<Resource<?>> call(TreeView<Resource<?>> resourceTreeView)
         {
-            EditingTreeCell<Resource> treeCell = new EditingTreeCell<>(true);
+            EditingTreeCell<Resource<?>> treeCell = new EditingTreeCell<>(true);
 
             treeCell.itemProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())
@@ -175,14 +173,14 @@ public class BookBrowserManager
             });
 
             treeCell.setOnDragDetected(mouseEvent -> {
-                TreeCell<Resource> cell = (EditingTreeCell<Resource>) mouseEvent.getSource();
+                TreeCell<Resource<?>> cell = (EditingTreeCell<Resource<?>>) mouseEvent.getSource();
                 logger.info("dnd detected on item " + cell);
-                Resource res = cell.getItem();
+                Resource<?> res = cell.getItem();
                 if (MediaType.XHTML.equals(res.getMediaType()))
                 {
                     Dragboard dragBoard = cell.startDragAndDrop(TransferMode.MOVE);
                     ClipboardContent content = new ClipboardContent();
-                    content.put(OBJECT_DATA_FORMAT, res);
+                    content.put(DataFormat.URL, res.getHref());
                     dragBoard.setContent(content);
                     mouseEvent.consume();
                 }
@@ -190,14 +188,14 @@ public class BookBrowserManager
 
             treeCell.setOnDragDropped(dragEvent -> {
                 logger.info("dnd dropped of item " + dragEvent.getSource());
-                Object o = dragEvent.getDragboard().getContent(OBJECT_DATA_FORMAT);
-                if (o != null)
+                Object object = dragEvent.getDragboard().getContent(DataFormat.URL);
+                if (object != null)
                 {
-                    TreeCell<Resource> draggedCell = (TreeCell<Resource>) dragEvent.getGestureSource();
+                    TreeCell<Resource<?>> draggedCell = (TreeCell<Resource<?>>) dragEvent.getGestureSource();
                     logger.info("dragged cell is " + draggedCell.getItem());
                     logger.info("cell dropped on is " + treeCell.getItem());
 
-                    TreeItem<Resource> draggedItem = draggedCell.getTreeItem();
+                    TreeItem<Resource<?>> draggedItem = draggedCell.getTreeItem();
                     textItem.getChildren().remove(draggedItem);
                     int index = textItem.getChildren().indexOf(treeCell.getTreeItem());
                     textItem.getChildren().add(index, draggedItem);
@@ -219,7 +217,7 @@ public class BookBrowserManager
             });
 
             treeCell.setOnDragOver(event -> {
-                Resource res = treeCell.getItem();
+                Resource<?> res = treeCell.getItem();
                 if (MediaType.XHTML.equals(res.getMediaType()))
                 {
                     Point2D sceneCoordinates = treeCell.localToScene(0d, 0d);
@@ -259,7 +257,7 @@ public class BookBrowserManager
         }
     }
 
-    public void setTreeView(TreeView<Resource> initTreeView)
+    public void setTreeView(TreeView<Resource<?>> initTreeView)
     {
         this.treeView = initTreeView;
         treeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -276,7 +274,7 @@ public class BookBrowserManager
             {
                 if (event.getClickCount() == 2)
                 {
-                    TreeItem<Resource> item = treeView.getSelectionModel().getSelectedItem();
+                    TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
                     if (isTextItem(item))
                     {
                         editorManager.openFileInEditor(item.getValue(), MediaType.XHTML);
@@ -298,7 +296,7 @@ public class BookBrowserManager
             }
             else if (event.getButton().equals(MouseButton.SECONDARY))
             {
-                TreeItem<Resource> item = treeView.getSelectionModel().getSelectedItem();
+                TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
                 if (isTextItem(item))
                 {
                     createXHTMLItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
@@ -336,7 +334,7 @@ public class BookBrowserManager
         
         treeView.setOnEditCommit(event -> {
             logger.info("editing end for new value " + event.getNewValue());
-            Resource resource = event.getNewValue();
+            Resource<?> resource = event.getNewValue();
             editorManager.refreshEditorCode(resource);
             editorManager.totalRefreshPreview();
             Book book = currentBookProperty().getValue();
@@ -357,32 +355,32 @@ public class BookBrowserManager
             }
         });
 
-        Resource textResource = new Resource("Text");
+        Resource<?> textResource = new Resource<>("Text");
         textItem = new TreeItem<>(textResource);
         textItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         textItem.expandedProperty().addListener(new FolderSymbolListener(textItem));
         rootItem.getChildren().add(textItem);
 
-        Resource cssResource = new Resource("Styles");
+        Resource<?> cssResource = new Resource<>("Styles");
         cssItem = new TreeItem<>(cssResource);
         cssItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         cssItem.expandedProperty().addListener(new FolderSymbolListener(cssItem));
         rootItem.getChildren().add(cssItem);
 
-        Resource imagesResource = new Resource("Bilder");
+        Resource<?> imagesResource = new Resource<>("Bilder");
         imagesItem = new TreeItem<>(imagesResource);
         imagesItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         imagesItem.expandedProperty().addListener(new FolderSymbolListener(imagesItem));
         rootItem.getChildren().add(imagesItem);
 
-        Resource fontsResource = new Resource("Fonts");
+        Resource<?> fontsResource = new Resource<>("Fonts");
         fontsItem = new TreeItem<>(fontsResource);
         fontsItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
         fontsItem.expandedProperty().addListener(new FolderSymbolListener(fontsItem));
         rootItem.getChildren().add(fontsItem);
     }
 
-    private ContextMenu createImagesRootContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createImagesRootContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -396,7 +394,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private ContextMenu createFontsRootContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createFontsRootContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -410,7 +408,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private ContextMenu createCssRootContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createCssRootContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -437,7 +435,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private ContextMenu createXHTMLRootContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createXHTMLRootContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -465,7 +463,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private ContextMenu createXHTMLItemContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createXHTMLItemContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -547,11 +545,11 @@ public class BookBrowserManager
         return menu;
     }
 
-    private void addSemanticsMenuItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addSemanticsMenuItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         GuideReference.Semantics[] semantics = GuideReference.Semantics.values();
-        Resource resource = treeItem.getValue();
+        Resource<?> resource = treeItem.getValue();
         Guide guide = book.getGuide();
         for (GuideReference.Semantics semantic : semantics)
         {
@@ -582,7 +580,7 @@ public class BookBrowserManager
 
     }
 
-    private void addXhtmlOpenWithApplicationItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addXhtmlOpenWithApplicationItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         List<EpubEditorConfiguration.OpenWithApplication> applications = configuration.getXhtmlOpenWithApplications();
         for (EpubEditorConfiguration.OpenWithApplication application : applications)
@@ -598,7 +596,7 @@ public class BookBrowserManager
         menu.getItems().add(item);
     }
 
-    private ContextMenu createCssItemContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createCssItemContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -662,7 +660,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private void addCssOpenWithApplicationItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addCssOpenWithApplicationItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         List<EpubEditorConfiguration.OpenWithApplication> applications = configuration.getCssOpenWithApplications();
         for (EpubEditorConfiguration.OpenWithApplication application : applications)
@@ -678,7 +676,7 @@ public class BookBrowserManager
         menu.getItems().add(item);
     }
 
-    private ContextMenu createImageItemContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createImageItemContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -728,7 +726,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private ContextMenu createFontItemContextMenu(TreeItem<Resource> treeItem)
+    private ContextMenu createFontItemContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -766,7 +764,7 @@ public class BookBrowserManager
         return menu;
     }
 
-    private void addImageSemanticMenuItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addImageSemanticMenuItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         ImageResource resource = (ImageResource)treeItem.getValue();
@@ -795,7 +793,7 @@ public class BookBrowserManager
         menu.getItems().add(item);
     }
 
-    private void addImageOpenWithApplicationItems(Menu menu, TreeItem<Resource> treeItem)
+    private void addImageOpenWithApplicationItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         List<EpubEditorConfiguration.OpenWithApplication> applications = configuration.getImageOpenWithApplications();
         for (EpubEditorConfiguration.OpenWithApplication application : applications)
@@ -826,34 +824,34 @@ public class BookBrowserManager
         List<SpineReference> xhtmlResources = book.getSpine().getSpineReferences();
         for (SpineReference xhtmlResource : xhtmlResources)
         {
-            TreeItem<Resource> xhtmlItem = new TreeItem<>(xhtmlResource.getResource());
+            TreeItem<Resource<?>> xhtmlItem = new TreeItem<>(xhtmlResource.getResource());
             xhtmlItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
             textItem.getChildren().add(xhtmlItem);
         }
 
-        List<Resource> cssResources = book.getResources().getCssResources();
+        List<Resource<?>> cssResources = book.getResources().getCssResources();
         cssResources.sort(new ResourceFilenameComparator());
-        for (Resource cssResource : cssResources)
+        for (Resource<?> cssResource : cssResources)
         {
-            TreeItem<Resource> item = new TreeItem<>(cssResource);
+            TreeItem<Resource<?>> item = new TreeItem<>(cssResource);
             item.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
             cssItem.getChildren().add(item);
         }
 
-        List<Resource> fontResources = book.getResources().getFontResources();
+        List<Resource<?>> fontResources = book.getResources().getFontResources();
         fontResources.sort(new ResourceFilenameComparator());
-        for (Resource fontResource : fontResources)
+        for (Resource<?> fontResource : fontResources)
         {
-            TreeItem<Resource> item = new TreeItem<>(fontResource);
+            TreeItem<Resource<?>> item = new TreeItem<>(fontResource);
             item.setGraphic(getFontIcon((FontResource) fontResource));
             fontsItem.getChildren().add(item);
         }
 
-        List<Resource> imageResources = book.getResources().getImageResources();
+        List<Resource<?>> imageResources = book.getResources().getImageResources();
         imageResources.sort(new ResourceFilenameComparator());
-        for (Resource imageResource : imageResources)
+        for (Resource<?> imageResource : imageResources)
         {
-            TreeItem<Resource> item = new TreeItem<>(imageResource);
+            TreeItem<Resource<?>> item = new TreeItem<>(imageResource);
             if (imageResource.getMediaType().equals(MediaType.GIF))
             {
                 item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
@@ -878,7 +876,7 @@ public class BookBrowserManager
         opfItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
         rootItem.getChildren().add(opfItem);
 
-        Resource ncxResource = book.getNcxResource();
+        Resource<?> ncxResource = book.getNcxResource();
         if (ncxResource != null) //in case of epub 3 it could be null
         {
             ncxItem = new TreeItem<>(ncxResource);
@@ -900,10 +898,10 @@ public class BookBrowserManager
         //TODO adding misc resources
     }
 
-    private void addTreeItem(Resource resource) {
-        TreeItem<Resource> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
+    private void addTreeItem(Resource<?> resource) {
+        TreeItem<Resource<?>> selectedTreeItem = treeView.getSelectionModel().getSelectedItem();
         int index;
-        TreeItem<Resource> treeItem = new TreeItem<>(resource);
+        TreeItem<Resource<?>> treeItem = new TreeItem<>(resource);
         if (resource.getMediaType() == MediaType.XHTML) {
             index = textItem.getChildren().indexOf(selectedTreeItem);
             treeItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
@@ -967,15 +965,15 @@ public class BookBrowserManager
         }
     }
 
-    public void selectTextItem(Resource resource)
+    public void selectTextItem(Resource<?> resource)
     {
         if (resource == null)
         {
             return;
         }
         textItem.setExpanded(true);
-        List<TreeItem<Resource>> textItems = textItem.getChildren();
-        for (TreeItem<Resource> item : textItems)
+        List<TreeItem<Resource<?>>> textItems = textItem.getChildren();
+        for (TreeItem<Resource<?>> item : textItems)
         {
             if (item.getValue().equals(resource))
             {
@@ -985,7 +983,7 @@ public class BookBrowserManager
         }
     }
 
-    public void selectTreeItem(Resource resource)
+    public void selectTreeItem(Resource<?> resource)
     {
         if (resource == null) {
             return;
@@ -1005,9 +1003,9 @@ public class BookBrowserManager
         }
     }
 
-    private boolean findAndSelectChildItem(TreeItem<Resource> parent, Resource resource) {
-        List<TreeItem<Resource>> childrenItems = parent.getChildren();
-        for (TreeItem<Resource> item : childrenItems) {
+    private boolean findAndSelectChildItem(TreeItem<Resource<?>> parent, Resource<?> resource) {
+        List<TreeItem<Resource<?>>> childrenItems = parent.getChildren();
+        for (TreeItem<Resource<?>> item : childrenItems) {
             if (item.getValue().equals(resource)) {
                 parent.setExpanded(true);
                 treeView.getSelectionModel().clearSelection();
@@ -1023,27 +1021,27 @@ public class BookBrowserManager
         this.editorManager = editorManager;
     }
 
-    public boolean isTextItem(TreeItem<Resource> item)
+    public boolean isTextItem(TreeItem<Resource<?>> item)
     {
         return item.getParent().equals(textItem);
     }
 
-    public boolean isCssItem(TreeItem<Resource> item)
+    public boolean isCssItem(TreeItem<Resource<?>> item)
     {
         return item.getParent().equals(cssItem);
     }
 
-    private boolean isImageItem(TreeItem<Resource> item)
+    private boolean isImageItem(TreeItem<Resource<?>> item)
     {
         return item.getParent().equals(imagesItem);
     }
 
-    private boolean isFontItem(TreeItem<Resource> item)
+    private boolean isFontItem(TreeItem<Resource<?>> item)
     {
         return item.getParent().equals(fontsItem);
     }
 
-    public boolean isXmlItem(TreeItem<Resource> item)
+    public boolean isXmlItem(TreeItem<Resource<?>> item)
     {
         return item.getParent().equals(rootItem) &&
                 !item.equals(textItem) && !item.equals(cssItem) && !item.equals(fontsItem) && !item.equals(imagesItem);
@@ -1051,8 +1049,8 @@ public class BookBrowserManager
 
     private void deleteSelectedItems()
     {
-        List<TreeItem<Resource>> selectedItems = treeView.getSelectionModel().getSelectedItems();
-        for (TreeItem<Resource> selectedItem : selectedItems)
+        List<TreeItem<Resource<?>>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+        for (TreeItem<Resource<?>> selectedItem : selectedItems)
         {
             if (selectedItem.getValue().getMediaType().equals(MediaType.CSS))
             {
@@ -1073,7 +1071,7 @@ public class BookBrowserManager
         }
     }
 
-    private void deleteXHTMLItem(TreeItem<Resource> treeItem)
+    private void deleteXHTMLItem(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         book.removeSpineResource(treeItem.getValue());
@@ -1083,7 +1081,7 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void deleteCssItem(TreeItem<Resource> treeItem)
+    private void deleteCssItem(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
@@ -1093,7 +1091,7 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void deleteImageItem(TreeItem<Resource> treeItem)
+    private void deleteImageItem(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
@@ -1103,7 +1101,7 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void deleteFontItem(TreeItem<Resource> treeItem)
+    private void deleteFontItem(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
@@ -1114,7 +1112,7 @@ public class BookBrowserManager
     }
 
     private void copyFileNameToClipboard() {
-        TreeItem<Resource> treeItem = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<Resource<?>> treeItem = treeView.getSelectionModel().getSelectedItem();
         if (treeItem != null && textItem != treeItem && cssItem != treeItem && imagesItem != treeItem
             && fontsItem != treeItem) {
             Clipboard.getSystemClipboard().setContent(Collections.singletonMap(DataFormat.PLAIN_TEXT, treeItem.getValue().getFileName()));
@@ -1143,7 +1141,7 @@ public class BookBrowserManager
 
     public void addEmptyXHTMLFile()
     {
-        TreeItem<Resource> treeItem = null;
+        TreeItem<Resource<?>> treeItem = null;
         if (textItem.getChildren().size() > 0)
         {
             treeItem = treeView.getSelectionModel().getSelectedItem();
@@ -1155,11 +1153,11 @@ public class BookBrowserManager
         addEmptyXHTMLFile(treeItem);
     }
 
-    public void addEmptyXHTMLFile(TreeItem<Resource> treeItem)
+    public void addEmptyXHTMLFile(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         String fileName = book.getNextStandardFileName(MediaType.XHTML);
-        Resource res;
+        Resource<?> res;
         if (book.isEpub3() && book.isFixedLayout())
         {
             res = book.addResourceFromTemplate("/epub/template_fixed_layout.xhtml", "Text/" + fileName);
@@ -1183,11 +1181,11 @@ public class BookBrowserManager
         editorManager.openFileInEditor(res, MediaType.XHTML);
     }
 
-    private void addCopy(TreeItem<Resource> treeItem)
+    private void addCopy(TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
-        Resource oldResource = treeItem.getValue();
-        Resource newResource = book.addCopyOfResource(oldResource);
+        Resource<?> oldResource = treeItem.getValue();
+        Resource<?> newResource = book.addCopyOfResource(oldResource);
         book.setBookIsChanged(true);
 
         addTreeItem(newResource);
@@ -1197,7 +1195,7 @@ public class BookBrowserManager
     }
 
 
-    private void saveAs(TreeItem<Resource> treeItem)
+    private void saveAs(TreeItem<Resource<?>> treeItem)
     {
 
 
@@ -1205,10 +1203,10 @@ public class BookBrowserManager
 
     private void addStylesheet()
     {
-        ObservableList<TreeItem<Resource>> selectedItems = treeView.getSelectionModel().getSelectedItems();
-        List<Resource> resources = new ArrayList<>();
+        ObservableList<TreeItem<Resource<?>>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+        List<Resource<?>> resources = new ArrayList<>();
         boolean allAreValid = true;
-        for (TreeItem<Resource> selectedItem : selectedItems)
+        for (TreeItem<Resource<?>> selectedItem : selectedItems)
         {
             if (((XHTMLResource)selectedItem.getValue()).isValidXML())
             {
@@ -1242,9 +1240,9 @@ public class BookBrowserManager
         }
     }
 
-    private void openWithApplication(TreeItem<Resource> treeItem, String applicationExecutable)
+    private void openWithApplication(TreeItem<Resource<?>> treeItem, String applicationExecutable)
     {
-        Resource resource = treeItem.getValue();
+        Resource<?> resource = treeItem.getValue();
         try
         {
             File tmp = new File(Files.createTempDir(), resource.getFileName());
@@ -1349,20 +1347,20 @@ public class BookBrowserManager
         }
     }
 
-    private void joinXHTMLItemWitPreviousItem(TreeItem<Resource> treeItem)
+    private void joinXHTMLItemWitPreviousItem(TreeItem<Resource<?>> treeItem)
     {
     }
 
-    private void renameItem(TreeItem<Resource> treeItem)
+    private void renameItem(TreeItem<Resource<?>> treeItem)
     {
-        ((EditingTreeCell)treeItem.getGraphic().getParent()).startEdit();
+        ((EditingTreeCell<?>)treeItem.getGraphic().getParent()).startEdit();
     }
 
-    private void addSemanticsToXHTMLFile(TreeItem<Resource> treeItem, GuideReference.Semantics semantic)
+    private void addSemanticsToXHTMLFile(TreeItem<Resource<?>> treeItem, GuideReference.Semantics semantic)
     {
         Book book = currentBookProperty().getValue();
         //hat der schon eine andere Semantik, die dann entfernen
-        Resource resource = treeItem.getValue();
+        Resource<?> resource = treeItem.getValue();
         Guide guide = book.getGuide();
         List<GuideReference> typeReferences = guide.getReferences();
         GuideReference toRemove = null;
@@ -1386,10 +1384,10 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void removeSemanticsFromXHTMLFile(TreeItem<Resource> treeItem, GuideReference.Semantics semantic)
+    private void removeSemanticsFromXHTMLFile(TreeItem<Resource<?>> treeItem, GuideReference.Semantics semantic)
     {
         Book book = currentBookProperty().getValue();
-        Resource resource = treeItem.getValue();
+        Resource<?> resource = treeItem.getValue();
         Guide guide = book.getGuide();
         List<GuideReference> typeReferences = guide.getGuideReferencesByType(semantic);
         GuideReference toRemove = null;
@@ -1409,12 +1407,12 @@ public class BookBrowserManager
         book.setBookIsChanged(true);
     }
 
-    private void selectAll(TreeItem<Resource> parentItem)
+    private void selectAll(TreeItem<Resource<?>> parentItem)
     {
-        List<TreeItem<Resource>> treeItems = parentItem.getChildren();
+        List<TreeItem<Resource<?>>> treeItems = parentItem.getChildren();
         int[] indices = new int[treeItems.size()];
         int i = 0;
-        for (TreeItem<Resource> item : treeItems)
+        for (TreeItem<Resource<?>> item : treeItems)
         {
             indices[i] = treeView.getRow(item);
             i++;
@@ -1426,7 +1424,7 @@ public class BookBrowserManager
     {
         Book book = currentBookProperty().getValue();
         String fileName = book.getNextStandardFileName(MediaType.CSS);
-        Resource res = book.addResourceFromTemplate("/epub/template.css", "Styles/" + fileName);
+        Resource<?> res = book.addResourceFromTemplate("/epub/template.css", "Styles/" + fileName);
         String content = new String(res.getData(), StandardCharsets.UTF_8);
         content = content.replace("${Title}", book.getTitle());
         res.setData(content.getBytes(StandardCharsets.UTF_8));
@@ -1438,25 +1436,25 @@ public class BookBrowserManager
         editorManager.refreshEditorCode(book.getOpfResource());
     }
 
-    private void validateCss(TreeItem<Resource> treeItem)
+    private void validateCss(TreeItem<Resource<?>> treeItem)
     {
 
 
     }
 
-    private void configureApplicationForOpenXHTML(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenXHTML(TreeItem<Resource<?>> treeItem)
     {
 
 
     }
 
-    private void configureApplicationForOpenCSS(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenCSS(TreeItem<Resource<?>> treeItem)
     {
 
 
     }
 
-    private void configureApplicationForOpenImage(TreeItem<Resource> treeItem)
+    private void configureApplicationForOpenImage(TreeItem<Resource<?>> treeItem)
     {
 
 

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.nio.file.Path;
 
 import javafx.beans.property.ObjectProperty;
@@ -29,7 +30,7 @@ import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
  * @author paul
  *
  */
-public class Resource<T> implements ToStringConvertible, Cloneable
+public class Resource<T> implements ToStringConvertible, Cloneable, Serializable
 {
     private static final Logger logger = Logger.getLogger(Resource.class);
 
@@ -453,9 +454,9 @@ public class Resource<T> implements ToStringConvertible, Cloneable
     }
 
 	public Object clone() {
-		Resource resource = null;
+		Resource<?> resource = null;
 		try {
-			resource = (Resource) super.clone();
+			resource = (Resource<?>) super.clone();
 			resource.setData(ObjectUtils.clone(getData()));
 			resource.href = new SimpleStringProperty(href.getValue());
 			resource.mediaType = new SimpleObjectProperty<>(mediaType.getValue());

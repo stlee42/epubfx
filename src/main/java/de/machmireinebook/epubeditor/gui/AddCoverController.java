@@ -90,12 +90,12 @@ public class AddCoverController implements Initializable
     private void refresh()
     {
         List<ImageResource> imageResources = new ArrayList<>();
-        List<Resource> resources = book.getResources().getResourcesByMediaTypes(new MediaType[]{
+        List<Resource<?>> resources = book.getResources().getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        for (Resource resource : resources)
+        for (Resource<?> resource : resources)
         {
             imageResources.add((ImageResource)resource);
         }
@@ -134,7 +134,7 @@ public class AddCoverController implements Initializable
         ImageResource image = tableView.getSelectionModel().getSelectedItem();
         book.setCoverImage(image);
         new CoverpageBookProcessor().processBook(book);
-        Resource coverPage = null;
+        Resource<?> coverPage = null;
         if (book.isEpub3()) {
             List<LandmarkReference> landmarks = book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.COVER);
             if (!landmarks.isEmpty()) {

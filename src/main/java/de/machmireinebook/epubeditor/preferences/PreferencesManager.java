@@ -106,6 +106,10 @@ public class PreferencesManager
     private final IntegerProperty fontSizeProperty = new SimpleIntegerProperty(this, "fontSize", 12);
     private final IntegerField fontSizeControl = Field.ofIntegerType(fontSizeProperty).render(new SimpleIntegerControl());
 
+    private ObservableList<String> fontItems = FXCollections.observableArrayList(Arrays.asList(
+            "Source Code Pro", "Victor Mono"));
+    private ObjectProperty<String> fontSelectionProperty = new SimpleObjectProperty<>("Source Code Pro");
+
     public void init(Element preferencesRootElement)
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
@@ -139,6 +143,7 @@ public class PreferencesManager
             ),
             Category.of("Editor",
                     Group.of("Font",
+                            Setting.of("Font", fontItems, fontSelectionProperty),
                             Setting.of("Font Size", fontSizeControl, fontSizeProperty)
                     ),
                     Group.of("Tabs and Indents",
@@ -336,6 +341,16 @@ public class PreferencesManager
     }
     public final void setFontSize(int value) {
         fontSizeProperty.set(value);
+    }
+
+    public final ObjectProperty<String> fontSelectionProperty() {
+        return fontSelectionProperty;
+    }
+    public final String getFontSelection() {
+        return fontSelectionProperty.getValue();
+    }
+    public final void setFontSelection(String value) {
+        fontSelectionProperty.set(value);
     }
 
     public final ObjectProperty<StartupType> startupTypeProperty() {

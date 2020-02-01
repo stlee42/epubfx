@@ -15,11 +15,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.eaio.stringsearch.BoyerMooreHorspool;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+
+import com.eaio.stringsearch.BoyerMooreHorspool;
 
 /**
  * User: mjungierek
@@ -171,7 +171,7 @@ public class SearchManager
         }
         else if (params.getRegion() == SearchRegion.ALL_RESOURCES) {
             Book book = currentBook.getValue();
-            Optional<Resource> resourceOptional = book.getResources().getAll().stream()
+            Optional<Resource<?>> resourceOptional = book.getResources().getAll().stream()
                     .dropWhile(resource -> resource != currentResource) //drop all resources before current resource
                     .filter(resource -> resource != currentResource) //remain all resources after the current resource
                     .findFirst();

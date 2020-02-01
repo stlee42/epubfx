@@ -89,15 +89,15 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
     {
         List<ImageResource> unusedResources = new ArrayList<>();
         Resources resources = currentBookProperty.getValue().getResources();
-        List<Resource> imagesResources = resources.getResourcesByMediaTypes(new MediaType[]{
+        List<Resource<?>> imagesResources = resources.getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
                 MediaType.PNG,
                 MediaType.SVG,
                 MediaType.JPG});
-        List<Resource> xhtmlResources = resources.getResourcesByMediaTypes(new MediaType[]{
+        List<Resource<?>> xhtmlResources = resources.getResourcesByMediaTypes(new MediaType[]{
                 MediaType.XHTML,
                 MediaType.CSS});
-        for (Resource resource : imagesResources)
+        for (Resource<?> resource : imagesResources)
         {
             if (notUsed((ImageResource)resource, xhtmlResources)) {
                 unusedResources.add((ImageResource) resource);
@@ -108,8 +108,8 @@ public class FindUnusedMediaFilesController extends AbstractStandardController {
         tableView.getSelectionModel().select(0);
     }
 
-    private boolean notUsed(ImageResource imageResource, List<Resource> xhtmlResources) {
-        for (Resource xhtmlResource : xhtmlResources) {
+    private boolean notUsed(ImageResource imageResource, List<Resource<?>> xhtmlResources) {
+        for (Resource<?> xhtmlResource : xhtmlResources) {
             String text = StringUtils.toEncodedString(xhtmlResource.getData(), StandardCharsets.UTF_8);
             if (text.contains(imageResource.convertToString())) {
                 return false;

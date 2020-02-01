@@ -123,11 +123,11 @@ public class TocGenerator
     {
         List<EditableTocEntry> tocEntries = new ArrayList<>();
         Book book = bookProperty.get();
-        List<Resource> contentResources = book.getReadableContents();
+        List<Resource<?>> contentResources = book.getReadableContents();
         EditableTocEntry currentHighestEntry = null;
         int currentHighestLevel = 999;
 
-        for (Resource resource : contentResources)
+        for (Resource<?> resource : contentResources)
         {
             if (resource.getMediaType().equals(MediaType.XHTML))
             {
