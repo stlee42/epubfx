@@ -6,7 +6,6 @@ import java.net.InetSocketAddress;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -37,6 +36,7 @@ import de.machmireinebook.epubeditor.preview.EpubHttpHandler;
 import de.machmireinebook.epubeditor.preview.ResourceHttpHandler;
 
 import com.sun.net.httpserver.HttpServer;
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 
 public class EpubEditorApplication extends Application
 {
@@ -98,6 +98,9 @@ public class EpubEditorApplication extends Application
                 //if ebooks uses internally this uri part, and a book resource will be tried to serve with this http handler,
                 // prefix it with something like "epubfx-" and remove it in resource handler
                 server.createContext("/dtd", resourceHttpHandler);
+
+                ResourceHttpHandler previewCssHttpHandler = new ResourceHttpHandler();
+                server.createContext("/editor-css", previewCssHttpHandler);
 
                 server.start();
 

@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.Constants;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
+import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.jdom2.LocatedIdentifiableJDOMFactory;
@@ -95,6 +95,17 @@ public class XHTMLResource extends XMLResource
         LocatedIdentifiableJDOMFactory factory = new LocatedIdentifiableJDOMFactory();
         try {
             Document document = XHTMLUtils.parseXHTMLDocument(code, factory);
+            //inject special css only for preview
+            Element root = document.getRootElement();
+            Element head = root.getChild("head", Constants.NAMESPACE_XHTML);
+            if (head != null) {
+                //    <link href="../Styles/fonts.css" type="text/css" rel="stylesheet" />
+                Element element = new Element("link");
+                element.setAttribute("href", "http://localhost:8777/editor-css/preview.css");
+                element.setAttribute("type", "text/css");
+                element.setAttribute("rel", "stylesheet");
+                head.addContent(element);
+            }
             webViewPreparedData  = XHTMLUtils.outputXHTMLDocument(document, true, version);
         }
         catch (IOException | JDOMException e) {

@@ -249,7 +249,7 @@ public class MainController implements Initializable
     @FXML
     private Button italicButton;
     @FXML
-    private ListView<Resource> clipListView;
+    private ListView<Resource<?>> clipListView;
     @FXML
     private TreeView<TocEntry> tocTreeView;
     @FXML
@@ -434,7 +434,7 @@ public class MainController implements Initializable
         createNcxButton.disableProperty().bind(currentBookProperty.isNull());
 
         cursorPosLabel.textProperty().bind(editorTabManager.cursorPosLabelProperty());
-        previewWidthLabel.textProperty().bind(Bindings.createStringBinding(() -> "Preview width: " + previewWebview.widthProperty().getValue(), previewWebview.widthProperty()));
+        previewWidthLabel.textProperty().bind(Bindings.createStringBinding(() -> "Width: " + previewWebview.widthProperty().getValue(), previewWebview.widthProperty()));
 
         //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
         clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());
@@ -669,7 +669,7 @@ public class MainController implements Initializable
                 );
                 if (!currentBook.getSpine().isEmpty())
                 {
-                    Resource firstResource = currentBook.getSpine().getResource(0);
+                    Resource<?> firstResource = currentBook.getSpine().getResource(0);
                     editorTabManager.openFileInEditor(firstResource);
                 }
             }
@@ -694,7 +694,7 @@ public class MainController implements Initializable
         addExistingFiles();
     }
 
-    public void addExistingFiles()
+    public List<Resource<?>> addExistingFiles()
     {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choose Files to Insert");
@@ -702,6 +702,7 @@ public class MainController implements Initializable
             chooser.setInitialDirectory(lastFilePath.toFile());
         }
         List<File> files = chooser.showOpenMultipleDialog(stage);
+        List<Resource<?>> addedResources = new ArrayList<>();
         if (files != null)
         {
             for (File file : files)
@@ -713,37 +714,38 @@ public class MainController implements Initializable
                 if (MediaType.CSS.equals(mediaType))
                 {
                     href = "Styles/" + file.getName();
-                    book.addResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addResourceFromFile(file, href, mediaType));
                 }
                 else if (MediaType.XHTML.equals(mediaType) || MediaType.XML.equals(mediaType))
                 {
                     href = "Text/" + file.getName();
-                    book.addSpineResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addSpineResourceFromFile(file, href, mediaType));
                 }
                 else if (mediaType.isImage())
                 {
                     href = "Images/" + file.getName();
-                    book.addResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addResourceFromFile(file, href, mediaType));
                 }
                 else if (MediaType.JAVASCRIPT.equals(mediaType))
                 {
                     href = "Scripts/" + file.getName();
-                    book.addResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addResourceFromFile(file, href, mediaType));
                 }
                 else if (mediaType.isFont())
                 {
                     href = "Fonts/" + file.getName();
-                    book.addResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addResourceFromFile(file, href, mediaType));
                 }
                 else
                 {
                     href = "Misc/" + file.getName();
-                    book.addResourceFromFile(file, href, mediaType);
+                    addedResources.add(book.addResourceFromFile(file, href, mediaType));
                 }
             }
             bookBrowserManager.refreshBookBrowser();
             currentBookProperty.get().setBookIsChanged(true);
         }
+        return addedResources;
     }
 
     @SuppressWarnings("UnusedParameters")

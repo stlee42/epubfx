@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -34,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.editor.CodeEditor;
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
@@ -43,7 +43,6 @@ import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.gui.StandardController;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.util.EpubFxNumberUtils;
 import de.machmireinebook.epubeditor.xhtml.XmlUtils;
 
@@ -156,7 +155,7 @@ public class InsertMediaController extends AbstractStandardController
         return instance;
     }
 
-    public void onOkAction(ActionEvent actionEvent)
+    public void onOkAction()
     {
         ImageResource resource = tableView.getSelectionModel().getSelectedItem();
         if (resource != null) {
@@ -191,7 +190,7 @@ public class InsertMediaController extends AbstractStandardController
                     altText = StringUtils.replace(altText, "&amp;", "");
                     altText = StringUtils.replace(altText, "&", "");
                     altText = StringUtils.replace(altText, "\"", "");
-                    altText = StringUtils.replace(altText, "\'", "");
+                    altText = StringUtils.replace(altText, "'", "");
                 }
                 snippet = StringUtils.replace(snippet, "${alt}", altText);
                 snippet = StringUtils.replace(snippet, "${caption}", text);
@@ -261,19 +260,33 @@ public class InsertMediaController extends AbstractStandardController
         }
     }
 
-    public void onCancelAction(ActionEvent actionEvent)
+    public void onCancelAction()
     {
         stage.close();
     }
 
-    public void otherFileButtonAction(ActionEvent actionEvent)
+    public void otherFileButtonAction()
     {
-        mainController.addExistingFiles();
-        refresh();
+        List<Resource<?>> addedResources = mainController.addExistingFiles();
+        addedResources.stream()
+                .filter(resource -> resource instanceof ImageResource)
+                .findFirst()
+                .ifPresent(resource -> {
+                    refresh();
+                    ImageResource imageResource = (ImageResource) resource;
+                    tableView.getSelectionModel().select(imageResource);
+                    tableView.scrollTo(imageResource);
+                });
+
     }
 
-    public void refresh()
+    public void refreshAndSelectFirst()
     {
+        refresh();
+        tableView.getSelectionModel().select(0);
+    }
+
+    private void refresh() {
         List<ImageResource> imageResources = new ArrayList<>();
         List<Resource<?>> resources = currentBookProperty.get().getResources().getResourcesByMediaTypes(new MediaType[]{
                 MediaType.GIF,
@@ -286,7 +299,7 @@ public class InsertMediaController extends AbstractStandardController
         }
         imageResources.sort(new ResourceFilenameComparator());
         tableView.setItems(FXCollections.observableList(imageResources));
-        tableView.getSelectionModel().select(0);
+
     }
 
     private void refreshImageView(ImageResource resource)
@@ -308,7 +321,7 @@ public class InsertMediaController extends AbstractStandardController
     {
         super.setStage(stage);
         stage.setOnShowing(event -> {
-            refresh();
+            refreshAndSelectFirst();
         });
     }
 

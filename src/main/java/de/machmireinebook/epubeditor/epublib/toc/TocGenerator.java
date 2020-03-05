@@ -471,7 +471,10 @@ public class TocGenerator
             liElement.addContent(ahrefElement);
             
             ahrefElement.setAttribute("type", landmark.getType().getName(), NAMESPACE_EPUB);
-            ahrefElement.setAttribute("href", landmark.getCompleteHref());
+
+            Path navPath = navResource.getHrefAsPath();
+            Path relativePath = navPath.relativize(landmark.getCompleteHrefAsPath());
+            ahrefElement.setAttribute("href", relativePath.toString());
             ahrefElement.setText(landmark.getTitle());
         }
     }
