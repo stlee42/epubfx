@@ -56,13 +56,15 @@ import javafx.util.Callback;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.io.Files;
+
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.Guide;
-import de.machmireinebook.epubeditor.epublib.domain.epub2.GuideReference;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.Guide;
+import de.machmireinebook.epubeditor.epublib.domain.epub2.GuideReference;
 import de.machmireinebook.epubeditor.epublib.resource.CSSResource;
 import de.machmireinebook.epubeditor.epublib.resource.FontResource;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
@@ -76,8 +78,6 @@ import de.machmireinebook.epubeditor.gui.MainController;
 import de.machmireinebook.epubeditor.gui.StandardControllerFactory;
 import de.machmireinebook.epubeditor.javafx.FXUtils;
 import de.machmireinebook.epubeditor.javafx.cells.EditingTreeCell;
-
-import com.google.common.io.Files;
 
 /**
  * User: mjungierek
@@ -335,7 +335,12 @@ public class BookBrowserManager
         treeView.setOnEditCommit(event -> {
             logger.info("editing end for new value " + event.getNewValue());
             Resource<?> resource = event.getNewValue();
-            editorManager.refreshEditorCode(resource);
+            if (resource instanceof CSSResource || resource instanceof JavascriptResource
+                    ||  resource instanceof XMLResource) {
+                editorManager.refreshEditorCode(resource);
+            } else if (resource instanceof ImageResource) {
+                editorManager.refreshImageViewer(resource);
+            }
             editorManager.totalRefreshPreview();
             Book book = currentBookProperty().getValue();
             book.setBookIsChanged(true);
@@ -1050,7 +1055,8 @@ public class BookBrowserManager
     private void deleteSelectedItems()
     {
         List<TreeItem<Resource<?>>> selectedItems = treeView.getSelectionModel().getSelectedItems();
-        for (TreeItem<Resource<?>> selectedItem : selectedItems)
+        List<TreeItem<Resource<?>>> toDelete = new ArrayList<>(selectedItems);
+        for (TreeItem<Resource<?>> selectedItem : toDelete)
         {
             if (selectedItem.getValue().getMediaType().equals(MediaType.CSS))
             {
@@ -1297,7 +1303,7 @@ public class BookBrowserManager
                                             return;
                                         }
                                         resource.setData(data);
-                                        if (resource instanceof XHTMLResource || resource instanceof CSSResource || resource instanceof JavascriptResource
+                                        if (resource instanceof CSSResource || resource instanceof JavascriptResource
                                                 ||  resource instanceof XMLResource)
                                         {
                                             editorManager.refreshEditorCode(resource);

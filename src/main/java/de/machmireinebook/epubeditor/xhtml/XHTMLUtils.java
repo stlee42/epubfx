@@ -122,12 +122,6 @@ public class XHTMLUtils
                     }
                 }
             }
-
-            if (epubVersion.isEpub2()) {
-                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-            } else {
-                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
-            }
             content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IOException | IllegalAddException e)
@@ -203,11 +197,6 @@ public class XHTMLUtils
 
             TagNode rootNode = cleaner.clean(originalHtml);
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            if (epubVersion.isEpub2()) {
-                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-            } else {
-                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
-            }
             content = outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (IllegalAddException e)
@@ -254,15 +243,18 @@ public class XHTMLUtils
             document.setDocType(Constants.DOCTYPE_HTML.clone());
         }
 
-        ByteArrayOutputStream baos;
+        ;
+        byte[] bytes;
         try {
-            baos = outputXhtml(document, escapeOutput);
+            ByteArrayOutputStream baos = outputXhtml(document, escapeOutput);
+            bytes = baos.toByteArray();
+            bytes = unescapedHtmlWithXmlExceptions(bytes);
         }
         catch (IOException e) {
             logger.error("", e);
             throw new XhtmlOutputException(e.getMessage());
         }
-        return baos.toByteArray();
+        return bytes;
     }
 
     public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent, EpubVersion epubVersion) {
@@ -320,7 +312,7 @@ public class XHTMLUtils
         }
     }
 
-    public static String unescapedHtmlWithXmlExceptions(String escapedText) {
+    public static String unescapedHtmlWithXmlAndNbspExceptions(String escapedText) {
         //leave nbsp untouched
         Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
         withoutNbsp.remove("&nbsp;");
@@ -336,5 +328,23 @@ public class XHTMLUtils
                 );
         String unescapedXhtml = translator.translate(escapedText);
         return unescapedXhtml;
+
+    }
+
+    public static byte[] unescapedHtmlWithXmlExceptions(byte[] escapedText) {
+        //leave nbsp untouched
+        Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
+        //some scripts for generating html from docx generate this (wrong typed) entity for „ (german double quote bottom)
+        //for convience replace it too
+        withoutNbsp.put("&dbquo;", "„");
+        CharSequenceTranslator translator =
+                new AggregateTranslator(
+                        new LookupTranslator(BASIC_UNESCAPE),
+                        new LookupTranslator(withoutNbsp),
+                        new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE),
+                        new NumericEntityUnescaper()
+                );
+        String unescapedXhtml = translator.translate(new String(escapedText, StandardCharsets.UTF_8));
+        return unescapedXhtml.getBytes(StandardCharsets.UTF_8);
     }
 }

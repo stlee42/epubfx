@@ -366,13 +366,13 @@
                                             <Tooltip styleClass="white-tooltip" text="Change current paragraph to a headline of level 1" />
                                         </tooltip>
                                     </Button>
-                                    <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction" styleClass="square-button">
-                                        <graphic>
+                                    <Button fx:id="quotationMarksButton" mnemonicParsing="false" onAction="#quotationMarksButtonAction" styleClass="colored-letter-button">
+                                        <!--graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
                                                 <Image url="icons/double-quotes-open-close-german.png"/>
                                             </ImageView>
-                                        </graphic>
+                                        </graphic-->
                                         <tooltip>
                                             <Tooltip styleClass="white-tooltip" text="Surround selection with primary quotation marks" />
                                         </tooltip>
@@ -385,13 +385,13 @@
                                         </tooltip>
                                     </Button>
 
-                                    <Button fx:id="singleQuotationMarksButton" maxHeight="32" maxWidth="32" mnemonicParsing="false" onAction="#singleQuotationMarksButtonAction" styleClass="square-button">
-                                        <graphic>
+                                    <Button fx:id="singleQuotationMarksButton" maxHeight="32" maxWidth="32" mnemonicParsing="false" onAction="#singleQuotationMarksButtonAction" styleClass="colored-letter-button">
+                                        <!--graphic>
                                             <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
                                                        preserveRatio="true">
                                                 <Image url="icons/single-quotes-open-close-german.png"/>
                                             </ImageView>
-                                        </graphic>
+                                        </graphic-->
                                         <tooltip>
                                             <Tooltip styleClass="white-tooltip" text="Surround selection with secondary quotation marks" />
                                         </tooltip>
@@ -720,6 +720,21 @@
                                                 <Image url="icons/icons8_Lowercase_96px.png"/>
                                             </ImageView>
                                         </graphic-->
+                                    </Button>
+                                </Column>
+                                <Column>
+                                    <Button fx:id="smallCapsButton" mnemonicParsing="false"
+                                            onAction="#smallCapsButtonAction" styleClass="colored-letter-button">
+                                        <tooltip>
+                                            <Tooltip styleClass="white-tooltip"
+                                                     text="Change the selected text to small caps letters"/>
+                                        </tooltip>
+                                        <graphic>
+                                            <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true"
+                                                       preserveRatio="true">
+                                                <Image url="icons/icons8_Lowercase_96px.png"/>
+                                            </ImageView>
+                                        </graphic>
                                     </Button>
                                 </Column>
                             </nodes>

@@ -421,7 +421,7 @@ public class EditorTabManager {
         String code = editor.getCode();
         if (currentEditorIsXHTML.get()) {
             Resource resource = currentXHTMLResource.get();
-            code = XHTMLUtils.unescapedHtmlWithXmlExceptions(code);
+            code = XHTMLUtils.unescapedHtmlWithXmlAndNbspExceptions(code);
             resource.setData(code.getBytes(StandardCharsets.UTF_8));
         }
         refreshPreview();
@@ -991,9 +991,11 @@ public class EditorTabManager {
         for (Tab tab : tabs) {
             Resource<?> resource = (Resource<?>) tab.getUserData();
             if (resourceToUpdate.equals(resource)) {
-                CodeEditor editor = (CodeEditor) tab.getContent();
-                editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
-                editor.setAbsoluteCursorPosition(0);
+                if (tab.getContent() instanceof CodeEditor) {
+                    CodeEditor editor = (CodeEditor) tab.getContent();
+                    editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
+                    editor.setAbsoluteCursorPosition(0);
+                }
             }
         }
         if (resourceToUpdate.getMediaType() == MediaType.XHTML) {

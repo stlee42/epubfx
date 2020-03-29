@@ -591,7 +591,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
     public boolean isInsertablePosition() {
         Optional<XMLTagPair> optional = findSurroundingTags(tagName -> "head".equals(tagName) || "body".equals(tagName)
                 || "html".equals(tagName));
-        return !(optional.isEmpty() || "head".equals(optional.get().getTagName())
+        return !(!optional.isPresent() || "head".equals(optional.get().getTagName())
                 || "html".equals(optional.get().getTagName())
                 || StringUtils.isEmpty(optional.get().getTagName()));
     }

@@ -17,8 +17,6 @@ import javafx.stage.StageStyle;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import de.machmireinebook.epubeditor.gui.UIHelper;
-
 /**
  * User: mjungierek
  * Date: 04.01.2016
@@ -30,7 +28,7 @@ public class MainStage extends Stage
     {
         initStyle(style);
 
-        FXMLLoader loader = new FXMLLoader(UIHelper.class.getResource("/main.fxml"), null, new JavaFXBuilderFactory(),
+        FXMLLoader loader = new FXMLLoader(MainStage.class.getResource("/main.fxml"), null, new JavaFXBuilderFactory(),
                 type -> BeanFactory.getInstance().getBean(type));
         AnchorPane root = loader.load();
 

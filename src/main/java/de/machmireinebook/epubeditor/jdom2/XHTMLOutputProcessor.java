@@ -395,4 +395,11 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
             write(out, "\n");
         }
     }
+
+    protected void printEntityRef(final Writer out, final FormatStack fstack,
+                                  final EntityRef entity) throws IOException {
+        // EntityRefs are treated like text, not indented/newline content.
+        logger.debug("output entity " + entity.getName());
+        textEntityRef(out, entity.getName());
+    }
 }

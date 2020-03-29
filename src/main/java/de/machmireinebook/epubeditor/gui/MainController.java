@@ -103,6 +103,8 @@ public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
     @FXML
+    private Button smallCapsButton;
+    @FXML
     private Button setHtmtlTitleButton;
     @FXML
     private Button removeUnusedMediaFilesButton;
@@ -378,6 +380,12 @@ public class MainController implements Initializable
         paragraphButton.disableProperty().bind(isNoXhtmlEditorBinding);
         quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
         singleQuotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
+
+        preferencesManager.quotationMarkSelectionProperty().addListener((observableValue, newValue, oldValue) -> {
+            QuotationMark quotationMark = QuotationMark.findByDescription(newValue);
+            quotationMarksButton.setText(quotationMark.getLeft() + quotationMark.getRight());
+        });
+
         blockQuoteButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
         boldButton.disableProperty().bind(isNoXhtmlEditorBinding);
@@ -429,12 +437,13 @@ public class MainController implements Initializable
         insertLinkButton.disableProperty().bind(isNoXhtmlEditorBinding);
         lowercaseButton.disableProperty().bind(isNoEditorBinding);
         uppercaseButton.disableProperty().bind(isNoEditorBinding);
+        smallCapsButton.disableProperty().bind(isNoEditorBinding);
 
         createHtmlTocButton.disableProperty().bind(currentBookProperty.isNull());
         createNcxButton.disableProperty().bind(currentBookProperty.isNull());
 
         cursorPosLabel.textProperty().bind(editorTabManager.cursorPosLabelProperty());
-        previewWidthLabel.textProperty().bind(Bindings.createStringBinding(() -> "Width: " + previewWebview.widthProperty().getValue(), previewWebview.widthProperty()));
+        previewWidthLabel.textProperty().bind(Bindings.createStringBinding(() -> "Width: " + Math.ceil(previewWebview.widthProperty().getValue()), previewWebview.widthProperty()));
 
         //Teile der Oberfläche an-/abschalten, per Binding an die Buttons im Ribbon
         clipListView.visibleProperty().bindBidirectional(showClipsToggleButton.selectedProperty());
@@ -533,7 +542,6 @@ public class MainController implements Initializable
         //not bind bidiretional, because selectionModel has only read only properties and preferences can not set values from preferences store if property is bind
         preferencesManager.languageSpellSelectionProperty().addListener((observable, oldValue, newValue) -> languageSpellComboBox.getSelectionModel().select(newValue));
         //initialize the value in combobox
-        languageSpellComboBox.getSelectionModel().select(preferencesManager.languageSpellSelectionProperty().get());
         languageSpellComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> preferencesManager.languageSpellSelectionProperty().set(newValue));
 
         languageSpellComboBox.disableProperty().bind(preferencesManager.spellcheckProperty().not());
@@ -545,6 +553,7 @@ public class MainController implements Initializable
             previewManager.changePreviewWidth(newValue.getWidth());
         });
     }
+
 
     @NotNull
     private String setStageTitle(Book book) {
@@ -593,6 +602,11 @@ public class MainController implements Initializable
         }
     }
 
+    /**
+     * Now all configuration values are read into application. Set different ui elements to the stored values, like language
+     *
+     * @param stage
+     */
     public void setStage(Stage stage)
     {
         this.stage = stage;
@@ -616,6 +630,13 @@ public class MainController implements Initializable
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN), this::openEpubAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN), this::saveEpubAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN), this::italicButtonAction);
+
+        String quotationMarkSelection = preferencesManager.getQuotationMarkSelection();
+        QuotationMark quotationMark = QuotationMark.findByDescription(quotationMarkSelection);
+        quotationMarksButton.setText(quotationMark.getLeft() + quotationMark.getRight());
+        singleQuotationMarksButton.setText(quotationMark.getSingleLeft() + quotationMark.getSingleRight());
+
+        languageSpellComboBox.getSelectionModel().select(preferencesManager.languageSpellSelectionProperty().get());
     }
 
     public Book getCurrentBook()
@@ -1379,6 +1400,11 @@ public class MainController implements Initializable
     public void lowercaseButtonAction() {
         editorTabManager.toLowerCase();
     }
+
+    public void smallCapsButtonAction() {
+        editorTabManager.surroundSelection("<span style=\"font-variant: small-caps;\">", "</span>");
+    }
+
 
     public void settingsButtonAction()
     {
