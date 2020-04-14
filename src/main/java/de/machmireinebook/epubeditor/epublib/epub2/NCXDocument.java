@@ -183,13 +183,13 @@ public class NCXDocument
        return write(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource createNCXResource(Book book)
+    public static Resource<Document> createNCXResource(Book book)
     {
         EpubMetadata metadata = book.getMetadata();
         return createNCXResource(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource createNCXResource(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
+    public static Resource<Document> createNCXResource(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
     {
         Document ncxDocument = write(identifiers, title, tableOfContents);
 
@@ -198,7 +198,7 @@ public class NCXDocument
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(ncxDocument);
 
-        Resource resource = null;
+        Resource<Document> resource = null;
         try
         {
             resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);

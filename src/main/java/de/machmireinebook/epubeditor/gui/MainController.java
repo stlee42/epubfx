@@ -859,7 +859,9 @@ public class MainController implements Initializable
             logger.error("", e);
         }
         editorTabManager.refreshEditorCode(book.getOpfResource());
-        editorTabManager.refreshEditorCode(book.getNcxResource());
+        if (!book.isEpub3() || book.getNcxResource() != null) {
+            editorTabManager.refreshEditorCode(book.getNcxResource());
+        }
         currentBookProperty.get().setBookIsChanged(false);
     }
 
@@ -1362,7 +1364,7 @@ public class MainController implements Initializable
 
     public void createNcxAction() {
         TocGenerator.TocGeneratorResult result = tocGenerator.createNcxFromNav();
-        Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
+        Map<Resource<Document>, Document> allResourcesToRewrite = result.getResourcesToRewrite();
 
         Book book = getCurrentBook();
         for (Resource resource : allResourcesToRewrite.keySet())

@@ -2,6 +2,8 @@ package de.machmireinebook.epubeditor.epublib.resource;
 
 import org.apache.log4j.Logger;
 
+import org.jdom2.Document;
+
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
@@ -53,15 +55,15 @@ public class XHTMLResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public Resource<Document> createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new XHTMLResource(id, data, href);
+        Resource<Document> res = new XHTMLResource(id, data, href);
         res.setMediaType(mediaType);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public Resource<Document> createResource(byte[] data, String href, MediaType mediaType)
     {
         return new XHTMLResource(data, href, mediaType);
     }

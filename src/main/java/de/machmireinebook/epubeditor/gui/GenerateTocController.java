@@ -95,7 +95,7 @@ public class GenerateTocController implements StandardController
     private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
     private ObservableList<EditableTocEntry> allTocEntries = FXCollections.observableArrayList();
-    private Map<Resource, Document> resourcesToRewrite = new HashMap<>();
+    private Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
     private final BooleanProperty editModeProperty = new SimpleBooleanProperty(this, "editMode");
     // levelToShowProperty
     private final IntegerProperty levelToShowProperty = new SimpleIntegerProperty(this, "levelToShow");
@@ -347,7 +347,7 @@ public class GenerateTocController implements StandardController
                 result = tocGenerator.generateNcx(tocEntriesToUseInToc);
             }
 
-            Map<Resource, Document> allResourcesToRewrite = result.getResourcesToRewrite();
+            Map<Resource<Document>, Document> allResourcesToRewrite = result.getResourcesToRewrite();
             allResourcesToRewrite.putAll(resourcesToRewrite);
 
             for (Resource resource : allResourcesToRewrite.keySet())
@@ -358,7 +358,7 @@ public class GenerateTocController implements StandardController
 
             bookBrowserManager.refreshBookBrowser();
             editorTabManager.refreshEditorCode(result.getTocResource());
-            editorTabManager.refreshPreview();
+            editorTabManager.totalRefreshPreview();
             currentBook.get().setBookIsChanged(true);
         }
         catch (IOException | JDOMException e)

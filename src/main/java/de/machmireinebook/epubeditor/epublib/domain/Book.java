@@ -72,7 +72,7 @@ public class Book implements Serializable
     private boolean isFixedLayout = false;
     private int fixedLayoutWidth;
     private int fixedLayoutHeight;
-    private Resource<?> epub3NavResource;
+    private Resource<Document> epub3NavResource;
     private Resource<?> appleDisplayOptions;
 
     private BooleanProperty bookIsChanged = new SimpleBooleanProperty(false);
@@ -221,7 +221,7 @@ public class Book implements Serializable
      * @param resource
      * @return The table of contents
      */
-    public TocEntry addSection(String title, Resource<?> resource)
+    public void addSection(String title, Resource<?> resource)
     {
         getResources().put(resource);
         TocEntry tocReference = tableOfContents.addTOCReference(new TocEntry(title, resource));
@@ -229,15 +229,14 @@ public class Book implements Serializable
         {
             spine.addSpineReference(new SpineReference(resource), null);
         }
-        return tocReference;
     }
 
-    public SpineReference addSpineResource(Resource<?> resource)
+    public void addSpineResource(Resource<?> resource)
     {
-        return addSpineResource(resource, null);
+        addSpineResource(resource, null);
     }
 
-    public SpineReference addSpineResource(Resource<?> resource, Integer index)
+    public void addSpineResource(Resource<?> resource, Integer index)
     {
         resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
         getResources().put(resource);
@@ -247,7 +246,6 @@ public class Book implements Serializable
             ref = spine.addSpineReference(new SpineReference(resource), index);
         }
         refreshOpfResource();
-        return ref;
     }
 
     public void removeResource(Resource<?> resource)
@@ -293,17 +291,15 @@ public class Book implements Serializable
     }
 
 
-    public SpineReference removeSpineResource(Resource resource)
+    public void removeSpineResource(Resource resource)
     {
         getResources().remove(resource);
         int index = spine.findFirstResourceById(resource.getId());
-        SpineReference ref = null;
         if (index >= 0)
         {
-            ref = spine.getSpineReferences().remove(index);
+            spine.getSpineReferences().remove(index);
         }
         refreshOpfResource();
-        return ref;
     }
 
     public void refreshOpfResource()
@@ -748,7 +744,7 @@ public class Book implements Serializable
         this.isFixedLayout = isFixedLayout;
     }
 
-    public Resource getEpub3NavResource()
+    public Resource<Document> getEpub3NavResource()
     {
         return epub3NavResource;
     }
@@ -876,10 +872,6 @@ public class Book implements Serializable
         }
         else if(MediaType.XHTML.equals(resource.getMediaType()))
         {
-            //nach href suchen
-            //rename in toc
-            getTableOfContents().replaceResourceInTocReference(oldResource, newResource);
-
             //refresh ncx
             refreshNcxResource();
 

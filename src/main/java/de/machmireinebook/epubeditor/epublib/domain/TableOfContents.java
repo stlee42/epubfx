@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,29 +55,6 @@ public class TableOfContents implements Serializable {
 		return tocReference;
 	}
 
-	public Optional<TocEntry<? extends TocEntry, Document>> replaceResourceInTocReference(Resource oldResource, Resource newResource)
-	{
-		return replaceResourceInTocReference(tocReferences, oldResource, newResource);
-	}
-
-	private Optional<TocEntry<? extends TocEntry, Document>> replaceResourceInTocReference(List<TocEntry<?, Document>> tocEntries, Resource oldResource, Resource newResource)
-	{
-		for (TocEntry<?, Document> tocReference : tocEntries)
-		{
-			if(tocReference.getResource().equals(oldResource))
-			{
-				tocReference.setResource(newResource);
-				return Optional.of(tocReference);
-			}
-
-			if (tocReference.hasChildren())
-			{
-				return replaceResourceInTocReference(oldResource, newResource);
-			}
-		}
-		return Optional.empty();
-	}
-	
 	/**
 	 * All unique references (unique by href) in the order in which they are referenced to in the table of contents.
 	 * 

@@ -61,21 +61,21 @@ public class TocGenerator
 
     public static class TocGeneratorResult
     {
-        private Resource tocResource;
-        private Map<Resource, Document> resourcesToRewrite;
+        private Resource<Document> tocResource;
+        private Map<Resource<Document>, Document> resourcesToRewrite;
 
-        public TocGeneratorResult(Resource tocResource, Map<Resource, Document> resourcesToRewrite)
+        public TocGeneratorResult(Resource<Document> tocResource, Map<Resource<Document>, Document> resourcesToRewrite)
         {
             this.tocResource = tocResource;
             this.resourcesToRewrite = resourcesToRewrite;
         }
 
-        public Resource getTocResource()
+        public Resource<Document> getTocResource()
         {
             return tocResource;
         }
 
-        public Map<Resource, Document> getResourcesToRewrite()
+        public Map<Resource<Document>, Document> getResourcesToRewrite()
         {
             return resourcesToRewrite;
         }
@@ -284,9 +284,9 @@ public class TocGenerator
         Book book = getBook();
         book.setBookIsChanged(true);
         book.getTableOfContents().setTocReferences(tocEntries);
-        Resource navResource = book.getEpub3NavResource();
+        Resource<Document> navResource = book.getEpub3NavResource();
 
-        Map<Resource, Document> resourcesToRewrite = new HashMap<>();
+        Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
 
         Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
         Element originalHeadElement = null; //but try to use the original head beacus the title, styles etc.
@@ -485,9 +485,9 @@ public class TocGenerator
         book.setBookIsChanged(true);
         book.getTableOfContents().setTocReferences(tocEntries);
 
-        Map<Resource, Document> resourcesToRewrite = new HashMap<>();
+        Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
 
-        Resource ncxResource = NCXDocument.createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getTableOfContents());
+        Resource<Document> ncxResource = NCXDocument.createNCXResource(book.getMetadata().getIdentifiers(), book.getTitle(), book.getTableOfContents());
         book.setNcxResource(ncxResource);
         book.getSpine().setTocResource(ncxResource);
         //in epub3 it will not be recreated at saving the book as for epub2, because this overwrite the old one in resources
