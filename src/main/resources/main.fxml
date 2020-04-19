@@ -51,7 +51,7 @@
                 <StashableSplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL">
                     <AnchorPane fx:id="previewAnchorPane" SplitPane.resizableWithParent="false">
                         <ToolBar layoutX="14.0" layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0"
-                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" styleClass="flat">
                             <Button fx:id="zoomInButton" mnemonicParsing="false" onAction="#previewZoomIn" styleClass="flat">
                                 <tooltip>
                                     <Tooltip styleClass="white-tooltip" text="Zoom in"/>
@@ -89,7 +89,7 @@
                             </Button>
                             <Separator orientation="VERTICAL" prefHeight="30.0"/>
                             <Label>Device Width: </Label>
-                            <ChoiceBox fx:id="deviceWidthComboBox" maxWidth="200">
+                            <ChoiceBox fx:id="deviceWidthComboBox" maxWidth="100">
                                 <items>
                                     <FXCollections fx:factory="observableArrayList">
                                         <ReaderDevice description="Responsive" width="600"/>
@@ -107,12 +107,15 @@
                                 </tooltip>
                             </ChoiceBox>
 
-                            <Label fx:id="previewWidthLabel">Width: </Label>
 
+                        </ToolBar>
+                        <ToolBar layoutY="-6.0" prefHeight="40.0" AnchorPane.leftAnchor="0.0"
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" styleClass="flat">
+                            <Label fx:id="previewWidthLabel">Width: </Label>
                         </ToolBar>
                         <WebView fx:id="previewWebview" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0"
                                  prefWidth="-1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0"/>
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0"/>
                     </AnchorPane>
                     <TreeView fx:id="tocTreeView"/>
                 </StashableSplitPane>
@@ -997,7 +1000,7 @@
             </tabs>
         </Ribbon>
         <ToolBar layoutY="848.0" prefHeight="40.0" prefWidth="1207.0" AnchorPane.bottomAnchor="0.0"
-                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" styleClass="flat">
             <Label fx:id="cursorPosLabel" layoutX="1077.0" layoutY="12.0" text="Label" AnchorPane.bottomAnchor="11.0"
                    AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="12.0"/>
         </ToolBar>

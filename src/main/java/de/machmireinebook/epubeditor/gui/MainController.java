@@ -381,9 +381,11 @@ public class MainController implements Initializable
         quotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
         singleQuotationMarksButton.disableProperty().bind(isNoXhtmlEditorBinding);
 
-        preferencesManager.quotationMarkSelectionProperty().addListener((observableValue, newValue, oldValue) -> {
+        preferencesManager.quotationMarkSelectionProperty().addListener((observableValue, oldValue, newValue) -> {
+            logger.debug("quotation mark selection changed: " + newValue);
             QuotationMark quotationMark = QuotationMark.findByDescription(newValue);
             quotationMarksButton.setText(quotationMark.getLeft() + quotationMark.getRight());
+            singleQuotationMarksButton.setText(quotationMark.getSingleLeft() + quotationMark.getSingleRight());
         });
 
         blockQuoteButton.disableProperty().bind(isNoXhtmlEditorBinding);
