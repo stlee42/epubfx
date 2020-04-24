@@ -23,6 +23,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Spinner;
 
 import org.apache.log4j.Logger;
 
@@ -110,6 +112,22 @@ public class PreferencesManager
             "Source Code Pro", "Victor Mono"));
     private ObjectProperty<String> fontSelectionProperty = new SimpleObjectProperty<>("Source Code Pro");
 
+    private final IntegerProperty previewZoomProperty = new SimpleIntegerProperty(this, "previewZoomProperty", 100);
+    private final IntegerField previewZoomControl;
+
+    {
+        SimpleIntegerControl integerControl = new SimpleIntegerControl();
+        List<Node> children = integerControl.getChildren();
+        for (Node child : children) {
+            if (child instanceof Spinner) {
+                Spinner<Integer> spinner = (Spinner) child;
+                spinner.increment(10);
+                spinner.decrement(10);
+            }
+        }
+        previewZoomControl = Field.ofIntegerType(previewZoomProperty).render(integerControl);
+    }
+
     public void init(Element preferencesRootElement)
     {
         storageHandler = new EpubFxPreferencesStorageHandler(preferencesRootElement);
@@ -151,6 +169,11 @@ public class PreferencesManager
                             Setting.of("Tab Size", tabSizeControl, tabSizeProperty)
                     )
                 ),
+            Category.of("Preview",
+                    Group.of("Appearance",
+                            Setting.of("Default Zoom Factpr", previewZoomControl, previewZoomProperty)
+                    )
+            ),
             Category.of("Language specific Settings",
                     Group.of("UI",
                         Setting.of("UI Language", languageItems, languageSelection)
@@ -351,6 +374,16 @@ public class PreferencesManager
     }
     public final void setFontSelection(String value) {
         fontSelectionProperty.set(value);
+    }
+
+    public int getPreviewZoom() {
+        return previewZoomProperty.getValue();
+    }
+    public IntegerProperty previewZoomProperty() {
+        return previewZoomProperty;
+    }
+    public void setPreviewZoom(int previewZoomProperty) {
+        this.previewZoomProperty.setValue(previewZoomProperty);
     }
 
     public final ObjectProperty<StartupType> startupTypeProperty() {

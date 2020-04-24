@@ -124,7 +124,7 @@ public class Book implements Serializable
         book.setNcxResource(ncxResource);
         book.addResource(ncxResource, false);
 
-        Resource<?> textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
+        Resource<?> textRes = book.addResourceFromTemplate("/epub/template-epub3.html", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
         book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);

@@ -336,9 +336,10 @@ public class BookBrowserManager
             logger.info("editing end for new value " + event.getNewValue());
             Resource<?> resource = event.getNewValue();
             if (resource instanceof CSSResource || resource instanceof JavascriptResource
-                    ||  resource instanceof XMLResource) {
+                    || resource instanceof XMLResource) {
                 editorManager.refreshEditorCode(resource);
-            } else if (resource instanceof ImageResource) {
+            }
+            else if (resource instanceof ImageResource) {
                 editorManager.refreshImageViewer(resource);
             }
             editorManager.totalRefreshPreview();
@@ -1170,7 +1171,11 @@ public class BookBrowserManager
         }
         else
         {
-            res = book.addResourceFromTemplate("/epub/template.xhtml", "Text/" + fileName);
+            if (book.isEpub3()) {
+                res = book.addResourceFromTemplate("/epub/template-epub3.html", "Text/" + fileName);
+            } else {
+                res = book.addResourceFromTemplate("/epub/template.xhtml", "Text/" + fileName);
+            }
         }
 
         addTreeItem(res);

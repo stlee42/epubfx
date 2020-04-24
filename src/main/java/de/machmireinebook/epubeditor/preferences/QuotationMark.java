@@ -14,11 +14,11 @@ public enum QuotationMark
     FRENCH("«» (Français)", "«", "»",  "‹", "›"),
             ;
 
-    private String description;
-    private String left;
-    private String right;
-    private String singleLeft;
-    private String singleRight;
+    private final String description;
+    private final String left;
+    private final String right;
+    private final String singleLeft;
+    private final String singleRight;
 
     QuotationMark(String description, String left, String right, String singleLeft, String singleRight)
     {

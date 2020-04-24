@@ -503,7 +503,7 @@ public class EditorTabManager {
     }
 
 
-    private boolean isTabAlreadyOpen(Resource resource) {
+    public boolean isTabAlreadyOpen(Resource resource) {
         boolean found = false;
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {

@@ -23,6 +23,7 @@ import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.editor.ElementPosition;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.preferences.PreferencesManager;
 
 /**
  * User: mjungierek
@@ -39,6 +40,8 @@ public class PreviewManager
 
     @Inject
     private EditorTabManager editorManager;
+    @Inject
+    private PreferencesManager preferencesManager;
 
     public PreviewManager()
     {
@@ -67,12 +70,18 @@ public class PreviewManager
     public void setWebview(WebView webview)
     {
         this.webview = webview;
-        webview.setContextMenuEnabled(false);
+        webview.setContextMenuEnabled(true);
+        webview.setZoom(preferencesManager.getPreviewZoom() / 100d);
+        preferencesManager.previewZoomProperty().addListener((observable, oldValue, newValue) -> {
+            webview.setZoom(preferencesManager.getPreviewZoom() / 100d);
+        });
 
         WebEngine engine = webview.getEngine();
         engine.setOnError(event -> logger.error(event.getMessage(), event.getException()));
         engine.setOnAlert(event -> logger.info(event.getData()));
     }
+
+
 
     private void refreshWebView(Resource resource)
     {

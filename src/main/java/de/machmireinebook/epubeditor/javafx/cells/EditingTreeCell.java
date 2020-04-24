@@ -48,8 +48,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
             return;
         }
         super.startEdit();
-        if(textField == null)
-        {
+        if(textField == null) {
             createTextField();
         }
         setText(null);
@@ -135,23 +134,25 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
         });
 
         textField.setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.ENTER)
-            {
-                String value = textField.getText();
-                if (value != null)
+            if (isEditing()) {
+                if (event.getCode() == KeyCode.ENTER)
                 {
-                    T item = getItem();
-                    item.convertFromString(value);
-                    commitEdit(item);
+                    String value = textField.getText();
+                    if (value != null)
+                    {
+                        T item = getItem();
+                        item.convertFromString(value);
+                        commitEdit(item);
+                    }
+                    else
+                    {
+                        commitEdit(null);
+                    }
                 }
-                else
+                else if (event.getCode() == KeyCode.ESCAPE)
                 {
-                    commitEdit(null);
+                    cancelEdit();
                 }
-            }
-            else if (event.getCode() == KeyCode.ESCAPE)
-            {
-                cancelEdit();
             }
         });
         textField.getStyleClass().add("editing-tree-cell-textfield");

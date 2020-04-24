@@ -1,14 +1,19 @@
 package de.machmireinebook.epubeditor.gui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -22,15 +27,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
-import de.machmireinebook.epubeditor.epublib.bookprocessor.CoverpageBookProcessor;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
 
 /**
  * User: mjungierek
@@ -39,6 +46,13 @@ import de.machmireinebook.epubeditor.editor.EditorTabManager;
  */
 public class AddCoverController implements Initializable
 {
+    private static final Logger logger = Logger.getLogger(AddCoverController.class);
+
+    public static final String DEFAULT_COVER_IMAGE_ID = "cover-image";
+    public static final String DEFAULT_COVER_IMAGE_HREF = "Images/cover.jpg";
+    public static final String DEFAULT_COVER_PAGE_ID = "cover";
+    public static final String DEFAULT_COVER_PAGE_HREF = "Text/cover.xhtml";
+
     @FXML
     private ImageView imageView;
     @FXML
@@ -124,7 +138,7 @@ public class AddCoverController implements Initializable
         return instance;
     }
 
-    public void onOkAction(ActionEvent actionEvent)
+    public void onOkAction()
     {
         insertCover();
     }
@@ -133,17 +147,20 @@ public class AddCoverController implements Initializable
     {
         ImageResource image = tableView.getSelectionModel().getSelectedItem();
         book.setCoverImage(image);
-        new CoverpageBookProcessor().processBook(book);
-        Resource<?> coverPage = null;
-        if (book.isEpub3()) {
-            List<LandmarkReference> landmarks = book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.COVER);
-            if (!landmarks.isEmpty()) {
-                coverPage = landmarks.get(0).getResource();
+        Optional<Resource> coverPageOptional = createOrReplaceCoverPage();
+        coverPageOptional.ifPresentOrElse(coverPage -> {
+            bookBrowserManager.refreshOpf();
+            bookBrowserManager.refreshBookBrowser();
+            bookBrowserManager.selectTextItem(coverPage);
+            if (editorTabManager.isTabAlreadyOpen(coverPage)) {
+                editorTabManager.refreshEditorCode(coverPage);
+                editorTabManager.refreshPreview();
+            } else {
+                editorTabManager.openFileInEditor(coverPage);
             }
-        } else {
-            coverPage = book.getGuide().getCoverPage();
-        }
-        if (coverPage == null) {
+            book.setBookIsChanged(true);
+            stage.close();
+        }, () -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(stage);
             alert.setTitle("Coverpage not generated");
@@ -151,17 +168,10 @@ public class AddCoverController implements Initializable
             alert.getDialogPane().setHeaderText(null);
             alert.setContentText("Can't find generated cover page, something goes wrong");
             alert.showAndWait();
-            return;
-        }
-        book.getSpine().addResource(coverPage, 0);
-        bookBrowserManager.refreshOpf();
-        bookBrowserManager.refreshBookBrowser();
-        bookBrowserManager.selectTextItem(coverPage);
-        editorTabManager.openFileInEditor(coverPage);
-        stage.close();
+        });
     }
 
-    public void onCancelAction(ActionEvent actionEvent)
+    public void onCancelAction()
     {
         stage.close();
     }
@@ -177,9 +187,98 @@ public class AddCoverController implements Initializable
         this.book = book;
     }
 
-    public void otherFileButtonAction(ActionEvent actionEvent)
+    public void otherFileButtonAction()
     {
         mainController.addExistingFiles();
         refresh();
+    }
+
+    public Optional<Resource> createOrReplaceCoverPage()
+    {
+        if (book.getCoverPage() == null && book.getCoverImage() == null)
+        {
+            return Optional.empty();
+        }
+        Resource coverPage = book.getCoverPage();
+        ImageResource coverImage = book.getCoverImage();
+        if (coverPage == null)
+        {
+            if (coverImage != null) {
+                if (StringUtils.isBlank(coverImage.getHref()))
+                {
+                    coverImage.setHref(DEFAULT_COVER_IMAGE_HREF);
+                }
+                String coverPageHtml = createCoverpageHtml(coverImage.getHref(), coverImage.getWidth(), coverImage.getHeight());
+                if (StringUtils.isEmpty(coverPageHtml)) {
+                    logger.warn("generated coverPageHtml is empty");
+                    return Optional.empty();
+                }
+                coverPage = MediaType.XHTML.getResourceFactory().createResource(coverPageHtml.getBytes(), DEFAULT_COVER_PAGE_HREF);
+                fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
+                book.getSpine().addResource(coverPage, 0);
+            } else {
+                return Optional.empty();
+            }
+        }
+        else
+        {
+            if (StringUtils.isBlank(coverImage.getHref()))
+            {
+                coverImage.setHref(DEFAULT_COVER_IMAGE_HREF);
+            }
+            String coverPageHtml = createCoverpageHtml(coverImage.getHref(), coverImage.getWidth(), coverImage.getHeight());
+            coverPage.setData(coverPageHtml.getBytes());
+            fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
+        }
+
+        book.setCoverImage(coverImage);
+        book.setCoverPage(coverPage);
+        setCoverResourceIds(book);
+        return Optional.of(coverPage);
+    }
+
+    private String createCoverpageHtml(String imageHref, double width, double height)
+    {
+        String templateFileName;
+        if (book.isEpub3()) {
+            templateFileName = "/epub/cover-epub3.xhtml";
+        } else {
+            templateFileName = "/epub/cover-epub2.xhtml";
+        }
+        File file = new File(Book.class.getResource(templateFileName).getFile());
+        String content = null;
+        try (InputStream is = new FileInputStream(file)) {
+            content = IOUtils.toString(is, StandardCharsets.UTF_8);
+            content = content.replaceAll("\\$\\{width}", String.valueOf(width));
+            content = content.replaceAll("\\$\\{height}", String.valueOf(height));
+            content = content.replaceAll("\\$\\{imageHref}", imageHref);
+        }
+        catch (IOException e) {
+            logger.error("", e);
+            return content;
+        }
+        return content;
+    }
+
+    private void setCoverResourceIds(Book book)
+    {
+        if (book.getCoverImage() != null)
+        {
+            fixCoverResourceId(book, book.getCoverImage(), DEFAULT_COVER_IMAGE_ID);
+        }
+        if (book.getCoverPage() != null)
+        {
+            fixCoverResourceId(book, book.getCoverPage(), DEFAULT_COVER_PAGE_ID);
+        }
+    }
+
+
+    private void fixCoverResourceId(Book book, Resource resource, String defaultId)
+    {
+        if (StringUtils.isBlank(resource.getId()))
+        {
+            resource.setId(defaultId);
+        }
+        book.getResources().fixResourceId(resource);
     }
 }
