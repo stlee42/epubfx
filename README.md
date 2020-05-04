@@ -21,10 +21,14 @@ This project is in early stage, but some functions are working (with possible bu
 - inserting tables using configurable templates
 - inserting links to internal and external targets
 - Preview of xhtml file
+- preview of image files with information about size and dimesion  
 - basic search function (currently working: search and replace in current file, search in current file, all files, all html files (only forward searching available))
-- creating toc ncx (epub 2) and nav (epub 3)
+- generating and editing toc ncx (epub 2) and nav (epub 3)
+- generating cover file by image 
+- if nav for epub 3 is generated a ncx file can be generated for backwards compatibility 
 - creating cover xhtml file by image
 - splitting files
+- sorting files by drag and drop in book browser
 - renaming files
 - setting title of all xhtml files
 - check of ebook with official epub checker (not configurable yet)
