@@ -23,10 +23,10 @@ This project is in early stage, but some functions are working (with possible bu
 - Preview of xhtml file
 - basic search function (currently working: search and replace in current file, search in current file, all files, all html files (only forward searching available))
 - creating toc ncx (epub 2) and nav (epub 3)
-- creating cover file by image
+- creating cover xhtml file by image
 - splitting files
 - renaming files
-- setting title of all xhtml file
+- setting title of all xhtml files
 - check of ebook with official epub checker (not configurable yet)
 - opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
 - insert special symbols via dialog (typographical signs, special latin letters, greek alphabet, mathematical symbols, measurement unit signs)
@@ -34,7 +34,6 @@ This project is in early stage, but some functions are working (with possible bu
 ### Planned feature:
 - configuration for external applications
 - checking internal and external links
-- europatastatur like inserting of symbols (adaption of key codes of the project https://www.europatastatur.de/)
 
 ## Build and Running
 
@@ -65,6 +64,12 @@ I plan to include the maven javafx plugin for easier running the app.
 - BACKSPACE: delete back
 - RETURN, ENTER: insert paragraph (not html paragraph `<p></p>`)
 - TAB: insert tab or spaces (configurable how much spaces or tab character is used)
+- CTRL-1: change current pargraph to headline level 1  (`<h1></h1>`) 
+- CTRL-2: change current pargraph to headline level 2  (`<h2></h2>`)
+- CTRL-3: change current pargraph to headline level 3  (`<h3></h3>`)
+- CTRL-4: change current pargraph to headline level 4  (`<h4></h4>`)
+- CTRL-5: change current pargraph to headline level 5  (`<h5></h5>`)
+- CTRL-6: change current pargraph to headline level 6  (`<h6></h6>`)
 - CTRL-DEL: delete next word
 - CTRL-BACKSPACE: delete previous word
 - CTRL-I: wrap selected text with i-tag `<i></i>`

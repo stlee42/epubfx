@@ -42,26 +42,29 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
      * inside &lt;p&gt;. For exception of this rule there is the map <code>insertBreakBeforeIfInElement</code>
      */
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
-            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span", "aside");
-    private static Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
+            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span", "aside", "i", "b", "u", "s",
+            "sup", "sub", "strong");
+    private static final Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
             "div", "blockquote", "table", "tr", "hr", "ul", "ol", "figure", "hr", "aside");
     private static final List<String> neverExpand = Arrays.asList("br", "hr", "img", "link", "meta");
 
     static {
+        //exception of the preserve rule, that a break is inserted if these elements are in another specific element 
         List<String> inLiInsertBreak = Arrays.asList("ol", "ul");
-        List<String> inAsideInsertBreak = Arrays.asList("ol", "ul", "figure", "p", "div");
         insertBreakBeforeIfInElement.put("li", inLiInsertBreak);
+
+        List<String> inAsideInsertBreak = Arrays.asList("ol", "ul", "figure", "p", "div");
         insertBreakBeforeIfInElement.put("aside", inAsideInsertBreak);
     }
 
     private boolean escapeOutput = false;
-    private XhtmlEscapeStrategy xhtmlEscapeStrategy;
+    private final XhtmlEscapeStrategy xhtmlEscapeStrategy;
     private static class XhtmlEscapeStrategy implements EscapeStrategy {
         /**
          * Includes all characters that should escaped every time, e.g. the non breaking space, to avoid confusions with normal spaces
          */
-        private List<Character> specialXhtmlCharacter = Arrays.asList(
+        private final List<Character> specialXhtmlCharacter = Arrays.asList(
                 (char) 160,  //non breaking space
                 (char) 0x2002,  //en space
                 (char) 0x2003, //em space
@@ -95,7 +98,6 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
     protected void printElement(final Writer out, final FormatStack fstack,
                                 final NamespaceStack nstack, final Element element) throws IOException
     {
-
         nstack.push(element);
         try
         {

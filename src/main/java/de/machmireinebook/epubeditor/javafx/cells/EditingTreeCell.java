@@ -22,7 +22,7 @@ public class EditingTreeCell<T extends ToStringConvertible> extends TreeCell<T>
     private static final Logger logger = Logger.getLogger(EditingTreeCell.class);
 
     private TextField textField;
-    private boolean selectOnlyFirstPartOfFileName;
+    private final boolean selectOnlyFirstPartOfFileName;
 
     public EditingTreeCell() {
         this(false);

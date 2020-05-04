@@ -17,8 +17,6 @@ import de.machmireinebook.epubeditor.epublib.resource.XMLResourceFactory;
 
 /**
  * MediaType is used to tell the type of content a resource is.
- * <p>
- * Examples of mediatypes are image/gif, text/css and application/xhtml+xml
  */
 public enum MediaType implements Serializable
 {
@@ -49,6 +47,7 @@ public enum MediaType implements Serializable
     TTF_SINCE_3_2 ("font/ttf", ".ttf", FontResourceFactory.getInstance(), 3.2F),
     TTF_2_SINCE_3_2 ("application/font-sfnt", ".ttf", FontResourceFactory.getInstance(), 3.2F),
     TTF_RFC_8081 ("font/ttf", ".ttf", FontResourceFactory.getInstance()),
+    OPENTYPE_SIGIL ("font/otf", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
     OPENTYPE_RFC_8081("font/sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),

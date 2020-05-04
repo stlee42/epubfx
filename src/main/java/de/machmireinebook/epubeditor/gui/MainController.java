@@ -633,6 +633,13 @@ public class MainController implements Initializable
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN), this::saveEpubAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN), this::italicButtonAction);
 
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), this::h1ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN), this::h2ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN), this::h3ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN), this::h4ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN), this::h5ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN), this::h6ButtonAction);
+
         String quotationMarkSelection = preferencesManager.getQuotationMarkSelection();
         QuotationMark quotationMark = QuotationMark.findByDescription(quotationMarkSelection);
         quotationMarksButton.setText(quotationMark.getLeft() + quotationMark.getRight());
@@ -979,37 +986,37 @@ public class MainController implements Initializable
         editMetadataStage.show();
     }
 
-    public void h1ButtonAction(ActionEvent actionEvent)
+    public void h1ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h1");
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void h2ButtonAction(ActionEvent actionEvent)
+    public void h2ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h2");
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void h3ButtonAction(ActionEvent actionEvent)
+    public void h3ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h3");
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void h4ButtonAction(ActionEvent actionEvent)
+    public void h4ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h4");
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void h5ButtonAction(ActionEvent actionEvent)
+    public void h5ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h5");
         getCurrentBook().setBookIsChanged(true);
     }
 
-    public void h6ButtonAction(ActionEvent actionEvent)
+    public void h6ButtonAction()
     {
         editorTabManager.surroundParagraphWithTag("h6");
         getCurrentBook().setBookIsChanged(true);

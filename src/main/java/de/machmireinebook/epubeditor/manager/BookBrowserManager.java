@@ -275,21 +275,10 @@ public class BookBrowserManager
                 if (event.getClickCount() == 2)
                 {
                     TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
-                    if (isTextItem(item))
-                    {
-                        editorManager.openFileInEditor(item.getValue(), MediaType.XHTML);
-                    }
-                    else if (isCssItem(item))
-                    {
-                        editorManager.openFileInEditor(item.getValue(), MediaType.CSS);
-                    }
-                    else if (isXmlItem(item))
-                    {
-                        editorManager.openFileInEditor(item.getValue(), MediaType.XML);
-                    }
-                    else if (isImageItem(item))
-                    {
+                    if (isImageItem(item)) {
                         editorManager.openImageFile(item.getValue());
+                    } else {
+                        editorManager.openFileInEditor(item.getValue());
                     }
                     event.consume();
                 }
@@ -358,6 +347,15 @@ public class BookBrowserManager
             } else if (keyCode.equals(KeyCode.C) && event.isShortcutDown()) {
                 logger.debug("Ctrl-C pressed");
                 copyFileNameToClipboard();
+            } else if (keyCode.equals(KeyCode.ENTER)) {
+                logger.debug("Enter pressed");
+                TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
+                if (isImageItem(item)) {
+                    editorManager.openImageFile(item.getValue());
+                } else {
+                    editorManager.openFileInEditor(item.getValue());
+                }
+                event.consume();
             }
         });
 
@@ -489,7 +487,7 @@ public class BookBrowserManager
 
         item = new MenuItem("Join");
         item.setUserData(treeItem);
-        item.setOnAction(event -> joinXHTMLItemWitPreviousItem(treeItem));
+        item.setOnAction(event -> joinXHTMLItemWithPreviousItem(treeItem));
         menu.getItems().add(item);
 
         item = new MenuItem("Sort");
@@ -1358,7 +1356,7 @@ public class BookBrowserManager
         }
     }
 
-    private void joinXHTMLItemWitPreviousItem(TreeItem<Resource<?>> treeItem)
+    private void joinXHTMLItemWithPreviousItem(TreeItem<Resource<?>> treeItem)
     {
     }
 
