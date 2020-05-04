@@ -6,6 +6,8 @@ The layout and the functionality of this application is inspired by the famous e
 
 The editor supports ebooks in epub 2 and epub 3 format. 
 
+![](documentation/main-window.jpg)
+
 ## Functions
 ### Current features
 This project is in early stage, but some functions are working (with possible bugs):
@@ -34,6 +36,8 @@ This project is in early stage, but some functions are working (with possible bu
 - check of ebook with official epub checker (not configurable yet)
 - opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
 - insert special symbols via dialog (typographical signs, special latin letters, greek alphabet, mathematical symbols, measurement unit signs)
+
+![](documentation/symbols.jpg)
 
 ### Planned feature:
 - configuration for external applications
