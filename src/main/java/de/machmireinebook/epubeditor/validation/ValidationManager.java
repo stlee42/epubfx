@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,15 +28,15 @@ import org.apache.log4j.Logger;
 
 import org.controlsfx.dialog.ExceptionDialog;
 
+import com.adobe.epubcheck.api.EpubCheck;
+
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.editor.EditorPosition;
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
-
-import com.adobe.epubcheck.api.EpubCheck;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 
 /**
  * User: Michail Jungierek
@@ -134,20 +135,23 @@ public class ValidationManager {
         service.setOnSucceeded(event -> {
             EpubCheckReport report = service.getValue();
             List<ValidationMessage> messages = report.getMessages();
-            if (messages.isEmpty())
-            {
+            tableView.setPlaceholder(oldPlaceholder);
+            List<ValidationMessage> filteredMessages = messages
+                    .parallelStream()
+                    .filter(validationMessage -> validationMessage.getType().equals("ERROR") || validationMessage.getType().equals("WARNING"))
+                    .collect(Collectors.toList());
+            if (messages.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.NONE);
                 alert.initOwner(tableView.getScene().getWindow());
                 alert.setTitle("Result Epub Check");
                 alert.setHeaderText("Result of the Epub Check");
                 alert.getDialogPane().setGraphic(FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.CHECK));
-                alert.setContentText("The ebook is valid");
+                alert.setContentText("The ebook is valid. No errors and warnings found.");
                 alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
                 alert.showAndWait();
                 return;
             }
-            tableView.setPlaceholder(oldPlaceholder);
-            tableView.getItems().addAll(FXCollections.observableList(messages));
+            tableView.getItems().addAll(FXCollections.observableList(filteredMessages));
         });
         service.setOnFailed(event -> {
             ExceptionDialog exceptionDialog = new ExceptionDialog(event.getSource().getException());
