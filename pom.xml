@@ -17,7 +17,7 @@
     <repositories>
         <repository>
             <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
         <repository>
             <snapshots>
@@ -38,7 +38,7 @@
         <repository>
             <name>BestSolution e(fx)clipse releases</name>
             <id>efxclipse-releases</id>
-            <url>http://maven.bestsolution.at/efxclipse-releases/</url>
+            <url>https://maven.bestsolution.at/efxclipse-releases/</url>
         </repository>
     </repositories>
 
