@@ -802,12 +802,9 @@ public class MainController implements Initializable
     public void saveEpubAction()
     {
         Book book = currentBookProperty.get();
-        if (book.getPhysicalFileName() == null)
-        {
+        if (book.getPhysicalFileName() == null) {
             saveEpubAs();
-        }
-        else
-        {
+        } else {
             saveEpub(book);
         }
     }
@@ -826,8 +823,7 @@ public class MainController implements Initializable
         fileChooser.getExtensionFilters().removeAll();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("EPUB-Datei", "*.epub"));
         File file = fileChooser.showSaveDialog(stage);
-        if (file != null)
-        {
+        if (file != null) {
             book.setPhysicalFileName(file.toPath());
             saveEpub(book);
         }
@@ -859,12 +855,9 @@ public class MainController implements Initializable
     public void saveEpub(Book book)
     {
         EpubWriter writer = new EpubWriter();
-        try(OutputStream out = Files.newOutputStream(book.getPhysicalFileName()))
-        {
+        try(OutputStream out = Files.newOutputStream(book.getPhysicalFileName())) {
             writer.write(book, out);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.error("", e);
         }
         editorTabManager.refreshEditorCode(book.getOpfResource());
@@ -1219,8 +1212,7 @@ public class MainController implements Initializable
     public void splitButtonAction()
     {
         boolean success = editorTabManager.splitXHTMLFile();
-        if (success)
-        {
+        if (success) {
             getCurrentBook().setBookIsChanged(true);
         }
     }
@@ -1376,9 +1368,10 @@ public class MainController implements Initializable
         Map<Resource<Document>, Document> allResourcesToRewrite = result.getResourcesToRewrite();
 
         Book book = getCurrentBook();
-        for (Resource resource : allResourcesToRewrite.keySet())
+        for (Map.Entry<Resource<Document>, Document> entry : allResourcesToRewrite.entrySet())
         {
-            resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), book.getVersion()));
+            Resource<Document> resource = entry.getKey();
+            resource.setData(XHTMLUtils.outputXHTMLDocument(entry.getValue(), book.getVersion()));
             editorTabManager.refreshEditorCode(resource);
         }
 

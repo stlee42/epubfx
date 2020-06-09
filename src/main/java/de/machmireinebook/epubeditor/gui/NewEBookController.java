@@ -115,10 +115,9 @@ public class NewEBookController implements StandardController
         epub3ReflowableBooks.clear();
         epub3ReflowableBooks.add(MINIMAL_EPUB_3_BOOK);
         epub3PrepaginatedBooks.clear();
-        try
+        Path templatePath = new File(NewEBookController.class.getResource("/epub/templates/").getFile()).toPath();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(templatePath, filter))
         {
-            Path templatePath = new File(NewEBookController.class.getResource("/epub/templates/").getFile()).toPath();
-            DirectoryStream<Path> stream = Files.newDirectoryStream(templatePath, filter);
             for (Path path : stream)
             {
                 ZipInputStream zis = new ZipInputStream(new FileInputStream(path.toFile()));
@@ -180,9 +179,7 @@ public class NewEBookController implements StandardController
                     }
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.error("", e);
         }
 

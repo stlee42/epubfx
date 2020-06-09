@@ -271,6 +271,7 @@ public class AddStylesheetController implements StandardController
 
     public void okAction(ActionEvent actionEvent)
     {
+        // deepcode ignore IterateOver~keySet: no lookup of value
         for (Element headElement : headElements.keySet())
         {
             for (StylesheetResource stylesheetResource : stylesheetResources)

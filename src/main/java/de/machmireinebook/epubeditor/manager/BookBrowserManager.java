@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -92,6 +93,7 @@ public class BookBrowserManager
     private static final String CSS_FILE_ICON = "/icons/icons8_CSS_Filetype_96px.png";
     private static final String IMAGE_FILE_ICON = "/icons/icons8_Image_File_96px.png";
     private static final String XHTML_FILE_ICON = "/icons/icons8_Code_File_96px.png";
+    private static final int ICON_SIZE = 24;
 
     private TreeItem<Resource<?>> textItem;
     private TreeItem<Resource<?>> cssItem;
@@ -829,7 +831,7 @@ public class BookBrowserManager
         for (SpineReference xhtmlResource : xhtmlResources)
         {
             TreeItem<Resource<?>> xhtmlItem = new TreeItem<>(xhtmlResource.getResource());
-            xhtmlItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
+            xhtmlItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, ICON_SIZE));
             textItem.getChildren().add(xhtmlItem);
         }
 
@@ -838,7 +840,7 @@ public class BookBrowserManager
         for (Resource<?> cssResource : cssResources)
         {
             TreeItem<Resource<?>> item = new TreeItem<>(cssResource);
-            item.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
+            item.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, ICON_SIZE));
             cssItem.getChildren().add(item);
         }
 
@@ -858,33 +860,33 @@ public class BookBrowserManager
             TreeItem<Resource<?>> item = new TreeItem<>(imageResource);
             if (imageResource.getMediaType().equals(MediaType.GIF))
             {
-                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, ICON_SIZE));
             }
             else if (imageResource.getMediaType().equals(MediaType.PNG))
             {
-                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, ICON_SIZE));
             }
             else if (imageResource.getMediaType().equals(MediaType.SVG))
             {
-                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, ICON_SIZE));
             }
             else if (imageResource.getMediaType().equals(MediaType.JPG))
             {
-                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+                item.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, ICON_SIZE));
             }
             imagesItem.getChildren().add(item);
         }
 
         opfItem = new TreeItem<>();
         opfItem.valueProperty().bind(book.opfResourceProperty());
-        opfItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
+        opfItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, ICON_SIZE));
         rootItem.getChildren().add(opfItem);
 
         Resource<?> ncxResource = book.getNcxResource();
         if (ncxResource != null) //in case of epub 3 it could be null
         {
             ncxItem = new TreeItem<>(ncxResource);
-            ncxItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
+            ncxItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, ICON_SIZE));
             rootItem.getChildren().add(ncxItem);
         }
 
@@ -908,7 +910,7 @@ public class BookBrowserManager
         TreeItem<Resource<?>> treeItem = new TreeItem<>(resource);
         if (resource.getMediaType() == MediaType.XHTML) {
             index = textItem.getChildren().indexOf(selectedTreeItem);
-            treeItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, 24));
+            treeItem.setGraphic(FXUtils.getIcon(XHTML_FILE_ICON, ICON_SIZE));
             if (textItem.getChildren().size() > 0) {
                 textItem.getChildren().add(index + 1, treeItem);
             } else {
@@ -917,7 +919,7 @@ public class BookBrowserManager
         }
         else if (resource.getMediaType() == MediaType.CSS) {
             index = cssItem.getChildren().indexOf(selectedTreeItem);
-            treeItem.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, 24));
+            treeItem.setGraphic(FXUtils.getIcon(CSS_FILE_ICON, ICON_SIZE));
             if (cssItem.getChildren().size() > 0) {
                 cssItem.getChildren().add(index + 1, treeItem);
             } else {
@@ -926,7 +928,7 @@ public class BookBrowserManager
         }
         else if (resource.getMediaType().isImage()) {
             index = imagesItem.getChildren().indexOf(selectedTreeItem);
-            treeItem.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, 24));
+            treeItem.setGraphic(FXUtils.getIcon(IMAGE_FILE_ICON, ICON_SIZE));
             if (imagesItem.getChildren().size() > 0) {
                 imagesItem.getChildren().add(index + 1, treeItem);
             } else {
@@ -953,19 +955,19 @@ public class BookBrowserManager
     private ImageView getFontIcon(FontResource fontResource) {
         if (fontResource.getMediaType().isTTFFont())
         {
-            return FXUtils.getIcon("/icons/icons8_TTF_48px.png", 24);
+            return FXUtils.getIcon("/icons/icons8_TTF_48px.png", ICON_SIZE);
         }
         else if (fontResource.getMediaType().isOpenTypeFont())
         {
-            return FXUtils.getIcon("/icons/icons8_OTF_48px.png", 24);
+            return FXUtils.getIcon("/icons/icons8_OTF_48px.png", ICON_SIZE);
         }
         else if (fontResource.getMediaType().isWoffFont())
         {
-            return FXUtils.getIcon("/icons/icons8_WOFF_48px.png", 24);
+            return FXUtils.getIcon("/icons/icons8_WOFF_48px.png", ICON_SIZE);
         }
         else //default file icon
         {
-            return FXUtils.getIcon("/icons/icons8_File_48px.png", 24);
+            return FXUtils.getIcon("/icons/icons8_File_48px.png", ICON_SIZE);
         }
     }
 
@@ -1252,13 +1254,12 @@ public class BookBrowserManager
     private void openWithApplication(TreeItem<Resource<?>> treeItem, String applicationExecutable)
     {
         Resource<?> resource = treeItem.getValue();
-        try
+        File tmp = new File(Files.createTempDir(), resource.getFileName());
+
+        try (FileOutputStream output = new FileOutputStream(tmp))
         {
-            File tmp = new File(Files.createTempDir(), resource.getFileName());
-            FileOutputStream output = new FileOutputStream(tmp);
             output.write(resource.getData());
             output.flush();
-            output.close();
 
             Runtime.getRuntime().exec(applicationExecutable + " " + tmp);
             WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -1279,6 +1280,7 @@ public class BookBrowserManager
                         }
                         catch (InterruptedException x)
                         {
+                            Thread.currentThread().interrupt();
                             return null;
                         }
 
@@ -1297,9 +1299,9 @@ public class BookBrowserManager
                                 Path filename = ev.context();
                                 logger.info("getting modify event for file " + filename);
                                 Platform.runLater(() -> {
-                                    try
+                                    try (InputStream is = new FileInputStream(tmp))
                                     {
-                                        byte[] data = IOUtils.toByteArray(new FileInputStream(tmp));
+                                        byte[] data = IOUtils.toByteArray(is);
                                         if (data.length == 0)
                                         {
                                             logger.info("file " + filename + " looks like its writing from external application, ignore this event");
@@ -1317,9 +1319,7 @@ public class BookBrowserManager
                                         }
                                         Book book = currentBookProperty().getValue();
                                         book.setBookIsChanged(true);
-                                    }
-                                    catch (IOException e)
-                                    {
+                                    } catch (IOException e) {
                                         logger.error("error while reading content written by external program", e);
                                     }
                                 });

@@ -43,28 +43,27 @@ public class MainStage extends Stage
         //set icon of the application
         getIcons().add(applicationIcon);
 
-        if (new File("application.properties").exists())
-        {
-            FileInputStream fis = new FileInputStream("application.properties");
-            Properties prop = new Properties();
-            prop.load(fis);
-            Boolean isFullscreen = BooleanUtils.toBoolean((String) prop.get("isFullscreen"));
-            Double width = Double.valueOf((String) prop.get("width"));
-            Double height = Double.valueOf((String) prop.get("height"));
-            Double x = Double.valueOf((String) prop.get("x"));
-            Double y = Double.valueOf((String) prop.get("y"));
+        if (new File("application.properties").exists()) {
+            try (FileInputStream fis = new FileInputStream("application.properties")) {
+                Properties prop = new Properties();
+                prop.load(fis);
+                Boolean isFullscreen = BooleanUtils.toBoolean((String) prop.get("isFullscreen"));
+                Double width = Double.valueOf((String) prop.get("width"));
+                Double height = Double.valueOf((String) prop.get("height"));
+                Double x = Double.valueOf((String) prop.get("x"));
+                Double y = Double.valueOf((String) prop.get("y"));
 
-            Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-            if (isFullscreen)
-            {
-                setFullScreen(true);
-            }
-            else if (x >= 0.0 && y >= 0.0 && x < primaryScreenBounds.getWidth() - 100 && y < primaryScreenBounds.getHeight() - 100) // verhindern dass Fenster ausserhalb des sichtbaren Bereichs geöffnet wird
-            {
-                setWidth(width);
-                setHeight(height);
-                setX(x);
-                setY(y);
+                Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+                if (isFullscreen) {
+                    setFullScreen(true);
+                }
+                else if (x >= 0.0 && y >= 0.0 && x < primaryScreenBounds.getWidth() - 100 && y < primaryScreenBounds.getHeight() - 100) // verhindern dass Fenster ausserhalb des sichtbaren Bereichs geöffnet wird
+                {
+                    setWidth(width);
+                    setHeight(height);
+                    setX(x);
+                    setY(y);
+                }
             }
         }
     }

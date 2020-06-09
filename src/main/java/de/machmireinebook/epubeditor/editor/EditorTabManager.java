@@ -831,18 +831,19 @@ public class EditorTabManager {
                     return false;
                 }
                 logger.debug("umgebendes pair " + pair.getTagName());
-                //wir sind innerhalb des Body
+                //inside body
                 int index = xhtmlCodeEditor.getAbsoluteCursorPosition();
                 try {
                     String originalCode = xhtmlCodeEditor.getCode();
                     List<Content> originalHeadContent = xhtmlCodeEditor.getHeadContent();
 
                     byte[] frontPart = originalCode.substring(0, index).getBytes(StandardCharsets.UTF_8);
-                    Resource<?> oldResource = currentXHTMLResource.getValue();
+                    XHTMLResource oldResource = currentXHTMLResource.getValue();
                     oldResource.setData(frontPart);
                     HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                     processor.processResource(oldResource, book);
                     xhtmlCodeEditor.setCode(new String(oldResource.getData(), StandardCharsets.UTF_8));
+                    oldResource.prepareWebViewDocument(book.getVersion());
 
                     byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);

@@ -38,16 +38,18 @@ public class ResourceUtil
 			return null;
 		}
 		MediaType mediaType = MediaType.getByFileName(file.getName());
-		byte[] data = IOUtils.toByteArray(new FileInputStream(file));
-        Resource result;
-        if (mediaType.isBitmapImage())
-        {
-            return new ImageResource(data, mediaType);
-        }
-        else
-        {
-            result = new Resource(data, mediaType);
-        }
+		Resource result;
+		try (InputStream is = new FileInputStream(file)) {
+			byte[] data = IOUtils.toByteArray(is);
+			if (mediaType.isBitmapImage())
+			{
+				return new ImageResource(data, mediaType);
+			}
+			else
+			{
+				result = new Resource(data, mediaType);
+			}
+		}
 		return result;
 	}
 	
@@ -114,6 +116,7 @@ public class ResourceUtil
 	 */
 	public static Document getAsDocument(Resource resource) throws IOException, JDOMException
     {
+		// deepcode ignore XxeMissesFeatures~org.jdom2.input.SAXBuilder: <please specify a reason of ignoring this>
 		return getAsDocument(resource, new SAXBuilder());
 	}
 	
