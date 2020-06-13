@@ -631,6 +631,7 @@ public class MainController implements Initializable
 
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN), this::openEpubAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN), this::saveEpubAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), this::splitButtonAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN), this::italicButtonAction);
 
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), this::h1ButtonAction);
@@ -639,6 +640,7 @@ public class MainController implements Initializable
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN), this::h4ButtonAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN), this::h5ButtonAction);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN), this::h6ButtonAction);
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.P, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), this::paragraphButtonAction);
 
         String quotationMarkSelection = preferencesManager.getQuotationMarkSelection();
         QuotationMark quotationMark = QuotationMark.findByDescription(quotationMarkSelection);

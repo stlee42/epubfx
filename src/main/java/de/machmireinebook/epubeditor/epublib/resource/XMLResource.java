@@ -73,7 +73,7 @@ public class XMLResource extends Resource<Document> implements TextResource
         }
         catch (ResourceDataException e)
         {
-            //ignoring, somethin is wrong with the xml
+            //ignoring, something is wrong with the xml
         }
         return result;
     }

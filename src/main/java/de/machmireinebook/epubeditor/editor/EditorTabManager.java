@@ -830,7 +830,7 @@ public class EditorTabManager {
 
                     return false;
                 }
-                logger.debug("umgebendes pair " + pair.getTagName());
+                logger.debug("enclosing pair " + pair.getTagName());
                 //inside body
                 int index = xhtmlCodeEditor.getAbsoluteCursorPosition();
                 try {
