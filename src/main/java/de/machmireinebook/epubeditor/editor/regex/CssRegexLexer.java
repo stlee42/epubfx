@@ -126,7 +126,7 @@ public class CssRegexLexer extends RegexLexer {
         addRule(new RegexLexerRule("BRACE", "\\{|\\}"));
         addRule(new RegexLexerRule("BRACKET", "\\[|\\]"));
         addRule(new RegexLexerRule("CONTROL", "\\;|\\,|\\:"));
-        addRule(new RegexLexerRule("STRING", "((\"([^\"\\\\]|\\\\.)*\")|(\'([^\'\\\\]|\\\\.)*\'))"));
+        addRule(new RegexLexerRule("STRING", "((\"([^\"\\\\]|\\\\.)*\")|('([^'\\\\]|\\\\.)*'))"));
         addRule(new RegexLexerRule("COMMENT", "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/"));
         addRule(new RegexLexerRule("SELECTOR", "(\\.|\\#)?[a-zA-Z0-9\\_\\*\\+\\-\\ \\~\\>\\.\\#\\:\\,\\n\\r\\t]{1,}[ ]{0,}(\\{)", -1));
 

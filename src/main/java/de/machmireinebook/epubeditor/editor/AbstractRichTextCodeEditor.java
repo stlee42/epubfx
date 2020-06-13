@@ -59,7 +59,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
     ExecutorService taskExecutor = newWorkStealingPool();
 
-    private CodeArea codeArea = new CodeArea();
+    protected CodeArea codeArea = new CodeArea();
     private BooleanProperty canUndo = new SimpleBooleanProperty();
     private BooleanProperty canRedo = new SimpleBooleanProperty();
     private ObjectProperty<Worker.State> state = new SimpleObjectProperty<>();
@@ -81,9 +81,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         getChildren().add(scrollPane);
 
-        IntFunction<String> format = (digits -> " %" + digits + "d ");
-        IntFunction<Node> factory = LineNumberFactory.get(codeArea, format);
-        codeArea.setParagraphGraphicFactory(factory);
+        createParagraphGraphicFactory();
 
         codeArea.multiPlainChanges()
                 .successionEnds(Duration.ofMillis(durationHighlightingComputation))
@@ -162,6 +160,12 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
         codeArea.setStyle("-fx-font-size:" + preferencesManager.fontSizeProperty().getValue());
         preferencesManager.fontSizeProperty().addListener((observable, oldValue, newValue) -> codeArea.setStyle("-fx-font-size:" + newValue));
 
+    }
+
+    protected void createParagraphGraphicFactory() {
+        IntFunction<String> format = (digits -> " %" + digits + "d ");
+        IntFunction<Node> factory = LineNumberFactory.get(codeArea, format);
+        codeArea.setParagraphGraphicFactory(factory);
     }
 
     @Override
