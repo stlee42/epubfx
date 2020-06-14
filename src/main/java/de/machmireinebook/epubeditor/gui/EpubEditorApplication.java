@@ -29,14 +29,14 @@ import org.apache.log4j.Logger;
 import org.apache.webbeans.config.WebBeansContext;
 import org.apache.webbeans.spi.ContainerLifecycle;
 
+import com.sun.net.httpserver.HttpServer;
+
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.MainStage;
 import de.machmireinebook.epubeditor.preview.EpubHttpHandler;
 import de.machmireinebook.epubeditor.preview.ResourceHttpHandler;
-
-import com.sun.net.httpserver.HttpServer;
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 
 public class EpubEditorApplication extends Application
 {
@@ -129,6 +129,9 @@ public class EpubEditorApplication extends Application
             EpubEditorConfiguration configuration =  BeanFactory.getInstance().getBean(EpubEditorConfiguration.class);
             configuration.setMainWindow(mainStage);
             setUserAgentStylesheet(STYLESHEET_MODENA);
+
+            /*JMetro jMetro = new JMetro(Style.LIGHT);
+            jMetro.setScene(mainStage.getScene());*/
 
             mainStage.setOnShown(event ->
             {

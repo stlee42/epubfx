@@ -20,13 +20,11 @@ import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.EpubJDomSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
-import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.IllegalAddException;
 import org.jdom2.JDOMException;
 import org.jdom2.JDOMFactory;
-import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
@@ -257,48 +255,7 @@ public class XHTMLUtils
         return bytes;
     }
 
-    public static byte[] repairWithHead(byte[] data, List<Content> originalHeadContent, EpubVersion epubVersion) {
-        HtmlCleaner htmlCleaner = createHtmlCleaner(epubVersion);
-        ByteArrayOutputStream baos;
-        try {
-            TagNode rootNode = htmlCleaner.clean(new ByteArrayInputStream(data));
-            Document jdomDocument = new EpubJDomSerializer(htmlCleaner.getProperties(), false).createJDom(rootNode);
-            Element root = jdomDocument.getRootElement();
-
-            Element headElement = root.getChild("head");
-            for (Content content : originalHeadContent)
-            {
-                headElement.addContent(content);
-            }
-
-            root.setNamespace(Constants.NAMESPACE_XHTML);
-            root.addNamespaceDeclaration(Constants.NAMESPACE_XHTML);
-            root.addNamespaceDeclaration(Constants.NAMESPACE_EPUB);
-            IteratorIterable<Element> elements = root.getDescendants(Filters.element());
-            for (Element element : elements)
-            {
-                if (element.getNamespace() == null || element.getNamespace() == Namespace.NO_NAMESPACE) //kein oder der leere NS zum XHTML namespace machen
-                {
-                    element.setNamespace(Constants.NAMESPACE_XHTML);
-                }
-            }
-            if (epubVersion.isEpub2()) {
-                jdomDocument.setDocType(Constants.DOCTYPE_XHTML.clone());
-            } else {
-                jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
-            }
-
-            baos = outputXhtml(jdomDocument, false);
-        }
-        catch (IOException e) {
-            logger.error("", e);
-            throw new XhtmlOutputException(e.getMessage());
-        }
-
-        return baos.toByteArray();
-    }
-
-    private static ByteArrayOutputStream outputXhtml(Document document, boolean escapeOutput) throws IOException {
+    public static ByteArrayOutputStream outputXhtml(Document document, boolean escapeOutput) throws IOException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             XMLOutputter outputter = new XMLOutputter();
             Format xmlFormat = Format.getPrettyFormat();

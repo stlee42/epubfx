@@ -66,7 +66,6 @@ import de.machmireinebook.epubeditor.BeanFactory;
 import de.machmireinebook.epubeditor.EpubEditorConfiguration;
 import de.machmireinebook.epubeditor.clips.Clip;
 import de.machmireinebook.epubeditor.clips.ClipManager;
-import de.machmireinebook.epubeditor.epublib.bookprocessor.HtmlCleanerBookProcessor;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.epub2.PackageDocumentReader;
@@ -80,6 +79,7 @@ import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
+import de.machmireinebook.epubeditor.xhtml.HtmlFileSplitter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
@@ -260,12 +260,7 @@ public class EditorTabManager {
         });
         contextMenuXML.getItems().add(generateUuidMenuItem);
         currentXMLResource.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && currentXMLResource.get().mediaTypeProperty().getValue().equals(MediaType.OPF)) {
-                generateUuidMenuItem.visibleProperty().setValue(true);
-            }
-            else {
-                generateUuidMenuItem.visibleProperty().setValue(false);
-            }
+            generateUuidMenuItem.visibleProperty().setValue(newValue != null && currentXMLResource.get().getMediaType().equals(MediaType.OPF));
         });
 
         MenuItem separatorItem2 = new SeparatorMenuItem();
@@ -837,18 +832,21 @@ public class EditorTabManager {
                     String originalCode = xhtmlCodeEditor.getCode();
                     List<Content> originalHeadContent = xhtmlCodeEditor.getHeadContent();
 
-                    byte[] frontPart = originalCode.substring(0, index).getBytes(StandardCharsets.UTF_8);
+                    String frontPart = originalCode.substring(0, index);
                     XHTMLResource oldResource = currentXHTMLResource.getValue();
-                    oldResource.setData(frontPart);
-                    HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
-                    processor.processResource(oldResource, book);
-                    xhtmlCodeEditor.setCode(new String(oldResource.getData(), StandardCharsets.UTF_8));
+                    /*HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
+                    processor.processResource(oldResource, book);*/
+                    HtmlFileSplitter splitter = new HtmlFileSplitter(book.getVersion());
+                    String completedFrontPart = splitter.completeFrontPart(frontPart);
+
+                    oldResource.setData(completedFrontPart.getBytes(StandardCharsets.UTF_8));
+                    xhtmlCodeEditor.setCode(completedFrontPart);
                     oldResource.prepareWebViewDocument(book.getVersion());
 
-                    byte[] backPart = originalCode.substring(index, originalCode.length() - 1).getBytes(StandardCharsets.UTF_8);
+                    String backPart = originalCode.substring(index);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);
                     Resource<?> resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
-                    byte[] backPartXHTML = XHTMLUtils.repairWithHead(backPart, originalHeadContent, book.getVersion());
+                    byte[] backPartXHTML = splitter.completeBackPart(backPart, originalHeadContent, book.getVersion());
                     resource.setData(backPartXHTML);
 
                     int spineIndex = book.getSpine().getResourceIndex(oldResource);

@@ -109,6 +109,7 @@ public class BookBrowserManager
 
     private final ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>(this, "currentBook");
     private StandardControllerFactory standardControllerFactory;
+    private boolean isEditingFileName = false;
 
     @Inject
     private Provider<MainController> mainControllerProvider;
@@ -336,6 +337,13 @@ public class BookBrowserManager
             editorManager.totalRefreshPreview();
             Book book = currentBookProperty().getValue();
             book.setBookIsChanged(true);
+            event.consume();
+            isEditingFileName = false;
+        });
+
+        treeView.setOnEditCancel(event -> {
+            logger.info("editing cancelled");
+            isEditingFileName = false;
         });
 
         treeView.setOnKeyPressed(event -> {
@@ -350,14 +358,16 @@ public class BookBrowserManager
                 logger.debug("Ctrl-C pressed");
                 copyFileNameToClipboard();
             } else if (keyCode.equals(KeyCode.ENTER)) {
-                logger.debug("Enter pressed");
-                TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
-                if (isImageItem(item)) {
-                    editorManager.openImageFile(item.getValue());
-                } else {
-                    editorManager.openFileInEditor(item.getValue());
+                if (!isEditingFileName) {
+                    logger.debug("Enter pressed");
+                    TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
+                    if (isImageItem(item)) {
+                        editorManager.openImageFile(item.getValue());
+                    } else {
+                        editorManager.openFileInEditor(item.getValue());
+                    }
+                    event.consume();
                 }
-                event.consume();
             }
         });
 
@@ -1362,6 +1372,7 @@ public class BookBrowserManager
 
     private void renameItem(TreeItem<Resource<?>> treeItem)
     {
+        isEditingFileName = true;
         ((EditingTreeCell<?>)treeItem.getGraphic().getParent()).startEdit();
     }
 
