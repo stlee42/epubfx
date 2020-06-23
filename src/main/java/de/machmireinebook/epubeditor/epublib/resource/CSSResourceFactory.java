@@ -9,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:49
  */
-public class CSSResourceFactory implements ResourceFactory
+public class CSSResourceFactory implements ResourceFactory<CSSResource>
 {
     private static final Logger logger = Logger.getLogger(CSSResourceFactory.class);
 
@@ -21,40 +21,40 @@ public class CSSResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public CSSResource createResource()
     {
         return new CSSResource();
     }
 
     @Override
-    public Resource createResource(String href)
+    public CSSResource createResource(String href)
     {
         return new CSSResource(href);
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public CSSResource createResource(byte[] data, String href)
     {
         return new CSSResource(data, href);
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public CSSResource createResource(String id, byte[] data, String href)
     {
-        Resource res = new CSSResource(id, data, href);
+        CSSResource res = new CSSResource(id, data, href);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public CSSResource createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new CSSResource(id, data, href);
+        CSSResource res = new CSSResource(id, data, href);
         res.setMediaType(mediaType);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public CSSResource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new CSSResource(data, href, mediaType);
     }

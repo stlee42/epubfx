@@ -9,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:28
  */
-public class XMLResourceFactory implements ResourceFactory
+public class XMLResourceFactory implements ResourceFactory<XMLResource>
 {
     private static final Logger logger = Logger.getLogger(XMLResourceFactory.class);
 
@@ -21,40 +21,40 @@ public class XMLResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public XMLResource createResource()
     {
         return new XMLResource();
     }
 
     @Override
-    public Resource createResource(String href)
+    public XMLResource createResource(String href)
     {
         return new XMLResource(href);
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public XMLResource createResource(byte[] data, String href)
     {
         return new XMLResource(data, href);
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public XMLResource createResource(String id, byte[] data, String href)
     {
-        Resource res = new XMLResource(id, data, href);
+        XMLResource res = new XMLResource(id, data, href);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public XMLResource createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new XMLResource(id, data, href);
+        XMLResource res = new XMLResource(id, data, href);
         res.setMediaType(mediaType);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public XMLResource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new XMLResource(data, href, mediaType);
     }

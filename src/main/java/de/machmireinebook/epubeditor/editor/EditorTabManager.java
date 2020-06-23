@@ -845,16 +845,17 @@ public class EditorTabManager {
 
                     String backPart = originalCode.substring(index);
                     String fileName = book.getNextStandardFileName(MediaType.XHTML);
-                    Resource<?> resource = MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
-                    byte[] backPartXHTML = splitter.completeBackPart(backPart, originalHeadContent, book.getVersion());
-                    resource.setData(backPartXHTML);
+                    XHTMLResource resource = (XHTMLResource) MediaType.XHTML.getResourceFactory().createResource("Text/" + fileName);
+                    String backPartXHTML = splitter.completeBackPart(backPart, originalHeadContent);
+                    resource.setData(backPartXHTML.getBytes(StandardCharsets.UTF_8));
+                    //webview will be prepared while opening the file, not necessary here
 
                     int spineIndex = book.getSpine().getResourceIndex(oldResource);
                     book.addSpineResource(resource, spineIndex + 1);
                     openFileInEditor(resource, MediaType.XHTML);
 
                     bookBrowserManager.refreshBookBrowser();
-                    currentXHTMLResource.set((XHTMLResource) resource);
+                    currentXHTMLResource.set(resource);
                 }
                 catch (IOException | JDOMException | ResourceDataException e) {
                     logger.error("", e);

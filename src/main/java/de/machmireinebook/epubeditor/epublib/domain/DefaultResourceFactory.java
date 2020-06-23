@@ -10,7 +10,7 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
  * Date: 01.09.2014
  * Time: 22:40
  */
-public class DefaultResourceFactory implements ResourceFactory
+public class DefaultResourceFactory implements ResourceFactory<Resource<?>>
 {
     private static final Logger logger = Logger.getLogger(DefaultResourceFactory.class);
 
@@ -22,39 +22,39 @@ public class DefaultResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public Resource<?> createResource()
     {
         return new Resource();
     }
 
     @Override
-    public Resource createResource(String href)
+    public Resource<?> createResource(String href)
     {
         return new Resource(href);
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public Resource<?> createResource(byte[] data, String href)
     {
         return new Resource(data, href);
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public Resource<?> createResource(String id, byte[] data, String href)
     {
-        Resource res = new Resource(id, data, href, null);
+        Resource<?> res = new Resource(id, data, href, null);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public Resource<?> createResource(String id, byte[] data, String href, MediaType mediaType)
     {
         Resource res = new Resource(id, data, href, mediaType);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public Resource<?> createResource(byte[] data, String href, MediaType mediaType)
     {
         return new Resource(data, href, mediaType);
     }

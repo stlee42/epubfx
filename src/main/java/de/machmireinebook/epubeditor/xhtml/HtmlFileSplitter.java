@@ -1,6 +1,5 @@
 package de.machmireinebook.epubeditor.xhtml;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class HtmlFileSplitter {
 
             SAXBuilder builder = new SAXBuilder();
             Document jdomDocument = builder.build(new StringReader(frontPart));
-            frontPartFormatted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, false, epubVersion);
+            frontPartFormatted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, epubVersion);
         }
         catch (JDOMException | IOException e) {
             logger.error("", e);
@@ -94,17 +93,16 @@ public class HtmlFileSplitter {
         }
     }
 
-    public byte[] completeBackPart(String data, List<Content> originalHeadContent, EpubVersion epubVersion) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public String completeBackPart(String backPart,  List<Content> originalHeadContent) {
+        StringBuilder dataBuilder = new StringBuilder(backPart);
+        for (CompletionElement completion : completions) {
+            dataBuilder.insert(0, "\n<" + completion.getElementName() + " " + completion.getAttributes() + ">");
+        }
+        String backPartCompleted = dataBuilder.toString();
         try {
-            StringBuilder dataBuilder = new StringBuilder(data);
-            for (CompletionElement completion : completions) {
-                dataBuilder.insert(0, "\n<" + completion.getElementName() + " " + completion.getAttributes() + ">");
-            }
-            data = dataBuilder.toString();
             SAXBuilder builder = new SAXBuilder();
             try {
-                Document jdomDocument = builder.build(new StringReader(data));
+                Document jdomDocument = builder.build(new StringReader(backPartCompleted));
                 Element root = jdomDocument.getRootElement();
 
                 Element headElement = new Element("head");
@@ -130,7 +128,7 @@ public class HtmlFileSplitter {
                 } else {
                     jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
                 }
-                baos = XHTMLUtils.outputXhtml(jdomDocument, false);
+                backPartCompleted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, epubVersion);
             }
             catch (JDOMException e) {
                 logger.error("", e);
@@ -141,7 +139,7 @@ public class HtmlFileSplitter {
             throw new XhtmlOutputException(e.getMessage());
         }
 
-        return baos.toByteArray();
+        return backPartCompleted;
     }
 
 }

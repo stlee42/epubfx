@@ -2,8 +2,6 @@ package de.machmireinebook.epubeditor.epublib.resource;
 
 import org.apache.log4j.Logger;
 
-import org.jdom2.Document;
-
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
@@ -11,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:19
  */
-public class XHTMLResourceFactory implements ResourceFactory
+public class XHTMLResourceFactory implements ResourceFactory<XHTMLResource>
 {
     private static final Logger logger = Logger.getLogger(XHTMLResourceFactory.class);
 
@@ -23,47 +21,47 @@ public class XHTMLResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public XHTMLResource createResource()
     {
-        Resource res = new XHTMLResource();
+        XHTMLResource res = new XHTMLResource();
         res.setMediaType(MediaType.XHTML);
         return res;
     }
 
     @Override
-    public Resource createResource(String href)
+    public XHTMLResource createResource(String href)
     {
-        Resource res = new XHTMLResource(href);
+        XHTMLResource res = new XHTMLResource(href);
         res.setMediaType(MediaType.XHTML);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public XHTMLResource createResource(byte[] data, String href)
     {
-        Resource res = new XHTMLResource(data, href);
+        XHTMLResource res = new XHTMLResource(data, href);
         res.setMediaType(MediaType.XHTML);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public XHTMLResource createResource(String id, byte[] data, String href)
     {
-        Resource res = new XHTMLResource(id, data, href);
+        XHTMLResource res = new XHTMLResource(id, data, href);
         res.setMediaType(MediaType.XHTML);
         return res;
     }
 
     @Override
-    public Resource<Document> createResource(String id, byte[] data, String href, MediaType mediaType)
+    public XHTMLResource createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource<Document> res = new XHTMLResource(id, data, href);
+        XHTMLResource res = new XHTMLResource(id, data, href);
         res.setMediaType(mediaType);
         return res;
     }
 
     @Override
-    public Resource<Document> createResource(byte[] data, String href, MediaType mediaType)
+    public XHTMLResource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new XHTMLResource(data, href, mediaType);
     }

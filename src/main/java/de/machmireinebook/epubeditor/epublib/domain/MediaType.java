@@ -11,6 +11,7 @@ import de.machmireinebook.epubeditor.epublib.resource.CSSResourceFactory;
 import de.machmireinebook.epubeditor.epublib.resource.FontResourceFactory;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResourceFactory;
 import de.machmireinebook.epubeditor.epublib.resource.JavascriptResourceFactory;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResourceFactory;
 import de.machmireinebook.epubeditor.epublib.resource.XMLResourceFactory;
@@ -143,28 +144,28 @@ public enum MediaType implements Serializable
     private String defaultExtension;
     private Collection<String> extensions;
     private String fileNamePrefix;
-    private ResourceFactory resourceFactory;
+    private ResourceFactory<? extends Resource<?>> resourceFactory;
     private Float sinceVersion;
 
-    MediaType(String name, String defaultExtension, ResourceFactory resourceFactory)
+    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>> resourceFactory)
     {
         this(name, defaultExtension, new String[]{defaultExtension}, resourceFactory);
     }
 
-    MediaType(String name, String defaultExtension, ResourceFactory resourceFactory, float sinceVersion)
+    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>> resourceFactory, float sinceVersion)
     {
         this(name, defaultExtension, resourceFactory);
         this.sinceVersion = sinceVersion;
     }
 
     MediaType(String name, String defaultExtension,
-                     String[] extensions, ResourceFactory resourceFactory)
+                     String[] extensions, ResourceFactory<? extends Resource<?>> resourceFactory)
     {
         this(name, defaultExtension, Arrays.asList(extensions), resourceFactory);
     }
 
     MediaType(String name, String defaultExtension,
-                     Collection<String> extensions, ResourceFactory resourceFactory)
+                     Collection<String> extensions, ResourceFactory<? extends Resource<?>> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -173,7 +174,7 @@ public enum MediaType implements Serializable
     }
 
     MediaType(String name, String defaultExtension,
-                     String[] extensions, String fileNamePrefix, ResourceFactory resourceFactory)
+                     String[] extensions, String fileNamePrefix, ResourceFactory<?> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -182,7 +183,7 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory)
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -191,7 +192,7 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory resourceFactory, float sinceVersion)
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>> resourceFactory, float sinceVersion)
     {
         this(name, defaultExtension, fileNamePrefix, resourceFactory);
         this.sinceVersion = sinceVersion;
@@ -224,7 +225,7 @@ public enum MediaType implements Serializable
         return fileNamePrefix;
     }
 
-    public ResourceFactory getResourceFactory()
+    public ResourceFactory<? extends Resource<?>> getResourceFactory()
     {
         return resourceFactory;
     }

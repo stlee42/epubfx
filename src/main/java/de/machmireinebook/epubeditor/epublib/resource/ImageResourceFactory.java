@@ -9,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 22:36
  */
-public class ImageResourceFactory implements ResourceFactory
+public class ImageResourceFactory implements ResourceFactory<ImageResource>
 {
     private static final Logger logger = Logger.getLogger(ImageResourceFactory.class);
 
@@ -21,39 +21,39 @@ public class ImageResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public ImageResource createResource()
     {
         return new ImageResource();
     }
 
     @Override
-    public Resource createResource(String href)
+    public ImageResource createResource(String href)
     {
         return new ImageResource(href);
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public ImageResource createResource(byte[] data, String href)
     {
         return new ImageResource(data, href);
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public ImageResource createResource(String id, byte[] data, String href)
     {
-        Resource res = new ImageResource(id, data, href, null);
+        ImageResource res = new ImageResource(id, data, href, null);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public ImageResource createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new ImageResource(id, data, href, mediaType);
+        ImageResource res = new ImageResource(id, data, href, mediaType);
         return res;
     }
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public ImageResource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new ImageResource(data, href, mediaType);
     }

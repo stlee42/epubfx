@@ -7,12 +7,12 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 18:39
  */
-public interface ResourceFactory
+public interface ResourceFactory<T extends Resource<?>>
 {
-    Resource createResource();
-    Resource createResource(String href);
-    Resource createResource(byte[] data, String href);
-    Resource createResource(String id, byte[] data, String href);
-    Resource createResource(String id, byte[] data, String href, MediaType mediaType);
-    Resource createResource(byte[] data, String href, MediaType mediaType);
+    T createResource();
+    T createResource(String href);
+    T createResource(byte[] data, String href);
+    T createResource(String id, byte[] data, String href);
+    T createResource(String id, byte[] data, String href, MediaType mediaType);
+    T createResource(byte[] data, String href, MediaType mediaType);
 }

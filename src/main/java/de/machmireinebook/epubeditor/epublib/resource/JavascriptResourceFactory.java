@@ -9,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:39
  */
-public class JavascriptResourceFactory implements ResourceFactory
+public class JavascriptResourceFactory implements ResourceFactory<JavascriptResource>
 {
     private static final Logger logger = Logger.getLogger(JavascriptResourceFactory.class);
 
@@ -21,41 +21,41 @@ public class JavascriptResourceFactory implements ResourceFactory
     }
 
     @Override
-    public Resource createResource()
+    public JavascriptResource createResource()
     {
         return new JavascriptResource();
     }
 
     @Override
-    public Resource createResource(String href)
+    public JavascriptResource createResource(String href)
     {
         return new JavascriptResource(href);
     }
 
     @Override
-    public Resource createResource(byte[] data, String href)
+    public JavascriptResource createResource(byte[] data, String href)
     {
         return new JavascriptResource(data, href);
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href)
+    public JavascriptResource createResource(String id, byte[] data, String href)
     {
-        Resource res = new JavascriptResource(id, data, href);
+        JavascriptResource res = new JavascriptResource(id, data, href);
         return res;
     }
 
     @Override
-    public Resource createResource(String id, byte[] data, String href, MediaType mediaType)
+    public JavascriptResource createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new JavascriptResource(id, data, href);
+        JavascriptResource res = new JavascriptResource(id, data, href);
         res.setMediaType(mediaType);
         return res;
     }
 
 
     @Override
-    public Resource createResource(byte[] data, String href, MediaType mediaType)
+    public JavascriptResource createResource(byte[] data, String href, MediaType mediaType)
     {
         return new JavascriptResource(data, href, mediaType);
     }
