@@ -2,6 +2,8 @@ package de.machmireinebook.epubeditor.epublib.resource;
 
 import org.apache.log4j.Logger;
 
+import com.helger.css.decl.CascadingStyleSheet;
+
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
@@ -9,7 +11,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:49
  */
-public class CSSResourceFactory implements ResourceFactory<CSSResource>
+public class CSSResourceFactory implements ResourceFactory<CSSResource, CascadingStyleSheet>
 {
     private static final Logger logger = Logger.getLogger(CSSResourceFactory.class);
 

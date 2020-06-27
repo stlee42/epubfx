@@ -1,5 +1,7 @@
 package de.machmireinebook.epubeditor.epublib.resource;
 
+import javafx.scene.text.Font;
+
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
@@ -9,7 +11,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 22:36
  */
-public class FontResourceFactory implements ResourceFactory<FontResource>
+public class FontResourceFactory implements ResourceFactory<FontResource, Font>
 {
     private static final Logger logger = Logger.getLogger(FontResourceFactory.class);
 

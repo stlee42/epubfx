@@ -23,9 +23,10 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.EpubIdentifier;
 import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.epublib.util.ResourceUtil;
 
 /**
@@ -189,7 +190,7 @@ public class NCXDocument
         return createNCXResource(metadata.getIdentifiers(), book.getTitle(), book.getTableOfContents());
     }
 
-    public static Resource<Document> createNCXResource(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
+    public static XMLResource createNCXResource(List<EpubIdentifier> identifiers, String title, TableOfContents tableOfContents)
     {
         Document ncxDocument = write(identifiers, title, tableOfContents);
 
@@ -198,10 +199,10 @@ public class NCXDocument
         outputter.setFormat(xmlFormat);
         String text = outputter.outputString(ncxDocument);
 
-        Resource<Document> resource = null;
+        XMLResource resource = null;
         try
         {
-            resource = MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);
+            resource = (XMLResource) MediaType.NCX.getResourceFactory().createResource(NCX_ITEM_ID, text.getBytes(Constants.CHARACTER_ENCODING), DEFAULT_NCX_HREF, MediaType.NCX);
         }
         catch (UnsupportedEncodingException e)
         {

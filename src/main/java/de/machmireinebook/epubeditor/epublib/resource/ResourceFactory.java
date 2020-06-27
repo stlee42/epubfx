@@ -7,7 +7,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 18:39
  */
-public interface ResourceFactory<T extends Resource<?>>
+public interface ResourceFactory<T extends Resource<S>, S>
 {
     T createResource();
     T createResource(String href);

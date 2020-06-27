@@ -10,11 +10,11 @@ import de.machmireinebook.epubeditor.epublib.resource.ResourceFactory;
  * Date: 01.09.2014
  * Time: 22:40
  */
-public class DefaultResourceFactory implements ResourceFactory<Resource<?>>
+public class DefaultResourceFactory<S> implements ResourceFactory<Resource<S>, S>
 {
     private static final Logger logger = Logger.getLogger(DefaultResourceFactory.class);
 
-    private static final DefaultResourceFactory instance = new DefaultResourceFactory();
+    private static final DefaultResourceFactory instance = new DefaultResourceFactory<>();
 
     public static DefaultResourceFactory getInstance()
     {
@@ -22,40 +22,40 @@ public class DefaultResourceFactory implements ResourceFactory<Resource<?>>
     }
 
     @Override
-    public Resource<?> createResource()
+    public Resource<S> createResource()
     {
-        return new Resource();
+        return new Resource<>();
     }
 
     @Override
-    public Resource<?> createResource(String href)
+    public Resource<S> createResource(String href)
     {
-        return new Resource(href);
+        return new Resource<>(href);
     }
 
     @Override
-    public Resource<?> createResource(byte[] data, String href)
+    public Resource<S> createResource(byte[] data, String href)
     {
-        return new Resource(data, href);
+        return new Resource<>(data, href);
     }
 
     @Override
-    public Resource<?> createResource(String id, byte[] data, String href)
+    public Resource<S> createResource(String id, byte[] data, String href)
     {
-        Resource<?> res = new Resource(id, data, href, null);
+        Resource<S> res = new Resource<>(id, data, href, null);
         return res;
     }
 
     @Override
-    public Resource<?> createResource(String id, byte[] data, String href, MediaType mediaType)
+    public Resource<S> createResource(String id, byte[] data, String href, MediaType mediaType)
     {
-        Resource res = new Resource(id, data, href, mediaType);
+        Resource<S> res = new Resource<>(id, data, href, mediaType);
         return res;
     }
 
     @Override
-    public Resource<?> createResource(byte[] data, String href, MediaType mediaType)
+    public Resource<S> createResource(byte[] data, String href, MediaType mediaType)
     {
-        return new Resource(data, href, mediaType);
+        return new Resource<>(data, href, mediaType);
     }
 }

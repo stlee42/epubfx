@@ -144,28 +144,28 @@ public enum MediaType implements Serializable
     private String defaultExtension;
     private Collection<String> extensions;
     private String fileNamePrefix;
-    private ResourceFactory<? extends Resource<?>> resourceFactory;
+    private ResourceFactory<? extends Resource<?>, ?> resourceFactory;
     private Float sinceVersion;
 
-    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>> resourceFactory)
+    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>, ?> resourceFactory)
     {
         this(name, defaultExtension, new String[]{defaultExtension}, resourceFactory);
     }
 
-    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>> resourceFactory, float sinceVersion)
+    MediaType(String name, String defaultExtension, ResourceFactory<? extends Resource<?>, ?> resourceFactory, float sinceVersion)
     {
         this(name, defaultExtension, resourceFactory);
         this.sinceVersion = sinceVersion;
     }
 
     MediaType(String name, String defaultExtension,
-                     String[] extensions, ResourceFactory<? extends Resource<?>> resourceFactory)
+                     String[] extensions, ResourceFactory<? extends Resource<?>, ?> resourceFactory)
     {
         this(name, defaultExtension, Arrays.asList(extensions), resourceFactory);
     }
 
     MediaType(String name, String defaultExtension,
-                     Collection<String> extensions, ResourceFactory<? extends Resource<?>> resourceFactory)
+                     Collection<String> extensions, ResourceFactory<? extends Resource<?>, ?> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -174,7 +174,7 @@ public enum MediaType implements Serializable
     }
 
     MediaType(String name, String defaultExtension,
-                     String[] extensions, String fileNamePrefix, ResourceFactory<?> resourceFactory)
+                     String[] extensions, String fileNamePrefix, ResourceFactory<? extends Resource<?>, ?> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -183,7 +183,7 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>> resourceFactory)
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>, ?> resourceFactory)
     {
         this.name = name;
         this.defaultExtension = defaultExtension;
@@ -192,7 +192,7 @@ public enum MediaType implements Serializable
         this.resourceFactory = resourceFactory;
     }
 
-    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>> resourceFactory, float sinceVersion)
+    MediaType(String name, String defaultExtension, String fileNamePrefix, ResourceFactory<? extends Resource<?>, ?> resourceFactory, float sinceVersion)
     {
         this(name, defaultExtension, fileNamePrefix, resourceFactory);
         this.sinceVersion = sinceVersion;
@@ -225,7 +225,7 @@ public enum MediaType implements Serializable
         return fileNamePrefix;
     }
 
-    public ResourceFactory<? extends Resource<?>> getResourceFactory()
+    public ResourceFactory<? extends Resource<?>, ?> getResourceFactory()
     {
         return resourceFactory;
     }

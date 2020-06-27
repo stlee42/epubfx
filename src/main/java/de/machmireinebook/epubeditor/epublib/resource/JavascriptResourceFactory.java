@@ -9,7 +9,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:39
  */
-public class JavascriptResourceFactory implements ResourceFactory<JavascriptResource>
+public class JavascriptResourceFactory implements ResourceFactory<JavascriptResource, String>
 {
     private static final Logger logger = Logger.getLogger(JavascriptResourceFactory.class);
 
@@ -52,7 +52,6 @@ public class JavascriptResourceFactory implements ResourceFactory<JavascriptReso
         res.setMediaType(mediaType);
         return res;
     }
-
 
     @Override
     public JavascriptResource createResource(byte[] data, String href, MediaType mediaType)

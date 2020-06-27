@@ -2,6 +2,8 @@ package de.machmireinebook.epubeditor.epublib.resource;
 
 import org.apache.log4j.Logger;
 
+import org.jdom2.Document;
+
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 
 /**
@@ -9,7 +11,7 @@ import de.machmireinebook.epubeditor.epublib.domain.MediaType;
  * Date: 01.09.2014
  * Time: 21:28
  */
-public class XMLResourceFactory implements ResourceFactory<XMLResource>
+public class XMLResourceFactory implements ResourceFactory<XMLResource, Document>
 {
     private static final Logger logger = Logger.getLogger(XMLResourceFactory.class);
 
