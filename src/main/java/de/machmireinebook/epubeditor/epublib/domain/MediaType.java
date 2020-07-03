@@ -48,9 +48,9 @@ public enum MediaType implements Serializable
     TTF_SINCE_3_2 ("font/ttf", ".ttf", FontResourceFactory.getInstance(), 3.2F),
     TTF_2_SINCE_3_2 ("application/font-sfnt", ".ttf", FontResourceFactory.getInstance(), 3.2F),
     TTF_RFC_8081 ("font/ttf", ".ttf", FontResourceFactory.getInstance()),
-    OPENTYPE_SIGIL ("font/otf", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_UNTIL_3 ("application/vnd.ms-opentype", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_SINCE_3_1 ("application/font-sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
+    OPENTYPE_SIGIL ("font/otf", ".otf", FontResourceFactory.getInstance()),
     OPENTYPE_RFC_8081("font/sfnt", ".otf", FontResourceFactory.getInstance(), 3.1F),
     WOFF ("application/font-woff", ".woff", FontResourceFactory.getInstance()),
     WOFF_RFC_8081 ("font/woff", ".woff", FontResourceFactory.getInstance()),
@@ -83,7 +83,7 @@ public enum MediaType implements Serializable
     }
 
     public boolean isOpenTypeFont() {
-        return this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(OPENTYPE_RFC_8081);
+        return this.equals(OPENTYPE_UNTIL_3) || this.equals(OPENTYPE_SINCE_3_1) || this.equals(OPENTYPE_RFC_8081) || this.equals(OPENTYPE_SIGIL);
     }
 
     public boolean isWoffFont()

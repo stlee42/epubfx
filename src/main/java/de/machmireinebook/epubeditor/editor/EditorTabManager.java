@@ -79,7 +79,7 @@ import de.machmireinebook.epubeditor.epublib.resource.XMLResource;
 import de.machmireinebook.epubeditor.gui.ExceptionDialog;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 import de.machmireinebook.epubeditor.preferences.PreferencesManager;
-import de.machmireinebook.epubeditor.xhtml.HtmlFileSplitter;
+import de.machmireinebook.epubeditor.xhtml.XhtmlFileSplitter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static org.fxmisc.wellbehaved.event.EventPattern.keyPressed;
@@ -295,10 +295,10 @@ public class EditorTabManager {
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            Resource resource;
+            Resource<?> resource;
             if (newValue != null && newValue.getContent() instanceof CodeEditor) {
                 CodeEditor selectedEditor = (CodeEditor) newValue.getContent();
-                resource = (Resource) newValue.getUserData();
+                resource = (Resource<?>) newValue.getUserData();
                 currentSearchableResource.set(resource);
                 currentEditor.setValue(selectedEditor);
 
@@ -427,8 +427,8 @@ public class EditorTabManager {
         editor.requestFocus();
     }
 
-    public void openImageFile(Resource resource) {
-        if (resource == null) {
+    public void openImageFile(ImageResource imageResource) {
+        if (imageResource == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initOwner(tabPane.getScene().getWindow());
             alert.setTitle("Image not found");
@@ -439,27 +439,29 @@ public class EditorTabManager {
 
             return;
         }
-        Tab tab = new Tab();
-        tab.setClosable(true);
-        tab.setText(resource.getFileName());
-        tab.setContextMenu(createTabContextMenu(tab));
+        if (!isTabAlreadyOpen(imageResource)) {
 
-        ImageResource imageResource = (ImageResource) resource;
-        ImageViewerPane pane = new ImageViewerPane();
-        pane.setImageResource(imageResource);
+            Tab tab = new Tab();
+            tab.setClosable(true);
+            tab.setText(imageResource.getFileName());
+            tab.setContextMenu(createTabContextMenu(tab));
 
-        ImageView imageView = pane.getImageView();
-        imageView.setImage(imageResource.asNativeFormat());
-        imageView.setFitHeight(-1);
-        imageView.setFitWidth(-1);
+            ImageViewerPane pane = new ImageViewerPane();
+            pane.setImageResource(imageResource);
 
-        Label imagePropertiesLabel = pane.getImagePropertiesLabel();
-        imagePropertiesLabel.setText(imageResource.getImageDescription());
+            ImageView imageView = pane.getImageView();
+            imageView.setImage(imageResource.asNativeFormat());
+            imageView.setFitHeight(-1);
+            imageView.setFitWidth(-1);
 
-        tab.setContent(pane);
-        tab.setUserData(resource);
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
+            Label imagePropertiesLabel = pane.getImagePropertiesLabel();
+            imagePropertiesLabel.setText(imageResource.getImageDescription());
+
+            tab.setContent(pane);
+            tab.setUserData(imageResource);
+            tabPane.getTabs().add(tab);
+            tabPane.getSelectionModel().select(tab);
+        }
     }
 
     private ContextMenu createTabContextMenu(Tab tab) {
@@ -498,7 +500,7 @@ public class EditorTabManager {
     }
 
 
-    public boolean isTabAlreadyOpen(Resource resource) {
+    public boolean isTabAlreadyOpen(Resource<?> resource) {
         boolean found = false;
         List<Tab> tabs = tabPane.getTabs();
         for (Tab tab : tabs) {
@@ -510,26 +512,27 @@ public class EditorTabManager {
         return found;
     }
 
-    public void openFileInEditor(Resource resource) throws IllegalArgumentException {
+    public void openFileInEditor(Resource<?> resource) throws IllegalArgumentException {
         openFileInEditor(resource, resource.getMediaType());
     }
 
-    public void openFileInEditor(Resource resource, MediaType mediaType) throws IllegalArgumentException {
+    public void openFileInEditor(Resource<?> resource, MediaType mediaType) throws IllegalArgumentException {
+        if (resource == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initOwner(tabPane.getScene().getWindow());
+            alert.setTitle("File not found");
+            alert.getDialogPane().setHeader(null);
+            alert.getDialogPane().setHeaderText(null);
+            alert.setContentText("The file does not exist and cannot be opened");
+            alert.showAndWait();
+
+            return;
+        }
+
         if (!isTabAlreadyOpen(resource)) {
             configuration.getMainWindow().getScene().setCursor(Cursor.WAIT);
             Tab tab = new Tab();
             tab.setClosable(true);
-            if (resource == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.initOwner(tabPane.getScene().getWindow());
-                alert.setTitle("File not found");
-                alert.getDialogPane().setHeader(null);
-                alert.getDialogPane().setHeaderText(null);
-                alert.setContentText("The file does not exist and cannot be opened");
-                alert.showAndWait();
-
-                return;
-            }
             tab.setText(resource.getFileName());
             resource.hrefProperty().addListener((observable, oldValue, newValue) -> {
                 tab.setText(resource.getFileName());
@@ -551,7 +554,9 @@ public class EditorTabManager {
                 editor.setContextMenu(contextMenuXML);
             }
             else {
-                throw new IllegalArgumentException("no editor for mediatype " + mediaType.getName());
+                logger.warn("no editor for mediatype " + mediaType.getName() + ", ignoring the call to open this file");
+                configuration.getMainWindow().getScene().setCursor(Cursor.DEFAULT);
+                return;
             }
             tab.setOnCloseRequest(event -> editor.shutdown());
 
@@ -836,7 +841,7 @@ public class EditorTabManager {
                     XHTMLResource oldResource = currentXHTMLResource.getValue();
                     /*HtmlCleanerBookProcessor processor = new HtmlCleanerBookProcessor();
                     processor.processResource(oldResource, book);*/
-                    HtmlFileSplitter splitter = new HtmlFileSplitter(book.getVersion());
+                    XhtmlFileSplitter splitter = new XhtmlFileSplitter(book.getVersion());
                     String completedFrontPart = splitter.completeFrontPart(frontPart);
 
                     oldResource.setData(completedFrontPart.getBytes(StandardCharsets.UTF_8));

@@ -93,6 +93,7 @@ public class BookBrowserManager
     private static final String CSS_FILE_ICON = "/icons/icons8_CSS_Filetype_96px.png";
     private static final String IMAGE_FILE_ICON = "/icons/icons8_Image_File_96px.png";
     private static final String XHTML_FILE_ICON = "/icons/icons8_Code_File_96px.png";
+    private static final String OTHER_FILE_ICON = "/icons/icons8_File_48px.png";
     private static final int ICON_SIZE = 24;
 
     private TreeItem<Resource<?>> textItem;
@@ -146,11 +147,11 @@ public class BookBrowserManager
         {
             if (newValue)
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Open_48px.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Open_48px.png", BookBrowserManager.ICON_SIZE));
             }
             else
             {
-                item.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
+                item.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", BookBrowserManager.ICON_SIZE));
             }
         }
     }
@@ -279,8 +280,8 @@ public class BookBrowserManager
                 {
                     TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
                     if (isImageItem(item)) {
-                        editorManager.openImageFile(item.getValue());
-                    } else {
+                        editorManager.openImageFile((ImageResource) item.getValue());
+                    } else if (!isFontItem(item)) {
                         editorManager.openFileInEditor(item.getValue());
                     }
                     event.consume();
@@ -305,6 +306,10 @@ public class BookBrowserManager
                 {
                     createFontItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
+                else if (isMisContentItem(item))
+                {
+                    createMiscContentItemContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
                 else if (item.equals(textItem))
                 {
                     createXHTMLRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
@@ -320,6 +325,9 @@ public class BookBrowserManager
                 else if (item.equals(fontsItem))
                 {
                     createFontsRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
+                }
+                else if (item.equals(miscContentItem)) {
+                    createMiscContentRootContextMenu(item).show(item.getGraphic(), event.getScreenX(), event.getScreenY());
                 }
             }
         });
@@ -350,9 +358,8 @@ public class BookBrowserManager
             KeyCode keyCode = event.getCode();
             logger.info("key typed in tree view editor: " + keyCode);
 
-            if (keyCode.equals(KeyCode.DELETE))
-            {
-                logger.debug("Delete gedrückt");
+            if (keyCode.equals(KeyCode.DELETE)) {
+                logger.debug("Delete pressed");
                 deleteSelectedItems();
             } else if (keyCode.equals(KeyCode.C) && event.isShortcutDown()) {
                 logger.debug("Ctrl-C pressed");
@@ -362,8 +369,8 @@ public class BookBrowserManager
                     logger.debug("Enter pressed");
                     TreeItem<Resource<?>> item = treeView.getSelectionModel().getSelectedItem();
                     if (isImageItem(item)) {
-                        editorManager.openImageFile(item.getValue());
-                    } else {
+                        editorManager.openImageFile((ImageResource) item.getValue());
+                    } else if (!isFontItem(item)) {
                         editorManager.openFileInEditor(item.getValue());
                     }
                     event.consume();
@@ -373,27 +380,33 @@ public class BookBrowserManager
 
         Resource<?> textResource = new Resource<>("Text");
         textItem = new TreeItem<>(textResource);
-        textItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
+        textItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", ICON_SIZE));
         textItem.expandedProperty().addListener(new FolderSymbolListener(textItem));
         rootItem.getChildren().add(textItem);
 
         Resource<?> cssResource = new Resource<>("Styles");
         cssItem = new TreeItem<>(cssResource);
-        cssItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
+        cssItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", ICON_SIZE));
         cssItem.expandedProperty().addListener(new FolderSymbolListener(cssItem));
         rootItem.getChildren().add(cssItem);
 
-        Resource<?> imagesResource = new Resource<>("Bilder");
+        Resource<?> imagesResource = new Resource<>("Images");
         imagesItem = new TreeItem<>(imagesResource);
-        imagesItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
+        imagesItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", ICON_SIZE));
         imagesItem.expandedProperty().addListener(new FolderSymbolListener(imagesItem));
         rootItem.getChildren().add(imagesItem);
 
         Resource<?> fontsResource = new Resource<>("Fonts");
         fontsItem = new TreeItem<>(fontsResource);
-        fontsItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", 24));
+        fontsItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", ICON_SIZE));
         fontsItem.expandedProperty().addListener(new FolderSymbolListener(fontsItem));
         rootItem.getChildren().add(fontsItem);
+
+        Resource<?> miscResource = new Resource<>("Misc");
+        miscContentItem = new TreeItem<>(miscResource);
+        miscContentItem.setGraphic(FXUtils.getIcon("/icons/icons8_Folder_48px.png", ICON_SIZE));
+        miscContentItem.expandedProperty().addListener(new FolderSymbolListener(miscContentItem));
+        rootItem.getChildren().add(miscContentItem);
     }
 
     private ContextMenu createImagesRootContextMenu(TreeItem<Resource<?>> treeItem)
@@ -411,6 +424,20 @@ public class BookBrowserManager
     }
 
     private ContextMenu createFontsRootContextMenu(TreeItem<Resource<?>> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Add existing files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
+    private ContextMenu createMiscContentRootContextMenu(TreeItem<Resource<?>> treeItem)
     {
         ContextMenu menu = new ContextMenu();
         menu.setAutoFix(true);
@@ -583,13 +610,12 @@ public class BookBrowserManager
                 if (item.isSelected())
                 {
                     addSemanticsToXHTMLFile(treeItem, semantic);
-                    book.setBookIsChanged(true);
                 }
                 else
                 {
                     removeSemanticsFromXHTMLFile(treeItem, semantic);
-                    book.setBookIsChanged(true);
                 }
+                book.setBookIsChanged(true);
             });
             menu.getItems().add(item);
         }
@@ -780,19 +806,50 @@ public class BookBrowserManager
         return menu;
     }
 
+    private ContextMenu createMiscContentItemContextMenu(TreeItem<Resource<?>> treeItem)
+    {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoFix(true);
+        menu.setAutoHide(true);
+
+        MenuItem item = new MenuItem("Delete...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> deleteSelectedItems());
+        item.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        menu.getItems().add(item);
+
+        item = new MenuItem("Rename...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> renameItem(treeItem));
+        item.setAccelerator(new KeyCodeCombination(KeyCode.F2));
+        menu.getItems().add(item);
+
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Save as...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> saveAs(treeItem));
+        menu.getItems().add(item);
+
+        item = new SeparatorMenuItem();
+        menu.getItems().add(item);
+
+        item = new MenuItem("Add existing files...");
+        item.setUserData(treeItem);
+        item.setOnAction(event -> mainControllerProvider.get().addExistingFiles(treeItem));
+        menu.getItems().add(item);
+
+        return menu;
+    }
+
     private void addImageSemanticMenuItems(Menu menu, TreeItem<Resource<?>> treeItem)
     {
         Book book = currentBookProperty().getValue();
         ImageResource resource = (ImageResource)treeItem.getValue();
         CheckMenuItem item = new CheckMenuItem("Cover Image");
-        if (resource.coverProperty().getValue())
-        {
-            item.setSelected(true);
-        }
-        else
-        {
-            item.setSelected(false);
-        }
+        item.setSelected(resource.coverProperty().getValue());
         item.setUserData(treeItem);
         item.setOnAction(event -> {
             if (item.isSelected())
@@ -833,6 +890,7 @@ public class BookBrowserManager
         cssItem.getChildren().clear();
         imagesItem.getChildren().clear();
         fontsItem.getChildren().clear();
+        miscContentItem.getChildren().clear();
 
         rootItem.getChildren().remove(opfItem);
         rootItem.getChildren().remove(ncxItem);
@@ -861,6 +919,14 @@ public class BookBrowserManager
             TreeItem<Resource<?>> item = new TreeItem<>(fontResource);
             item.setGraphic(getFontIcon((FontResource) fontResource));
             fontsItem.getChildren().add(item);
+        }
+
+        List<Resource<?>> miscResources = book.getResources().getMiscResources();
+        miscResources.sort(new ResourceFilenameComparator());
+        for (Resource<?> miscResource : miscResources) {
+            TreeItem<Resource<?>> item = new TreeItem<>(miscResource);
+            item.setGraphic(FXUtils.getIcon(OTHER_FILE_ICON, ICON_SIZE));
+            miscContentItem.getChildren().add(item);
         }
 
         List<Resource<?>> imageResources = book.getResources().getImageResources();
@@ -953,6 +1019,14 @@ public class BookBrowserManager
             } else {
                 fontsItem.getChildren().add(treeItem);
             }
+        } else {
+            index = miscContentItem.getChildren().indexOf(selectedTreeItem);
+            treeItem.setGraphic(FXUtils.getIcon(OTHER_FILE_ICON, ICON_SIZE));
+            if (miscContentItem.getChildren().size() > 0) {
+                miscContentItem.getChildren().add(index + 1, treeItem);
+            } else {
+                miscContentItem.getChildren().add(treeItem);
+            }
         }
         int selectionIndex = treeView.getSelectionModel().getSelectedIndex();
         if (selectionIndex > -1) {
@@ -977,7 +1051,7 @@ public class BookBrowserManager
         }
         else //default file icon
         {
-            return FXUtils.getIcon("/icons/icons8_File_48px.png", ICON_SIZE);
+            return FXUtils.getIcon(OTHER_FILE_ICON, ICON_SIZE);
         }
     }
 
@@ -1057,10 +1131,18 @@ public class BookBrowserManager
         return item.getParent().equals(fontsItem);
     }
 
+    private boolean isMisContentItem(TreeItem<Resource<?>> item)
+    {
+        return item.getParent().equals(miscContentItem);
+    }
+
+
     public boolean isXmlItem(TreeItem<Resource<?>> item)
     {
-        return item.getParent().equals(rootItem) &&
-                !item.equals(textItem) && !item.equals(cssItem) && !item.equals(fontsItem) && !item.equals(imagesItem);
+        return item.getParent().equals(rootItem)
+                && !item.equals(textItem) && !item.equals(cssItem)
+                && !item.equals(fontsItem) && !item.equals(imagesItem)
+                && !item.equals(miscContentItem);
     }
 
     private void deleteSelectedItems()
@@ -1084,6 +1166,10 @@ public class BookBrowserManager
             else if (selectedItem.getValue().getMediaType().isFont())
             {
                 deleteFontItem(selectedItem);
+            }
+            else if (selectedItem.getParent() == miscContentItem)
+            {
+                deleteMiscContentItem(selectedItem);
             }
         }
     }
@@ -1122,16 +1208,24 @@ public class BookBrowserManager
     {
         Book book = currentBookProperty().getValue();
         book.removeResource(treeItem.getValue());
+        fontsItem.getChildren().remove(treeItem);
+        book.setBookIsChanged(true);
+    }
+
+    private void deleteMiscContentItem(TreeItem<Resource<?>> treeItem)
+    {
+        Book book = currentBookProperty().getValue();
+        book.removeResource(treeItem.getValue());
         editorManager.refreshEditorCode(book.getOpfResource());
         editorManager.closeTab(treeItem.getValue());
-        fontsItem.getChildren().remove(treeItem);
+        miscContentItem.getChildren().remove(treeItem);
         book.setBookIsChanged(true);
     }
 
     private void copyFileNameToClipboard() {
         TreeItem<Resource<?>> treeItem = treeView.getSelectionModel().getSelectedItem();
         if (treeItem != null && textItem != treeItem && cssItem != treeItem && imagesItem != treeItem
-            && fontsItem != treeItem) {
+            && fontsItem != treeItem && miscContentItem != treeItem) {
             Clipboard.getSystemClipboard().setContent(Collections.singletonMap(DataFormat.PLAIN_TEXT, treeItem.getValue().getFileName()));
         }
     }
@@ -1275,7 +1369,7 @@ public class BookBrowserManager
             WatchService watcher = FileSystems.getDefault().newWatchService();
             Path path = tmp.toPath().getParent();
             path.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-            Task task = new Task<Void>()
+            Task<Void> task = new Task<Void>()
             {
                 @Override
                 public Void call()

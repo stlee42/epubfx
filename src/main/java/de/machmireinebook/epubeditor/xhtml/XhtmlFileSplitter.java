@@ -28,8 +28,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-public class HtmlFileSplitter {
-    private static final Logger logger = Logger.getLogger(HtmlFileSplitter.class);
+public class XhtmlFileSplitter {
+    private static final Logger logger = Logger.getLogger(XhtmlFileSplitter.class);
 
     private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENTOPEN>(<\\h*)(\\w+:?\\w*)([^<>]*)(\\h*/?>))" +
             "|(?<ELEMENTCLOSE>(</?\\h*)(\\w+:?\\w*)([^<>]*)(\\h*>))" +
@@ -41,7 +41,7 @@ public class HtmlFileSplitter {
     private List<CompletionElement> completions = new ArrayList<>();
     private EpubVersion epubVersion;
 
-    public HtmlFileSplitter(EpubVersion epubVersion) {
+    public XhtmlFileSplitter(EpubVersion epubVersion) {
         this.epubVersion = epubVersion;
     }
 
@@ -66,7 +66,7 @@ public class HtmlFileSplitter {
 
             SAXBuilder builder = new SAXBuilder();
             Document jdomDocument = builder.build(new StringReader(frontPart));
-            frontPartFormatted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, epubVersion);
+            frontPartFormatted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, true, epubVersion);
         }
         catch (JDOMException | IOException e) {
             logger.error("", e);
@@ -128,7 +128,7 @@ public class HtmlFileSplitter {
                 } else {
                     jdomDocument.setDocType(Constants.DOCTYPE_HTML.clone());
                 }
-                backPartCompleted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, epubVersion);
+                backPartCompleted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, true, epubVersion);
             }
             catch (JDOMException e) {
                 logger.error("", e);

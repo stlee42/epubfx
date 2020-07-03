@@ -1,8 +1,8 @@
 package de.machmireinebook.epubeditor.preview;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -12,13 +12,13 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import org.apache.log4j.Logger;
 
-import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.MediaType;
-import de.machmireinebook.epubeditor.epublib.resource.Resource;
-
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import de.machmireinebook.epubeditor.epublib.domain.Book;
+import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
  * User: mjungierek
@@ -28,7 +28,7 @@ import com.sun.net.httpserver.HttpHandler;
 public class EpubHttpHandler implements HttpHandler
 {
     public static final Logger logger = Logger.getLogger(EpubHttpHandler.class);
-    private ObjectProperty<Book> book = new SimpleObjectProperty<>();
+    private final ObjectProperty<Book> book = new SimpleObjectProperty<>();
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException
@@ -37,9 +37,6 @@ public class EpubHttpHandler implements HttpHandler
         logger.info("getting request " + requestURI);
 
         String command = httpExchange.getRequestMethod();
-        httpExchange.getRequestHeaders();
-        InputStream body = httpExchange.getRequestBody();
-        body.close();
         Headers headers = httpExchange.getResponseHeaders();
         if ("GET".equals(command) && book.get() != null)
         {
@@ -51,21 +48,23 @@ public class EpubHttpHandler implements HttpHandler
             {
                 MediaType mediaType = resource.getMediaType();
                 headers.set("Content-Type", mediaType.getName() + "; charset=utf-8");
-                httpExchange.sendResponseHeaders(200, 0);
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK , 0);
                 logger.info("return code 200");
-                OutputStream out = httpExchange.getResponseBody();
-                out.write(resource.getWebViewPreparedData());
-                out.close();
+                try (OutputStream out = httpExchange.getResponseBody()) {
+                    out.write(resource.getWebViewPreparedData());
+                } catch (IOException e) {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+                }
             }
             else
             {
-                httpExchange.sendResponseHeaders(404, -1);
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
                 logger.info("return code 404");
             }
         }
         else
         {
-            httpExchange.sendResponseHeaders(404, -1);
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
             logger.info("return code 404");
         }
     }

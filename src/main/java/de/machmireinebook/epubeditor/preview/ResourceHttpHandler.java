@@ -3,13 +3,14 @@ package de.machmireinebook.epubeditor.preview;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /**
  * User: mjungierek
@@ -27,31 +28,27 @@ public class ResourceHttpHandler implements HttpHandler
         logger.info("getting request " + requestURI);
 
         String command = httpExchange.getRequestMethod();
-        httpExchange.getRequestHeaders();
         InputStream body = httpExchange.getRequestBody();
         body.close();
         if ("GET".equals(command))
         {
-            InputStream is = ResourceHttpHandler.class.getResourceAsStream(requestURI.toString());
-            if (is != null)
-            {
-                httpExchange.sendResponseHeaders(200, 0);
-                logger.info("return code 200");
-                OutputStream out = httpExchange.getResponseBody();
-                IOUtils.copy(is, out);
-                out.close();
-                is.close();
-            }
-            else
-            {
-                logger.info("return code 404");
-                httpExchange.sendResponseHeaders(404, -1);
+            try (InputStream is = ResourceHttpHandler.class.getResourceAsStream(requestURI.toString()); OutputStream out = httpExchange.getResponseBody();) {
+                if (is != null) {
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+                    logger.info("return code 200");
+                    IOUtils.copy(is, out);
+                } else {
+                    logger.info("return code 404");
+                    httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
+                }
+            } catch (IOException e) {
+                httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
             }
         }
         else
         {
             logger.info("return code 404");
-            httpExchange.sendResponseHeaders(404, -1);
+            httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
         }
     }
 }
