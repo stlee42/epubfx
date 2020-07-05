@@ -57,7 +57,7 @@ public class ValidationManager {
 
     private class ValidateEpubService extends Service<EpubCheckReport>
     {
-        private Path epubFileName;
+        private final Path epubFileName;
 
         ValidateEpubService(Path epubFileName)
         {
@@ -102,7 +102,7 @@ public class ValidationManager {
                 ValidationMessage message = tableView.getSelectionModel().getSelectedItem();
                 logger.info("double clicked on message " + message.getMessage() + " for resource " + message.getResource());
                 String href = message.getResource().replace("OEBPS/", "");
-                Resource resource = getBook().getResources().getByHref(href);
+                Resource<?> resource = getBook().getResources().getByHref(href);
                 if (resource == null) {
                     if (message.getResource().contains(getBook().getOpfResource().getHref())) {
                         resource =  getBook().getOpfResource();
@@ -140,7 +140,7 @@ public class ValidationManager {
                     .parallelStream()
                     .filter(validationMessage -> validationMessage.getType().equals("ERROR") || validationMessage.getType().equals("WARNING"))
                     .collect(Collectors.toList());
-            if (messages.isEmpty()) {
+            if (filteredMessages.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.NONE);
                 alert.initOwner(tableView.getScene().getWindow());
                 alert.setTitle("Result Epub Check");

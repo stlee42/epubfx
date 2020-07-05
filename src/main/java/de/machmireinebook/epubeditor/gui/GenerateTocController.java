@@ -42,13 +42,13 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
+import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.toc.EditableTocEntry;
 import de.machmireinebook.epubeditor.epublib.toc.TocGenerator;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
-import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
 import static de.machmireinebook.epubeditor.epublib.Constants.IGNORE_IN_TOC;
@@ -267,19 +267,21 @@ public class GenerateTocController implements StandardController
         }
     }
 
-    private void addTocEntryToTableView(EditableTocEntry tocEntry, TreeItem<EditableTocEntry> treeItem, int level)
+    private void addTocEntryToTableView(TocEntry tocEntry, TreeItem<EditableTocEntry> treeItem, int level)
     {
         int levelIncrement = 0;
         TreeItem<EditableTocEntry> newParent = treeItem;
-        if ((!showTocItemsCheckBox.isSelected() || tocEntry.getChoosed()) &&
+        if (tocEntry instanceof EditableTocEntry &&
+                (!showTocItemsCheckBox.isSelected() || ((EditableTocEntry)tocEntry).getChoosed()) &&
                 ((!isEditMode() && TocGenerator.getLevel(tocEntry.getLevel()) <= levelToShowProperty.get()) || isEditMode())) {
-            newParent = new TreeItem<>(tocEntry);
+            newParent = new TreeItem<>((EditableTocEntry)tocEntry);
             newParent.setExpanded(true);
             treeItem.getChildren().add(newParent);
             levelIncrement = 1;
         }
+
         for (TocEntry childEntry : tocEntry.getChildren()) {
-            addTocEntryToTableView((EditableTocEntry)childEntry, newParent, level + levelIncrement);
+            addTocEntryToTableView(childEntry, newParent, level + levelIncrement);
         }
     }
 
@@ -331,9 +333,9 @@ public class GenerateTocController implements StandardController
         try
         {
             TocGenerator.TocGeneratorResult result;
-            List<TocEntry<? extends TocEntry, Document>> tocEntriesToUseInToc = new ArrayList<>();
+            List<TocEntry> tocEntriesToUseInToc = new ArrayList<>();
 
-            for (EditableTocEntry tocEntry : allTocEntries)
+            for (TocEntry tocEntry : allTocEntries)
             {
                 addTocEntryToGeneratorResult(tocEntry, tocEntriesToUseInToc);
             }
@@ -350,9 +352,9 @@ public class GenerateTocController implements StandardController
             Map<Resource<Document>, Document> allResourcesToRewrite = result.getResourcesToRewrite();
             allResourcesToRewrite.putAll(resourcesToRewrite);
 
-            for (Resource resource : allResourcesToRewrite.keySet())
+            for (Resource<Document> resource : allResourcesToRewrite.keySet())
             {
-                resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), currentBook.get().getVersion()));
+                resource.setData(XHTMLUtils.outputXHTMLDocument(allResourcesToRewrite.get(resource), true, currentBook.get().getVersion()));
                 editorTabManager.refreshEditorCode(resource);
             }
 
@@ -368,13 +370,13 @@ public class GenerateTocController implements StandardController
         stage.close();
     }
 
-    private void addTocEntryToGeneratorResult(EditableTocEntry originalEntry, List<TocEntry<? extends TocEntry, Document>> parent)
+    private void addTocEntryToGeneratorResult(TocEntry originalEntry, List<TocEntry> parent)
     {
         boolean elevateChildren = false;
         EditableTocEntry tocEntry = null;
-        if (originalEntry.getChoosed())
+        if (originalEntry instanceof EditableTocEntry && ((EditableTocEntry)originalEntry).getChoosed())
         {
-            tocEntry = originalEntry.clone();
+            tocEntry = ((EditableTocEntry)originalEntry).clone();
             tocEntry.getChildren().clear(); //will be filled with choosed toc entries and not with all current childs
             parent.add(tocEntry);
         }
@@ -387,11 +389,11 @@ public class GenerateTocController implements StandardController
         {
             if (elevateChildren)
             {
-                addTocEntryToGeneratorResult((EditableTocEntry)childEntry, parent);
+                addTocEntryToGeneratorResult(childEntry, parent);
             }
             else
             {
-                addTocEntryToGeneratorResult((EditableTocEntry)childEntry, tocEntry.getChildren());
+                addTocEntryToGeneratorResult(childEntry, tocEntry.getChildren());
             }
         }
     }
@@ -405,7 +407,7 @@ public class GenerateTocController implements StandardController
     {
         TreeItem<EditableTocEntry> treeItem = treeTableView.getSelectionModel().getSelectedItem();
         EditableTocEntry parentTocEntry = treeItem.getParent().getValue();
-        List<TocEntry<? extends TocEntry, Document>> tocEntryList = parentTocEntry.getChildren();
+        List<TocEntry> tocEntryList = parentTocEntry.getChildren();
         int index = tocEntryList.indexOf(treeItem.getValue());
         EditableTocEntry choosableTocEntry = new EditableTocEntry();
         choosableTocEntry.setChoosed(true);
@@ -418,7 +420,7 @@ public class GenerateTocController implements StandardController
     {
         TreeItem<EditableTocEntry> treeItem = treeTableView.getSelectionModel().getSelectedItem();
         EditableTocEntry parentTocEntry = treeItem.getParent().getValue();
-        List<TocEntry<? extends TocEntry, Document>> tocEntryList = parentTocEntry.getChildren();
+        List<TocEntry> tocEntryList = parentTocEntry.getChildren();
         int index = tocEntryList.indexOf(treeItem.getValue());
         EditableTocEntry choosableTocEntry = new EditableTocEntry();
         choosableTocEntry.setChoosed(true);
@@ -439,7 +441,7 @@ public class GenerateTocController implements StandardController
     {
         TreeItem<EditableTocEntry> treeItem = treeTableView.getSelectionModel().getSelectedItem();
         EditableTocEntry parentTocEntry = treeItem.getParent().getValue();
-        List<TocEntry<? extends TocEntry, Document>> tocEntryList = parentTocEntry.getChildren();
+        List<TocEntry> tocEntryList = parentTocEntry.getChildren();
         tocEntryList.remove(treeItem.getValue());
         setTableViewItems();
     }

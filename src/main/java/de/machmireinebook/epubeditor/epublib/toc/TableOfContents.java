@@ -1,8 +1,7 @@
-package de.machmireinebook.epubeditor.epublib.domain;
+package de.machmireinebook.epubeditor.epublib.toc;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 
 /**
@@ -27,7 +27,7 @@ public class TableOfContents implements Serializable {
 
 	private static final long serialVersionUID = -3147391239966275152L;
 	
-	private List<TocEntry<?, Document>> tocReferences;
+	private List<TocEntry> tocReferences;
 	private String tocTitle;
 	private String id;
 
@@ -35,15 +35,15 @@ public class TableOfContents implements Serializable {
 		this(new ArrayList<>());
 	}
 	
-	public TableOfContents(List<TocEntry<? extends TocEntry, Document>> tocReferences) {
+	public TableOfContents(List<TocEntry> tocReferences) {
 		this.tocReferences = tocReferences;
 	}
 
-	public List<TocEntry<? extends TocEntry, Document>> getTocReferences() {
+	public List<TocEntry> getTocReferences() {
 		return tocReferences;
 	}
 
-	public void setTocReferences(List<TocEntry<? extends TocEntry, Document>> tocReferences) {
+	public void setTocReferences(List<TocEntry> tocReferences) {
 		this.tocReferences = tocReferences;
 	}
 	
@@ -60,17 +60,17 @@ public class TableOfContents implements Serializable {
 	 * 
 	 * @return All unique references (unique by href) in the order in which they are referenced to in the table of contents.
 	 */
-	public List<Resource> getAllUniqueResources() {
+	public List<Resource<Document>> getAllUniqueResources() {
 		Set<String> uniqueHrefs = new HashSet<>();
-		List<Resource> result = new ArrayList<>();
+		List<Resource<Document>> result = new ArrayList<>();
 		getAllUniqueResources(uniqueHrefs, result, tocReferences);
 		return result;
 	}
 	
 	
-	private static void getAllUniqueResources(Set<String> uniqueHrefs, List<Resource> result, List<TocEntry<? extends TocEntry, Document>> tocReferences) {
-		for (TocEntry<? extends TocEntry, Document> tocReference: tocReferences) {
-			Resource resource = tocReference.getResource();
+	private static void getAllUniqueResources(Set<String> uniqueHrefs, List<Resource<Document>> result, List<TocEntry> tocReferences) {
+		for (TocEntry tocReference: tocReferences) {
+			Resource<Document> resource = tocReference.getResource();
 			if (resource != null && ! uniqueHrefs.contains(resource.getHref())) {
 				uniqueHrefs.add(resource.getHref());
 				result.add(resource);
@@ -88,9 +88,9 @@ public class TableOfContents implements Serializable {
 		return getTotalSize(tocReferences);
 	}
 	
-	private static int getTotalSize(Collection<TocEntry<? extends TocEntry, Document>> tocReferences) {
+	private static int getTotalSize(List<TocEntry> tocReferences) {
 		int result = tocReferences.size();
-		for (TocEntry<? extends TocEntry, Document> tocReference: tocReferences) {
+		for (TocEntry tocReference: tocReferences) {
 			result += getTotalSize(tocReference.getChildren());
 		}
 		return result;
@@ -104,9 +104,9 @@ public class TableOfContents implements Serializable {
 		return calculateDepth(tocReferences, 0);
 	}
 
-	private int calculateDepth(List<TocEntry<? extends TocEntry, Document>> tocReferences, int currentDepth) {
+	private int calculateDepth(List<TocEntry> tocReferences, int currentDepth) {
 		int maxChildDepth = 0;
-		for (TocEntry<? extends TocEntry, Document> tocReference: tocReferences) {
+		for (TocEntry tocReference: tocReferences) {
 			int childDepth = calculateDepth(tocReference.getChildren(), 1);
 			if (childDepth > maxChildDepth) {
 				maxChildDepth = childDepth;

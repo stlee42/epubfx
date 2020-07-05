@@ -54,8 +54,17 @@ import de.machmireinebook.epubeditor.xhtml.XmlUtils;
 public class InsertMediaController extends AbstractStandardController
 {
     private static final Logger logger = Logger.getLogger(InsertMediaController.class);
+    public CheckBox addMarginCheckBox;
     @FXML
-    private ChoiceBox alignmentChoiceBox;
+    private TextField marginTopStyleTextField;
+    @FXML
+    private TextField marginLeftStyleTextField;
+    @FXML
+    private TextField marginRightStyleTextField;
+    @FXML
+    private TextField marginBottomStyleTextField;
+    @FXML
+    private ChoiceBox<String> alignmentChoiceBox;
     @FXML
     private CheckBox addBorderCheckBox;
     @FXML
@@ -147,6 +156,35 @@ public class InsertMediaController extends AbstractStandardController
         maxPhysicalWidthCheckBox.disableProperty().bind(Bindings.not(flexibleWidthRadioButton.selectedProperty()));
         borderStyleTextField.disableProperty().bind(Bindings.not(addBorderCheckBox.selectedProperty()));
 
+        marginTopStyleTextField.disableProperty().bind(Bindings.not(addMarginCheckBox.selectedProperty()));
+        marginRightStyleTextField.disableProperty().bind(Bindings.not(addMarginCheckBox.selectedProperty()));
+        marginBottomStyleTextField.disableProperty().bind(Bindings.not(addMarginCheckBox.selectedProperty()));
+        marginLeftStyleTextField.disableProperty().bind(Bindings.not(addMarginCheckBox.selectedProperty()));
+
+        percentWidthTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            int percent = Integer.parseInt(percentWidthTextField.getText());
+            if (percent > 100) {
+                percent = 100;
+            } else if (percent < 0) { //10 percent as minimum
+                percent = 10;
+            }
+
+            if (percent == 100) {
+                marginRightStyleTextField.setText("0");
+                marginLeftStyleTextField.setText("0");
+            }
+        });
+        alignmentChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() == ALIGNMENT_LEFT) {
+                marginLeftStyleTextField.setText("0");
+            } else if (newValue.intValue() == ALIGNMENT_RIGHT) {
+                marginRightStyleTextField.setText("0");
+            } else {
+                marginRightStyleTextField.setText("auto");
+                marginLeftStyleTextField.setText("auto");
+            }
+        });
+
         instance = this;
     }
 
@@ -209,31 +247,51 @@ public class InsertMediaController extends AbstractStandardController
             snippet = StringUtils.replace(snippet, "${url}", editorManager.getCurrentXHTMLResource().relativize(resource));
 
             String style = "";
+            String containerStyle = "";
             if (addBorderCheckBox.isSelected())
             {
                 style += "border:" + borderStyleTextField.getText() + "; ";
             }
+
+            if (addMarginCheckBox.isSelected()) {
+                containerStyle += "margin:" + marginTopStyleTextField.getText() + " " + marginRightStyleTextField.getText() + " " + marginBottomStyleTextField.getText() + " " + marginLeftStyleTextField.getText() + "; ";
+            }
+
             if (fixWidthHeightRadioButton.isSelected())
             {
-                style += "width:" + resource.getWidth() +"px; height:" + resource.getHeight() + "px;";
+                containerStyle += "width:" + resource.getWidth() +"px; height:" + resource.getHeight() + "px;";
             }
             else if(flexibleWidthRadioButton.isSelected())
             {
-                //max-width will be ignored by amazon, because this the physical width of the image set as width of the figure,
-                // otherwise amazon creates funny effects
-                style += "max-width:" + percentWidthTextField.getText() +"%; ";
-                if (maxPhysicalWidthCheckBox.isSelected())
-                {
-                    style += "width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
+                int percent = Integer.parseInt(percentWidthTextField.getText());
+                if (percent > 100) {
+                    percent = 100;
+                } else if (percent < 0) { //10 percent as minimum
+                    percent = 10;
+                }
+
+                if (percent == 100) {
+                    //max-width will be ignored by amazon, because this the physical width of the image set as width of the figure,
+                    // otherwise amazon creates funny effects
+                    containerStyle += "max-width:" + percent +"%; ";
+                    if (maxPhysicalWidthCheckBox.isSelected()) {
+                        containerStyle += "width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
+                    }
+                } else { //but if lower then 100 percent we want that the image has the percentage width on amazon too
+                    containerStyle += "width:" + percent +"%; ";
+                    if (maxPhysicalWidthCheckBox.isSelected()) {
+                        containerStyle += "max-width:" + EpubFxNumberUtils.formatAsInteger(resource.getWidth()) +"px; ";
+                    }
                 }
             }
-            String containerStyle;
             if (alignment == ALIGNMENT_LEFT) {
-                containerStyle = "float:left";
+                containerStyle += "float:left";
             } else if (alignment == ALIGNMENT_RIGHT) {
-                containerStyle = "float:right";
+                containerStyle += "float:right";
             } else {
-                containerStyle = style + "margin-right: auto; margin-left:auto";
+                if (!addMarginCheckBox.isSelected()) {
+                    containerStyle += "margin-right: auto; margin-left:auto";
+                }
                 style = "width: 100%";
             }
 

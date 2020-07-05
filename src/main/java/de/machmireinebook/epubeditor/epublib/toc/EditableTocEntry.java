@@ -12,7 +12,7 @@ import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 /**
  * Created by Michail Jungierek
  */
-public class EditableTocEntry extends TocEntry<EditableTocEntry, Document> implements Cloneable
+public class EditableTocEntry extends TocEntry implements Cloneable
 {
     private boolean choosed;
     private boolean titleChanged = false;
@@ -23,20 +23,18 @@ public class EditableTocEntry extends TocEntry<EditableTocEntry, Document> imple
     {
     }
 
-    public EditableTocEntry(TocEntry<? extends TocEntry, ?> tocEntry)
+    public EditableTocEntry(TocEntry tocEntry)
     {
         this.setTitle(tocEntry.getTitle());
-        for (TocEntry<? extends TocEntry, ?> child : tocEntry.getChildren())
+        for (TocEntry child : tocEntry.getChildren())
         {
-            EditableTocEntry choosableChild = new EditableTocEntry(child);
-            this.getChildren().add(choosableChild);
+            EditableTocEntry editableChild = new EditableTocEntry(child);
+            this.getChildren().add(editableChild);
         }
         this.setReference(tocEntry.getReference());
         this.setResource(tocEntry.getResource(), tocEntry.getFragmentId());
         this.setLevel(tocEntry.getLevel());
     }
-
-
 
     public boolean getChoosed()
     {

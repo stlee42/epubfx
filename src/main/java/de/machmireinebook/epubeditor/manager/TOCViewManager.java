@@ -15,12 +15,10 @@ import javafx.scene.input.MouseEvent;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
-import org.jdom2.Document;
-
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.toc.TableOfContents;
 
 /**
  * User: mjungierek
@@ -90,7 +88,7 @@ public class TOCViewManager
         {
             TableOfContents toc = bookProperty.get().getTableOfContents();
 
-            List<TocEntry<? extends TocEntry, Document>> references = toc.getTocReferences();
+            List<TocEntry> references = toc.getTocReferences();
             for (TocEntry reference : references)
             {
                 TreeItem<TocEntry> tocItem = new TreeItem<>(reference);
@@ -106,8 +104,8 @@ public class TOCViewManager
     private void addChildren(TreeItem<TocEntry> parentItem)
     {
         TocEntry parent = parentItem.getValue();
-        List<TocEntry<? extends TocEntry, Document>> children = parent.getChildren();
-        for (TocEntry<? extends TocEntry, Document> child : children)
+        List<TocEntry> children = parent.getChildren();
+        for (TocEntry child : children)
         {
             TreeItem<TocEntry> childItem = new TreeItem<>(child);
             parentItem.getChildren().add(childItem);

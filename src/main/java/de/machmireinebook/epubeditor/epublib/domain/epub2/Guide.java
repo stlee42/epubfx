@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom2.Document;
+
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.ResourceReference;
 
@@ -88,7 +90,7 @@ public class Guide implements Serializable {
 	 * 
 	 * @return The coverpage of the book.
 	 */
-	public Resource getCoverPage() {
+	public Resource<Document> getCoverPage() {
 		GuideReference guideReference = getCoverReference();
 		if (guideReference == null) {
 			return null;
@@ -96,7 +98,7 @@ public class Guide implements Serializable {
 		return guideReference.getResource();
 	}
 
-	public void setCoverPage(Resource coverPage) {
+	public void setCoverPage(Resource<Document> coverPage) {
 		GuideReference coverpageGuideReference = new GuideReference(coverPage, GuideReference.Semantics.COVER, DEFAULT_COVER_TITLE);
 		setCoverReference(coverpageGuideReference);
 	}

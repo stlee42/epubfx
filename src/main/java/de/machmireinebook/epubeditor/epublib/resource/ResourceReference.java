@@ -10,7 +10,7 @@ public class ResourceReference<T> implements Serializable {
 	private static final long serialVersionUID = 2596967243557743048L;
 	protected Resource<T> resource;
 
-	public ResourceReference(Resource resource) {
+	public ResourceReference(Resource<T> resource) {
 		this.resource = resource;
 	}
 

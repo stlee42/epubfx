@@ -44,6 +44,7 @@ import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.Resources;
 import de.machmireinebook.epubeditor.epublib.resource.TextResource;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
+import de.machmireinebook.epubeditor.epublib.toc.TableOfContents;
 import de.machmireinebook.epubeditor.jdom2.AttributeElementFilter;
 import de.machmireinebook.epubeditor.xhtml.XHTMLUtils;
 
@@ -90,15 +91,15 @@ public class Book implements Serializable
 
         book.setMetadata(new Metadata());
 
-        Resource<?> ncxResource = NCXDocument.createNCXResource(book);
+        Resource<Document> ncxResource = NCXDocument.createNCXResource(book);
         book.setNcxResource(ncxResource);
         book.getSpine().setTocResource(ncxResource);
         book.addResource(ncxResource, false);
 
-        Resource<?> opfResource = PackageDocumentWriter.createOPFResource(book);
+        Resource<Document> opfResource = PackageDocumentWriter.createOPFResource(book);
         book.setOpfResource(opfResource);
 
-        Resource<?> textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
+        Resource<Document> textRes = book.addResourceFromTemplate("/epub/template.xhtml", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
         book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
@@ -124,7 +125,7 @@ public class Book implements Serializable
         book.setNcxResource(ncxResource);
         book.addResource(ncxResource, false);
 
-        Resource<?> textRes = book.addResourceFromTemplate("/epub/template-epub3.html", "Text/text-0001.xhtml", false);
+        Resource<Document> textRes = book.addResourceFromTemplate("/epub/template-epub3.html", "Text/text-0001.xhtml", false);
         book.addSection("Start", textRes);
 
         book.addResourceFromTemplate("/epub/standard-small.css", "Styles/standard.css", false);
@@ -139,7 +140,7 @@ public class Book implements Serializable
         return addResourceFromTemplate(templateFileName, href, true);
     }
 
-    public Resource<?> addResourceFromTemplate(String templateFileName, String href, boolean refreshOpf)
+    public Resource<Document> addResourceFromTemplate(String templateFileName, String href, boolean refreshOpf)
     {
         File file = new File(Book.class.getResource(templateFileName).getFile());
         Resource<?> res = createResourceFromFile(file, href, MediaType.getByFileName(href));
@@ -162,7 +163,7 @@ public class Book implements Serializable
                 logger.error("", e);
             }
         }
-        return res;
+        return (Resource<Document>)res;
     }
 
     public Resource<?> addResourceFromFile(File file, String href, MediaType mediaType)
@@ -221,10 +222,10 @@ public class Book implements Serializable
      * @param resource
      * @return The table of contents
      */
-    public void addSection(String title, Resource<?> resource)
+    public void addSection(String title, Resource<Document> resource)
     {
         getResources().put(resource);
-        TocEntry tocReference = tableOfContents.addTOCReference(new TocEntry(title, resource));
+        tableOfContents.addTOCReference(new TocEntry(title, resource));
         if (spine.findFirstResourceById(resource.getId()) < 0)
         {
             spine.addSpineReference(new SpineReference(resource), null);
@@ -524,12 +525,12 @@ public class Book implements Serializable
      *
      * @return The book's cover page as a Resource
      */
-    public Resource getCoverPage()
+    public Resource<Document> getCoverPage()
     {
         return guide.getCoverPage();
     }
 
-    public void setCoverPage(Resource coverPage)
+    public void setCoverPage(Resource<Document> coverPage)
     {
         if (coverPage == null)
         {

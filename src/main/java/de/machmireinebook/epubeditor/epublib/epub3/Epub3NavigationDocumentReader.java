@@ -21,7 +21,7 @@ import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.Resources;
-import de.machmireinebook.epubeditor.epublib.domain.TableOfContents;
+import de.machmireinebook.epubeditor.epublib.toc.TableOfContents;
 import de.machmireinebook.epubeditor.epublib.domain.TocEntry;
 import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.EpubType;
@@ -167,22 +167,22 @@ public class Epub3NavigationDocumentReader
         book.setTableOfContents(tableOfContents);
     }
 
-    private List<TocEntry<? extends TocEntry, Document>> readNavReferences(List<Element> liElements)
+    private List<TocEntry> readNavReferences(List<Element> liElements)
     {
         if (liElements == null)
         {
             return new ArrayList<>();
         }
-        List<TocEntry<?, Document>> result = new ArrayList<>(liElements.size());
+        List<TocEntry> result = new ArrayList<>(liElements.size());
         for (Element liElement : liElements)
         {
-            Optional<TocEntry<? extends TocEntry, Document>> tocReferenceOptional = readTOCReference(liElement);
+            Optional<TocEntry> tocReferenceOptional = readTOCReference(liElement);
             tocReferenceOptional.ifPresent(result::add);
         }
         return result;
     }
 
-    private Optional<TocEntry<? extends TocEntry, Document>> readTOCReference(Element liElement)
+    private Optional<TocEntry> readTOCReference(Element liElement)
     {
         Element anchorElement = liElement.getChild("a", NAMESPACE_XHTML);
         String label = "";
@@ -207,7 +207,7 @@ public class Epub3NavigationDocumentReader
             logger.error("Resource with href " + href + " in nav document not found");
             return Optional.empty();
         }
-        TocEntry<? extends TocEntry, Document> result = new TocEntry<>(label, resource, fragmentId);
+        TocEntry result = new TocEntry(label, resource, fragmentId);
         result.setReference(resource.getHref());
         Element olElement = liElement.getChild("ol", NAMESPACE_XHTML);
         if (olElement != null)

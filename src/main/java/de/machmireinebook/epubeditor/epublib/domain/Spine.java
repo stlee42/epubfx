@@ -33,25 +33,15 @@ public class Spine implements Serializable
         this(new ArrayList<>());
     }
 
-    /**
-     * Creates a spine out of all the resources in the table of contents.
-     *
-     * @param tableOfContents
-     */
-    public Spine(TableOfContents tableOfContents)
-    {
-        this.spineReferences = createSpineReferences(tableOfContents.getAllUniqueResources());
-    }
-
     public Spine(List<SpineReference> spineReferences)
     {
         this.spineReferences = spineReferences;
     }
 
-    public static List<SpineReference> createSpineReferences(Collection<Resource> resources)
+    public static List<SpineReference> createSpineReferences(Collection<Resource<?>> resources)
     {
         List<SpineReference> result = new ArrayList<>(resources.size());
-        for (Resource resource : resources)
+        for (Resource<?> resource : resources)
         {
             result.add(new SpineReference(resource));
         }

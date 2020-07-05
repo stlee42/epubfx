@@ -3,10 +3,10 @@ package de.machmireinebook.epubeditor.epublib.resource;
 import java.io.Serializable;
 import java.nio.file.Path;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class TitledResourceReference<T> extends ResourceReference<T> implements Serializable {
 
@@ -17,15 +17,15 @@ public class TitledResourceReference<T> extends ResourceReference<T> implements 
 	private String fragmentId;
 	private String title;
 
-	public TitledResourceReference(Resource resource) {
+	public TitledResourceReference(Resource<T> resource) {
 		this(resource, null);
 	}
 
-	public TitledResourceReference(Resource resource, String title) {
+	public TitledResourceReference(Resource<T> resource, String title) {
 		this(resource, title, null);
 	}
 	
-	public TitledResourceReference(Resource resource, String title, String fragmentId) {
+	public TitledResourceReference(Resource<T> resource, String title, String fragmentId) {
 		super(resource);
 		this.title = title;
 		this.fragmentId = fragmentId;
@@ -82,7 +82,7 @@ public class TitledResourceReference<T> extends ResourceReference<T> implements 
 
 	}
 
-	public void setResource(Resource resource, String fragmentId) {
+	public void setResource(Resource<T> resource, String fragmentId) {
 		super.setResource(resource);
 		this.fragmentId = fragmentId;
 	}
@@ -91,7 +91,7 @@ public class TitledResourceReference<T> extends ResourceReference<T> implements 
 	 * Sets the resource to the given resource and sets the fragmentId to null.
 	 * 
 	 */
-	public void setResource(Resource resource) {
+	public void setResource(Resource<T> resource) {
 		setResource(resource, null);
 	}
 
