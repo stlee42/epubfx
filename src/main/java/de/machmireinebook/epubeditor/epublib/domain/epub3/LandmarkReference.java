@@ -35,7 +35,7 @@ public class LandmarkReference extends TitledResourceReference implements Serial
          */
         INDEX("index", "Index"),
         GLOSSARY("glossary", "Glossar"),
-        ACKNOWLEDGEMENTS("acknowledgements", "Danksagung", "acknowledgments"),
+        ACKNOWLEDGEMENTS("acknowledgements", "Danksagung", null, "acknowledgments"),
         BIBLIOGRAPHY("bibliography", "Bibliografie"),
         COLOPHON("colophon", "Kolophon"),
         COPYRIGHT_PAGE("copyright-page", "Impressum"),
@@ -66,16 +66,24 @@ public class LandmarkReference extends TitledResourceReference implements Serial
         /**
          * human-readable page with title, author, publisher, and other metadata
          */
-        TITLE_PAGE("titlepage", "Titelseite");
+        TITLE_PAGE("titlepage", "Titelseite", "title-page");
 
         private String name;
         private String description;
         private List<String> alternativeNames = new ArrayList<>();
+        private String epub2GuideName;
 
-        Semantic(String name, String description, String... alternativeNames)
+        Semantic(String name, String description)
         {
             this.name = name;
             this.description = description;
+        }
+
+        Semantic(String name, String description, String epub2GuideName, String... alternativeNames)
+        {
+            this.name = name;
+            this.description = description;
+            this.epub2GuideName = epub2GuideName;
             this.alternativeNames.addAll(Arrays.asList(alternativeNames));
         }
 
@@ -100,6 +108,10 @@ public class LandmarkReference extends TitledResourceReference implements Serial
                 }
             }
             return result;
+        }
+
+        public String getEpub2GuideName() {
+            return epub2GuideName;
         }
     }
 

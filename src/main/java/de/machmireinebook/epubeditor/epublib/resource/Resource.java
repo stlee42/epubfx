@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,9 +46,9 @@ public class Resource<T> implements ToStringConvertible, Cloneable, Serializable
 	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
 	private String inputEncoding = Constants.CHARACTER_ENCODING;
 	protected byte[] data;
+	private final List<ResourceExternalChangedListener> externalChangedListeners = new ArrayList<>();
 
-    public Resource()
-    {
+    public Resource() {
     }
 
     /**
@@ -467,4 +469,17 @@ public class Resource<T> implements ToStringConvertible, Cloneable, Serializable
 		return resource;
 	}
 
+	public void triggerExternalChanged() {
+		for (ResourceExternalChangedListener externalChangedListener : externalChangedListeners) {
+			externalChangedListener.onExternalChanged();
+		}
+	}
+
+	public void addExternalChangedListener(ResourceExternalChangedListener listener) {
+		externalChangedListeners.add(listener);
+	}
+
+	public void removeExternalChangedListener(ResourceExternalChangedListener listener) {
+		externalChangedListeners.remove(listener);
+	}
 }

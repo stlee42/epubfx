@@ -904,6 +904,7 @@ public class EditorTabManager {
 
     public void totalRefreshPreview() {
         if (currentEditorIsXHTML.getValue()) {
+            logger.debug("refreshing xhtml editor");
             CodeEditor xhtmlCodeEditor = currentEditor.getValue();
             XHTMLResource xhtmlResource = currentXHTMLResource.getValue();
             if (xhtmlCodeEditor != null && xhtmlResource != null) {

@@ -16,9 +16,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -30,8 +32,8 @@ import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.BookTemplate;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.DublinCoreMetadataElement;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
-import de.machmireinebook.epubeditor.epublib.domain.epub3.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.MetadataProperty;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.RenditionLayout;
 import de.machmireinebook.epubeditor.epublib.epub2.EpubReader;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.javafx.cells.WrappableTextCellFactory;
@@ -47,11 +49,14 @@ import static de.machmireinebook.epubeditor.epublib.domain.BookTemplate.MINIMAL_
 public class NewEBookController implements StandardController
 {
     private static final Logger logger = Logger.getLogger(NewEBookController.class);
+    @FXML
+    private TextField titleTextField;
 
-    DirectoryStream.Filter<Path> filter = file -> (!Files.isDirectory(file) && file.getFileName().toString().endsWith(".epub"));
 
-    public ListView<String> typeListView;
-    public TableView<BookTemplate> tableView;
+    @FXML
+    private ListView<String> typeListView;
+    @FXML
+    private TableView<BookTemplate> tableView;
     private ObjectProperty<Book> currentBookProperty = new SimpleObjectProperty<>();
     private Stage stage;
     private static NewEBookController instance;
@@ -59,6 +64,7 @@ public class NewEBookController implements StandardController
     private ObservableList<BookTemplate> epub2Books = FXCollections.observableArrayList();
     private ObservableList<BookTemplate> epub3ReflowableBooks = FXCollections.observableArrayList();
     private ObservableList<BookTemplate> epub3PrepaginatedBooks = FXCollections.observableArrayList();
+    private static final DirectoryStream.Filter<Path> filter = file -> (!Files.isDirectory(file) && file.getFileName().toString().endsWith(".epub"));
 
     @SuppressWarnings("unchecked")
     @Override
@@ -202,7 +208,7 @@ public class NewEBookController implements StandardController
         return instance;
     }
 
-    public void onOkAction(ActionEvent actionEvent) throws IOException
+    public void onOkAction() throws IOException
     {
         if (tableView.getSelectionModel().getSelectedItem().equals(MINIMAL_EPUB_2_BOOK))
         {

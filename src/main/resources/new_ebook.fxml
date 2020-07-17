@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="380.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.NewEBookController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="430.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.machmireinebook.epubeditor.gui.NewEBookController">
  <children>
-    <ListView fx:id="typeListView" prefHeight="290.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-    <TableView fx:id="tableView" layoutX="210.0" layoutY="27.6" prefHeight="252.0" prefWidth="567.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <ListView fx:id="typeListView" prefHeight="290.0" prefWidth="200.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <TableView fx:id="tableView" layoutX="210.0" layoutY="27.6" prefHeight="252.0" prefWidth="567.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <columns>
         <TableColumn prefWidth="87.99999845027924" text="Template" />
          <TableColumn prefWidth="174.00000762939453" text="Description" />
         <TableColumn prefWidth="126.0" text="Preview" />
       </columns>
     </TableView>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="340.0" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label text="Title" />
+            <TextField fx:id="titleTextField" />
+            <Label text="Author" />
+            <TextField fx:id="authorTextField" />
+         </children></HBox>
     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
        <children>
           <Button mnemonicParsing="false" onAction="#onOkAction" prefWidth="75.0" text="Ok" />

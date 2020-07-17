@@ -249,7 +249,11 @@ public class Epub3PackageDocumentWriter
             return;
         }
         Element referenceElement = new Element(OPFTag.reference.getName(), NAMESPACE_OPF.getURI());
-        referenceElement.setAttribute(OPFAttribute.type.getName(), reference.getType().getName());
+        if (StringUtils.isNotEmpty(reference.getType().getEpub2GuideName())) {
+            referenceElement.setAttribute(OPFAttribute.type.getName(), reference.getType().getEpub2GuideName());
+        } else {
+            referenceElement.setAttribute(OPFAttribute.type.getName(), reference.getType().getName());
+        }
         referenceElement.setAttribute(OPFAttribute.href.getName(), reference.getCompleteHref());
 
         if (StringUtils.isNotBlank(reference.getTitle()))

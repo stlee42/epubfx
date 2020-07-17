@@ -165,15 +165,8 @@ public class BookBrowserManager
             EditingTreeCell<Resource<?>> treeCell = new EditingTreeCell<>(true);
 
             treeCell.itemProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue != null && !MediaType.XML.equals(newValue.getMediaType())
-                        && !MediaType.OPF.equals(newValue.getMediaType()) && !MediaType.NCX.equals(newValue.getMediaType()))
-                {
-                    treeCell.setEditable(true);
-                }
-                else
-                {
-                    treeCell.setEditable(false);
-                }
+                treeCell.setEditable(newValue != null && !MediaType.XML.equals(newValue.getMediaType())
+                        && !MediaType.OPF.equals(newValue.getMediaType()) && !MediaType.NCX.equals(newValue.getMediaType()));
             });
 
             treeCell.setOnDragDetected(mouseEvent -> {
@@ -346,11 +339,13 @@ public class BookBrowserManager
             Book book = currentBookProperty().getValue();
             book.setBookIsChanged(true);
             event.consume();
+            logger.debug("isEditingFileName = false;");
             isEditingFileName = false;
         });
 
         treeView.setOnEditCancel(event -> {
             logger.info("editing cancelled");
+            logger.debug("isEditingFileName = false;");
             isEditingFileName = false;
         });
 
@@ -364,6 +359,8 @@ public class BookBrowserManager
             } else if (keyCode.equals(KeyCode.C) && event.isShortcutDown()) {
                 logger.debug("Ctrl-C pressed");
                 copyFileNameToClipboard();
+            } else if (keyCode.equals(KeyCode.F2)) {
+                isEditingFileName = true;
             } else if (keyCode.equals(KeyCode.ENTER)) {
                 if (!isEditingFileName) {
                     logger.debug("Enter pressed");
@@ -1466,6 +1463,7 @@ public class BookBrowserManager
 
     private void renameItem(TreeItem<Resource<?>> treeItem)
     {
+        logger.debug("isEditingFileName = true;");
         isEditingFileName = true;
         ((EditingTreeCell<?>)treeItem.getGraphic().getParent()).startEdit();
     }

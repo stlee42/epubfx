@@ -130,6 +130,6 @@ public class XHTMLResource extends XMLResource
                 }
             }
         }
-        setData(XHTMLUtils.outputXHTMLDocument(document, version));
+        setData(XHTMLUtils.outputXHTMLDocument(document, true, version));
     }
 }

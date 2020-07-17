@@ -149,6 +149,7 @@ public class PackageDocumentReader
             return;
         }
         Guide guide = book.getGuide();
+        guide.clearReferences();
         List<Element> guideReferences = guideElement.getChildren(OPFTag.reference.getName(), NAMESPACE_OPF);
         for (Element guideReference : guideReferences)
         {

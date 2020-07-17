@@ -45,7 +45,20 @@
                                 <TabPane fx:id="epubFilesTabPane" minWidth="200.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             </children>
                         </AnchorPane>
-                        <TableView fx:id="validationResultsTableView" />
+                        <AnchorPane fx:id="validationResultsAnchorPane" minWidth="200">
+                            <Button fx:id="closeValidationResultsButton" layoutX="806.0" maxHeight="18.0" maxWidth="18.0" minHeight="18.0" minWidth="18.0"
+                                    mnemonicParsing="false" prefHeight="18.0" prefWidth="18.0" styleClass="flat" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <graphic>
+                                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="icons/icons8_Close_Window_96px.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                            </Button>
+
+                            <TableView fx:id="validationResultsTableView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0"/>
+                        </AnchorPane>
                     </items>
                 </StashableSplitPane>
                 <StashableSplitPane fx:id="rightDivider" dividerPositions="0.5" orientation="VERTICAL">
@@ -947,6 +960,33 @@
                         </RibbonGroup>
 
                     </ribbonGroups>
+                </RibbonTab>
+                <RibbonTab text="Imprvove book">
+                    <RibbonGroup title="Paragraphs">
+                        <Button fx:id="findSplittedParagraphsButtonAction" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#findSplittedParagraphsButtonAction" text="find splitted paragraphs" wrapText="true">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Finds paragraphs or sentences that are potentially splitted into different html paragraphs" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <Image url="icons/icons8_Checked_96px.png"/>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="removeEmptyParagraphsButtonAction" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeEmptyParagraphsButtonAction" text="Remove emtpy paragraphs" wrapText="true">
+                            <tooltip>
+                                <Tooltip styleClass="white-tooltip" text="Remove empty html paragraphs like &lt;p&gt;&lt;/p&gt;" />
+                            </tooltip>
+                            <graphic>
+                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <Image url="icons/empty-paragraph.png"/>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                    </RibbonGroup>
+
                 </RibbonTab>
                 <RibbonTab text="View">
                     <ribbonGroups>

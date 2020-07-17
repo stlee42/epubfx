@@ -43,6 +43,10 @@ public class Guide implements Serializable {
 		this.references = references;
 		uncheckCoverPage();
 	}
+
+	public void clearReferences() {
+		references.clear();
+	}
 	
 	private void uncheckCoverPage() {
 		coverPageIndex = COVERPAGE_UNITIALIZED;

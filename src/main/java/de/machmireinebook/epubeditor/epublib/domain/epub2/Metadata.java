@@ -29,6 +29,7 @@ public class Metadata implements Serializable, EpubMetadata
     private List<Author> authors = new ArrayList<>();
     private List<Author> contributors = new ArrayList<>();
     private List<MetadataDate> dates = new ArrayList<>();
+    //don't replace with Collections.singletonList(). This returns an immutable list
     private List<DublinCoreMetadataElement> languages = Arrays.asList(DEFAULT_LANGUAGE);
     private List<DublinCoreMetadataElement> formats = new ArrayList<>();
     private List<DublinCoreMetadataElement> rights = new ArrayList<>();
@@ -371,14 +372,10 @@ public class Metadata implements Serializable, EpubMetadata
     @Override
     public String getLanguage()
     {
-        if (!getLanguages().isEmpty())
-        {
+        if (!getLanguages().isEmpty()) {
             return getLanguages().get(0).getLanguage();
-        }
-        else
-        {
-            return null;
+        } else {
+            return DEFAULT_LANGUAGE.getValue();
         }
     }
-
 }

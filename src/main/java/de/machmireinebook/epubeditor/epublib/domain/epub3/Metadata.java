@@ -2,6 +2,7 @@ package de.machmireinebook.epubeditor.epublib.domain.epub3;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import de.machmireinebook.epubeditor.epublib.domain.EpubMetadata;
  */
 public class Metadata implements Serializable, EpubMetadata
 {
+    public static final DublinCoreMetadataElement DEFAULT_LANGUAGE = new DublinCoreMetadataElement("en");
 
     /**
      *
@@ -31,7 +33,8 @@ public class Metadata implements Serializable, EpubMetadata
     private List<Author> contributors = new ArrayList<>();
     private MetadataDate publicationDate;
     private MetadataProperty modificationDate;
-    private List<DublinCoreMetadataElement> languages = new ArrayList<>();
+    //don't replace with Collections.singletonList(). This returns an immutable list
+    private List<DublinCoreMetadataElement> languages = Arrays.asList(DEFAULT_LANGUAGE);
     private List<MetadataProperty> epub3MetaProperties = new ArrayList<>();
     private List<DublinCoreMetadataElement> rights = new ArrayList<>();
     private List<DublinCoreMetadataElement> sources = new ArrayList<>();
@@ -175,13 +178,11 @@ public class Metadata implements Serializable, EpubMetadata
     @Override
     public String getLanguage()
     {
-        if (!getLanguages().isEmpty())
-        {
+        if (!getLanguages().isEmpty()) {
             return getLanguages().get(0).getLanguage();
         }
-        else
-        {
-            return null;
+        else {
+            return DEFAULT_LANGUAGE.getValue();
         }
     }
 

@@ -103,6 +103,10 @@ public class MainController implements Initializable
 {
     private static final Logger logger = Logger.getLogger(MainController.class);
     @FXML
+    private Button closeValidationResultsButton;
+    @FXML
+    private AnchorPane validationResultsAnchorPane;
+    @FXML
     private Button smallCapsButton;
     @FXML
     private Button setHtmtlTitleButton;
@@ -356,7 +360,6 @@ public class MainController implements Initializable
                 stage.setTitle(currentTitle);
             });
 
-            validateEpubButton.disableProperty().bind(Bindings.createBooleanBinding(() -> currentBookProperty.get().getPhysicalFileName() == null));
             validationResultsTableView.getItems().clear();
         });
         BooleanBinding isNoXhtmlEditorBinding = Bindings.isNull(currentBookProperty).or(Bindings.not(editorTabManager.currentEditorIsXHTMLProperty())
@@ -472,18 +475,19 @@ public class MainController implements Initializable
             }
             leftDivider.setVisibility(0, newValue);
         });
-        validationResultsTableView.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
+        validationResultsAnchorPane.visibleProperty().bindBidirectional(showValidationResultsToggleButton.selectedProperty());
         showValidationResultsToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
             {
-                if (!centerDivider.getItems().contains(validationResultsTableView))
+                if (!centerDivider.getItems().contains(validationResultsAnchorPane))
                 {
-                    centerDivider.getItems().add(validationResultsTableView);
+                    centerDivider.getItems().add(validationResultsAnchorPane);
                     centerDivider.setDividerPosition(0, 0.8);
                 }
             }
             centerDivider.setVisibility(1, newValue);
         });
+        closeValidationResultsButton.setOnMouseClicked(event -> closeValidationResults());
 
         validateEpubButton.disableProperty().bind(currentBookProperty.isNull());
         validationManager.setTableView(validationResultsTableView);
@@ -660,8 +664,7 @@ public class MainController implements Initializable
         return currentBookProperty;
     }
 
-    @SuppressWarnings("UnusedParameters")
-    public void newEpubAction(ActionEvent actionEvent)
+    public void newEpubAction()
     {
         Stage windowStage = standardControllerFactory.createStandardController("/new_ebook.fxml", NewEBookController.class);
         NewEBookController controller = NewEBookController.getInstance();
@@ -1418,6 +1421,7 @@ public class MainController implements Initializable
     }
 
     public void validateEpubButton() {
+        saveEpubAction();
         validationManager.startValidationEpub(currentBookProperty.get().getPhysicalFileName());
         getShowValidationResultsToggleButton().selectedProperty().set(true);
     }
@@ -1443,5 +1447,17 @@ public class MainController implements Initializable
             editorTabManager.refreshAll();
             getCurrentBook().setBookIsChanged(true);
         });
+    }
+
+    public void closeValidationResults() {
+        logger.debug("close validation results");
+        getShowValidationResultsToggleButton().selectedProperty().set(false);
+    }
+
+    public void findSplittedParagraphsButtonAction() {
+    }
+
+    public void removeEmptyParagraphsButtonAction() {
+
     }
 }

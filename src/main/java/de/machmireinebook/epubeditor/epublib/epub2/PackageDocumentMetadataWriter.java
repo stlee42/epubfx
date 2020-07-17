@@ -92,11 +92,11 @@ public class PackageDocumentMetadataWriter
         }
 
         // write languages
-        for (DublinCoreMetadataElement language : metadata.getLanguages()) {
+        for (DublinCoreMetadataElement languageMetadata : metadata.getLanguages()) {
             Element langElement = new Element(DublinCoreTag.language.getName(), NAMESPACE_DUBLIN_CORE);
-            langElement.setText(metadata.getLanguage());
-            if (StringUtils.isNotEmpty(language.getId())) {
-                langElement.setAttribute(DublinCoreAttributes.id.name(), language.getId());
+            langElement.setText(languageMetadata.getValue());
+            if (StringUtils.isNotEmpty(languageMetadata.getId())) {
+                langElement.setAttribute(DublinCoreAttributes.id.name(), languageMetadata.getId());
             }
             metadataElement.addContent(langElement);
         }
@@ -182,14 +182,16 @@ public class PackageDocumentMetadataWriter
         identifierElement.setText(bookIdIdentifier.getValue());
         metadataElement.addContent(identifierElement);
 
-        for (Identifier identifier : identifiers.subList(1, identifiers.size()))
+        for (Identifier identifier : identifiers)
         {
             if (identifier == bookIdIdentifier)
             {
                 continue;
             }
             Element otherIdentifierElement = new Element(DublinCoreTag.identifier.getName(), NAMESPACE_DUBLIN_CORE);
-            otherIdentifierElement.setAttribute(OPFAttribute.scheme.getName(), identifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
+            if (identifier.getScheme() != null) {
+                otherIdentifierElement.setAttribute(OPFAttribute.scheme.getName(), identifier.getScheme(), NAMESPACE_OPF_WITH_PREFIX);
+            }
             otherIdentifierElement.setText(identifier.getValue());
             metadataElement.addContent(otherIdentifierElement);
         }

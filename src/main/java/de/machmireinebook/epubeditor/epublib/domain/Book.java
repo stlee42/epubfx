@@ -241,10 +241,8 @@ public class Book implements Serializable
     {
         resource.hrefProperty().addListener((observable, oldValue, newValue) -> renameResource(resource, oldValue, newValue));
         getResources().put(resource);
-        SpineReference ref = null;
-        if (spine.findFirstResourceById(resource.getId()) < 0)
-        {
-            ref = spine.addSpineReference(new SpineReference(resource), index);
+        if (spine.findFirstResourceById(resource.getId()) < 0) {
+            spine.addSpineReference(new SpineReference(resource), index);
         }
         refreshOpfResource();
     }
@@ -337,11 +335,15 @@ public class Book implements Serializable
     }
 
     public void replaceHrefInXhtmlResources(String oldHref, String newHref) {
-        for (Resource resource : getResources().getResourcesByMediaType(MediaType.XHTML)) {
+        for (Resource<?> resource : getResources().getResourcesByMediaType(MediaType.XHTML)) {
             String text = ((TextResource)resource).asString();
             text = text.replaceAll(oldHref, newHref);
             try {
                 resource.setData(text.getBytes(resource.getInputEncoding()));
+                if (resource instanceof XHTMLResource) {
+                    ((XHTMLResource)resource).prepareWebViewDocument(getVersion());
+                }
+                resource.triggerExternalChanged();
             }
             catch (UnsupportedEncodingException e) {
                 logger.error(e);
@@ -352,7 +354,7 @@ public class Book implements Serializable
     public String getNextStandardFileName(MediaType mediaType)
     {
         int lastNumber = 0;
-        for (Resource resource : getResources().getResourcesByMediaType(mediaType))
+        for (Resource<?> resource : getResources().getResourcesByMediaType(mediaType))
         {
             String fileName = resource.getFileName();
             if (fileName.startsWith(mediaType.getFileNamePrefix()))
@@ -831,8 +833,8 @@ public class Book implements Serializable
 
     public void renameResource(Resource<?> resource, String oldValue, String newValue)
     {
-        Resource<?> oldResource = resources.remove(oldValue); //unter altem namen löschen
-        Resource<?> newResource = resources.put(resource); //unter neuem wieder hinzufügen
+        resources.remove(oldValue); //remove resource with old name, because the search key is the name of the resource
+        resources.put(resource); //and put again with new name
 
         if (MediaType.CSS.equals(resource.getMediaType()))
         {
@@ -861,12 +863,14 @@ public class Book implements Serializable
                 IteratorIterable<Element> descendants = document.getDescendants(hrefFilter);
                 for (Element descendant : descendants)
                 {
-                    logger.info("found element with attribut href in resource " + xhtmlResource);
+                    logger.info("found element with attribute href in resource " + xhtmlResource);
                     descendant.setAttribute("href", relativePath + "/" + newFileName);
                 }
                 //nach noch mehr Elementen suchen
                 //zB src-Attribut
-                xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document, getVersion()));
+                xhtmlResource.setData(XHTMLUtils.outputXHTMLDocument(document, true, getVersion()));
+                ((XHTMLResource) xhtmlResource).prepareWebViewDocument(getVersion());
+                xhtmlResource.triggerExternalChanged();
             }
 
             //weiter nach import etc. in anderen css dateien suchen
