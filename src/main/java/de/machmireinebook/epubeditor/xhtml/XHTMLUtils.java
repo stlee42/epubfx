@@ -13,7 +13,6 @@ import org.apache.commons.text.translate.AggregateTranslator;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.EntityArrays;
 import org.apache.commons.text.translate.LookupTranslator;
-import org.apache.commons.text.translate.NumericEntityUnescaper;
 import org.apache.log4j.Logger;
 
 import org.htmlcleaner.CleanerProperties;
@@ -246,7 +245,7 @@ public class XHTMLUtils
         try {
             ByteArrayOutputStream baos = outputXhtml(document, escapeOutput);
             bytes = baos.toByteArray();
-            bytes = unescapedHtmlWithXmlExceptions(bytes);
+            bytes = unescapedHtmlWithXmlAndNbspExceptions(bytes);
         }
         catch (IOException e) {
             logger.error("", e);
@@ -281,27 +280,18 @@ public class XHTMLUtils
                         new LookupTranslator(BASIC_UNESCAPE),
                         new LookupTranslator(withoutNbsp),
                         new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE),
-                        new NumericEntityUnescaper()
+                        new NumericEntityWithoutSpacesUnescaper()
                 );
         String unescapedXhtml = translator.translate(escapedText);
         return unescapedXhtml;
 
     }
 
-    public static byte[] unescapedHtmlWithXmlExceptions(byte[] escapedText) {
-        //leave nbsp untouched
-        Map<CharSequence, CharSequence> withoutNbsp = new HashMap<>(EntityArrays.ISO8859_1_UNESCAPE);
-        //some scripts for generating html from docx generate this (wrong typed) entity for „ (german double quote bottom)
-        //for convience replace it too
-        withoutNbsp.put("&dbquo;", "„");
-        CharSequenceTranslator translator =
-                new AggregateTranslator(
-                        new LookupTranslator(BASIC_UNESCAPE),
-                        new LookupTranslator(withoutNbsp),
-                        new LookupTranslator(EntityArrays.HTML40_EXTENDED_UNESCAPE),
-                        new NumericEntityUnescaper()
-                );
-        String unescapedXhtml = translator.translate(new String(escapedText, StandardCharsets.UTF_8));
-        return unescapedXhtml.getBytes(StandardCharsets.UTF_8);
+    public static byte[] unescapedHtmlWithXmlAndNbspExceptions(byte[] escapedText) {
+        String unescapedXhtml = unescapedHtmlWithXmlAndNbspExceptions(new String(escapedText, StandardCharsets.UTF_8));
+        if (unescapedXhtml != null) {
+            return unescapedXhtml.getBytes(StandardCharsets.UTF_8);
+        }
+        return new byte[]{};
     }
 }

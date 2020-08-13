@@ -15,6 +15,7 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,6 +31,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -1144,31 +1146,38 @@ public class BookBrowserManager
 
     private void deleteSelectedItems()
     {
-        List<TreeItem<Resource<?>>> selectedItems = treeView.getSelectionModel().getSelectedItems();
-        List<TreeItem<Resource<?>>> toDelete = new ArrayList<>(selectedItems);
-        for (TreeItem<Resource<?>> selectedItem : toDelete)
-        {
-            if (selectedItem.getValue().getMediaType().equals(MediaType.CSS))
-            {
-                deleteCssItem(selectedItem);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initOwner(configuration.getMainWindow());
+        alert.setTitle("Delete");
+        alert.getDialogPane().setHeader(null);
+        alert.getDialogPane().setHeaderText(null);
+        alert.setContentText("Should the selected item to be deleted?");
+        alert.getDialogPane().getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> choosedButton = alert.showAndWait();
+        choosedButton.ifPresent(buttonType -> {
+            if (buttonType.equals(ButtonType.YES)) {
+
+                List<TreeItem<Resource<?>>> selectedItems = treeView.getSelectionModel().getSelectedItems();
+                List<TreeItem<Resource<?>>> toDelete = new ArrayList<>(selectedItems);
+                for (TreeItem<Resource<?>> selectedItem : toDelete) {
+                    if (selectedItem.getValue().getMediaType().equals(MediaType.CSS)) {
+                        deleteCssItem(selectedItem);
+                    }
+                    else if (selectedItem.getValue().getMediaType().equals(MediaType.XHTML)) {
+                        deleteXHTMLItem(selectedItem);
+                    }
+                    else if (selectedItem.getValue().getMediaType().isBitmapImage()) {
+                        deleteImageItem(selectedItem);
+                    }
+                    else if (selectedItem.getValue().getMediaType().isFont()) {
+                        deleteFontItem(selectedItem);
+                    }
+                    else if (selectedItem.getParent() == miscContentItem) {
+                        deleteMiscContentItem(selectedItem);
+                    }
+                }
             }
-            else if (selectedItem.getValue().getMediaType().equals(MediaType.XHTML))
-            {
-                deleteXHTMLItem(selectedItem);
-            }
-            else if (selectedItem.getValue().getMediaType().isBitmapImage())
-            {
-                deleteImageItem(selectedItem);
-            }
-            else if (selectedItem.getValue().getMediaType().isFont())
-            {
-                deleteFontItem(selectedItem);
-            }
-            else if (selectedItem.getParent() == miscContentItem)
-            {
-                deleteMiscContentItem(selectedItem);
-            }
-        }
+        });
     }
 
     private void deleteXHTMLItem(TreeItem<Resource<?>> treeItem)

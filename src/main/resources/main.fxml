@@ -961,7 +961,7 @@
 
                     </ribbonGroups>
                 </RibbonTab>
-                <RibbonTab text="Imprvove book">
+                <RibbonTab text="Improve book">
                     <RibbonGroup title="Paragraphs">
                         <Button fx:id="findSplittedParagraphsButtonAction" contentDisplay="TOP" minWidth="-Infinity" mnemonicParsing="false" onAction="#findSplittedParagraphsButtonAction" text="find splitted paragraphs" wrapText="true">
                             <tooltip>

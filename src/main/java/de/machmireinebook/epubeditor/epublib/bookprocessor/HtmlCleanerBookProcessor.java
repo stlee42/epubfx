@@ -56,7 +56,7 @@ public class HtmlCleanerBookProcessor extends HtmlBookProcessor implements
             HtmlCleaner cleaner = XHTMLUtils.createHtmlCleaner(book.getVersion());
             TagNode rootNode = cleaner.clean(resource.getInputStream());
             Document jdomDocument = new EpubJDomSerializer(cleaner.getProperties(), false).createJDom(rootNode);
-            String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, book.getVersion());
+            String content = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, true, book.getVersion());
             logger.debug("new content " + content);
             resource.setData(content.getBytes(StandardCharsets.UTF_8));
             resource.setInputEncoding("UTF-8");
