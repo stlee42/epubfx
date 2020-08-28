@@ -8,6 +8,7 @@ import org.jdom2.Document;
 
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
 import de.machmireinebook.epubeditor.epublib.resource.ResourceReference;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 
 /**
  * The guide is a selection of special pages of the book.
@@ -94,12 +95,12 @@ public class Guide implements Serializable {
 	 * 
 	 * @return The coverpage of the book.
 	 */
-	public Resource<Document> getCoverPage() {
+	public XHTMLResource getCoverPage() {
 		GuideReference guideReference = getCoverReference();
 		if (guideReference == null) {
 			return null;
 		}
-		return guideReference.getResource();
+		return (XHTMLResource)guideReference.getResource();
 	}
 
 	public void setCoverPage(Resource<Document> coverPage) {

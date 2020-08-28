@@ -15,6 +15,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
@@ -135,16 +136,15 @@ public class Epub3PackageDocumentWriter
         Element manifestElement = new Element(OPFTag.manifest.getName(), NAMESPACE_OPF);
         root.addContent(manifestElement);
 
-        List<Resource> allResources = getAllResourcesSortById(book);
-        for(Resource resource: allResources)
-        {
-			writeItem(resource, manifestElement);
+        List<Resource<?>> allResources = getAllResourcesSortById(book);
+        for(Resource<?>resource: allResources) {
+			writeItem(resource, manifestElement, book.getVersion());
 		}
     }
 
-    private static List<Resource> getAllResourcesSortById(Book book)
+    private static List<Resource<?>> getAllResourcesSortById(Book book)
     {
-        List<Resource> allResources = new ArrayList<>(book.getResources().getAll());
+        List<Resource<?>> allResources = new ArrayList<>(book.getResources().getAll());
         allResources.sort((resource1, resource2) -> resource1.getId().compareToIgnoreCase(resource2.getId()));
         return allResources;
     }
@@ -152,7 +152,7 @@ public class Epub3PackageDocumentWriter
     /**
      * Writes a resources as an item element
      */
-    private static void writeItem(Resource resource, Element manifestElement)
+    private static void writeItem(Resource<?> resource, Element manifestElement, EpubVersion version)
     {
         if (resource == null)
         {
@@ -178,8 +178,8 @@ public class Epub3PackageDocumentWriter
         manifestItemElement.setAttribute(ManifestItemAttribute.id.getName(), resource.getId());
         manifestItemElement.setAttribute(ManifestItemAttribute.href.getName(), resource.getHref());
         manifestItemElement.setAttribute(ManifestItemAttribute.media_type.getName(), resource.getMediaType().getName());
-        if (StringUtils.isNotEmpty(resource.getProperties())) {
-            manifestItemElement.setAttribute(ManifestItemAttribute.properties.getName(), resource.getProperties());
+        if (!resource.getProperties().isEmpty()) {
+            manifestItemElement.setAttribute(ManifestItemAttribute.properties.getName(), resource.propertiesAsAttributeValue(version));
         }
         if (StringUtils.isNotEmpty(resource.getFallback())) {
             manifestItemElement.setAttribute(ManifestItemAttribute.fallback.getName(), resource.getFallback());
@@ -225,7 +225,7 @@ public class Epub3PackageDocumentWriter
         if (!(book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.COVER).isEmpty())){
             return;
         }
-        Resource coverPage = book.getCoverPage();
+        Resource<?> coverPage = book.getCoverPage();
         if (coverPage != null) {
             writeGuideReference(new LandmarkReference(coverPage, LandmarkReference.Semantic.COVER, LandmarkReference.Semantic.COVER.getName()), guideElement);
         }
@@ -236,7 +236,7 @@ public class Epub3PackageDocumentWriter
         if (!(book.getLandmarks().getLandmarkReferencesByType(LandmarkReference.Semantic.TOC).isEmpty())){
             return;
         }
-        Resource navPage = book.getEpub3NavResource();
+        Resource<?> navPage = book.getEpub3NavResource();
         if (navPage != null) {
             writeGuideReference(new LandmarkReference(navPage, LandmarkReference.Semantic.TOC, LandmarkReference.Semantic.TOC.getName()), guideElement);
         }

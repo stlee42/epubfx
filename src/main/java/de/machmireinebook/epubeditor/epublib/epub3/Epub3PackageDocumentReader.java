@@ -17,7 +17,7 @@ import org.jdom2.Element;
 import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.NavNotFoundException;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
-import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemPropertiesValue;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
@@ -130,7 +130,7 @@ public class Epub3PackageDocumentReader
                 logger.error(e.getMessage());
             }
             String mediaTypeName = itemElement.getAttributeValue(ManifestItemAttribute.media_type.getName());
-            Resource resource = resources.remove(href);
+            Resource<?> resource = resources.remove(href);
             if (resource == null)
             {
                 logger.error("resource with href '" + href + "' not found");
@@ -138,12 +138,15 @@ public class Epub3PackageDocumentReader
             }
             resource.setId(id);
             MediaType mediaType = MediaType.getByName(mediaTypeName);
-            if (mediaType != null)
-            {
+            if (mediaType != null) {
                 resource.setMediaType(mediaType);
             }
-            String properties = itemElement.getAttributeValue(ManifestItemAttribute.properties.getName());
-            resource.setProperties(properties);
+            String propertiesAttributeValue = itemElement.getAttributeValue(ManifestItemAttribute.properties.getName());
+            if (StringUtils.isNotEmpty(propertiesAttributeValue)) {
+                List<ManifestItemPropertiesValue> values = ManifestItemPropertiesValue.extractFromAttributeValue(propertiesAttributeValue);
+                resource.getProperties().clear();
+                resource.getProperties().addAll(values);
+            }
             String fallback = itemElement.getAttributeValue(ManifestItemAttribute.fallback.getName());
             resource.setFallback(fallback);
             String mediaOverlay = itemElement.getAttributeValue(ManifestItemAttribute.media_overlay.getName());
@@ -174,8 +177,8 @@ public class Epub3PackageDocumentReader
         // den komplizierten heckmeck machen, da Resources intern eine Map mit href als Key ist,
         // aber genau der wird ja hier geändert
         List<String> oldHrefsToRemove = new ArrayList<>();
-        List<Resource> newResources = new ArrayList<>();
-        for (Resource resource : resourcesByHref.getAll())
+        List<Resource<?>> newResources = new ArrayList<>();
+        for (Resource<?> resource : resourcesByHref.getAll())
         {
             if (StringUtils.isNotBlank(resource.getHref())
                     && resource.getHref().length() > lastSlashPos && resource.getHref().contains(packageFolderName))
@@ -283,7 +286,7 @@ public class Epub3PackageDocumentReader
             List<Element> itemElements = manifestElement.getChildren(OPFTag.item.getName(), NAMESPACE_OPF);
             for (Element itemElement : itemElements)
             {
-                if (ManifestItemProperties.cover_image.getName().equals(itemElement.getAttributeValue(OPFAttribute.properties.getName())))
+                if (ManifestItemPropertiesValue.cover_image.getName().equals(itemElement.getAttributeValue(OPFAttribute.properties.getName())))
                 {
                     String coverHref = itemElement.getAttributeValue(OPFAttribute.href.getName());
                     Resource resource = book.getResources().getByHref(coverHref);

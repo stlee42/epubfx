@@ -49,4 +49,12 @@ public enum EpubVersion
                 || this == EpubVersion.VERSION_3_1
                 || this == EpubVersion.VERSION_3_2);
     }
+
+    public boolean isLowerThenEpub3_2()
+    {
+        return (this == EpubVersion.VERSION_3
+                || this == EpubVersion.VERSION_3_0_1
+                || this == EpubVersion.VERSION_3_1);
+    }
+
 }

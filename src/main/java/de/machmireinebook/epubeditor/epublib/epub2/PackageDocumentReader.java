@@ -127,8 +127,6 @@ public class PackageDocumentReader
             {
                 resource.setMediaType(mediaType);
             }
-            String properties = itemElement.getAttributeValue(OPFAttribute.properties.getName());
-            resource.setProperties(properties);
 
             result.put(resource);
             idMapping.put(id, resource.getId());
@@ -193,11 +191,11 @@ public class PackageDocumentReader
             return resourcesByHref;
         }
         String packageFolderName = packageHref.substring(0, lastSlashPos);
-        //den komplizierten heckmeck machen, da Resources intern eine Map mit href als Key ist,
+        // den komplizierten heckmeck machen, da Resources intern eine Map mit href als Key ist,
         // aber genau der wird ja hier geändert
         List<String> oldHrefsToRemove = new ArrayList<>();
-        List<Resource> newResources = new ArrayList<>();
-        for (Resource resource : resourcesByHref.getAll())
+        List<Resource<?>> newResources = new ArrayList<>();
+        for (Resource<?> resource : resourcesByHref.getAll())
         {
             if (StringUtils.isNotBlank(resource.getHref())
                     && resource.getHref().length() > lastSlashPos && resource.getHref().contains(packageFolderName))

@@ -42,8 +42,9 @@ public class XHTMLOutputProcessor extends AbstractXMLOutputProcessor
      * inside &lt;p&gt;. For exception of this rule there is the map <code>insertBreakBeforeIfInElement</code>
      */
     private static final List<String> preserveElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5",
-            "h6", "th", "td", "a", "center", "li", "dt", "dd", "q", "caption", "figcaption", "span", "aside", "i", "b", "u", "s",
-            "sup", "sub", "strong", "dt", "dd", "dfn", "del", "ins");
+            "h6", "th", "td", "a", "center", "li", "q", "caption", "figcaption", "span", "aside",
+            "i", "b", "u", "s", "em", "strong",
+            "sup", "sub", "dt", "dd", "dfn", "del", "ins");
     private static final Map<String, List<String>> insertBreakBeforeIfInElement = new HashMap<>();
     private static final List<String> emptyLineAfterElements = Arrays.asList("p", "h1", "h2", "h3", "h4", "h5", "h6",
             "div", "blockquote", "table", "tr", "hr", "ul", "ol", "figure", "hr", "aside", "dl", "colgroup", "col");

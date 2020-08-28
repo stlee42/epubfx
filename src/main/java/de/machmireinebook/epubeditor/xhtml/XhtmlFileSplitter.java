@@ -1,7 +1,6 @@
 package de.machmireinebook.epubeditor.xhtml;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +16,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
-import org.jdom2.input.SAXBuilder;
 import org.jdom2.util.IteratorIterable;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
@@ -61,11 +59,9 @@ public class XhtmlFileSplitter {
             completions.add(currentCompletionOptional.get());
             currentCompletionOptional = getNextCompletion(frontPart);
         }
-        String frontPartFormatted = "null";
+        String frontPartFormatted = "";
         try {
-
-            SAXBuilder builder = new SAXBuilder();
-            Document jdomDocument = builder.build(new StringReader(frontPart));
+            Document jdomDocument = XHTMLUtils.parseXHTMLDocument(frontPart);
             frontPartFormatted = XHTMLUtils.outputXHTMLDocumentAsString(jdomDocument, true, epubVersion);
         }
         catch (JDOMException | IOException e) {
@@ -100,9 +96,8 @@ public class XhtmlFileSplitter {
         }
         String backPartCompleted = dataBuilder.toString();
         try {
-            SAXBuilder builder = new SAXBuilder();
             try {
-                Document jdomDocument = builder.build(new StringReader(backPartCompleted));
+                Document jdomDocument = XHTMLUtils.parseXHTMLDocument(backPartCompleted);
                 Element root = jdomDocument.getRootElement();
 
                 Element headElement = new Element("head");

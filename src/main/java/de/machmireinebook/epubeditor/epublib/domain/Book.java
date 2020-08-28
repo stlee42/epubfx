@@ -36,6 +36,7 @@ import de.machmireinebook.epubeditor.epublib.domain.epub2.GuideReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub2.Metadata;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.LandmarkReference;
 import de.machmireinebook.epubeditor.epublib.domain.epub3.Landmarks;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemPropertiesValue;
 import de.machmireinebook.epubeditor.epublib.epub2.NCXDocument;
 import de.machmireinebook.epubeditor.epublib.epub2.PackageDocumentWriter;
 import de.machmireinebook.epubeditor.epublib.epub3.Epub3PackageDocumentWriter;
@@ -115,7 +116,7 @@ public class Book implements Serializable
         book.setMetadata(new de.machmireinebook.epubeditor.epublib.domain.epub3.Metadata());
 
         Resource<?> navResource = book.addResourceFromTemplate("/epub/nav.xhtml", "Text/nav.xhtml", false);
-        navResource.setProperties(ManifestItemProperties.nav.getName());
+        navResource.addPropertiesValue(ManifestItemPropertiesValue.nav);
         book.setEpub3NavResource(navResource);
         book.getSpine().addResource(navResource);
         book.addResource(navResource, false);
@@ -527,7 +528,7 @@ public class Book implements Serializable
      *
      * @return The book's cover page as a Resource
      */
-    public Resource<Document> getCoverPage()
+    public XHTMLResource getCoverPage()
     {
         return guide.getCoverPage();
     }

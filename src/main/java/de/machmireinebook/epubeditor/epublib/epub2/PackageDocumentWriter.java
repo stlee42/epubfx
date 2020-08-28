@@ -186,9 +186,6 @@ public class PackageDocumentWriter
         manifestItemElement.setAttribute(OPFAttribute.id.getName(), resource.getId());
         manifestItemElement.setAttribute(OPFAttribute.href.getName(), resource.getHref());
         manifestItemElement.setAttribute(OPFAttribute.media_type.getName(), resource.getMediaType().getName());
-        if (StringUtils.isNotEmpty(resource.getProperties())) {
-            manifestItemElement.setAttribute(OPFAttribute.properties.getName(), resource.getProperties());
-        }
         manifestElement.addContent(manifestItemElement);
     }
 

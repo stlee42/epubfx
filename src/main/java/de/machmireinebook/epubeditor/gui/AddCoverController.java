@@ -34,8 +34,10 @@ import org.apache.log4j.Logger;
 import de.machmireinebook.epubeditor.editor.EditorTabManager;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemPropertiesValue;
 import de.machmireinebook.epubeditor.epublib.resource.ImageResource;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
+import de.machmireinebook.epubeditor.epublib.resource.XHTMLResource;
 import de.machmireinebook.epubeditor.javafx.cells.ImageCellFactory;
 import de.machmireinebook.epubeditor.manager.BookBrowserManager;
 
@@ -199,7 +201,7 @@ public class AddCoverController implements Initializable
         {
             return Optional.empty();
         }
-        Resource coverPage = book.getCoverPage();
+        XHTMLResource coverPage = book.getCoverPage();
         ImageResource coverImage = book.getCoverImage();
         if (coverPage == null)
         {
@@ -213,7 +215,7 @@ public class AddCoverController implements Initializable
                     logger.warn("generated coverPageHtml is empty");
                     return Optional.empty();
                 }
-                coverPage = MediaType.XHTML.getResourceFactory().createResource(coverPageHtml.getBytes(), DEFAULT_COVER_PAGE_HREF);
+                coverPage = (XHTMLResource) MediaType.XHTML.getResourceFactory().createResource(coverPageHtml.getBytes(), DEFAULT_COVER_PAGE_HREF);
                 fixCoverResourceId(book, coverPage, DEFAULT_COVER_PAGE_ID);
                 book.getSpine().addResource(coverPage, 0);
             } else {
@@ -234,6 +236,10 @@ public class AddCoverController implements Initializable
         book.setCoverImage(coverImage);
         book.setCoverPage(coverPage);
         setCoverResourceIds(book);
+        if (book.isEpub3()) {
+            coverPage.addPropertiesValue(ManifestItemPropertiesValue.svg);
+            coverImage.addPropertiesValue(ManifestItemPropertiesValue.cover_image);
+        };
         return Optional.of(coverPage);
     }
 

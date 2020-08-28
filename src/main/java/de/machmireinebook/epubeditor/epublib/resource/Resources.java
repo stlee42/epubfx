@@ -273,8 +273,8 @@ public class Resources implements Serializable {
 	 * 
 	 * @param resources
 	 */
-	public void addAll(Collection<Resource> resources) {
-		for(Resource resource: resources) {
+	public void addAll(Collection<Resource<?>> resources) {
+		for(Resource<?> resource: resources) {
 			put(resource);
 		}
 	}
@@ -286,8 +286,8 @@ public class Resources implements Serializable {
 	 * @param idOrHref
 	 * @return the found Resource
 	 */
-	public Resource getByIdOrHref(String idOrHref) {
-		Resource resource = getById(idOrHref);
+	public Resource<?> getByIdOrHref(String idOrHref) {
+		Resource<?> resource = getById(idOrHref);
 		if (resource == null) {
 			resource = getByHref(idOrHref);
 		}

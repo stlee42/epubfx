@@ -29,7 +29,7 @@ public enum MediaType implements Serializable
     NCX ("application/x-dtbncx+xml", ".ncx", XMLResourceFactory.getInstance()),
 
     JAVASCRIPT ("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance()),
-    JAVASCRIPT_SINCE_3_1 ("text/javascript", ".js", "script", JavascriptResourceFactory.getInstance(), 3.1F),
+    JAVASCRIPT_SINCE_3_1 ("application/javascript", ".js", "script", JavascriptResourceFactory.getInstance(), 3.1F),
     CSS("text/css", ".css", "style", CSSResourceFactory.getInstance()),
 
     MIMETYPE ("text/plain", "mimetype", "", DefaultResourceFactory.getInstance()),
@@ -225,8 +225,7 @@ public enum MediaType implements Serializable
         return fileNamePrefix;
     }
 
-    public ResourceFactory<? extends Resource<?>, ?> getResourceFactory()
-    {
+    public ResourceFactory<? extends Resource<?>, ?> getResourceFactory() {
         return resourceFactory;
     }
 

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,8 +21,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import de.machmireinebook.epubeditor.epublib.Constants;
+import de.machmireinebook.epubeditor.epublib.EpubVersion;
 import de.machmireinebook.epubeditor.epublib.ToStringConvertible;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemPropertiesValue;
 import de.machmireinebook.epubeditor.epublib.filesystem.EpubFileSystem;
 import de.machmireinebook.epubeditor.epublib.util.commons.io.XmlStreamReader;
 
@@ -40,7 +43,7 @@ public class Resource<T> implements ToStringConvertible, Cloneable, Serializable
 	private String title;
 	private StringProperty href = new SimpleStringProperty();
 	private String originalHref;
-    private String properties;
+    private List<ManifestItemPropertiesValue> properties = new ArrayList<>();
 	private String fallback;
 	private String mediaOverlay;
 	private ObjectProperty<MediaType> mediaType = new SimpleObjectProperty<>();
@@ -386,15 +389,22 @@ public class Resource<T> implements ToStringConvertible, Cloneable, Serializable
 		this.title = title;
 	}
 
-    public String getProperties()
-    {
+    public List<ManifestItemPropertiesValue> getProperties() {
         return properties;
     }
 
-    public void setProperties(String properties)
-    {
-        this.properties = properties;
-    }
+    public void addPropertiesValue(ManifestItemPropertiesValue value) {
+		properties.add(value);
+	}
+
+	public String propertiesAsAttributeValue(EpubVersion epubVersion) {
+		List<String> propertiesNames = properties.stream()
+				.filter(value -> value != ManifestItemPropertiesValue.epub_switch
+						|| epubVersion.isLowerThenEpub3_2())
+				.map(ManifestItemPropertiesValue::getName)
+				.collect(Collectors.toList());
+		return StringUtils.join(propertiesNames, " ");
+	}
 
 	public String getFallback() {
 		return fallback;

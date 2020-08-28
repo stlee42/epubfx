@@ -15,7 +15,7 @@ import org.jdom2.Element;
 import de.machmireinebook.epubeditor.epublib.Constants;
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.DublinCoreAttributes;
-import de.machmireinebook.epubeditor.epublib.domain.ManifestItemProperties;
+import de.machmireinebook.epubeditor.epublib.domain.epub3.ManifestItemPropertiesValue;
 import de.machmireinebook.epubeditor.epublib.domain.MediaType;
 import de.machmireinebook.epubeditor.epublib.domain.OPFAttribute;
 import de.machmireinebook.epubeditor.epublib.domain.OPFTag;
@@ -54,35 +54,39 @@ public class Epub3NavigationDocumentReader
         List<Element> manifestElements = manifestElement.getChildren("item", NAMESPACE_OPF);
         XHTMLResource resource = null;
 
-        for (Element element : manifestElements)
-        {
-            if (ManifestItemProperties.nav.getName().equals(element.getAttributeValue("properties")))
-            {
-                String href = element.getAttributeValue("href");
-                String id = element.getAttributeValue("id");
-                String mediaTypeName = element.getAttributeValue(OPFAttribute.media_type.getName());
+        for (Element element : manifestElements) {
+            String propertiesValues = element.getAttributeValue("properties");
+            if (StringUtils.isNotEmpty(propertiesValues)) {
+                List<ManifestItemPropertiesValue> values = ManifestItemPropertiesValue.extractFromAttributeValue(propertiesValues);
+                if (values.contains(ManifestItemPropertiesValue.nav))
+                {
+                    String href = element.getAttributeValue("href");
+                    String id = element.getAttributeValue("id");
+                    String mediaTypeName = element.getAttributeValue(OPFAttribute.media_type.getName());
 
-                try
-                {
-                    href = URLDecoder.decode(href, Constants.CHARACTER_ENCODING);
-                }
-                catch (UnsupportedEncodingException e)
-                {
-                    //never happens
-                }
-                resource = (XHTMLResource) resources.getByHref(href); //drin lassen damit die im Manifest dann noch gefunden werden,
-                // da es ja auch als ein normales HTML-Doc verwendet werden kann
-                if (resource == null)
-                {
-                    logger.error("resource with href '" + href + "' not found");
-                    continue;
-                }
-                resource.setId(id);
-                resource.setProperties(ManifestItemProperties.nav.getName());
-                MediaType mediaType = MediaType.getByName(mediaTypeName);
-                if (mediaType != null)
-                {
-                    resource.setMediaType(mediaType);
+                    try
+                    {
+                        href = URLDecoder.decode(href, Constants.CHARACTER_ENCODING);
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        //never happens
+                    }
+                    resource = (XHTMLResource) resources.getByHref(href); //drin lassen damit die im Manifest dann noch gefunden werden,
+                    // da es ja auch als ein normales HTML-Doc verwendet werden kann
+                    if (resource == null)
+                    {
+                        logger.error("resource with href '" + href + "' not found");
+                        continue;
+                    }
+                    resource.setId(id);
+                    resource.getProperties().clear();
+                    resource.getProperties().addAll(values);
+                    MediaType mediaType = MediaType.getByName(mediaTypeName);
+                    if (mediaType != null)
+                    {
+                        resource.setMediaType(mediaType);
+                    }
                 }
             }
         }
