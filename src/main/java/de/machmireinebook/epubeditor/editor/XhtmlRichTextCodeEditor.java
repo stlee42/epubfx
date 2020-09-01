@@ -113,7 +113,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
 
     public static class HtmlLayoutTagInspector implements TagInspector
     {
-        private List<String> htmlLayoutTags = Arrays.asList("body", "h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center", "table",
+        private final List<String> htmlLayoutTags = Arrays.asList("body", "h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center", "table",
                 "th", "td", "tr", "tbody", "thead", "tfoot", "figure", "figcaption", "caption", "dt", "dd", "q", "blockquote",
                 "section", "nav", "aside", "address", "main", "code", "map", "svg", "object", "video", "audio",
                 "ul", "ol", "li", "pre", "img", "a", "hr", "cite");
@@ -126,7 +126,7 @@ public class XhtmlRichTextCodeEditor extends XmlRichTextCodeEditor
 
     public static class BlockTagInspector implements TagInspector
     {
-        private List<String> blockTags = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center");
+        private final List<String> blockTags = Arrays.asList("h1", "h2", "h3", "h4", "h5", "h6", "p", "div", "center");
         
         public boolean isTagFound(String tagName)
         {

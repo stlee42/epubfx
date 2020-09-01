@@ -999,8 +999,9 @@ public class EditorTabManager {
             if (resourceToUpdate.equals(resource)) {
                 if (tab.getContent() instanceof CodeEditor) {
                     CodeEditor editor = (CodeEditor) tab.getContent();
+                    int currentCursorPosition = editor.getAbsoluteCursorPosition();
                     editor.setCode(new String(resourceToUpdate.getData(), StandardCharsets.UTF_8));
-                    editor.setAbsoluteCursorPosition(0);
+                    editor.setAbsoluteCursorPosition(currentCursorPosition);
                 }
             }
         }

@@ -23,7 +23,7 @@ This project is in early stage, but some functions are working (with possible bu
 - inserting tables using configurable templates
 - inserting links to internal and external targets
 - Preview of xhtml file
-- preview of image files with information about size and dimesion  
+- preview of image files with information about size and dimension  
 - basic search function (currently working: search and replace in current file, search in current file, all files, all html files (only forward searching available))
 - generating and editing toc ncx (epub 2) and nav (epub 3)
 - generating cover file by image 
@@ -35,13 +35,14 @@ This project is in early stage, but some functions are working (with possible bu
 - setting title of all xhtml files
 - check of ebook with official epub checker (not configurable yet)
 - opening files in external applications (for example to edit images), currently only configurable by editing configuration file directly
-- insert special symbols via dialog (typographical signs, special latin letters, greek alphabet, mathematical symbols, measurement unit signs)
+- insert special symbols via dialog (typographical signs, special latin chracters, greek alphabet, mathematical symbols, measurement unit signs)
 
 ![](documentation/symbols.jpg)
 
 ### Planned feature:
 - configuration for external applications
 - checking internal and external links
+- functions to improve the ebook
 
 ## Build and Running
 

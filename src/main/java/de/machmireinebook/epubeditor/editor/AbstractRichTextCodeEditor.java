@@ -1,8 +1,6 @@
 package de.machmireinebook.epubeditor.editor;
 
-import java.time.Duration;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.function.IntFunction;
 
@@ -83,7 +81,7 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
 
         createParagraphGraphicFactory();
 
-        codeArea.multiPlainChanges()
+   /*    codeArea.multiPlainChanges()
                 .successionEnds(Duration.ofMillis(durationHighlightingComputation))
                 .supplyTask(this::computeHighlightingAsync)
                 .awaitLatest(codeArea.multiPlainChanges())
@@ -97,7 +95,9 @@ public abstract class AbstractRichTextCodeEditor extends AnchorPane implements C
                         return Optional.empty();
                     }
                 })
-                .subscribe(this::applyHighlighting);
+                .subscribe(this::applyHighlighting);*/
+
+        codeArea.getVisibleParagraphs().addModificationObserver(new VisibleParagraphStyler<>( codeArea, this::computeHighlighting));
 
         Platform.runLater(() -> {
             state.setValue(Worker.State.SUCCEEDED);
