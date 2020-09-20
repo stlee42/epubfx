@@ -149,7 +149,7 @@ public class SearchAnchorPane extends AnchorPane implements Initializable
                 minimalMatchCheckBox.selectedProperty().get(),
                 SearchManager.SearchMode.values()[modusChoiceBox.getSelectionModel().selectedIndexProperty().get()],
                 SearchManager.SearchRegion.values()[searchRegionChoiceBox.getSelectionModel().selectedIndexProperty().get()]);
-        Resource resource = editorManager.getCurrentSearchableResource();
+        Resource<?> resource = editorManager.getCurrentSearchableResource();
         List<SearchManager.SearchResult> result = searchManager.findAll(searchStringTextField.getText(), resource, params);
         if (result.size() > 0)
         {

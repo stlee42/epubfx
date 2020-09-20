@@ -92,12 +92,11 @@ public class GenerateTocController implements StandardController
     @Inject
     private EditorTabManager editorTabManager;
 
-    private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
+    private final ObjectProperty<Book> currentBook = new SimpleObjectProperty<>(this, "currentBook");
     private Stage stage;
-    private ObservableList<EditableTocEntry> allTocEntries = FXCollections.observableArrayList();
-    private Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
+    private final ObservableList<EditableTocEntry> allTocEntries = FXCollections.observableArrayList();
+    private final Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
     private final BooleanProperty editModeProperty = new SimpleBooleanProperty(this, "editMode");
-    // levelToShowProperty
     private final IntegerProperty levelToShowProperty = new SimpleIntegerProperty(this, "levelToShow");
 
     private static GenerateTocController instance;

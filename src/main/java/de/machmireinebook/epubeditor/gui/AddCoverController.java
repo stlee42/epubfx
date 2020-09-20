@@ -255,9 +255,9 @@ public class AddCoverController implements Initializable
         String content = null;
         try (InputStream is = new FileInputStream(file)) {
             content = IOUtils.toString(is, StandardCharsets.UTF_8);
-            content = content.replaceAll("\\$\\{width}", String.valueOf(width));
-            content = content.replaceAll("\\$\\{height}", String.valueOf(height));
-            content = content.replaceAll("\\$\\{imageHref}", imageHref);
+            content = content.replace("${width}", String.valueOf(width));
+            content = content.replace("${height}", String.valueOf(height));
+            content = content.replace("${imageHref}", imageHref);
         }
         catch (IOException e) {
             logger.error("", e);

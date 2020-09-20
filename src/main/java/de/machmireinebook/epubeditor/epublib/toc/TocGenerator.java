@@ -60,8 +60,8 @@ public class TocGenerator
 
     public static class TocGeneratorResult
     {
-        private Resource<Document> tocResource;
-        private Map<Resource<Document>, Document> resourcesToRewrite;
+        private final Resource<Document> tocResource;
+        private final Map<Resource<Document>, Document> resourcesToRewrite;
 
         public TocGeneratorResult(Resource<Document> tocResource, Map<Resource<Document>, Document> resourcesToRewrite)
         {
@@ -281,7 +281,7 @@ public class TocGenerator
         Map<Resource<Document>, Document> resourcesToRewrite = new HashMap<>();
 
         Document navDoc = templateManager.getNavTemplate();  //ever recreate the nav by template
-        Element originalHeadElement = null; //but try to use the original head beacus the title, styles etc.
+        Element originalHeadElement = null; //but try to use the original head because the title, styles etc.
         if (navResource == null) {
             //set here with empty data, will at the end replaced by the created document
             navResource = new XHTMLResource(new byte[]{}, "Text/nav.xhtml");
@@ -294,7 +294,7 @@ public class TocGenerator
                 book.addSpineResource(navResource);
             }
         } else {
-            Document originalNavDoc = ((XHTMLResource)navResource).asNativeFormat();
+            Document originalNavDoc = navResource.asNativeFormat();
             Element originalRoot = originalNavDoc.getRootElement();
             if (originalRoot != null) {
                 originalHeadElement = originalRoot.getChild("head", NAMESPACE_XHTML);
@@ -501,7 +501,7 @@ public class TocGenerator
                 generateNcxResourcesToRewrite(tocEntry.getChildren(), tocGeneratorResult);
             }
 
-            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()))
+            if (StringUtils.isNotEmpty(tocEntry.getFragmentId()) && !getBook().getVersion().isEpub3()) //not needed if the ncx is created from nav
             {
                 tocGeneratorResult.getResourcesToRewrite().put(tocEntry.getResource(), ((EditableTocEntry) tocEntry).getDocument());
             }

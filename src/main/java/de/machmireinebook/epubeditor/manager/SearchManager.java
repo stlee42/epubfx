@@ -15,11 +15,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.eaio.stringsearch.BoyerMooreHorspool;
+
 import de.machmireinebook.epubeditor.epublib.domain.Book;
 import de.machmireinebook.epubeditor.epublib.domain.SpineReference;
 import de.machmireinebook.epubeditor.epublib.resource.Resource;
-
-import com.eaio.stringsearch.BoyerMooreHorspool;
 
 /**
  * User: mjungierek
@@ -33,15 +33,15 @@ public class SearchManager
 
     private BoyerMooreHorspool stringSearch;
 
-    private ObjectProperty<Book> currentBook = new SimpleObjectProperty<>();
+    private final ObjectProperty<Book> currentBook = new SimpleObjectProperty<>();
 
     public static class SearchResult
     {
-        private int begin;
-        private int end;
-        private Resource resource;
+        private final int begin;
+        private final int end;
+        private final Resource<?> resource;
 
-        public SearchResult(int begin, int end, Resource resource)
+        public SearchResult(int begin, int end, Resource<?> resource)
         {
             this.begin = begin;
             this.end = end;
@@ -58,7 +58,7 @@ public class SearchManager
             return end;
         }
 
-        public Resource getResource()
+        public Resource<?> getResource()
         {
             return resource;
         }
@@ -80,10 +80,10 @@ public class SearchManager
 
     public static class SearchParams
     {
-        private boolean dotAll;
-        private boolean minimalMatch;
-        private SearchMode mode;
-        private SearchRegion region;
+        private final boolean dotAll;
+        private final boolean minimalMatch;
+        private final SearchMode mode;
+        private final SearchRegion region;
 
         public SearchParams(boolean dotAll, boolean minimalMatch, SearchMode mode, SearchRegion region)
         {
@@ -125,7 +125,7 @@ public class SearchManager
         return currentBook;
     }
 
-    public Optional<SearchResult> findNext(String queryString, Resource currentResource, int fromIndex, SearchParams params)
+    public Optional<SearchResult> findNext(String queryString, Resource<?> currentResource, int fromIndex, SearchParams params)
     {
         logger.info("fromIndex " + fromIndex);
         Optional<SearchResult> result;
@@ -139,7 +139,7 @@ public class SearchManager
             try
             {
                 String text = new String(currentResource.getData(), currentResource.getInputEncoding());
-                text = text.replaceAll("\r\n", "\n");
+                text = text.replace("\r\n", "\n");
                 position = stringSearch.searchString(text, fromIndex, queryString);
                 logger.info("position " + position);
             }
@@ -187,7 +187,7 @@ public class SearchManager
             int index = book.getSpine().getResourceIndex(currentResource);
             if (index + 1 < book.getSpine().getSpineReferences().size()) {
                 SpineReference reference = book.getSpine().getSpineReferences().get(index + 1);
-                Resource resource = reference.getResource();
+                Resource<?> resource = reference.getResource();
                 result = findNext(queryString, resource, 0, params);
             } else {
                 result = Optional.empty();
@@ -199,7 +199,7 @@ public class SearchManager
         return result;
     }
 
-    public List<SearchResult> findAll(String queryString, Resource currentResource, SearchParams params)
+    public List<SearchResult> findAll(String queryString, Resource<?> currentResource, SearchParams params)
     {
         List<SearchResult> result = new ArrayList<>();
         int position = 0;
@@ -211,7 +211,7 @@ public class SearchManager
             if (params.getMode().equals(SearchMode.NORMAL))
             {
                 text = text.toLowerCase(Locale.GERMANY);
-                text = text.replaceAll("\r\n", "\n");
+                text = text.replace("\r\n", "\n");
                 queryString = queryString.toLowerCase(Locale.GERMANY);
             }
             while(true)

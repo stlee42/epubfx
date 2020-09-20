@@ -338,7 +338,7 @@ public class Book implements Serializable
     public void replaceHrefInXhtmlResources(String oldHref, String newHref) {
         for (Resource<?> resource : getResources().getResourcesByMediaType(MediaType.XHTML)) {
             String text = ((TextResource)resource).asString();
-            text = text.replaceAll(oldHref, newHref);
+            text = text.replace(oldHref, newHref);
             try {
                 resource.setData(text.getBytes(resource.getInputEncoding()));
                 if (resource instanceof XHTMLResource) {
